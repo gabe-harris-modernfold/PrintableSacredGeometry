@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bifilar Rodin Coil — Digital Twin Simulator</title>
+<style>
+  :root{
+    --bg:#0b0f1a; --panel:#121a2b; --panel2:#0e1524; --line:#1f2b45;
+    --txt:#dbe4f5; --dim:#7f8db0; --accA:#ffa14f; --accB:#4fc3f7;
+    --good:#6fe3a0; --warn:#ffd166; --mono:"Cascadia Code","Consolas",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font:14px/1.45 "Segoe UI",system-ui,sans-serif;padding:14px}
+  h1{font-size:19px;font-weight:600;letter-spacing:.3px}
+  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  header .sub{color:var(--dim);font-size:12.5px}
+  .grid{display:grid;grid-template-columns:290px minmax(480px,1fr) 330px;gap:12px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .panel h2{font-size:11.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);margin-bottom:10px}
+  .full{grid-column:1/-1}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;grid-column:1/-1}
+  @media(max-width:1180px){.grid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+
+  /* controls */
+  .ctl{margin-bottom:13px}
+  .ctl label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim);margin-bottom:4px}
+  .ctl label b{color:var(--txt);font-family:var(--mono);font-weight:600}
+  input[type=range]{width:100%;accent-color:var(--accA);height:22px}
+  .btnrow{display:flex;gap:6px;flex-wrap:wrap}
+  .btnrow button{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    border-radius:7px;padding:6px 4px;font-size:12px;cursor:pointer;min-width:56px}
+  .btnrow button.on{background:#1c2b4d;border-color:var(--accA);color:var(--txt)}
+  select{width:100%;background:var(--panel2);color:var(--txt);border:1px solid var(--line);
+    border-radius:7px;padding:6px;font-size:12.5px}
+  .hint{font-size:11px;color:var(--dim);margin-top:3px}
+
+  /* metric tiles */
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .tile{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+  .tile .k{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
+  .tile .v{font-family:var(--mono);font-size:14.5px;margin-top:2px}
+  .tile.big{grid-column:1/-1;padding:10px}
+  .tile.big .v{font-size:26px;color:var(--good)}
+  .tile .v.a{color:var(--accA)} .tile .v.b{color:var(--accB)}
+
+  canvas{display:block;width:100%;border-radius:8px;background:var(--panel2)}
+  .caption{font-size:11.5px;color:var(--dim);margin-top:6px}
+  .legend span{display:inline-flex;align-items:center;gap:5px;margin-right:14px;font-size:11.5px;color:var(--dim)}
+  .dotA,.dotB,.dotF{width:10px;height:3px;border-radius:2px;display:inline-block}
+  .dotA{background:var(--accA)} .dotB{background:var(--accB)} .dotF{background:var(--good)}
+  .eq{font-family:var(--mono);font-size:12px;color:var(--dim);line-height:1.9}
+  .eq b{color:var(--txt)}
+  #fieldStatus{font-size:11.5px;color:var(--warn);margin-top:5px;font-family:var(--mono)}
+
+  /* documentation / collapsible panels */
+  .docs{columns:2;column-gap:12px}
+  @media(max-width:900px){.docs{columns:1}}
+  details.doc{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    margin:0 0 12px;break-inside:avoid;overflow:hidden}
+  details.doc>summary{cursor:pointer;list-style:none;padding:11px 14px;font-size:13.5px;
+    font-weight:600;color:var(--txt);display:flex;align-items:center;gap:9px;user-select:none;
+    transition:background .12s}
+  details.doc>summary::-webkit-details-marker{display:none}
+  details.doc>summary:hover{background:#16223c}
+  details.doc>summary .chev{color:var(--accA);font-size:11px;transition:transform .15s;display:inline-block}
+  details.doc[open]>summary .chev{transform:rotate(90deg)}
+  details.doc>summary .tag{margin-left:auto;font-size:9.5px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.7px;padding:2px 7px;border-radius:20px}
+  .tag.phys{background:#173a2a;color:#6fe3a0} .tag.math{background:#1c2b4d;color:#7fb4ff}
+  .tag.caveat{background:#3a2417;color:#ffb26b} .tag.ui{background:#2a2340;color:#c9a8ff}
+  .doc .body{padding:2px 15px 14px;font-size:13px;line-height:1.6;color:var(--txt)}
+  .doc .body p{margin:0 0 9px} .doc .body p:last-child{margin-bottom:0}
+  .doc .body ul{margin:0 0 9px;padding-left:19px} .doc .body li{margin-bottom:5px}
+  .doc .body code{font-family:var(--mono);font-size:12px;background:#0a1120;padding:1px 5px;
+    border-radius:4px;color:#a9c4ef}
+  .doc .body .fx{display:block;font-family:var(--mono);font-size:12.5px;color:#bfe9d0;
+    background:#0a1120;border-left:2px solid var(--good);padding:7px 11px;margin:8px 0;
+    border-radius:0 5px 5px 0;overflow-x:auto}
+  .doc .body b{color:#fff} .doc .body .warn{color:var(--warn)} .doc .body .dim{color:var(--dim)}
+  .doc .body .ok{color:var(--good)} .doc .body a{color:var(--accB)}
+  .docnote{font-size:11.5px;color:var(--dim);margin:-2px 0 12px}
+  .docbar{display:flex;gap:8px;margin-bottom:12px}
+  .docbar button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    border-radius:7px;padding:6px 12px;font-size:12px;cursor:pointer}
+  .docbar button:hover{border-color:var(--accA);color:var(--txt)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚛ Bifilar Rodin Coil — Digital Twin</h1>
+  <span class="sub">12-pole · 150° skip ({12/5} star) · counter-wound bifilar · live circuit + Biot–Savart field model
+    &nbsp;|&nbsp; source: <span style="font-family:var(--mono)">bifilar-rodin-coil-digital-twin-math.pplx.md</span></span>
+</header>
+
+<div class="grid">
+
+  <!-- ============ CONTROLS ============ -->
+  <section class="panel">
+    <h2>Drive Controls</h2>
+
+    <div class="ctl">
+      <label>Waveform</label>
+      <div class="btnrow" id="wfRow">
+        <button data-wf="sine"  class="on">Sine</button>
+        <button data-wf="square">Square</button>
+        <button data-wf="triangle">Triangle</button>
+        <button data-wf="pwm">PWM</button>
+      </div>
+    </div>
+
+    <div class="ctl">
+      <label>Frequency <b id="freqVal"></b></label>
+      <input type="range" id="freq" min="0" max="1000" value="600">
+      <div class="hint">10 Hz — 1 MHz (log)</div>
+    </div>
+
+    <div class="ctl">
+      <label>Drive mode</label>
+      <div class="btnrow" id="driveRow">
+        <button data-dm="power" class="on">Wattage</button>
+        <button data-dm="voltage">Voltage</button>
+      </div>
+    </div>
+
+    <div class="ctl">
+      <label><span id="driveName">Target power</span> <b id="driveVal"></b></label>
+      <input type="range" id="drive" min="0" max="1000" value="500">
+      <div class="hint" id="driveHint">0.1 W — 1 kW (log) · solves V for P = I²·R_AC</div>
+    </div>
+
+    <div class="ctl" id="dutyCtl" style="display:none">
+      <label>PWM duty cycle <b id="dutyVal"></b></label>
+      <input type="range" id="duty" min="5" max="95" value="50">
+    </div>
+
+    <h2 style="margin-top:16px">Coil Parameters</h2>
+
+    <div class="ctl">
+      <label>Winding connection</label>
+      <select id="conn">
+        <option value="opposing" selected>Series opposing (I_A = −I_B) — dipole: poles + arcs</option>
+        <option value="aiding">Series aiding (I_A = I_B) — confined core flux</option>
+        <option value="anti">Anti-parallel bifilar</option>
+        <option value="single">Single winding A only</option>
+        <option value="vortex">Vortex — two-phase drive (rotating field)</option>
+      </select>
+    </div>
+
+    <div class="ctl" id="vphaseCtl" style="display:none">
+      <label>A↔B phase shift φ <b id="vphaseVal"></b></label>
+      <input type="range" id="vphase" min="0" max="180" value="90">
+      <div class="hint">90° = maximum rotating field — the two windings buck in quadrature, like a 2-phase motor stator</div>
+    </div>
+
+    <div class="ctl">
+      <label>Turns per winding N <b id="turnsVal"></b></label>
+      <input type="range" id="turns" min="12" max="120" step="12" value="36">
+    </div>
+
+    <div class="ctl">
+      <label>Wire diameter d <b id="diaVal"></b></label>
+      <input type="range" id="dia" min="30" max="250" value="100">
+      <div class="hint">0.30 — 2.50 mm copper</div>
+    </div>
+
+    <div class="ctl">
+      <label>Coupling k (A↔B) <b id="kVal"></b></label>
+      <input type="range" id="coupling" min="5" max="99" value="95">
+      <div class="hint" id="kHint">computing from geometry (Neumann formula)…</div>
+    </div>
+
+    <div class="ctl">
+      <label>Core µᵣ <b id="murVal"></b></label>
+      <input type="range" id="mur" min="1" max="100" value="1">
+      <div class="hint">1 = air core · scales circuit L only; the field map is always air-core</div>
+    </div>
+
+    <h2 style="margin-top:16px">Display Layers</h2>
+    <div class="ctl" style="display:flex;flex-direction:column;gap:7px">
+      <label style="justify-content:flex-start;gap:8px">
+        <input type="checkbox" id="autoRot" checked> auto-rotate 3D view
+      </label>
+      <label style="justify-content:flex-start;gap:8px">
+        <input type="checkbox" id="showCoil" checked> coil windings (off = field only)
+      </label>
+      <label style="justify-content:flex-start;gap:8px">
+        <input type="checkbox" id="showWindB" checked> <span style="color:var(--accB)">winding B (blue)</span>
+      </label>
+      <label style="justify-content:flex-start;gap:8px">
+        <input type="checkbox" id="showFlux" checked> magnetic field lines (all)
+      </label>
+      <label style="justify-content:flex-start;gap:8px">
+        <input type="checkbox" id="lineOuter" checked> <span style="color:var(--good)">outer field lines (green)</span>
+      </label>
+      <label style="justify-content:flex-start;gap:8px">
+        <input type="checkbox" id="lineCenter" checked> <span style="color:#ffd166">aperture arcs (gold)</span>
+      </label>
+      <label style="justify-content:flex-start;gap:8px">
+        <input type="checkbox" id="lineAxis" checked> <span style="color:#ff5fd7">centre axis line (magenta)</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- ============ 3D + SCOPE ============ -->
+  <section class="panel">
+    <h2>Coil Geometry &amp; Current Flow <span style="float:right;font-weight:400;text-transform:none">drag to rotate · wheel to zoom</span></h2>
+    <canvas id="c3d" height="400"></canvas>
+    <div class="legend" style="margin-top:6px">
+      <span><i class="dotA"></i>Winding A (skip-5)</span>
+      <span><i class="dotB"></i>Winding B (counter-wound, +10°)</span>
+      <span><i class="dotF"></i>outer field lines</span>
+      <span><i class="dotF" style="background:#ff5fd7"></i>axis line through the centre</span>
+      <span><i class="dotF" style="background:#ffd166"></i>arcs threading the aperture</span>
+      <span><b style="color:#ff7b7b">N</b>/<b style="color:#7bb8ff">S</b> = poles · ⊕ = centre B₀ probe</span>
+    </div>
+    <h2 style="margin-top:14px">Oscilloscope — v(t) &amp; i(t), two periods</h2>
+    <canvas id="scope" height="220"></canvas>
+  </section>
+
+  <!-- ============ METRICS ============ -->
+  <section class="panel">
+    <h2>Live Readouts</h2>
+    <div class="tiles">
+      <div class="tile big"><div class="k">True power dissipated  P = I²·R_AC</div><div class="v" id="mP">—</div></div>
+      <div class="tile"><div class="k">V rms</div><div class="v" id="mVrms">—</div></div>
+      <div class="tile"><div class="k">I rms</div><div class="v" id="mIrms">—</div></div>
+      <div class="tile"><div class="k">Reactive Q</div><div class="v" id="mQ">—</div></div>
+      <div class="tile"><div class="k">Apparent S</div><div class="v" id="mS">—</div></div>
+      <div class="tile"><div class="k">Power factor</div><div class="v" id="mPF">—</div></div>
+      <div class="tile"><div class="k">Phase φ₁</div><div class="v" id="mPh">—</div></div>
+      <div class="tile"><div class="k">|Z| @ f</div><div class="v" id="mZ">—</div></div>
+      <div class="tile"><div class="k">L effective</div><div class="v" id="mL">—</div></div>
+      <div class="tile"><div class="k">R_AC eff</div><div class="v" id="mRac">—</div></div>
+      <div class="tile"><div class="k">R_DC eff</div><div class="v" id="mRdc">—</div></div>
+      <div class="tile"><div class="k">Skin depth δ</div><div class="v" id="mSkin">—</div></div>
+      <div class="tile"><div class="k">Dowell F_R</div><div class="v" id="mFR">—</div></div>
+      <div class="tile"><div class="k">B @ centre (N–S midpoint)</div><div class="v" id="mBc" style="color:#ff5fd7">—</div></div>
+      <div class="tile"><div class="k">∂B/∂z @ centre</div><div class="v" id="mdBdz" style="color:#ff5fd7">—</div></div>
+      <div class="tile"><div class="k">F on 1 mm steel @ centre</div><div class="v" id="mFc" style="color:#ff5fd7">—</div></div>
+      <div class="tile"><div class="k">Peak axial pull → centre</div><div class="v" id="mFpk" style="color:#ff5fd7">—</div></div>
+      <div class="tile"><div class="k">B core (Biot–Savart)</div><div class="v a" id="mBcore">—</div></div>
+      <div class="tile"><div class="k">B peak (field map)</div><div class="v a" id="mBpk">—</div></div>
+      <div class="tile"><div class="k">B_max Faraday V/4.44fNAₑ</div><div class="v b" id="mBmax">—</div></div>
+      <div class="tile"><div class="k">Wire / winding</div><div class="v" id="mLen">—</div></div>
+    </div>
+
+    <h2 style="margin-top:14px">12-Pole Skip Pattern (top view)</h2>
+    <canvas id="poles" height="250"></canvas>
+    <div class="caption" style="font-family:var(--mono);text-align:center">
+      1→6→11→4→9→2→7→12→5→10→3→8→1
+    </div>
+  </section>
+
+  <!-- ============ BODE + FIELD ============ -->
+  <div class="row2">
+    <section class="panel">
+      <h2>Impedance vs Frequency — R_AC(f), ωL, |Z|</h2>
+      <canvas id="bode" height="260"></canvas>
+      <div class="caption">Skin + proximity effect (Dowell): R_AC rises as √f above the critical frequency; marker = operating point.</div>
+    </section>
+    <section class="panel">
+      <h2>|B| Field Cross-Section (y=0 plane) — numerical Biot–Savart
+        <label style="float:right;font-weight:400;text-transform:none;cursor:pointer">
+          <input type="checkbox" id="linScale"> linear colour scale (FEM-style)</label></h2>
+      <canvas id="field" height="260"></canvas>
+      <div id="fieldStatus">Computing Biot–Savart field…</div>
+      <div class="caption">Heatmap = |B| — <b>brightness scales with I_rms and pulses with the drive waveform i(t)</b>, colour-bar values
+        track the live current · streamlines = in-plane field lines with direction arrows
+        (<b style="color:#ff5fd7">magenta</b> = through the exact centre, <b style="color:#ffd166">gold</b> = threading the aperture,
+        white = outer) · ⊙/⊗ = field out of / into the plane · ⊕ B₀ probe, <b style="color:#5fffd0">◆ F↕max</b> grip points and
+        <b style="color:#ff7b7b">N</b>/<b style="color:#7bb8ff">S</b> poles mirror the 3-D view (+z up). Computed by summing
+        μ₀I/4π · dl×r̂/r² over every discretized segment of both windings.</div>
+    </section>
+  </div>
+
+  <!-- ============ EQUATIONS ============ -->
+  <section class="panel full">
+    <h2>Model Equations (from the study document)</h2>
+    <div class="eq">
+      <b>Geometry:</b> x=(R+a·cosθ)cosφ, y=(R+a·cosθ)sinφ, z=a·sinθ · winding: φ=s·10π, θ=s·24π ({12/5}: 12 poloidal wraps / 5 toroidal circuits) &nbsp;·&nbsp;
+      <b>Skin depth:</b> δ=√(ρ/π f μ₀) &nbsp;·&nbsp;
+      <b>Dowell:</b> R_AC/R_DC = Δ(sinh2Δ+sin2Δ)/(cosh2Δ−cos2Δ) + ⅔(M²−1)·Δ(sinhΔ−sinΔ)/(coshΔ+cosΔ), Δ=(√π/2)(d/δ)<br>
+      <b>Inductance:</b> L=µᵣµ₀N²(R−√(R²−a²)) · series aiding L=2L₁(1+k), opposing 2L₁(1−k), anti-parallel L₁(1−k)/2 · k from Neumann M=µ₀/4π ∮∮ dl_A·dl_B/r &nbsp;·&nbsp;
+      <b>Impedance:</b> Z=R_AC+jωL, I=V/|Z| &nbsp;·&nbsp;
+      <b>Power:</b> P=I²R_AC, Q=I²ωL, S=V·I, pf=R_AC/|Z|<br>
+      <b>PWM harmonics:</b> v(t)=DV + Σ 2V/(nπ)·sin(nπD)·cos(nωt), each harmonic sees Z(nf) &nbsp;·&nbsp;
+      <b>Flux:</b> B_max=V/(4.44 f N Aₑ) &nbsp;·&nbsp;
+      <b>Field-per-watt:</b> B=µ₀N√(P/R_AC)/(2πr) &nbsp;·&nbsp;
+      <b>Biot–Savart:</b> B(r)=µ₀I/4π · Σ dl×(r−r′)/|r−r′|³<br>
+      <b>Vortex (two-phase):</b> B(t)=B_A·i(ωt)+B_B·i(ωt−φ) → rotating aperture field (max at φ=90°), test-magnet sync speed 60·f RPM;
+      heatmap shows √⟨|B|²⟩ = √(½|B_A|²+½|B_B|²+(B_A·B_B)cosφ); mutual coupling neglected (Neumann k≈0.1)
+    </div>
+  </section>
+
+  <!-- ============ DOCUMENTATION ============ -->
+  <section class="panel full">
+    <h2>Documentation — How This Simulation Works &amp; What To Trust</h2>
+    <p class="docnote">Every model choice, physical assumption, and honest limitation, grouped by topic. Tags:
+      <span class="tag phys">physics</span> real EM behaviour ·
+      <span class="tag math">math</span> the equations used ·
+      <span class="tag caveat">caveat</span> where the model simplifies or where lore ≠ physics ·
+      <span class="tag ui">how&nbsp;to</span> using the controls.</p>
+    <div class="docbar">
+      <button id="docOpenAll">Expand all</button>
+      <button id="docCloseAll">Collapse all</button>
+    </div>
+    <div class="docs">
+
+      <details class="doc" open>
+        <summary><span class="chev">▶</span> What a Rodin coil actually is <span class="tag phys">physics</span></summary>
+        <div class="body">
+          <p>Conventionally, this is an <b>air-core toroidal transformer</b> with an unusual winding path. Two
+          conductors (bifilar) are laid diagonally across a torus following the <code>{12/5}</code> star pattern —
+          each wire makes 12 poloidal wraps for every 5 trips around the ring, skipping 5 of the 12 poles (150°) each step.</p>
+          <p>Because the wires cross the surface diagonally rather than wrapping perpendicular like a normal toroid,
+          the coil behaves like a <b>toroid on its outer edge and a solenoid through the center hole</b>. That hybrid
+          geometry is the whole point — it lets field escape into the aperture instead of being fully confined
+          to the core. Everything the simulation draws is computed from these actual wire paths, nothing else.</p>
+          <p class="dim">Geometry fixed to the study document's published dimensions: outer Ø 9.95 cm, aperture Ø 2.9 cm
+          → major radius R = 32.1 mm, minor radius a = 17.6 mm.</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> Biot–Savart: how the field is computed <span class="tag math">math</span></summary>
+        <div class="body">
+          <p>The magnetic field at any point is the exact sum of contributions from every short segment of both wires:</p>
+          <span class="fx">B(r) = (µ₀/4π) · Σ I·dl × (r − r′) / |r − r′|³</span>
+          <p>Each winding is discretized into hundreds of straight segments <code>dl</code>. For the cross-section
+          heatmap this is evaluated on a 120×80 grid; for the 3-D field lines it's integrated with an RK-2 (midpoint)
+          streamline tracer that steps along the local B direction. This is the same law FEM tools solve — the
+          difference is method (see the FEM-comparison panel).</p>
+          <p>Near a wire the <code>1/r²</code> term diverges, so we apply a <b>~1.2 mm softening radius</b> (a
+          finite-wire-thickness stand-in). That's why on-conductor values read lower here than in a meshed FEM solve.</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> Why "series aiding" shows no external field <span class="tag phys">physics</span></summary>
+        <div class="body">
+          <p>This surprises people. When both windings drive current the same way around the ring, the coil is a
+          near-ideal toroid, and <b>Ampère's law confines essentially all flux inside the donut core</b>:</p>
+          <span class="fx">B_inside = µ₀NI / 2πr &nbsp;&nbsp;&nbsp; B_outside ≈ 0</span>
+          <p>There are no poles and no external arcs to draw — not a bug, it's the defining property of a toroid.
+          The simulator detects this by computing the coil's <b>net magnetic dipole moment</b> and, when it's near
+          zero, prints "flux is confined inside the toroidal core" instead of drawing phantom field lines.</p>
+          <p>A bar-magnet picture (N/S poles + arcs) only appears when the winding has a <b>net dipole moment</b> —
+          which happens in the opposing, anti-parallel, and single-winding modes.</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> N / S poles &amp; the dipole moment <span class="tag math">math</span></summary>
+        <div class="body">
+          <p>The poles aren't drawn arbitrarily — they're placed where the coil's computed magnetic dipole moment
+          points. The moment is summed directly from the wire geometry:</p>
+          <span class="fx">m = ½ Σ w · (r × dl)&nbsp;&nbsp;&nbsp; (w = winding current sign)</span>
+          <p>If <code>|m_z|</code> exceeds ~12% of a reference single-loop moment, the coil is "magnetized" and
+          N (red) / S (blue) badges are placed on the axis. In opposing mode the measured moment is ≈ 0.0375 A·m²
+          per amp — matching the theoretical value for the coil's 5 net axial current loops.</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> The center point: max field, zero force <span class="tag phys">physics</span></summary>
+        <div class="body">
+          <p>The exact center — the midpoint between N and S — is the point you asked most about. Two facts:</p>
+          <ul>
+            <li>It is a <b>field maximum</b>: B₀ is strongest here and points purely along the axis (S→N).</li>
+            <li>It is a <b>force equilibrium</b>: <code>∂B/∂z ≈ 0</code>, so a small magnetic object feels
+            <i>no net pull</i> there. Magnetic force needs a gradient: <code>F ∝ ∇(B²)</code>.</li>
+          </ul>
+          <p>The steepest gradient — where the "grip" is strongest — sits <b>off-center</b> (≈ 14 mm up the axis at
+          default settings). An object nudged off the midpoint gets pulled back toward it. The force tiles scale
+          with current², so raising wattage 100× raises the pull 100×.</p>
+          <p class="dim">The 1 mm-steel-sphere force uses the small induced-dipole model (µᵣ≫1, object ≪ field
+          scale) — good for probes and particles. A large iron core would itself reshape the field (needs FEM).</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> The vortex: rotating field &amp; spinning magnets <span class="tag phys">physics</span></summary>
+        <div class="body">
+          <p>This is the effect the coil is famous for. Drive the two windings <b>out of phase</b> (the φ slider) and
+          they act like a <b>two-phase motor stator</b>. The combined field in the aperture doesn't just oscillate —
+          its pattern <b>physically rotates</b>:</p>
+          <span class="fx">B(t) = B_A·i(ωt) + B_B·i(ωt − φ)</span>
+          <p>Rotation is maximal at <b>φ = 90°</b> (quadrature) and vanishes at φ = 0° (pure bucking — oscillation
+          only). The simulator's harmonic detector finds the dominant rotating component is the <b>m = 12</b>
+          azimuthal harmonic — the strand pitch of the 12-pole winding — so the pattern turns at <code>ω/12</code>,
+          giving a sync speed of <b>5·f RPM</b>. At the 20–200 Hz experimenters use, that's 100–1000 RPM — exactly
+          the ball-magnet spin rates seen in videos.</p>
+          <p class="warn">Important nuance: the rotation is <i>not</i> at the dead center. By 12-fold symmetry the
+          field there is axial and static in direction. The swirl lives <b>near the aperture wall</b>, where the
+          strand ripple survives (it decays toward the axis as r¹²). A finite-sized ball spins because it couples
+          to that near-wall rotating pattern.</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> Frequency, wattage &amp; the drive circuit <span class="tag math">math</span></summary>
+        <div class="body">
+          <p>The 3-D view's brightness, line weight, and flux-dot speed all scale with the <b>real RMS current</b>,
+          which comes from a full AC circuit solve:</p>
+          <span class="fx">Z(f) = R_AC(f) + jωL &nbsp;&nbsp; I = V / |Z| &nbsp;&nbsp; P = I²·R_AC</span>
+          <p>In wattage mode the app <b>inverts this</b> — it solves for the drive voltage that hits your target
+          power exactly (P ∝ V², so one unit-solve scales analytically).</p>
+          <p><b>R_AC(f)</b> rises with frequency via skin and proximity effects, using the full Dowell equation:</p>
+          <span class="fx">δ = √(ρ/πfµ₀) &nbsp;&nbsp; R_AC/R_DC = F_R(Δ), &nbsp; Δ = (√π/2)(d/δ)</span>
+          <p>Non-sine waveforms are decomposed into a Fourier series and <b>each harmonic sees its own Z(nf)</b>,
+          so a square or PWM drive correctly shows extra high-frequency loss and a filtered current shape.</p>
+          <p class="dim">Field <i>shape</i> is deliberately independent of drive level — Maxwell's equations are
+          linear in current, so only field <i>strength</i> changes with V/f/watts. Geometry changes only when you
+          alter the winding connection.</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> Bifilar connection modes <span class="tag ui">how to</span></summary>
+        <div class="body">
+          <ul>
+            <li><b>Series opposing</b> — windings buck; net dipole → clear N/S poles + external arcs. <span class="ok">Default; best "field" view.</span></li>
+            <li><b>Series aiding</b> — windings add; near-ideal toroid, flux confined to core, no external field.</li>
+            <li><b>Anti-parallel bifilar</b> — the study document's near-zero-inductance case; far-field cancels, local inter-wire shear remains.</li>
+            <li><b>Single winding A</b> — one conductor only; simplest dipole, closest to a same-direction hand-wound coil.</li>
+            <li><b>Vortex (two-phase)</b> — independent phase-shifted drive; unlocks the φ slider and the rotating-field / spinning-magnet demo.</li>
+          </ul>
+          <p>Inductance follows the connection: <code>aiding 2L₁(1+k)</code>, <code>opposing 2L₁(1−k)</code>,
+          <code>anti-parallel L₁(1−k)/2</code>, where the coupling <b>k</b> comes from the Neumann double-integral
+          over the two real wire paths (default measured k ≈ 0.11).</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> How this compares to COMSOL / FEM <span class="tag caveat">caveat</span></summary>
+        <div class="body">
+          <p>Validated against FEM results, the <b>physics and scaling laws agree</b>; differences are method-level:</p>
+          <ul>
+            <li>Field <b>topology</b> matches — hot conductor bundles, moderate aperture, dark exterior equator,
+            dipole far-field decay converging to <code>µ₀m/2πz³</code> (within a few % by z = 20 cm).</li>
+            <li>FEM meshes the <b>copper volume</b>, so its on-conductor surface values are more trustworthy than
+            this filament model's (which softens within ~1.2 mm of a wire).</li>
+            <li>FEM resolves current redistribution <i>inside</i> the conductor at high f; here skin/proximity enter
+            only the circuit resistance (Dowell), not the field-map shape.</li>
+            <li>FEM gives one operating point per solve; this wraps the field solver in a <b>live drive circuit</b>
+            (f, waveform, wattage) updating in real time.</li>
+          </ul>
+          <p>Use the <b>"linear colour scale (FEM-style)"</b> checkbox on the cross-section to match FEM's linear
+          |B| plots (default here is log, showing 3 decades). For final absolute numbers on conductor surfaces,
+          the FEM remains the reference — matching the study document's own recommendation.</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> Vortex-Based Mathematics: lore vs. physics <span class="tag caveat">caveat</span></summary>
+        <div class="body">
+          <p>The winding <i>path</i> genuinely follows the VBM 1-2-4-8-7-5 doubling sequence mapped onto the 12
+          poles — and that geometry is exactly what produces the diagonal, semi-open field behaviour. So the
+          <b>geometry from VBM is real and is fully modeled here.</b></p>
+          <p class="warn">However: the claim that the "3-6-9 gap" is a special magnetic channel does <b>not</b> enter
+          the field equations anywhere. Everything the simulation shows — the aperture concentration, the vortex,
+          the poles — emerges from Biot–Savart over the copper alone. The center concentrates flux because it's a
+          solenoid-like axis, not because of numerology.</p>
+          <p class="dim">This simulator treats the coil as what mainstream physics says it is: a cleverly-wound
+          air-core toroid. No over-unity, no free energy — power in always equals copper loss plus stored reactive
+          energy returned each cycle.</p>
+        </div>
+      </details>
+
+      <details class="doc">
+        <summary><span class="chev">▶</span> Display layers &amp; reading the views <span class="tag ui">how to</span></summary>
+        <div class="body">
+          <p><b>Field-line colors</b> (both 3-D and cross-section):</p>
+          <ul>
+            <li><span style="color:#ff5fd7">Magenta</span> — the axis line through the exact center (N–S).</li>
+            <li><span style="color:#ffd166">Gold</span> — arcs threading the aperture hole.</li>
+            <li><span class="ok">Green</span> — outer arcs and core flux.</li>
+            <li><span style="color:#7ef0ff">Cyan</span> — instantaneous rotating vectors (vortex mode only).</li>
+          </ul>
+          <p><b>Cross-section glyphs:</b> ⊙ = field out of the plane, ⊗ = into the plane (the toroidal core flux a
+          2-D slice can't show with arrows).</p>
+          <p>Each layer has its own toggle under <b>Display Layers</b>, including turning off winding B (blue) or the
+          coil entirely to see the pure field. The center ⊕ probe and its B₀/force readouts stay live regardless.</p>
+        </div>
+      </details>
+
+    </div>
+  </section>
+</div>
+
+<script>
+'use strict';
+/* ================= constants & geometry (from the study doc) ================= */
+const MU0 = 4e-7*Math.PI;
+const RHO = 1.68e-8;                 // copper resistivity, Ω·m @25 °C
+const GEO = (()=> {                  // D = 9.95 cm outer, 2.9 cm aperture
+  const Rout = 0.0995/2, Rc = 0.029/2;
+  const R = (Rout+Rc)/2, a = (Rout-Rc)/2;
+  return {R, a, Ae: Math.PI*a*a};
+})();
+const WRAPS = 12, CIRCUITS = 5;      // {12/5} star: 12 poloidal wraps per 5 toroidal circuits
+
+/* ================= UI state ================= */
+const S = {
+  waveform:'sine', driveMode:'power',
+  f:1e4, Ptarget:10, V:24, duty:0.5,
+  conn:'opposing', N:36, d:1.0e-3, k:0.95, mur:1, autoRot:true, showFlux:true, showCoil:true,
+  showWindB:true, lineOuter:true, lineCenter:true, lineAxis:true, linScale:false, vphase:90
+};
+/* computed results */
+const C = { Vdrive:24, ready:false };
+
+/* ================= winding paths ================= */
+function torusPt(phi, theta, aScale){
+  const a = GEO.a*aScale, w = GEO.R + a*Math.cos(theta);
+  return {x: w*Math.cos(phi), y: w*Math.sin(phi), z: a*Math.sin(theta)};
+}
+function buildPath(dir, phi0, aScale, ptsPerWrap){
+  const n = WRAPS*ptsPerWrap, pts = [];
+  for(let i=0;i<=n;i++){
+    const s = i/n;
+    pts.push(torusPt(phi0 + dir*s*CIRCUITS*2*Math.PI, s*WRAPS*2*Math.PI, aScale));
+  }
+  return pts;
+}
+const pathA = buildPath(+1, 0, 1.00, 56);                    // winding A
+const pathB = buildPath(-1, 10*Math.PI/180, 1.045, 56);      // counter-wound, +10° offset
+function pathLength(p){let L=0;for(let i=1;i<p.length;i++){const dx=p[i].x-p[i-1].x,dy=p[i].y-p[i-1].y,dz=p[i].z-p[i-1].z;L+=Math.hypot(dx,dy,dz);}return L;}
+const LEN_PER_WRAP = pathLength(pathA)/WRAPS;                // metres of wire per poloidal turn
+
+/* Neumann formula: M = μ0/4π ∮∮ dl_A·dl_B / |r_A − r_B|  over the discretized paths.
+   Normalized by the analytic self-inductance of the same 12-wrap winding → geometric k.
+   (Both M and L scale as N², so k is independent of turn count and core µr.) */
+function neumannK(){
+  const segs=p=>{ const s=[]; for(let i=1;i<p.length;i++){ const a=p[i-1],b=p[i];
+    s.push([(a.x+b.x)/2,(a.y+b.y)/2,(a.z+b.z)/2, b.x-a.x,b.y-a.y,b.z-a.z]); } return s; };
+  const A=segs(pathA), B=segs(pathB);
+  let M=0;
+  for(const u of A){
+    let acc=0;
+    for(const v of B){
+      const dx=u[0]-v[0], dy=u[1]-v[1], dz=u[2]-v[2];
+      const r=Math.sqrt(dx*dx+dy*dy+dz*dz + 1e-8);   // 0.1 mm softening at crossings
+      acc+=(u[3]*v[3]+u[4]*v[4]+u[5]*v[5])/r;
+    }
+    M+=acc;
+  }
+  M*=MU0/(4*Math.PI);
+  const L12=MU0*WRAPS*WRAPS*(GEO.R-Math.sqrt(GEO.R*GEO.R-GEO.a*GEO.a));
+  return {M, k:Math.min(0.99, Math.max(0.05, Math.abs(M)/L12))};
+}
+
+/* ================= electrical model ================= */
+function skinDepth(f){ return Math.sqrt(RHO/(Math.PI*f*MU0)); }
+function dowellFR(f, layers){                 // R_AC/R_DC
+  const D = (Math.sqrt(Math.PI)/2) * S.d/skinDepth(f);
+  if(D < 1e-4) return 1;
+  if(D > 50)   return D*(1 + 2*(layers*layers-1)/3);   // asymptotic, avoids sinh overflow
+  const s2=Math.sinh(2*D), sn2=Math.sin(2*D), c2=Math.cosh(2*D), cs2=Math.cos(2*D);
+  const s1=Math.sinh(D),  sn1=Math.sin(D),  c1=Math.cosh(D),  cs1=Math.cos(D);
+  const skin = D*(s2+sn2)/(c2-cs2);
+  const prox = (2*(layers*layers-1)/3)*D*(s1-sn1)/(c1+cs1);
+  return Math.max(1, skin+prox);
+}
+function modeParams(){
+  const L1 = S.mur*MU0*S.N*S.N*(GEO.R - Math.sqrt(GEO.R*GEO.R - GEO.a*GEO.a));
+  switch(S.conn){
+    case 'single':   return {cR:1,   L:L1,               layers:1, branch:1,   Ntot:S.N,   cB:0};
+    case 'aiding':   return {cR:2,   L:2*L1*(1+S.k),     layers:2, branch:1,   Ntot:2*S.N, cB:+1};
+    case 'opposing': return {cR:2,   L:2*L1*(1-S.k),     layers:2, branch:1,   Ntot:2*S.N, cB:-1};
+    case 'anti':     return {cR:0.5, L:L1*(1-S.k)/2,     layers:2, branch:0.5, Ntot:S.N,   cB:-1};
+    /* two-phase vortex drive: windings driven independently, phase-shifted by φ.
+       Mutual coupling neglected (Neumann k≈0.1 → ~10% effect). cB is the field
+       snapshot weight of winding B at the instant winding A peaks: cos φ. */
+    case 'vortex':   return {cR:1,   L:L1,               layers:2, branch:1,   Ntot:S.N,
+                             cB:Math.cos(S.vphase*Math.PI/180), vortex:true};
+  }
+}
+function Reff(f, mp){ return mp.cR * C.Rdc1 * dowellFR(f, mp.layers); }
+
+/* Fourier series of the selected waveform: v(t) = dc + Σ a·sin(nωt + ph) */
+function buildHarmonics(V){
+  const H = []; let dc = 0;
+  if(S.waveform==='sine'){ H.push({n:1, a:V, ph:0}); }
+  else if(S.waveform==='square'){
+    for(let n=1;n<=39;n+=2) H.push({n, a:4*V/(n*Math.PI), ph:0});
+  } else if(S.waveform==='triangle'){
+    for(let n=1,j=0;n<=39;n+=2,j++) H.push({n, a:(j%2?-1:1)*8*V/(Math.PI*Math.PI*n*n), ph:0});
+  } else { // unipolar PWM 0..V, duty D
+    dc = S.duty*V;
+    for(let n=1;n<=60;n++){
+      const s = Math.sin(n*Math.PI*S.duty);
+      if(Math.abs(s)>1e-9) H.push({n, a:2*V*s/(n*Math.PI), ph:Math.PI/2});
+    }
+  }
+  return {H, dc};
+}
+
+/* full phasor solve at drive amplitude V — returns everything the UI needs */
+function solve(V){
+  const mp = modeParams();
+  const {H, dc} = buildHarmonics(V);
+  const RdcEff = mp.cR*C.Rdc1;
+  const Idc = dc>0 ? dc/RdcEff : 0;
+
+  let P = Idc*Idc*RdcEff, Q = 0, sumI2 = Idc*Idc, sumV2 = dc*dc;
+  const ih = [];
+  for(const h of H){
+    const fn = h.n*S.f;
+    const R = Reff(fn, mp), X = 2*Math.PI*fn*mp.L;
+    const Zm = Math.hypot(R,X), phZ = Math.atan2(X,R);
+    const Ia = h.a/Zm;                       // peak current of this harmonic
+    ih.push({n:h.n, a:Ia, ph:h.ph - phZ, va:h.a, vph:h.ph});
+    P += Ia*Ia/2*R;  Q += Ia*Ia/2*X;
+    sumI2 += Ia*Ia/2; sumV2 += h.a*h.a/2;
+  }
+  const Irms = Math.sqrt(sumI2), Vrms = Math.sqrt(sumV2);
+  const Sva = Vrms*Irms;
+
+  /* time-domain arrays over exactly two periods (600 samples) */
+  const NS=600, v=new Float32Array(NS), i=new Float32Array(NS);
+  let Vpk=1e-12, Ipk=1e-12;
+  for(let k=0;k<NS;k++){
+    const wt = 4*Math.PI*k/NS;               // ωt over 2 periods
+    let vv=dc, ii=Idc;
+    for(const h of H)  vv += h.a*Math.sin(h.n*wt + h.ph);
+    for(const h of ih) ii += h.a*Math.sin(h.n*wt + h.ph);
+    v[k]=vv; i[k]=ii;
+    Vpk=Math.max(Vpk,Math.abs(vv)); Ipk=Math.max(Ipk,Math.abs(ii));
+  }
+  const f1 = ih.length? ih[0] : {ph:0, vph:0};
+  const ph2 = mp.vortex ? 2 : 1;       // two-phase drive: both windings dissipate
+  return {mp, P:P*ph2, Q:Q*ph2, S:Sva*ph2, pf: Sva>0? P/Sva : 1, Irms, Vrms, Idc,
+          phase1:(f1.vph - f1.ph), vArr:v, iArr:i, Vpk, Ipk,
+          Zm: Math.hypot(Reff(S.f,mp), 2*Math.PI*S.f*mp.L),
+          Rac: Reff(S.f,mp), Rdc: RdcEff, L: mp.L};
+}
+
+function recompute(){
+  C.wireLen = LEN_PER_WRAP*S.N;
+  C.Rdc1 = RHO*C.wireLen/(Math.PI*(S.d/2)*(S.d/2));
+  let V;
+  if(S.driveMode==='power'){
+    const p1 = solve(1).P;                   // P ∝ V², so scale a unit solve
+    V = p1>0 ? Math.sqrt(S.Ptarget/p1) : 0;
+  } else V = S.V;
+  C.Vdrive = V;
+  Object.assign(C, solve(V));
+  C.delta = skinDepth(S.f);
+  C.FR = dowellFR(S.f, C.mp.layers);
+  C.Bfaraday = C.Vrms/(4.44*S.f*C.mp.Ntot*GEO.Ae);
+  updateReadouts(); drawScope(0); drawBode(); recolorField();
+}
+
+/* ================= formatting ================= */
+function eng(x, unit, dig=3){
+  if(!isFinite(x)) return '—';
+  const ax=Math.abs(x);
+  if(ax===0) return '0 '+unit;
+  const p=[[1e9,'G'],[1e6,'M'],[1e3,'k'],[1,''],[1e-3,'m'],[1e-6,'µ'],[1e-9,'n'],[1e-12,'p']];
+  for(const [v,s] of p) if(ax>=v) return (x/v).toPrecision(dig)+' '+s+unit;
+  return x.toExponential(1)+' '+unit;
+}
+const $=id=>document.getElementById(id);
+function updateReadouts(){
+  $('mP').textContent    = eng(C.P,'W');
+  $('mVrms').textContent = eng(C.Vrms,'V')+'  (drive '+eng(C.Vdrive,'V',3)+')';
+  $('mIrms').textContent = eng(C.Irms,'A');
+  $('mQ').textContent    = eng(C.Q,'VAR');
+  $('mS').textContent    = eng(C.S,'VA');
+  $('mPF').textContent   = C.pf.toFixed(3);
+  $('mPh').textContent   = (Math.atan2(2*Math.PI*S.f*C.L, C.Rac)*180/Math.PI).toFixed(1)+'°';
+  $('mZ').textContent    = eng(C.Zm,'Ω');
+  $('mL').textContent    = eng(C.L,'H');
+  $('mRac').textContent  = eng(C.Rac,'Ω');
+  $('mRdc').textContent  = eng(C.Rdc,'Ω');
+  $('mSkin').textContent = eng(C.delta,'m');
+  $('mFR').textContent   = '×'+C.FR.toFixed(2);
+  $('mBmax').textContent = eng(C.Bfaraday,'T');
+  $('mLen').textContent  = eng(C.wireLen,'m',3)+' · '+eng(C.Rdc1,'Ω',3);
+  if(typeof FLUX!=='undefined' && FLUX.Bc){
+    const s=(S.N/WRAPS)*C.Irms*C.mp.branch;
+    const bz=FLUX.Bc[2]*s, bm=Math.hypot(FLUX.Bc[0],FLUX.Bc[1],FLUX.Bc[2])*s;
+    $('mBc').textContent = eng(bm,'T')+(Math.abs(bz)>0.7*bm ? (bz>0?' ↑ (S→N)':' ↓ (S→N)') : '');
+    if(FLUX.probe){
+      const sphK=2*Math.PI*Math.pow(0.5e-3,3)/(4e-7*Math.PI);   // induced-dipole factor, µr≫1
+      $('mdBdz').textContent = eng(FLUX.probe.dBdz0*s,'T/m',2)+' (≈0: equilibrium)';
+      $('mFc').textContent   = eng(sphK*FLUX.probe.g0*s*s,'N',2);
+      $('mFpk').textContent  = eng(sphK*FLUX.probe.gPk*s*s,'N',2)+' @ z≈'+(FLUX.probe.zPk*1000).toFixed(0)+' mm';
+    }
+  }
+  if(FIELD.done){
+    const scale = (S.N/WRAPS)*C.Irms*C.mp.branch;
+    $('mBcore').textContent = eng(FIELD.coreUnit(C.mp.cB)*scale,'T');
+    $('mBpk').textContent   = eng(FIELD.maxUnit*scale,'T');
+  }
+}
+
+/* ================= canvas helpers ================= */
+function setupCanvas(id){
+  const c=$(id), dpr=window.devicePixelRatio||1;
+  const w=c.clientWidth, h=parseInt(c.getAttribute('height'));
+  c.width=w*dpr; c.height=h*dpr; c.style.height=h+'px';
+  const ctx=c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {c,ctx,w,h};
+}
+
+/* ================= oscilloscope ================= */
+let scope;
+function drawScope(cursor){                    // cursor ∈ [0,1) over the 2 displayed periods
+  const {ctx,w,h}=scope; ctx.clearRect(0,0,w,h);
+  const half=h/2, pad=44;
+  ctx.strokeStyle='#1c2740'; ctx.lineWidth=1;
+  ctx.beginPath();
+  for(let g=0;g<=8;g++){const x=pad+(w-pad-8)*g/8; ctx.moveTo(x,4); ctx.lineTo(x,h-4);}
+  ctx.moveTo(pad,half); ctx.lineTo(w-8,half);
+  ctx.moveTo(pad,half/2); ctx.lineTo(w-8,half/2);
+  ctx.moveTo(pad,half+half/2); ctx.lineTo(w-8,half+half/2);
+  ctx.stroke();
+  ctx.strokeStyle='#2a3a5f';
+  ctx.strokeRect(pad,4,w-pad-8,h-8);
+
+  const NS=C.vArr.length;
+  const trace=(arr,pk,y0,color)=>{
+    ctx.strokeStyle=color; ctx.lineWidth=1.8; ctx.beginPath();
+    for(let k=0;k<NS;k++){
+      const x=pad+(w-pad-8)*k/(NS-1);
+      const y=y0 - (arr[k]/pk)*(half/2-10);
+      k?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    }
+    ctx.stroke();
+  };
+  trace(C.vArr,C.Vpk,half/2,'#ffd166');
+  trace(C.iArr,C.Ipk,half+half/2,'#4fc3f7');
+
+  ctx.fillStyle='#ffd166'; ctx.font='11px Consolas,monospace';
+  ctx.fillText('v(t)  pk '+eng(C.Vpk,'V',3), pad+6, 16);
+  ctx.fillStyle='#4fc3f7';
+  ctx.fillText('i(t)  pk '+eng(C.Ipk,'A',3), pad+6, half+14);
+  ctx.fillStyle='#7f8db0';
+  ctx.fillText('T = '+eng(1/S.f,'s',3)+'/div×4', w-150, h-10);
+
+  /* animated sweep cursor */
+  const cx=pad+(w-pad-8)*cursor;
+  ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(cx,4); ctx.lineTo(cx,h-4); ctx.stroke();
+}
+
+/* ================= Bode / impedance sweep ================= */
+let bode;
+function drawBode(){
+  const {ctx,w,h}=bode; ctx.clearRect(0,0,w,h);
+  const mp=C.mp, padL=52, padB=26, padT=10, padR=10;
+  const fmin=1, fmax=6;                        // log10 Hz
+  const pts=[], n=160;
+  let ymin=1e9, ymax=1e-9;
+  for(let i=0;i<=n;i++){
+    const f=Math.pow(10, fmin+(fmax-fmin)*i/n);
+    const R=Reff(f,mp), X=2*Math.PI*f*mp.L, Z=Math.hypot(R,X);
+    pts.push({f,R,X,Z});
+    ymin=Math.min(ymin,R,Math.max(X,1e-6)); ymax=Math.max(ymax,Z);
+  }
+  const lmin=Math.floor(Math.log10(ymin)), lmax=Math.ceil(Math.log10(ymax));
+  const fx=f=>padL+(w-padL-padR)*(Math.log10(f)-fmin)/(fmax-fmin);
+  const fy=v=>h-padB-(h-padB-padT)*(Math.log10(Math.max(v,1e-9))-lmin)/(lmax-lmin);
+
+  ctx.strokeStyle='#1c2740'; ctx.fillStyle='#7f8db0'; ctx.font='10.5px Consolas,monospace';
+  for(let d=fmin;d<=fmax;d++){
+    const x=fx(Math.pow(10,d));
+    ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,h-padB); ctx.stroke();
+    ctx.fillText(eng(Math.pow(10,d),'Hz',1), x-16, h-8);
+  }
+  for(let d=lmin;d<=lmax;d++){
+    const y=fy(Math.pow(10,d));
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+    ctx.fillText(eng(Math.pow(10,d),'Ω',1), 4, y+3);
+  }
+  const curve=(key,color)=>{
+    ctx.strokeStyle=color; ctx.lineWidth=1.8; ctx.beginPath();
+    pts.forEach((p,i)=>{const x=fx(p.f),y=fy(p[key]); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+    ctx.stroke();
+  };
+  curve('R','#ff6b6b'); curve('X','#4fc3f7'); curve('Z','#e8eefc');
+
+  const x=fx(S.f);
+  ctx.strokeStyle='#ffa14f'; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,h-padB); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#ff6b6b'; ctx.fillText('R_AC', w-120, padT+12);
+  ctx.fillStyle='#4fc3f7'; ctx.fillText('ωL',   w-120, padT+26);
+  ctx.fillStyle='#e8eefc'; ctx.fillText('|Z|',  w-120, padT+40);
+}
+
+/* ================= Biot–Savart field map ================= */
+const FIELD = {
+  nx:120, nz:80, xmax:0.085, zmax:0.058,
+  BA:null, BB:null, mag:null, vec:null, maxUnit:1e-12, done:false, row:0,
+  segs:[],   // {mx,my,mz,dx,dy,dz,w} — w = winding index 0/1
+  coreUnit(cB){ // |B| at (R,0,0) per (1 A · 1 wrap-turn)
+    const ix=Math.round((GEO.R+this.xmax)/(2*this.xmax)*(this.nx-1));
+    const iz=Math.round((0+this.zmax)/(2*this.zmax)*(this.nz-1));
+    const j=(iz*this.nx+ix)*3;
+    const bx=this.BA[j]+cB*this.BB[j], by=this.BA[j+1]+cB*this.BB[j+1], bz=this.BA[j+2]+cB*this.BB[j+2];
+    return Math.hypot(bx,by,bz);
+  }
+};
+function buildSegments(){
+  const dec=1;   // use full path resolution for field
+  const add=(p,w)=>{
+    for(let i=1;i<p.length;i+=dec){
+      const a=p[i-1], b=p[i];
+      FIELD.segs.push({mx:(a.x+b.x)/2, my:(a.y+b.y)/2, mz:(a.z+b.z)/2,
+                       dx:b.x-a.x, dy:b.y-a.y, dz:b.z-a.z, w});
+    }
+  };
+  add(pathA,0); add(pathB,1);
+}
+function computeFieldChunk(){
+  const F=FIELD, eps2=1.5e-6;                  // ~1.2 mm softening at wire
+  const rowsPerChunk=4;
+  for(let r=0;r<rowsPerChunk && F.row<F.nz;r++,F.row++){
+    const z=-F.zmax + 2*F.zmax*F.row/(F.nz-1);
+    for(let ix=0;ix<F.nx;ix++){
+      const x=-F.xmax + 2*F.xmax*ix/(F.nx-1), y=0;
+      let ax=0,ay=0,az=0, bx=0,by=0,bz=0;
+      for(const s of F.segs){
+        const rx=x-s.mx, ry=y-s.my, rz=z-s.mz;
+        const r2=rx*rx+ry*ry+rz*rz+eps2;
+        const inv=1/(r2*Math.sqrt(r2));
+        const cx=(s.dy*rz-s.dz*ry)*inv, cy=(s.dz*rx-s.dx*rz)*inv, cz=(s.dx*ry-s.dy*rx)*inv;
+        if(s.w===0){ax+=cx;ay+=cy;az+=cz;} else {bx+=cx;by+=cy;bz+=cz;}
+      }
+      const j=(F.row*F.nx+ix)*3, k=MU0/(4*Math.PI);
+      F.BA[j]=ax*k; F.BA[j+1]=ay*k; F.BA[j+2]=az*k;
+      F.BB[j]=bx*k; F.BB[j+1]=by*k; F.BB[j+2]=bz*k;
+    }
+  }
+  const pct=Math.round(100*F.row/F.nz);
+  $('fieldStatus').textContent='Computing Biot–Savart field… '+pct+'%';
+  if(F.row<F.nz){ setTimeout(computeFieldChunk,0); }
+  else { F.done=true; $('fieldStatus').textContent=''; recolorField(); updateReadouts(); }
+}
+/* combine windings for current mode, colour-map, draw */
+const CMAP=[[13,8,32],[64,18,110],[152,44,110],[228,98,65],[251,190,80],[252,250,200]];
+function cmap(t){
+  t=Math.max(0,Math.min(1,t))*(CMAP.length-1);
+  const i=Math.min(CMAP.length-2,Math.floor(t)), u=t-i;
+  const c0=CMAP[i], c1=CMAP[i+1];
+  return [c0[0]+(c1[0]-c0[0])*u, c0[1]+(c1[1]-c0[1])*u, c0[2]+(c1[2]-c0[2])*u];
+}
+let field;
+function recolorField(){
+  if(!FIELD.done || !field) return;
+  const F=FIELD, cB=C.mp.cB;
+  if(!F.mag){ F.mag=new Float32Array(F.nx*F.nz); F.vec=new Float32Array(F.nx*F.nz*3); }
+  let mx=1e-20;
+  const vortex=!!C.mp.vortex, cphi=Math.cos(S.vphase*Math.PI/180);
+  for(let j=0;j<F.nx*F.nz;j++){
+    const p=j*3;
+    const bx=F.BA[p]+cB*F.BB[p], by=F.BA[p+1]+cB*F.BB[p+1], bz=F.BA[p+2]+cB*F.BB[p+2];
+    F.vec[p]=bx; F.vec[p+1]=by; F.vec[p+2]=bz;
+    let m;
+    if(vortex){
+      /* time-averaged RMS of B(t)=B_A·sin(ωt)+B_B·sin(ωt−φ):
+         ⟨|B|²⟩ = ½|B_A|² + ½|B_B|² + (B_A·B_B)cos φ */
+      const aA=F.BA[p]*F.BA[p]+F.BA[p+1]*F.BA[p+1]+F.BA[p+2]*F.BA[p+2];
+      const aB=F.BB[p]*F.BB[p]+F.BB[p+1]*F.BB[p+1]+F.BB[p+2]*F.BB[p+2];
+      const ab=F.BA[p]*F.BB[p]+F.BA[p+1]*F.BB[p+1]+F.BA[p+2]*F.BB[p+2];
+      m=Math.sqrt(Math.max(0, 0.5*(aA+aB)+ab*cphi));
+    } else m=Math.hypot(bx,by,bz);
+    F.mag[j]=m; if(m>mx)mx=m;
+  }
+  F.maxUnit=mx;
+  if(STREAM.cB!==cB){ STREAM.cB=cB; traceStreamlines2D(); }
+  const img=field.img, data=img.data, lo=Math.log10(mx)-3.2, span=3.2;
+  for(let j=0;j<F.nx*F.nz;j++){
+    const t = S.linScale ? F.mag[j]/mx
+                         : (Math.log10(F.mag[j]+1e-20)-lo)/span;
+    const [r,g,b]=cmap(t);
+    const q=j*4; data[q]=r; data[q+1]=g; data[q+2]=b; data[q+3]=255;
+  }
+  field.octx.putImageData(img,0,0);
+  drawField();
+}
+
+/* ---- 2D in-plane field lines (streamlines) + out-of-plane glyphs ---- */
+const STREAM = { lines:[], glyphs:[], cB:undefined };
+function sampleVec(x,z){
+  const F=FIELD;
+  const gx=(x+F.xmax)/(2*F.xmax)*(F.nx-1);
+  const gz=(z+F.zmax)/(2*F.zmax)*(F.nz-1);
+  if(!(gx>=0 && gz>=0 && gx<=F.nx-1.001 && gz<=F.nz-1.001)) return null;
+  const i0=gx|0, j0=gz|0, u=gx-i0, v=gz-j0;
+  const out=[0,0,0];
+  const acc=(i,j,wt)=>{ const q=(j*F.nx+i)*3; out[0]+=F.vec[q]*wt; out[1]+=F.vec[q+1]*wt; out[2]+=F.vec[q+2]*wt; };
+  acc(i0,j0,(1-u)*(1-v)); acc(i0+1,j0,u*(1-v)); acc(i0,j0+1,(1-u)*v); acc(i0+1,j0+1,u*v);
+  return out;
+}
+function traceStreamlines2D(){
+  const F=FIELD; STREAM.lines=[]; STREAM.glyphs=[];
+  if(!F.vec) return;
+  const cellW=64, cellH=44, occ=new Set();
+  const ds=(2*F.xmax)/F.nx*1.3, floor=F.maxUnit*3e-5;
+  const trace=(x0,z0)=>{
+    const pts=[[x0,z0]], cells=new Set();
+    for(const sgn of [1,-1]){
+      let x=x0, z=z0;
+      for(let st=0; st<420; st++){
+        const b=sampleVec(x,z); if(!b) break;
+        const m=Math.hypot(b[0],b[2]); if(m<floor) break;
+        const hx=x+sgn*b[0]/m*ds/2, hz=z+sgn*b[2]/m*ds/2;
+        const b2=sampleVec(hx,hz); if(!b2) break;
+        const m2=Math.hypot(b2[0],b2[2]); if(m2<floor) break;
+        x+=sgn*b2[0]/m2*ds; z+=sgn*b2[2]/m2*ds;
+        const key=Math.floor((z+F.zmax)/(2*F.zmax)*cellH)*cellW + Math.floor((x+F.xmax)/(2*F.xmax)*cellW);
+        if(occ.has(key) && !cells.has(key)) break;   // keep lines evenly spaced
+        cells.add(key);
+        if(sgn===1) pts.push([x,z]); else pts.unshift([x,z]);
+      }
+    }
+    if(pts.length>18){
+      for(const k of cells) occ.add(k);
+      /* classify like the 3D lines: exact-centre / aperture-threading / outer */
+      let dmin=1e9, hole=false;
+      for(const p of pts){
+        const d0=Math.hypot(p[0],p[1]); if(d0<dmin) dmin=d0;
+        if(Math.abs(p[0])<0.0145 && Math.abs(p[1])<GEO.a) hole=true;
+      }
+      STREAM.lines.push({pts, cls: dmin<0.0035 ? 'axis' : (hole ? 'center' : 'outer')});
+    }
+  };
+  /* seeds: rings around each tube cross-section, plus the aperture axis */
+  for(const sx of [-1,1])
+    for(let i=0;i<14;i++){
+      const ang=i/14*2*Math.PI;
+      for(const rr of [0.55,1.45])
+        trace(sx*GEO.R + rr*GEO.a*Math.cos(ang), rr*GEO.a*Math.sin(ang));
+    }
+  for(let i=0;i<7;i++) trace(0,(i-3)*0.014);
+  /* ⊙ / ⊗ markers where the field is mostly out of the slice (toroidal flux) */
+  const lo=Math.log10(F.maxUnit)-3.2;
+  for(let j=3;j<F.nz-3;j+=7)
+    for(let i=3;i<F.nx-3;i+=7){
+      const q=(j*F.nx+i)*3;
+      const by=F.vec[q+1], m=F.mag[j*F.nx+i];
+      if(m<F.maxUnit*1e-3 || Math.abs(by)<0.6*m) continue;
+      const t=Math.max(0,Math.min(1,(Math.log10(Math.abs(by))-lo)/3.2));
+      STREAM.glyphs.push({i,j,out:by>0,r:2+3*t});
+    }
+}
+/* the cross-section is rendered in two layers so it can interact with the drive
+   like the 3-D view: the HEAT layer's brightness scales with I_rms and pulses with
+   the instantaneous waveform i(t); the LINE layer (streamlines, markers, colour bar,
+   readouts) stays crisp. compositeField() blends them every animation frame. */
+function ensureFieldLayers(){
+  const dpr=window.devicePixelRatio||1;
+  const W=Math.round(field.w*dpr), H=Math.round(field.h*dpr);
+  if(!field.heatL || field.heatL.width!==W || field.heatL.height!==H){
+    for(const key of ['heatL','lineL']){
+      field[key]=document.createElement('canvas');
+      field[key].width=W; field[key].height=H;
+    }
+    field.hctx=field.heatL.getContext('2d'); field.hctx.setTransform(dpr,0,0,dpr,0,0);
+    field.lctx=field.lineL.getContext('2d'); field.lctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+}
+function drawField(){
+  if(!field) return;
+  const {ctx,w,h}=field, F=FIELD;
+  if(!F.done){ ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#7f8db0'; ctx.font='12px Consolas,monospace';
+    ctx.fillText('computing…', w/2-34, h/2); return; }
+  ensureFieldLayers();
+  const hctx=field.hctx, lctx=field.lctx;
+  hctx.clearRect(0,0,w,h); lctx.clearRect(0,0,w,h);
+  const cbW=52, plotW=w-cbW;
+
+  /* ---- heat layer (flipped so +z is up, matching the 3-D view) ---- */
+  hctx.imageSmoothingEnabled=true;
+  hctx.save(); hctx.translate(0,h); hctx.scale(1,-1);
+  hctx.drawImage(field.oc, 0,0,F.nx,F.nz, 0,0,plotW,h);
+  hctx.restore();
+
+  /* ---- line layer: everything that must not pulse ---- */
+  const ctx2=lctx;
+  const px=x=>( (x+F.xmax)/(2*F.xmax) )*plotW;
+  const pz=z=>h-( (z+F.zmax)/(2*F.zmax) )*h;          // +z up
+  /* torus cross-section outlines */
+  ctx2.strokeStyle='rgba(255,255,255,.4)'; ctx2.lineWidth=1.2; ctx2.setLineDash([3,3]);
+  for(const sgn of [-1,1]){
+    ctx2.beginPath();
+    ctx2.ellipse(px(sgn*GEO.R), pz(0), GEO.a/(2*F.xmax)*plotW, GEO.a/(2*F.zmax)*h, 0, 0, 2*Math.PI);
+    ctx2.stroke();
+  }
+  ctx2.setLineDash([]);
+  /* field lines (in-plane streamlines) — coloured to match the 3D view */
+  ctx2.save(); ctx2.beginPath(); ctx2.rect(0,0,plotW,h); ctx2.clip();
+  const SCOL={
+    axis:  {s:'rgba(255,95,215,.95)',  f:'rgba(255,95,215,1)',  lw:1.7},
+    center:{s:'rgba(255,209,102,.85)', f:'rgba(255,209,102,.95)', lw:1.3},
+    outer: {s:'rgba(228,242,255,.55)', f:'rgba(228,242,255,.85)', lw:1}
+  };
+  const clsOn={axis:S.lineAxis, center:S.lineCenter, outer:S.lineOuter};
+  for(const L of STREAM.lines){
+    if(!clsOn[L.cls]) continue;
+    const ln=L.pts, c=SCOL[L.cls]||SCOL.outer;
+    ctx2.strokeStyle=c.s; ctx2.lineWidth=c.lw;
+    ctx2.beginPath();
+    for(let i=0;i<ln.length;i++){
+      const X=px(ln[i][0]), Y=pz(ln[i][1]);
+      i?ctx2.lineTo(X,Y):ctx2.moveTo(X,Y);
+    }
+    ctx2.stroke();
+    /* direction arrows at 1/4, 1/2, 3/4 of the line */
+    ctx2.fillStyle=c.f;
+    for(const fr of [0.25,0.5,0.75]){
+      const m=Math.max(1,Math.min(ln.length-2,Math.round(ln.length*fr)));
+      const X=px(ln[m][0]), Y=pz(ln[m][1]);
+      const ang=Math.atan2(pz(ln[m+1][1])-pz(ln[m-1][1]), px(ln[m+1][0])-px(ln[m-1][0]));
+      ctx2.beginPath();
+      ctx2.moveTo(X+5*Math.cos(ang),     Y+5*Math.sin(ang));
+      ctx2.lineTo(X+5*Math.cos(ang+2.6), Y+5*Math.sin(ang+2.6));
+      ctx2.lineTo(X+5*Math.cos(ang-2.6), Y+5*Math.sin(ang-2.6));
+      ctx2.closePath(); ctx2.fill();
+    }
+  }
+  /* ⊙ / ⊗ out-of-plane markers */
+  ctx2.strokeStyle='rgba(255,255,255,.6)'; ctx2.lineWidth=1;
+  for(const g of STREAM.glyphs){
+    const X=g.i/(FIELD.nx-1)*plotW, Y=h-g.j/(FIELD.nz-1)*h;
+    ctx2.beginPath(); ctx2.arc(X,Y,g.r,0,2*Math.PI); ctx2.stroke();
+    if(g.out){ ctx2.fillStyle='rgba(255,255,255,.75)';
+      ctx2.beginPath(); ctx2.arc(X,Y,1.1,0,2*Math.PI); ctx2.fill(); }
+    else { const s=g.r*0.6;
+      ctx2.beginPath(); ctx2.moveTo(X-s,Y-s); ctx2.lineTo(X+s,Y+s);
+      ctx2.moveTo(X+s,Y-s); ctx2.lineTo(X-s,Y+s); ctx2.stroke(); }
+  }
+
+  /* ---- live markers, mirroring the 3-D view ---- */
+  const scale=(S.N/WRAPS)*C.Irms*C.mp.branch, Bpk=F.maxUnit*scale;
+  ctx2.font='11px Consolas,monospace';
+  if(typeof FLUX!=='undefined'){
+    /* ⊕ centre probe with live B₀ */
+    ctx2.strokeStyle='#ff5fd7'; ctx2.lineWidth=1.2;
+    ctx2.beginPath(); ctx2.arc(px(0),pz(0),5,0,2*Math.PI); ctx2.stroke();
+    if(FLUX.Bc){
+      const bm=Math.hypot(FLUX.Bc[0],FLUX.Bc[1],FLUX.Bc[2])*scale;
+      ctx2.fillStyle='#ff5fd7';
+      ctx2.fillText('B₀ '+eng(bm,'T',3), px(0)+10, pz(0)-8);
+    }
+    /* grip diamonds at ±z_pk with restoring arrows + F↕max */
+    if(FLUX.probe && FLUX.probe.zPk>0.001){
+      const sphK=2*Math.PI*Math.pow(0.5e-3,3)/(4e-7*Math.PI);
+      const Fpk=sphK*FLUX.probe.gPk*scale*scale;
+      for(const sgn of [1,-1]){
+        const X=px(0), Y=pz(sgn*FLUX.probe.zPk);
+        ctx2.strokeStyle='#5fffd0'; ctx2.fillStyle='rgba(95,255,208,.14)'; ctx2.lineWidth=1.2;
+        ctx2.beginPath();
+        ctx2.moveTo(X,Y-5); ctx2.lineTo(X+5,Y); ctx2.lineTo(X,Y+5); ctx2.lineTo(X-5,Y);
+        ctx2.closePath(); ctx2.fill(); ctx2.stroke();
+        const dir=sgn>0?1:-1;                       // arrow toward centre (screen: +z up)
+        ctx2.beginPath(); ctx2.moveTo(X,Y+dir*6); ctx2.lineTo(X,Y+dir*13); ctx2.stroke();
+        ctx2.fillStyle='#5fffd0';
+        ctx2.beginPath();
+        ctx2.moveTo(X,Y+dir*15); ctx2.lineTo(X-3.5,Y+dir*9); ctx2.lineTo(X+3.5,Y+dir*9);
+        ctx2.closePath(); ctx2.fill();
+        if(sgn>0) ctx2.fillText('F↕max '+eng(Fpk,'N',2), X+10, Y+3);
+      }
+    }
+    /* N / S letters on the axis, same convention as the 3-D view */
+    if(FLUX.poles){
+      const lab=(zz,txt,col)=>{
+        const X=px(0), Y=pz(zz);
+        ctx2.fillStyle=col.replace(')',' ,.15)').replace('rgb','rgba');
+        ctx2.beginPath(); ctx2.arc(X,Y,9,0,2*Math.PI); ctx2.fill();
+        ctx2.strokeStyle=col; ctx2.lineWidth=1.2;
+        ctx2.beginPath(); ctx2.arc(X,Y,9,0,2*Math.PI); ctx2.stroke();
+        ctx2.fillStyle=col; ctx2.font='bold 11px "Segoe UI",sans-serif';
+        ctx2.textAlign='center'; ctx2.textBaseline='middle';
+        ctx2.fillText(txt,X,Y+0.5);
+        ctx2.textAlign='left'; ctx2.textBaseline='alphabetic'; ctx2.font='11px Consolas,monospace';
+      };
+      lab( FLUX.poles.z,'N','rgb(255,123,123)');
+      lab(-FLUX.poles.z,'S','rgb(123,184,255)');
+    }
+  }
+  /* live drive readout — proof the slice tracks the controls */
+  ctx2.textAlign='right'; ctx2.fillStyle='#9fb3d9';
+  ctx2.fillText(eng(C.P,'W',3)+' · '+eng(C.Irms,'A',3)+' rms · '+eng(S.f,'Hz',3)+' '+S.waveform, plotW-8, h-22);
+  ctx2.fillStyle='#6fe3a0';
+  ctx2.fillText('B_pk '+eng(Bpk,'T',3)+' · brightness ∝ I', plotW-8, h-8);
+  ctx2.textAlign='left';
+  ctx2.restore();
+
+  /* colour bar */
+  for(let y=0;y<h;y++){
+    const [r,g,b]=cmap(1-y/h);
+    ctx2.fillStyle=`rgb(${r|0},${g|0},${b|0})`; ctx2.fillRect(plotW+8,y,12,1);
+  }
+  ctx2.fillStyle='#7f8db0'; ctx2.font='10px Consolas,monospace';
+  for(let d=0;d<=3;d++){
+    const y = S.linScale ? 8+(h-14)*d/3 : Math.min(h-4, h*d/3.2+8);
+    const val = S.linScale ? Bpk*(1-d/3) : Bpk*Math.pow(10,-d);
+    ctx2.fillText(eng(val,'T',2), plotW+22, y);
+  }
+  compositeField(1);
+}
+function compositeField(iNorm){
+  if(!field || !FIELD.done || !field.heatL) return;
+  const {ctx,w,h}=field;
+  const tI=Math.max(0,Math.min(1,(Math.log10(Math.max(C.Irms,1e-3))+1.5)/3));
+  const a=Math.max(0.10,(0.30+0.70*tI)*(0.55+0.45*Math.abs(iNorm)));
+  ctx.clearRect(0,0,w,h);
+  ctx.globalAlpha=a;  ctx.drawImage(field.heatL,0,0,w,h);
+  ctx.globalAlpha=1;  ctx.drawImage(field.lineL,0,0,w,h);
+}
+
+/* ================= 3D magnetic field lines (traced along Biot–Savart B) ================= */
+const FLUX = { lines:[], job:0, phase:0, poles:null, confined:false, mz:0, ring:[], rings:[], spinDir:0 };
+/* which way does the rotating aperture pattern turn? Extract the complex azimuthal
+   harmonics (m=1 and m=12, the strand pitch) of B_z around the probe ring at two
+   electrical angles; the drift of arg(Z_m) gives rotation sense, m gives sync ratio. */
+function updateSpinDir(){
+  if(!FLUX.ring.length){ FLUX.spinDir=0; FLUX.spinHarm=1; return; }
+  const phi=S.vphase*Math.PI/180;
+  const harm=th=>{
+    const iA=Math.sin(th), iB=Math.sin(th-phi);
+    let re1=0,im1=0,re12=0,im12=0;
+    for(const p of FLUX.ring){
+      const bz=p.A[2]*iA+p.B[2]*iB;
+      const az=Math.atan2(p.y,p.x);
+      re1 +=bz*Math.cos(az);    im1 +=bz*Math.sin(az);
+      re12+=bz*Math.cos(12*az); im12+=bz*Math.sin(12*az);
+    }
+    return {m1:[re1,im1], m12:[re12,im12]};
+  };
+  const h1=harm(0.15), h2=harm(0.55);
+  const amp=v=>Math.hypot(v[0],v[1]);
+  const use12 = amp(h1.m12)+amp(h2.m12) > amp(h1.m1)+amp(h2.m1);
+  const a1=use12?h1.m12:h1.m1, a2=use12?h2.m12:h2.m1;
+  let d=Math.atan2(a2[1],a2[0])-Math.atan2(a1[1],a1[0]);
+  while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+  FLUX.spinHarm = use12?12:1;
+  FLUX.spinDir  = d>0.03 ? 1 : (d<-0.03 ? -1 : 0);
+}
+function evalB3W(x,y,z,wA,wB){          // arbitrary per-winding current weights
+  let bx=0,by=0,bz=0;
+  const eps2=4e-6;
+  for(const s of FIELD.segs){
+    const w = s.w===0 ? wA : wB;
+    if(w===0) continue;
+    const rx=x-s.mx, ry=y-s.my, rz=z-s.mz;
+    const r2=rx*rx+ry*ry+rz*rz+eps2, inv=w/(r2*Math.sqrt(r2));
+    bx+=(s.dy*rz-s.dz*ry)*inv; by+=(s.dz*rx-s.dx*rz)*inv; bz+=(s.dx*ry-s.dy*rx)*inv;
+  }
+  return [bx,by,bz];
+}
+function evalB3(x,y,z,cB){ return evalB3W(x,y,z,1,cB); }
+function computeFluxLines(){
+  const cB=C.mp.cB, job=++FLUX.job;
+  FLUX.lines=[]; FLUX.poles=null; FLUX.confined=false;
+
+  /* net magnetic dipole moment m_z = ½ Σ w·(r × dl)_z per unit current.
+     Non-zero net moment → the coil has N/S poles like a bar magnet. */
+  let mz=0;
+  for(const s of FIELD.segs){
+    const w = s.w===0 ? 1 : cB;
+    mz += 0.5*w*(s.mx*s.dy - s.my*s.dx);
+  }
+  FLUX.mz=mz;
+  const mRef=Math.PI*GEO.R*GEO.R*CIRCUITS;      // one winding's net loop moment
+  if(Math.abs(mz) > 0.12*mRef) FLUX.poles={ z:(mz>0?1:-1)*GEO.a*1.9 };
+  else FLUX.confined=true;                       // ideal-toroid regime: B outside ≈ 0
+
+  /* B at the exact coil centre — the N–S midpoint (per wrap-amp, in Tesla) */
+  const k0=MU0/(4*Math.PI), bc0=evalB3(0,0,0,cB);
+  FLUX.Bc=[bc0[0]*k0, bc0[1]*k0, bc0[2]*k0];
+
+  /* force probe along the axis: F on a magnetizable sphere ∝ ∇(B²).
+     By symmetry the centre is an equilibrium (∇B²≈0); pull peaks off-centre. */
+  const axB=z=>{ const b=evalB3(0,0,z,cB); return Math.hypot(b[0],b[1],b[2])*k0; };
+  const Bm=axB(-0.0025), Bp=axB(0.0025), B0=axB(0);
+  let gPk=0, zPk=0, prevB=B0;
+  for(let i=1;i<=24;i++){
+    const z=i*0.0025, Bz=axB(z);
+    const g=Math.abs(Bz*Bz - prevB*prevB)/0.0025;
+    if(g>gPk){ gPk=g; zPk=z-0.00125; }
+    prevB=Bz;
+  }
+  FLUX.probe={ dBdz0:(Bp-Bm)/0.005, g0:Math.abs(Bp*Bp-Bm*Bm)/0.005, gPk, zPk };
+
+  /* vortex probe rings stacked through the aperture channel. The vortex is ONE
+     column threading the hole with TWO mouths (top & bottom faces) rotating the
+     same way — not two separate vortices. Rings sit near the wall, where the
+     12-strand ripple lives ((r/R_c)^m — dead at the axis), 36 probes each so the
+     12th azimuthal harmonic is resolved; past the faces the ring flares outward
+     to follow the funnel mouths. */
+  FLUX.rings=[];
+  for(const zf of [-1.5,-0.75,0,0.75,1.5]){
+    const z=zf*GEO.a;
+    const rr=0.0125 + Math.max(0, Math.abs(z)-GEO.a)*0.8;   // flare past the faces
+    const pts=[];
+    for(let i=0;i<36;i++){
+      const az=i/36*2*Math.PI, rx=rr*Math.cos(az), ry=rr*Math.sin(az);
+      const bA=evalB3W(rx,ry,z,1,0), bB=evalB3W(rx,ry,z,0,1);
+      pts.push({x:rx,y:ry,z,
+        A:[bA[0]*k0,bA[1]*k0,bA[2]*k0], B:[bB[0]*k0,bB[1]*k0,bB[2]*k0]});
+    }
+    FLUX.rings.push({z, r:rr, pts});
+  }
+  FLUX.ring=FLUX.rings[2].pts;      // mid-plane ring drives the spin detector
+  updateSpinDir();
+  updateReadouts();
+
+  /* reference |B| so lines wandering through ≈zero field get dropped */
+  let Bref=0;
+  for(const p of [[GEO.R,0,0],[0,0,0.006],[GEO.R+GEO.a*1.5,0,0]]){
+    const b=evalB3(p[0],p[1],p[2],cB);
+    Bref=Math.max(Bref,Math.hypot(b[0],b[1],b[2]));
+  }
+
+  const seeds=[];
+  for(let i=0;i<8;i++){                          // inside the core (confined toroidal flux)
+    const phi=i/8*2*Math.PI, psi=i*2.4, rr=GEO.a*0.5;
+    const w=GEO.R+rr*Math.cos(psi);
+    seeds.push([w*Math.cos(phi), w*Math.sin(phi), rr*Math.sin(psi)]);
+  }
+  for(const zz of [0.55,-0.55]) seeds.push([0,0,zz*GEO.a]);          // aperture axis
+  for(const az of [0,2.09,4.19]){                                     // dipole arcs, 3 azimuths
+    const ca=Math.cos(az), sa=Math.sin(az);
+    for(const rr of [0.006,0.0095,0.013]) seeds.push([rr*ca,rr*sa,0]);                // through the hole
+    for(const rr of [GEO.R+GEO.a*2.2, GEO.R+GEO.a*3.0]) seeds.push([rr*ca,rr*sa,0]); // outer arches
+  }
+
+  let si=0;
+  const ds=0.003;
+  const tubeDist=(x,y,z)=>Math.hypot(Math.hypot(x,y)-GEO.R, z);  // distance to winding centreline
+  const step=()=>{                               // budgeted chunks so the UI never stalls
+    if(job!==FLUX.job) return;
+    const t0=performance.now();
+    while(si<seeds.length && performance.now()-t0<14){
+      const [sx,sy,sz]=seeds[si++];
+      const external = tubeDist(sx,sy,sz) > GEO.a;  // seeded outside the winding shell?
+      let sumB=0, cnt=0;
+      const half=dir=>{                          // trace along ±B so arcs close
+        const arr=[];
+        let x=sx,y=sy,z=sz;
+        for(let st=0; st<340; st++){
+          const b=evalB3(x,y,z,cB), m=Math.hypot(b[0],b[1],b[2]);
+          if(m<=0) break;
+          sumB+=m; cnt++;
+          const b2=evalB3(x+dir*b[0]/m*ds/2, y+dir*b[1]/m*ds/2, z+dir*b[2]/m*ds/2, cB);
+          const m2=Math.hypot(b2[0],b2[1],b2[2]);
+          if(m2<=0) break;
+          x+=dir*b2[0]/m2*ds; y+=dir*b2[1]/m2*ds; z+=dir*b2[2]/m2*ds;
+          if(Math.hypot(x,y,z)>0.21) break;      // left the view volume
+          /* external lines terminate at the winding shell instead of
+             spiralling forever around individual wires */
+          if(external && tubeDist(x,y,z) < GEO.a*1.15) break;
+          arr.push({x,y,z});
+          if(st>30 && Math.hypot(x-sx,y-sy,z-sz)<ds*0.7) break;  // loop closed
+        }
+        return arr;
+      };
+      const fwd=half(1), bwd=half(-1).reverse();
+      const pts=bwd.concat([{x:sx,y:sy,z:sz}],fwd);   // ordered along +B for flow dots
+      if(pts.length>30 && sumB/Math.max(1,cnt) > Bref*0.012){
+        /* classify: through the exact centre / threading the aperture / outer */
+        let dmin=1e9, hole=false;
+        for(const p of pts){
+          const d0=Math.hypot(p.x,p.y,p.z); if(d0<dmin) dmin=d0;
+          if(Math.hypot(p.x,p.y)<0.0145 && Math.abs(p.z)<GEO.a) hole=true;
+        }
+        const cls = dmin<0.0035 ? 'axis' : (hole ? 'center' : 'outer');
+        FLUX.lines.push({pts, cls});
+      }
+    }
+    if(si<seeds.length) setTimeout(step,0);
+  };
+  setTimeout(step,0);
+}
+
+/* ================= 3D view ================= */
+const view={rx:-1.05, ry:0.55, zoom:0.8};
+let c3d, flowA=0, flowB=0;
+function draw3D(iNorm, dt, cyc){
+  const {ctx,w,h}=c3d; ctx.clearRect(0,0,w,h);
+  if(S.autoRot) view.ry += dt*0.25;
+  const scale=Math.min(w,h)*7.6*view.zoom;
+  const cy=Math.cos(view.ry), sy=Math.sin(view.ry);
+  const cx=Math.cos(view.rx), sx=Math.sin(view.rx);
+  const proj=p=>{
+    const x1=p.x*cy - p.y*sy, y1=p.x*sy + p.y*cy;
+    const y2=y1*cx - p.z*sx,  z2=y1*sx + p.z*cx;
+    const per=1/(1 - y2*2.0);
+    return {X:w/2 + x1*scale*per, Y:h/2 - z2*scale*per, d:y2};
+  };
+  const items=[];
+  /* faint torus wireframe */
+  if(S.showCoil)
+  for(let r=0;r<18;r++){
+    const phi=r/18*2*Math.PI; let prev=null;
+    for(let t=0;t<=24;t++){
+      const p=proj(torusPt(phi, t/24*2*Math.PI, 1));
+      if(prev) items.push({d:(p.d+prev.d)/2, a:prev, b:p, col:'rgba(90,110,160,.18)', lw:1});
+      prev=p;
+    }
+  }
+  /* windings */
+  const wind=(path, base, cur)=>{
+    let prev=null;
+    for(let i=0;i<path.length;i++){
+      const p=proj(path[i]);
+      if(prev){
+        const sh=0.55+0.45*((p.d+prev.d)/2/0.06+1)/2;   // depth shading
+        items.push({d:(p.d+prev.d)/2, a:prev, b:p,
+          col:`rgba(${base[0]},${base[1]},${base[2]},${Math.min(1,Math.max(.25,sh))})`, lw:1.7});
+      }
+      prev=p;
+    }
+    /* charge-flow dots */
+    if(Math.abs(cur)>1e-4){
+      const nd=36;
+      const phase = base===COL_A? flowA : flowB;
+      for(let k=0;k<nd;k++){
+        let s=(k/nd + phase)%1; if(s<0)s+=1;
+        const idx=Math.min(path.length-1, Math.floor(s*(path.length-1)));
+        const p=proj(path[idx]);
+        items.push({d:p.d, dot:p, col:`rgb(${base[0]},${base[1]},${base[2]})`, r:2.4});
+      }
+    }
+  };
+  const COL_A=[255,161,79], COL_B=[79,195,247];
+  const dirB=C.mp.cB;
+  /* drive-responsive intensity: log-scaled RMS current (1 mA → 0, ~30 A → 1)
+     and instantaneous pulse following the drive waveform i(t) */
+  const tI=Math.max(0,Math.min(1,(Math.log10(Math.max(C.Irms,1e-3))+1.5)/3));
+  const pulse=0.55+0.45*Math.abs(iNorm);
+  flowA=(flowA + dt*(0.10+0.80*tI)*iNorm)%1;
+  flowB=(flowB + dt*(0.10+0.80*tI)*iNorm*dirB)%1;
+  if(S.showCoil){
+    wind(pathA, COL_A, iNorm);
+    if(S.showWindB){
+      if(S.conn!=='single') wind(pathB, COL_B, iNorm*dirB);
+      else { let prev=null; for(const q of pathB){const p=proj(q);
+          if(prev)items.push({d:(p.d+prev.d)/2,a:prev,b:p,col:'rgba(79,195,247,.10)',lw:1.2}); prev=p;} }
+    }
+  }
+
+  /* magnetic field lines — brightness, weight, dot speed & density all track the drive.
+     Colour by class: magenta = through the exact centre (N–S midpoint),
+     gold = threading the aperture, green = outer arcs & core flux. */
+  if(S.showFlux && FLUX.lines.length){
+    FLUX.phase=(FLUX.phase + dt*(0.10+0.90*tI)*Math.max(0.15,Math.abs(iNorm)))%1;
+    const laN = (S.showCoil?0.40:0.80)*(0.30+0.70*tI)*pulse;
+    const lw = (S.showCoil?1.2:1.7)*(0.7+0.8*tI);
+    const dr = (S.showCoil?1.8:2.3)*(0.8+0.5*tI);
+    const gap = Math.round(34-16*tI);               // more flux dots at higher current
+    const CLS={
+      axis:  {rgb:'255,95,215',  la:Math.min(1,laN*1.6), lw:lw+0.8, dr:dr+0.7},
+      center:{rgb:'255,209,102', la:Math.min(1,laN*1.25), lw:lw+0.3, dr:dr+0.3},
+      outer: {rgb:'111,227,160', la:laN, lw, dr}
+    };
+    const clsOn={axis:S.lineAxis, center:S.lineCenter, outer:S.lineOuter};
+    for(const L of FLUX.lines){
+      if(!clsOn[L.cls]) continue;
+      const c=CLS[L.cls]||CLS.outer, pts=L.pts;
+      let prev=null;
+      for(let i=0;i<pts.length;i+=2){
+        const p=proj(pts[i]);
+        if(prev) items.push({d:(p.d+prev.d)/2, a:prev, b:p,
+          col:'rgba('+c.rgb+','+c.la.toFixed(3)+')', lw:c.lw});
+        prev=p;
+      }
+      const off=Math.floor(FLUX.phase*gap);
+      for(let k=off;k<pts.length;k+=gap){
+        const p=proj(pts[k]);
+        items.push({d:p.d, dot:p, col:'rgb('+c.rgb+')', r:c.dr});
+      }
+    }
+  }
+
+  /* vortex mode: the full rotating column — deviation vectors on five rings
+     stacked through the aperture (flared at the faces = the funnel mouths),
+     faint guide circles outlining the column, and marker dots that rigidly
+     rotate at the pattern's true sync speed ω/m. */
+  if(S.conn==='vortex' && S.showFlux && FLUX.rings.length && C.iArr){
+    const NS=C.iArr.length;
+    const kA=Math.floor((cyc||0)*NS)%NS;
+    const shift=Math.floor(S.vphase/360*(NS/2));      // NS covers two periods
+    const iA=C.iArr[kA]/C.Ipk, iB=C.iArr[((kA-shift)%NS+NS)%NS]/C.Ipk;
+    const th=(cyc||0)*4*Math.PI;                      // electrical angle, 2 periods
+    const hm=FLUX.spinHarm||1;
+    const rotOff=(FLUX.spinDir||0)*th/hm;             // mechanical pattern angle
+
+    /* per-ring deviation from that ring's own mean — isolates the rotating part */
+    let globalMax=1e-30;
+    const ringData=FLUX.rings.map((rg,ri)=>{
+      const raw=rg.pts.map(p=>({p,
+        bx:p.A[0]*iA+p.B[0]*iB, by:p.A[1]*iA+p.B[1]*iB, bz:p.A[2]*iA+p.B[2]*iB}));
+      let mbx=0,mby=0,mbz=0;
+      for(const v of raw){ mbx+=v.bx; mby+=v.by; mbz+=v.bz; }
+      mbx/=raw.length; mby/=raw.length; mbz/=raw.length;
+      let mmax=1e-30;
+      for(const v of raw){
+        v.dx=v.bx-mbx; v.dy=v.by-mby; v.dz=v.bz-mbz;
+        v.m=Math.hypot(v.dx,v.dy,v.dz); if(v.m>mmax)mmax=v.m;
+      }
+      globalMax=Math.max(globalMax,mmax);
+      return {rg, ri, raw, mmax};
+    });
+
+    for(const rd of ringData){
+      const central=rd.ri===2;
+      const strength=0.30+0.70*(rd.mmax/globalMax);   // weaker rings render dimmer
+      /* faint guide circle outlining the column / funnel mouth */
+      let gprev=null;
+      for(let k=0;k<=36;k++){
+        const az=k/36*2*Math.PI;
+        const gp=proj({x:rd.rg.r*Math.cos(az), y:rd.rg.r*Math.sin(az), z:rd.rg.z});
+        if(gprev) items.push({d:(gp.d+gprev.d)/2, a:gprev, b:gp,
+          col:'rgba(126,240,255,'+(0.10+0.08*strength).toFixed(3)+')', lw:1});
+        gprev=gp;
+      }
+      /* deviation vectors (all 36 on the mid ring, every 2nd elsewhere) */
+      const step=central?1:2;
+      for(let k=0;k<rd.raw.length;k+=step){
+        const v=rd.raw[k];
+        const L3=0.009*(v.m/rd.mmax);
+        if(L3<0.001) continue;
+        const tip={x:v.p.x+v.dx/v.m*L3, y:v.p.y+v.dy/v.m*L3, z:v.p.z+v.dz/v.m*L3};
+        const a=proj(v.p), b=proj(tip);
+        items.push({d:(a.d+b.d)/2, a, b,
+          col:'rgba(126,240,255,'+(0.85*strength).toFixed(3)+')', lw:central?1.5:1.2});
+        items.push({d:b.d, dot:b, col:'rgba(126,240,255,'+strength.toFixed(3)+')', r:central?2.0:1.6});
+      }
+      /* rigid marker dots rotating at the true sync speed — the visible tornado */
+      if(FLUX.spinDir){
+        for(let k=0;k<12;k++){
+          const az=k/12*2*Math.PI + rotOff;
+          const p=proj({x:rd.rg.r*Math.cos(az), y:rd.rg.r*Math.sin(az), z:rd.rg.z});
+          items.push({d:p.d, dot:p,
+            col:'rgba(190,252,255,'+(0.9*strength).toFixed(3)+')', r:1.5});
+        }
+      }
+    }
+  }
+
+  items.sort((u,v)=>u.d-v.d);              // painter: far → near
+  for(const it of items){
+    if(it.dot){ ctx.fillStyle=it.col; ctx.beginPath();
+      ctx.arc(it.dot.X,it.dot.Y,it.r,0,2*Math.PI); ctx.fill(); }
+    else { ctx.strokeStyle=it.col; ctx.lineWidth=it.lw; ctx.beginPath();
+      ctx.moveTo(it.a.X,it.a.Y); ctx.lineTo(it.b.X,it.b.Y); ctx.stroke(); }
+  }
+  /* centre point (N–S midpoint) crosshair with live B readout */
+  if(S.showFlux && FLUX.Bc){
+    const c0=proj({x:0,y:0,z:0});
+    ctx.strokeStyle='#ff5fd7'; ctx.lineWidth=1.3;
+    ctx.beginPath(); ctx.arc(c0.X,c0.Y,5.5,0,2*Math.PI); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(c0.X-11,c0.Y); ctx.lineTo(c0.X-6,c0.Y); ctx.moveTo(c0.X+6,c0.Y); ctx.lineTo(c0.X+11,c0.Y);
+    ctx.moveTo(c0.X,c0.Y-11); ctx.lineTo(c0.X,c0.Y-6); ctx.moveTo(c0.X,c0.Y+6); ctx.lineTo(c0.X,c0.Y+11);
+    ctx.stroke();
+    const s=(S.N/WRAPS)*C.Irms*C.mp.branch;
+    const bm=Math.hypot(FLUX.Bc[0],FLUX.Bc[1],FLUX.Bc[2])*s;
+    ctx.fillStyle='#ff5fd7'; ctx.font='11px Consolas,monospace';
+    ctx.fillText('B₀ '+eng(bm,'T',3), c0.X+14, c0.Y-9);
+  }
+  /* peak-gradient markers: the "grip" points at ±z_pk where ∇(B²) is steepest.
+     Aqua diamonds with arrows pointing back toward centre (the restoring force). */
+  if(S.showFlux && FLUX.probe && FLUX.probe.zPk>0.001){
+    const s=(S.N/WRAPS)*C.Irms*C.mp.branch;
+    const sphK=2*Math.PI*Math.pow(0.5e-3,3)/(4e-7*Math.PI);   // 1 mm-steel induced-dipole
+    const Fpk=sphK*FLUX.probe.gPk*s*s;
+    const grip=(zz, sgn, label)=>{
+      const p=proj({x:0,y:0,z:zz});
+      ctx.strokeStyle='#5fffd0'; ctx.fillStyle='rgba(95,255,208,.14)'; ctx.lineWidth=1.3;
+      ctx.beginPath();                                          // diamond glyph
+      ctx.moveTo(p.X,p.Y-6); ctx.lineTo(p.X+6,p.Y); ctx.lineTo(p.X,p.Y+6); ctx.lineTo(p.X-6,p.Y);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      /* short arrow pointing toward centre (screen-space, along projected axis) */
+      const c0=proj({x:0,y:0,z:0});
+      let ax=c0.X-p.X, ay=c0.Y-p.Y, al=Math.hypot(ax,ay)||1; ax/=al; ay/=al;
+      const bx=p.X+ax*10, by=p.Y+ay*10, ang=Math.atan2(ay,ax);
+      ctx.beginPath(); ctx.moveTo(p.X+ax*7,p.Y+ay*7); ctx.lineTo(bx,by); ctx.stroke();
+      ctx.fillStyle='#5fffd0'; ctx.beginPath();
+      ctx.moveTo(bx,by);
+      ctx.lineTo(bx-5*Math.cos(ang-0.5), by-5*Math.sin(ang-0.5));
+      ctx.lineTo(bx-5*Math.cos(ang+0.5), by-5*Math.sin(ang+0.5));
+      ctx.closePath(); ctx.fill();
+      if(label){ ctx.font='11px Consolas,monospace';
+        ctx.fillText('F↕max '+eng(Fpk,'N',2), p.X+11, p.Y+(sgn>0?-8:15)); }
+    };
+    grip( FLUX.probe.zPk, +1, true);
+    grip(-FLUX.probe.zPk, -1, false);
+  }
+  /* N / S pole markers where the net dipole moment points */
+  if(S.showFlux && FLUX.poles){
+    const pole=(zz,txt,col,glow)=>{
+      const p=proj({x:0,y:0,z:zz});
+      ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(p.X,p.Y,13,0,2*Math.PI); ctx.fill();
+      ctx.strokeStyle=col; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.arc(p.X,p.Y,13,0,2*Math.PI); ctx.stroke();
+      ctx.fillStyle=col; ctx.font='bold 15px "Segoe UI",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(txt,p.X,p.Y+1);
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    };
+    pole( FLUX.poles.z,'N','#ff7b7b','rgba(255,107,107,.15)');
+    pole(-FLUX.poles.z,'S','#7bb8ff','rgba(96,165,250,.15)');
+  }
+  /* vortex mode: spinning test magnet at the centre (the classic ball-magnet demo) */
+  if(S.conn==='vortex' && S.showFlux){
+    const th=(cyc||0)*2*2*Math.PI;                 // electrical angle over the 2 shown periods
+    const hm=FLUX.spinHarm||1;                     // pattern rotates at ω/m (m pole-pairs)
+    const kappa=FLUX.spinDir ? FLUX.spinDir*th/hm : 0.5*Math.sin(th);
+    const c0=proj({x:0,y:0,z:0});
+    ctx.save(); ctx.translate(c0.X,c0.Y); ctx.rotate(-kappa);
+    ctx.beginPath(); ctx.arc(0,0,9,-Math.PI/2,Math.PI/2); ctx.closePath();
+    ctx.fillStyle='#ff6b6b'; ctx.fill();
+    ctx.beginPath(); ctx.arc(0,0,9,Math.PI/2,3*Math.PI/2); ctx.closePath();
+    ctx.fillStyle='#60a5fa'; ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.7)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(0,0,9,0,2*Math.PI); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle='#7ef0ff'; ctx.font='11px Consolas,monospace';
+    ctx.fillText(FLUX.spinDir
+      ? 'vortex: rotating aperture field (m='+(FLUX.spinHarm||1)+') · pattern sync '
+        +eng(60*S.f/(FLUX.spinHarm||1),'RPM',3)+(FLUX.spinDir>0?' CCW':' CW')
+      : 'φ = 0°: fields buck in phase — oscillation only, no net rotation', 10, 20);
+    if(S.f>300) ctx.fillText('(sync speed is theoretical — real magnets follow only at low f, ~20–200 Hz)', 10, 35);
+  }
+  if(S.showFlux && FLUX.confined && S.conn!=='vortex'){
+    ctx.fillStyle='#8fa0c5'; ctx.font='11.5px "Segoe UI",sans-serif'; ctx.textAlign='center';
+    ctx.fillText('net dipole ≈ 0 — flux is confined inside the toroidal core (ideal toroid: B outside ≈ 0)', w/2, 18);
+    ctx.fillText('switch connection to “opposing” / “anti-parallel” / “single” to expose N–S poles and external arcs', w/2, 34);
+    ctx.textAlign='left';
+  }
+  ctx.fillStyle='#7f8db0'; ctx.font='11px Consolas,monospace';
+  ctx.fillText('R='+(GEO.R*1000).toFixed(1)+' mm  a='+(GEO.a*1000).toFixed(1)+' mm  {12/5} skip-150°', 10, h-10);
+  /* live drive readout — proof the view tracks the controls */
+  ctx.textAlign='right';
+  ctx.fillStyle='#9fb3d9';
+  ctx.fillText(eng(C.P,'W',3)+' · '+eng(C.Irms,'A',3)+' rms · '+eng(S.f,'Hz',3)+' '+S.waveform, w-10, h-24);
+  const Bnow=FIELD.done ? FIELD.coreUnit(C.mp.cB)*(S.N/WRAPS)*C.Irms*C.mp.branch : 0;
+  ctx.fillStyle='#6fe3a0';
+  ctx.fillText((FIELD.done?('B '+eng(Bnow,'T',3)+' · '):'')+'flux brightness & dot speed ∝ I', w-10, h-10);
+  ctx.textAlign='left';
+}
+
+/* ================= pole diagram ================= */
+function drawPoles(){
+  const {ctx,w,h}=poles; ctx.clearRect(0,0,w,h);
+  const cx0=w/2, cy0=h/2, r0=Math.min(w,h)/2-24;
+  ctx.strokeStyle='#2a3a5f'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(cx0,cy0,r0,0,2*Math.PI); ctx.stroke();
+  const pole=(i,off=0)=>{
+    const ang=-Math.PI/2 + (i*30+off)*Math.PI/180;
+    return {x:cx0+r0*Math.cos(ang), y:cy0+r0*Math.sin(ang)};
+  };
+  const star=(off,color,dash)=>{
+    ctx.strokeStyle=color; ctx.lineWidth=1.6; ctx.setLineDash(dash);
+    ctx.beginPath();
+    let p=0;
+    const s0=pole(p,off); ctx.moveTo(s0.x,s0.y);
+    for(let k=0;k<12;k++){ p=(p+5)%12; const q=pole(p,off); ctx.lineTo(q.x,q.y); }
+    ctx.stroke(); ctx.setLineDash([]);
+  };
+  star(0,'rgba(255,161,79,.85)',[]);
+  star(10,'rgba(79,195,247,.55)',[4,4]);
+  ctx.font='11px Consolas,monospace';
+  for(let i=0;i<12;i++){
+    const p=pole(i), lab=String(i+1);
+    const special=(i+1)%3===0;
+    ctx.fillStyle=special?'#ffd166':'#dbe4f5';
+    ctx.beginPath(); ctx.arc(p.x,p.y,special?4:3,0,2*Math.PI); ctx.fill();
+    const ang=-Math.PI/2+i*30*Math.PI/180;
+    ctx.fillText(lab, cx0+(r0+13)*Math.cos(ang)-4, cy0+(r0+13)*Math.sin(ang)+4);
+  }
+  ctx.fillStyle='#7f8db0';
+  ctx.fillText('A solid · B dashed (+10°) · 3-6-9-12 gold', 8, h-8);
+}
+
+/* ================= UI wiring ================= */
+function logMap(v, lo, hi){ return Math.pow(10, lo + (hi-lo)*v/1000); }
+function refreshLabels(){
+  $('freqVal').textContent  = eng(S.f,'Hz');
+  $('turnsVal').textContent = S.N+' t';
+  $('diaVal').textContent   = (S.d*1000).toFixed(2)+' mm';
+  $('kVal').textContent     = S.k.toFixed(2);
+  $('murVal').textContent   = S.mur;
+  $('dutyVal').textContent  = Math.round(S.duty*100)+'%';
+  $('vphaseVal').textContent = S.vphase+'°';
+  if(S.driveMode==='power'){
+    $('driveName').textContent='Target power';
+    $('driveVal').textContent = eng(S.Ptarget,'W');
+    $('driveHint').textContent='0.1 W — 1 kW (log) · solves V for P = I²·R_AC';
+  } else {
+    $('driveName').textContent='Drive amplitude';
+    $('driveVal').textContent = eng(S.V,'V');
+    $('driveHint').textContent='0.5 — 500 V (log) peak amplitude';
+  }
+}
+function wire(){
+  $('freq').addEventListener('input', e=>{ S.f=logMap(+e.target.value,1,6); refreshLabels(); recompute(); });
+  $('drive').addEventListener('input', e=>{
+    if(S.driveMode==='power') S.Ptarget=logMap(+e.target.value,-1,3);
+    else S.V=logMap(+e.target.value, Math.log10(0.5), Math.log10(500));
+    refreshLabels(); recompute();
+  });
+  $('duty').addEventListener('input', e=>{ S.duty=+e.target.value/100; refreshLabels(); recompute(); });
+  $('turns').addEventListener('input', e=>{ S.N=+e.target.value; refreshLabels(); recompute(); });
+  $('dia').addEventListener('input', e=>{ S.d=+e.target.value/100*1e-3; refreshLabels(); recompute(); });
+  $('coupling').addEventListener('input', e=>{ S.k=+e.target.value/100; refreshLabels(); recompute(); });
+  $('mur').addEventListener('input', e=>{ S.mur=+e.target.value; refreshLabels(); recompute(); });
+  $('conn').addEventListener('change', e=>{ S.conn=e.target.value;
+    $('vphaseCtl').style.display = S.conn==='vortex' ? '' : 'none';
+    recompute(); computeFluxLines(); });
+  let vpT=null;
+  $('vphase').addEventListener('input', e=>{ S.vphase=+e.target.value;
+    refreshLabels(); recompute(); updateSpinDir();
+    clearTimeout(vpT); vpT=setTimeout(computeFluxLines, 400); });
+  $('autoRot').addEventListener('change', e=>{ S.autoRot=e.target.checked; });
+  $('showFlux').addEventListener('change', e=>{ S.showFlux=e.target.checked;
+    if(S.showFlux && !FLUX.lines.length) computeFluxLines(); });
+  $('showCoil').addEventListener('change', e=>{ S.showCoil=e.target.checked; });
+  $('showWindB').addEventListener('change', e=>{ S.showWindB=e.target.checked; });
+  for(const id of ['lineOuter','lineCenter','lineAxis'])
+    $(id).addEventListener('change', e=>{ S[id]=e.target.checked; drawField(); });
+  $('linScale').addEventListener('change', e=>{ S.linScale=e.target.checked; recolorField(); });
+  $('docOpenAll').addEventListener('click', ()=>document.querySelectorAll('details.doc').forEach(d=>d.open=true));
+  $('docCloseAll').addEventListener('click', ()=>document.querySelectorAll('details.doc').forEach(d=>d.open=false));
+
+  $('wfRow').addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    S.waveform=b.dataset.wf;
+    [...$('wfRow').children].forEach(x=>x.classList.toggle('on',x===b));
+    $('dutyCtl').style.display = S.waveform==='pwm'?'':'none';
+    recompute();
+  });
+  $('driveRow').addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    S.driveMode=b.dataset.dm;
+    [...$('driveRow').children].forEach(x=>x.classList.toggle('on',x===b));
+    $('drive').value = S.driveMode==='power'
+      ? 1000*(Math.log10(S.Ptarget)+1)/4
+      : 1000*(Math.log10(S.V)-Math.log10(0.5))/(Math.log10(500)-Math.log10(0.5));
+    refreshLabels(); recompute();
+  });
+
+  /* 3D interaction */
+  const cv=c3d.c; let drag=null;
+  cv.addEventListener('pointerdown', e=>{ drag={x:e.clientX,y:e.clientY}; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e=>{
+    if(!drag)return;
+    view.ry += (e.clientX-drag.x)*0.008;
+    view.rx += (e.clientY-drag.y)*0.008;
+    view.rx=Math.max(-Math.PI/2,Math.min(Math.PI/2,view.rx));
+    drag={x:e.clientX,y:e.clientY};
+  });
+  cv.addEventListener('pointerup', ()=>drag=null);
+  cv.addEventListener('wheel', e=>{ e.preventDefault();
+    view.zoom=Math.max(.4,Math.min(3,view.zoom*(e.deltaY<0?1.1:0.9))); }, {passive:false});
+}
+
+/* ================= main loop ================= */
+let poles, lastT=0;
+function loop(t){
+  const dt=Math.min(0.05,(t-lastT)/1000)||0.016; lastT=t;
+  const cyc=(t/1000 % 4)/4;                        // 2 electrical periods per 4 s of wall time
+  const k=Math.floor(cyc*C.iArr.length)%C.iArr.length;
+  const iNorm=C.iArr[k]/C.Ipk;
+  draw3D(iNorm, dt, cyc);
+  drawScope(cyc);
+  compositeField(iNorm);          // heatmap brightness follows i(t) & I_rms
+  requestAnimationFrame(loop);
+}
+
+/* ---- settings persistence: the sim reopens exactly where you left it ---- */
+function saveState(){ try{ localStorage.setItem('rodinSim', JSON.stringify(S)); }catch(e){} }
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem('rodinSim')||'null');
+    if(!s) return;
+    for(const k of Object.keys(S)) if(k in s) S[k]=s[k];
+  }catch(e){}
+}
+function syncUI(){
+  $('freq').value   = 1000*(Math.log10(S.f)-1)/5;
+  $('drive').value  = S.driveMode==='power'
+    ? 1000*(Math.log10(S.Ptarget)+1)/4
+    : 1000*(Math.log10(S.V)-Math.log10(0.5))/(Math.log10(500)-Math.log10(0.5));
+  $('duty').value=Math.round(S.duty*100);
+  $('vphase').value=S.vphase;
+  $('turns').value=S.N;
+  $('dia').value=Math.round(S.d*1e5);
+  $('coupling').value=Math.round(S.k*100);
+  $('mur').value=S.mur;
+  $('conn').value=S.conn;
+  $('dutyCtl').style.display   = S.waveform==='pwm'  ? '' : 'none';
+  $('vphaseCtl').style.display = S.conn==='vortex'   ? '' : 'none';
+  [...$('wfRow').children].forEach(b=>b.classList.toggle('on', b.dataset.wf===S.waveform));
+  [...$('driveRow').children].forEach(b=>b.classList.toggle('on', b.dataset.dm===S.driveMode));
+  for(const id of ['autoRot','showCoil','showWindB','showFlux','lineOuter','lineCenter','lineAxis','linScale'])
+    $(id).checked=!!S[id];
+}
+window.addEventListener('beforeunload', saveState);
+
+function init(){
+  c3d=setupCanvas('c3d'); scope=setupCanvas('scope');
+  bode=setupCanvas('bode'); poles=setupCanvas('poles');
+  field=setupCanvas('field');
+  field.oc=document.createElement('canvas');
+  field.oc.width=FIELD.nx; field.oc.height=FIELD.nz;
+  field.octx=field.oc.getContext('2d');
+  field.img=field.octx.createImageData(FIELD.nx,FIELD.nz);
+  FIELD.BA=new Float32Array(FIELD.nx*FIELD.nz*3);
+  FIELD.BB=new Float32Array(FIELD.nx*FIELD.nz*3);
+  buildSegments();
+  const nm=neumannK();                       // doc's Neumann double integral → geometric k
+  C.kNeumann=nm.k; C.Mneumann=nm.M;
+  S.k=nm.k;
+  $('coupling').value=Math.round(nm.k*100);
+  $('kHint').textContent='Neumann ∮∮ dl·dl/r over both paths → k = '
+    +nm.k.toFixed(3)+' (M = '+eng(Math.abs(nm.M),'H',3)+' per 12 wraps) · slider = manual override';
+  loadState(); syncUI();                     // restore last session's settings
+  wire(); refreshLabels(); recompute(); drawPoles(); drawField();
+  computeFluxLines();
+  requestAnimationFrame(loop);
+  setTimeout(computeFieldChunk, 50);
+  window.addEventListener('resize', ()=>{      // re-setup canvases on resize
+    c3d=setupCanvas('c3d'); scope=setupCanvas('scope');
+    bode=setupCanvas('bode'); poles=setupCanvas('poles'); field=setupCanvas('field');
+    field.oc=document.createElement('canvas'); field.oc.width=FIELD.nx; field.oc.height=FIELD.nz;
+    field.octx=field.oc.getContext('2d'); field.img=field.octx.createImageData(FIELD.nx,FIELD.nz);
+    drawBode(); drawPoles(); recolorField();
+  });
+}
+init();
+</script>
+</body>
+</html>
