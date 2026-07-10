@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frequency Ladder — Horn Torus · FFT · Mandala</title>
+<style>
+  :root{
+    --bg:#0b0f1a; --panel:#121a2b; --panel2:#0e1524; --line:#1f2b45;
+    --txt:#dbe4f5; --dim:#7f8db0; --accA:#ffa14f; --accB:#4fc3f7;
+    --good:#6fe3a0; --warn:#ffd166; --mag:#ff5fd7; --mono:"Cascadia Code","Consolas",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font:14px/1.45 "Segoe UI",system-ui,sans-serif;padding:14px}
+  h1{font-size:19px;font-weight:600;letter-spacing:.3px}
+  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  header .sub{color:var(--dim);font-size:12.5px}
+  .tabs{margin-left:auto;display:flex;gap:6px}
+  .tabs button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer}
+  .tabs button.on{background:#1c2b4d;border-color:var(--accA);color:var(--txt)}
+
+  .grid{display:grid;grid-template-columns:300px minmax(440px,1fr) 340px;gap:12px}
+  .ggrid{display:grid;grid-template-columns:280px minmax(440px,1fr) 300px;gap:12px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .panel h2{font-size:11.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);margin-bottom:10px}
+  .full{grid-column:1/-1}
+  .row2{display:grid;grid-template-columns:1fr 1.2fr;gap:12px;grid-column:1/-1}
+  .row2in{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  @media(max-width:1180px){.grid,.ggrid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}}
+  @media(max-width:760px){.grid,.ggrid{grid-template-columns:1fr}}
+
+  /* controls */
+  .ctl{margin-bottom:13px}
+  .ctl label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim);margin-bottom:4px;gap:8px}
+  .ctl label b{color:var(--txt);font-family:var(--mono);font-weight:600;white-space:nowrap}
+  input[type=range]{width:100%;accent-color:var(--accA);height:22px}
+  input[type=number]{background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    border-radius:7px;padding:5px 8px;width:110px;font-family:var(--mono);font-size:13px}
+  .btnrow{display:flex;gap:6px;flex-wrap:wrap}
+  .btnrow button,button.wide{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    border-radius:7px;padding:6px 4px;font-size:12px;cursor:pointer;min-width:56px}
+  .btnrow button{flex:1}
+  button.wide{width:100%;padding:6px}
+  .btnrow button.on{background:#1c2b4d;border-color:var(--accA);color:var(--txt)}
+  .btnrow button:hover,button.wide:hover{border-color:var(--accA);color:var(--txt)}
+  .hint{font-size:11px;color:var(--dim);margin-top:3px}
+  .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .chips button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    border-radius:12px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:var(--mono)}
+  .chips button:hover{border-color:var(--accA);color:var(--txt)}
+  .chips button.lore{border-color:#3a2f17;color:#c9a86b}
+  .loretag{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;
+    padding:1px 6px;border-radius:10px;background:#3a2417;color:#ffb26b;vertical-align:middle}
+  .ck{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--dim);margin-bottom:6px;cursor:pointer}
+  .ck input{accent-color:var(--accA)}
+
+  /* harmonic editor rows */
+  .hrow{display:grid;grid-template-columns:12px 30px 1fr 1fr 18px;gap:6px;align-items:center;
+    margin-bottom:5px;padding:3px 4px;border-radius:6px}
+  .hrow:hover{background:#16223c}
+  .hrow .sw{width:10px;height:10px;border-radius:3px}
+  .hrow .hn{font-family:var(--mono);font-size:12px;color:var(--txt)}
+  .hrow input[type=range]{height:16px}
+  .hrow .rm{background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:0}
+  .hrow .rm:hover{color:var(--accA)}
+
+  /* metric tiles */
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .tile{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+  .tile .k{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
+  .tile .v{font-family:var(--mono);font-size:14.5px;margin-top:2px}
+  .tile.big{grid-column:1/-1;padding:10px}
+  .tile.big .v{font-size:24px;color:var(--accA)}
+  .tile .v.gold{color:var(--warn)}
+
+  canvas{display:block;width:100%;border-radius:8px;background:var(--panel2)}
+  .caption{font-size:11.5px;color:var(--dim);margin-top:6px}
+
+  /* guided stepper */
+  .step{display:flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid var(--line);
+    border-radius:8px;margin-bottom:6px;cursor:pointer;color:var(--dim);font-size:13px;user-select:none}
+  .step .num{font-family:var(--mono);font-size:11px;width:18px;height:18px;border-radius:50%;
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .step:hover{border-color:var(--accA)}
+  .step.cur{background:#1c2b4d;border-color:var(--accA);color:var(--txt)}
+  .step.cur .num{border-color:var(--accA);color:var(--accA)}
+  .step.done .num{color:var(--good);border-color:var(--good)}
+  .navrow{display:flex;gap:6px;margin:10px 0 14px}
+  .navrow button{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    border-radius:7px;padding:8px;font-size:13px;cursor:pointer}
+  .navrow button:hover{border-color:var(--accA)}
+  .rtitle{font-size:15px;font-weight:600;margin-bottom:7px;color:var(--accA)}
+  .rtext{font-size:13px;line-height:1.6;color:var(--txt)}
+  .rlink{font-size:12px;color:var(--accB);margin-top:10px;font-style:italic}
+
+  /* documentation */
+  .docs{columns:2;column-gap:12px}
+  @media(max-width:900px){.docs{columns:1}}
+  details.doc{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    margin:0 0 12px;break-inside:avoid;overflow:hidden}
+  details.doc>summary{cursor:pointer;list-style:none;padding:11px 14px;font-size:13.5px;
+    font-weight:600;color:var(--txt);display:flex;align-items:center;gap:9px;user-select:none}
+  details.doc>summary::-webkit-details-marker{display:none}
+  details.doc>summary:hover{background:#16223c}
+  details.doc>summary .chev{color:var(--accA);font-size:11px;transition:transform .15s;display:inline-block}
+  details.doc[open]>summary .chev{transform:rotate(90deg)}
+  details.doc>summary .tag{margin-left:auto;font-size:9.5px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.7px;padding:2px 7px;border-radius:20px}
+  .tag.math{background:#1c2b4d;color:#7fb4ff} .tag.caveat{background:#3a2417;color:#ffb26b}
+  .doc .body{padding:2px 15px 14px;font-size:13px;line-height:1.6;color:var(--txt)}
+  .doc .body p{margin:0 0 9px} .doc .body p:last-child{margin-bottom:0}
+  .doc .body code{font-family:var(--mono);font-size:12px;background:#0a1120;padding:1px 5px;
+    border-radius:4px;color:#a9c4ef}
+  .doc .body b{color:#fff} .doc .body .dim{color:var(--dim)}
+  .docbar{display:flex;gap:8px;margin-bottom:12px}
+  .docbar button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    border-radius:7px;padding:6px 12px;font-size:12px;cursor:pointer}
+  .docbar button:hover{border-color:var(--accA);color:var(--txt)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌀 Frequency Ladder — one signal, four shadows</h1>
+  <span class="sub">frequency → waveform → FFT → mandala → horn torus · phase-locked · purely visual</span>
+  <div class="tabs">
+    <button id="tabGuided" class="on">Guided Ladder</button>
+    <button id="tabDash">Free Play</button>
+  </div>
+</header>
+
+<!-- ================= GUIDED MODE ================= -->
+<div id="guidedView" class="ggrid">
+  <div class="panel">
+    <h2>The ladder of complexity</h2>
+    <div id="gStepper"></div>
+    <div class="navrow"><button id="btnPrev">← Prev</button><button id="btnNext">Next →</button></div>
+    <div id="gTitle" class="rtitle"></div>
+    <div id="gText" class="rtext"></div>
+    <div id="gLink" class="rlink"></div>
+  </div>
+  <div class="panel">
+    <h2>Stage <span style="float:right;text-transform:none;letter-spacing:0" id="gCaption"></span></h2>
+    <canvas id="gStage" height="520"></canvas>
+  </div>
+  <div id="guidedCtlSlot"></div>
+</div>
+
+<!-- ================= DASHBOARD MODE ================= -->
+<div id="dashView" class="grid" style="display:none">
+  <div id="dashCtlSlot"></div>
+
+  <div class="panel">
+    <h2>Rungs 1–2 · rotation &amp; waveform</h2>
+    <canvas id="dPhasor" height="250"></canvas>
+    <canvas id="dWave" height="170" style="margin-top:8px"></canvas>
+    <div class="caption">top: harmonics as stacked spinners (epicycles) · below: their summed height in time</div>
+  </div>
+
+  <div class="panel">
+    <h2>Rung 3 · FFT — the recipe, recovered</h2>
+    <canvas id="dSpec" height="180"></canvas>
+    <canvas id="dWind" height="230" style="margin-top:8px"></canvas>
+    <div class="caption">bars: real FFT of the sampled wave · below: wave wound at ×f, centroid jumps at each harmonic</div>
+  </div>
+
+  <div class="panel full" style="padding:8px 12px">
+    <canvas id="ladder" height="52" style="background:transparent"></canvas>
+  </div>
+
+  <div class="row2">
+    <div class="panel">
+      <h2>Rung 4 · mandala — the spectrum in polar space</h2>
+      <canvas id="dMandala" height="380"></canvas>
+      <div class="caption">r(θ) = R₀ + Σ aₙ·cos(nθ+φₙ) — harmonic n draws n-fold petals · hover a spectrum bar or harmonic row to spotlight</div>
+    </div>
+    <div class="panel">
+      <h2>Rung 5 · horn torus — all of it in 3D</h2>
+      <canvas id="dTorus" height="256"></canvas>
+      <div class="row2in">
+        <div><canvas id="dTop" height="104"></canvas><div class="caption">top view → the mandala</div></div>
+        <div><canvas id="dSide" height="104"></canvas><div class="caption">height over time → the waveform</div></div>
+      </div>
+      <div class="caption">fundamental spins the flow · harmonic n threads the central pinch n× per lap · drag to orbit, wheel to zoom</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DOCS (both modes) ================= -->
+<div class="panel" style="margin-top:12px">
+  <h2>How it all connects — notes</h2>
+  <div class="docbar">
+    <button id="docOpenAll">expand all</button><button id="docCloseAll">collapse all</button>
+  </div>
+  <div class="docs">
+    <details class="doc"><summary><span class="chev">▶</span>Frequency is a rotation rate<span class="tag math">math</span></summary>
+      <div class="body"><p>A frequency <code>f</code> counts repetitions per second. The cleanest picture of "repeating" is a point
+      going around a circle — a <b>phasor</b>. Angle is phase, revolutions per second is frequency, and the point's
+      height traced over time is a sine wave. Everything else in this tool is that one rotation, dressed differently.</p>
+      <p class="dim">The rotation is shown at its true rate — 1 Hz is one revolution per second. Above a few hertz a 60 fps display can only strobe the motion (the wagon-wheel effect), just as a camera would. The Time-dilation slider is an explicit, labelled slow-motion control when you want to inspect the cycle.</p></div>
+    </details>
+    <details class="doc"><summary><span class="chev">▶</span>What the FFT really does<span class="tag math">math</span></summary>
+      <div class="body"><p>The FFT asks a wave: <i>which rotation rates are hiding in you?</i> Winding the waveform around a circle
+      at a trial rate leaves the drawing balanced — unless the rate matches a component, when the graph piles up on one side
+      and its <b>centre of mass</b> jumps away from zero. Each jump is a spectrum bar.</p>
+      <p>The bars here come from a genuine radix-2 FFT of the sampled wave (1024 samples, one exact period), so the
+      spectrum <b>recovers</b> exactly the harmonic recipe you dialed in — nothing is echoed back by shortcut.</p></div>
+    </details>
+    <details class="doc"><summary><span class="chev">▶</span>Mandalas are spectra in polar space<span class="tag math">math</span></summary>
+      <div class="body"><p>Read the spectrum in polar coordinates: harmonic <code>n</code> with amplitude <code>aₙ</code> becomes an
+      n-petalled ripple, <code>r(θ) = R₀ + Σ aₙ·cos(nθ + φₙ)</code>. Fold-symmetry <i>is</i> frequency ratio, drawn in space;
+      phases rotate the petals. A mandala is a spectrum you can look at.</p></div>
+    </details>
+    <details class="doc"><summary><span class="chev">▶</span>The horn torus closes the loop<span class="tag math">math</span></summary>
+      <div class="body"><p>A horn torus is a torus whose tube radius equals its ring radius, so the hole pinches to a single
+      point — the <b>vortex</b>. Signal flow lives on its surface: the fundamental carries particles around the axis
+      (toroidal), harmonic <code>n</code> wraps them <code>n</code> times through the pinch per lap (poloidal), tracing a (1,n) winding.</p>
+      <p>Seen from above, the windings are the mandala's rose curves. A particle's height over time is the waveform.
+      The FFT of that trace is the spectrum. <b>One motion, four shadows</b> — that is the ladder.</p></div>
+    </details>
+    <details class="doc"><summary><span class="chev">▶</span>Solfeggio &amp; mod-9: lore, labeled<span class="tag caveat">lore</span></summary>
+      <div class="body"><p>The solfeggio frequency chips (174–963 Hz) and the mod-9 mandala overlay come from numerology
+      culture, not acoustics — the same "3-6-9" vortex-math family covered (and carefully fenced off) in this repo's
+      Rodin-coil math notes. Digit sums of multiples repeat with period 9 because we write numbers in base 10; that is
+      real arithmetic, but it appears nowhere in the physics of waves.</p>
+      <p class="dim">They're included because the patterns are pretty and the boundary between math and lore is itself worth teaching.</p></div>
+    </details>
+  </div>
+</div>
+
+<!-- ================= SHARED CONTROL PANEL (moves between modes) ================= -->
+<div class="panel" id="ctlPanel" style="display:none">
+  <h2>Signal</h2>
+  <div class="ctl">
+    <label>Frequency <b id="freqVal">220 Hz</b></label>
+    <input type="range" id="freqSlider" min="0" max="1000" value="347">
+    <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+      <input type="number" id="freqNum" min="1" max="20000" step="1" value="220">
+      <span class="hint">Hz · 1–20k, log slider</span>
+    </div>
+    <div class="chips" id="freqChips"></div>
+    <div class="hint">solfeggio chips are numerology-culture, not acoustics — here they're just seed numbers <span class="loretag">lore</span></div>
+  </div>
+  <div class="ctl">
+    <label>Waveform presets</label>
+    <div class="btnrow" id="wfRow">
+      <button data-wf="sine">Sine</button><button data-wf="square">Square</button>
+      <button data-wf="saw">Saw</button><button data-wf="tri">Triangle</button>
+      <button data-wf="organ">Organ</button>
+    </div>
+  </div>
+  <div class="ctl">
+    <label>Harmonics <span class="hint" style="margin:0">amp · phase — hover to spotlight</span></label>
+    <div id="harmRows"></div>
+    <button id="addHarm" class="wide">+ add harmonic</button>
+  </div>
+  <div class="ctl">
+    <label>Time dilation <b id="speedVal">real time</b></label>
+    <input type="range" id="speed" min="0" max="1000" value="1000">
+    <div class="hint">1× = true rate · drag left to slow the clock deliberately (to 1/100k×)</div>
+    <div class="btnrow" style="margin-top:5px"><button id="btnPause">⏸ pause</button></div>
+  </div>
+  <div class="ctl">
+    <label>FFT winding frequency <b id="windFVal">1.00 ×f</b></label>
+    <input type="range" id="windF" min="20" max="1200" value="100">
+    <div class="btnrow" style="margin-top:5px"><button id="btnSweep">▶ auto-sweep 0.2→12</button></div>
+  </div>
+  <div class="ctl">
+    <label class="ck"><input type="checkbox" id="mod9"> mod-9 overlay on mandala&nbsp;<span class="loretag">lore</span></label>
+    <label class="ck"><input type="checkbox" id="autoRot" checked> auto-rotate torus</label>
+  </div>
+  <h2 style="margin-top:4px">Readouts</h2>
+  <div class="tiles">
+    <div class="tile big"><div class="k">frequency</div><div class="v" id="tF">—</div></div>
+    <div class="tile"><div class="k">period 1/f</div><div class="v" id="tT">—</div></div>
+    <div class="tile"><div class="k">note ≈</div><div class="v" id="tNote">—</div></div>
+    <div class="tile"><div class="k">time dilation</div><div class="v" id="tSlow">—</div></div>
+    <div class="tile"><div class="k">harmonics</div><div class="v" id="tHarm">—</div></div>
+    <div class="tile"><div class="k">dominant symmetry</div><div class="v" id="tPetal">—</div></div>
+    <div class="tile"><div class="k">digital root <span style="color:var(--warn)">lore</span></div><div class="v gold" id="tRoot">—</div></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ============================================================
+   Frequency Ladder — teaching tool
+   frequency → waveform → FFT → mandala → horn torus
+   Single signal model: x(t) = Σ ampₙ·sin(2π·n·f·t + phₙ)
+   All views derive from one master phase CLK.phi (fundamental cycles),
+   so every panel is phase-locked — the visual proof of interdependence.
+   ============================================================ */
+const TAU = Math.PI*2;
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp = (a,b,t)=>a+(b-a)*t;
+const frac = x => x-Math.floor(x);
+const smooth = t => t<=0?0 : t>=1?1 : t*t*(3-2*t);
+
+function eng(v,u,d=3){
+  if(!isFinite(v)) return '—';
+  const s=v<0?'−':''; v=Math.abs(v);
+  if(v===0) return '0 '+u;
+  const p=[[1e9,'G'],[1e6,'M'],[1e3,'k'],[1,''],[1e-3,'m'],[1e-6,'µ'],[1e-9,'n']];
+  for(const [m,x] of p) if(v>=m*0.9995) return s+parseFloat((v/m).toPrecision(d))+' '+x+u;
+  return s+v.toExponential(1)+' '+u;
+}
+function setupCanvas(id){
+  const c=$(id), dpr=Math.min(2,window.devicePixelRatio||1);
+  const w=c.clientWidth, h=parseInt(c.getAttribute('height'));
+  c.width=w*dpr; c.height=h*dpr; c.style.height=h+'px';
+  const ctx=c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {c,ctx,w,h};
+}
+/* per-harmonic palette: harmonic n wears the same colour in EVERY view */
+const HPAL=['#ffa14f','#4fc3f7','#6fe3a0','#ffd166','#ff5fd7','#c9a8ff','#7fb4ff','#ff8f8f'];
+const HCOL = n => HPAL[(n-1)%HPAL.length];
+const RGBC={};
+function rgba(hex,a){
+  let c=RGBC[hex];
+  if(!c){ c=parseInt(hex.slice(1,3),16)+','+parseInt(hex.slice(3,5),16)+','+parseInt(hex.slice(5,7),16); RGBC[hex]=c; }
+  return 'rgba('+c+','+a.toFixed(3)+')';
+}
+
+/* ================= state ================= */
+const S = {
+  mode:'guided', rung:1,
+  f:220,
+  harmonics:[{n:1,amp:1,ph:0}],     // n:1..16 integer · amp 0..1 · ph radians
+  speed:1, paused:false,
+  windF:1, mod9:false, autoRot:true,
+  hoverN:0,                          // harmonic under cursor: spotlighted in every view
+};
+const CLK = { phi:0 };               // master phase, in fundamental CYCLES
+const FMIN=1, FMAX=20000, FLOG=Math.log10(FMAX/FMIN);
+/* TRUE RATE: the signal clock advances at exactly f cycles per second — no
+   artificial slow-down. Above a few Hz a 60 fps display can only strobe the
+   motion (wagon-wheel effect); the Time-dilation slider is the user's
+   explicit, labelled slow-motion control. WCLK is a wall-time clock used
+   ONLY for decorative pulses so UI shimmer never misrepresents f. */
+const WCLK={t:0};
+function fmtRate(r){ return r>=100?Math.round(r).toLocaleString('en-US'):r>=1?r.toFixed(2):r.toFixed(3); }
+function dilLabel(){
+  if(S.speed>=0.995) return 'real time';
+  const d=1/S.speed;
+  return '1/'+(d>=1e6?Math.round(d/1e6)+'M':d>=1e3?Math.round(d/1e3)+'k':d<10?d.toFixed(1):String(Math.round(d)))+'×';
+}
+
+const N=1024, SWEEP_N=480, SWEEP_LO=0.2, SWEEP_HI=12;
+const WIND_BASE=0.62, WIND_AMP=0.30;   // winding radius = R·(BASE + AMP·wave)
+const WIND_P=8;                        // periods wound around the circle: many laps make
+                                       // mismatches cancel cleanly and matches pile up hard
+const FRE=new Float32Array(N), FIM=new Float32Array(N);
+const MAGS=new Float32Array(25), PHS=new Float32Array(25);
+const CACHE = {
+  wave:new Float32Array(N), wnorm:new Float32Array(N), wmax:1,
+  spec:[], specMax:1, magTot:1,
+  sweep:new Float32Array(SWEEP_N), sweepMax:1,
+  torus:null, dirty:true,
+};
+function markDirty(){ CACHE.dirty=true; }
+function alphaFor(n){ return S.hoverN===0 ? 1 : (n===S.hoverN ? 1 : 0.22); }
+
+/* ================= math core ================= */
+function buildWave(){
+  const w=CACHE.wave; w.fill(0);
+  for(const h of S.harmonics){
+    const st=TAU*h.n/N;
+    for(let i=0;i<N;i++) w[i]+=h.amp*Math.sin(st*i+h.ph);
+  }
+  let m=1e-9;
+  for(let i=0;i<N;i++) m=Math.max(m,Math.abs(w[i]));
+  CACHE.wmax=m;
+  for(let i=0;i<N;i++) CACHE.wnorm[i]=w[i]/m;
+}
+/* iterative radix-2 Cooley–Tukey, in place */
+function fft(re,im){
+  const n=re.length;
+  for(let i=1,j=0;i<n;i++){
+    let bit=n>>1;
+    for(; j&bit; bit>>=1) j^=bit;
+    j|=bit;
+    if(i<j){ const tr=re[i];re[i]=re[j];re[j]=tr; const ti=im[i];im[i]=im[j];im[j]=ti; }
+  }
+  for(let len=2;len<=n;len<<=1){
+    const ang=-TAU/len, wr=Math.cos(ang), wi=Math.sin(ang);
+    for(let s=0;s<n;s+=len){
+      let cr=1, ci=0;
+      for(let k=0;k<(len>>1);k++){
+        const i=s+k, j=i+(len>>1);
+        const tr=re[j]*cr-im[j]*ci, ti=re[j]*ci+im[j]*cr;
+        re[j]=re[i]-tr; im[j]=im[i]-ti; re[i]+=tr; im[i]+=ti;
+        const t=cr*wr-ci*wi; ci=cr*wi+ci*wr; cr=t;
+      }
+    }
+  }
+}
+/* genuine spectrum of the sampled wave: bin k IS harmonic k (one exact period, no leakage).
+   x built with sin ⇒ recovered sin-phase = atan2(im,re) + π/2 */
+function computeSpectrum(){
+  FRE.set(CACHE.wave); FIM.fill(0);
+  fft(FRE,FIM);
+  CACHE.spec.length=0; MAGS.fill(0); PHS.fill(0);
+  let mx=1e-9, tot=0;
+  for(let k=1;k<=24;k++){
+    const mag=2*Math.hypot(FRE[k],FIM[k])/N;
+    if(mag>1e-3){
+      const ph=Math.atan2(FIM[k],FRE[k])+Math.PI/2;
+      CACHE.spec.push({n:k,mag,ph});
+      MAGS[k]=mag; PHS[k]=ph;
+      mx=Math.max(mx,mag); tot+=mag;
+    }
+  }
+  CACHE.specMax=mx; CACHE.magTot=Math.max(1,tot);
+}
+/* 3Blue1Brown winding: wrap the wave around a circle at trial rate fw (multiples of f);
+   the centroid magnitude spikes when fw hits a harmonic */
+function centroid(fw){
+  const wn=CACHE.wnorm; let cx=0, cy=0;
+  for(let i=0;i<N;i++){
+    const r=WIND_BASE+WIND_AMP*wn[(i*WIND_P)%N], a=-TAU*fw*WIND_P*i/N;
+    cx+=r*Math.cos(a); cy+=r*Math.sin(a);
+  }
+  return {x:cx/N, y:cy/N};
+}
+function buildSweep(){
+  let mx=1e-9;
+  for(let j=0;j<SWEEP_N;j++){
+    const fw=SWEEP_LO+(SWEEP_HI-SWEEP_LO)*j/(SWEEP_N-1);
+    const c=centroid(fw), m=Math.hypot(c.x,c.y);
+    CACHE.sweep[j]=m; mx=Math.max(mx,m);
+  }
+  /* exact spike heights at each harmonic (the sweep grid can straddle a narrow peak) */
+  CACHE.peakH={};
+  for(const h of CACHE.spec){
+    if(h.n>SWEEP_HI) continue;
+    const c=centroid(h.n), m=Math.hypot(c.x,c.y);
+    CACHE.peakH[h.n]=m; mx=Math.max(mx,m);
+  }
+  CACHE.sweepMax=mx;
+}
+/* composite epicycle tip at time t (cycles) — unit-normalized so the chain fits its circle */
+function ampNorm(){ let t=0; for(const h of S.harmonics) t+=h.amp; return t>0?1/t:1; }
+function tipAt(t){
+  let x=0,y=0;
+  for(const h of S.harmonics){
+    const a=TAU*h.n*t+h.ph;
+    x+=h.amp*Math.cos(a); y+=h.amp*Math.sin(a);
+  }
+  const s=ampNorm();
+  return {x:x*s, y:y*s};
+}
+const digitalRoot = x => x<=0 ? 0 : 1+((Math.round(x)-1)%9);
+function noteName(f){
+  const NM=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const m=Math.round(69+12*Math.log2(f/440));
+  const cents=Math.round(1200*Math.log2(f/(440*Math.pow(2,(m-69)/12))));
+  return NM[((m%12)+12)%12]+(Math.floor(m/12)-1)+(cents? (cents>0?' +':' −')+Math.abs(cents)+'¢':'');
+}
+
+/* ================= horn torus geometry =================
+   R = r = 1 → tube pinches to a point at the origin (the vortex).
+   hornPt: w = 1+cosθ vanishes at θ=π; extent x,y∈[−2,2], z∈[−1,1] */
+function hornPt(phi,theta){
+  const w=1+Math.cos(theta);
+  return {x:w*Math.cos(phi), y:w*Math.sin(phi), z:Math.sin(theta)};
+}
+function buildTorusGeom(){
+  const wire=[];
+  for(let i=0;i<14;i++){                       // tube cross-sections
+    const phi=i/14*TAU, ring=[];
+    for(let t=0;t<=28;t++) ring.push(hornPt(phi,t/28*TAU));
+    wire.push(ring);
+  }
+  for(let j=1;j<7;j++){                        // toroidal rings (skip the pinch)
+    const th=j/7*TAU, ring=[];
+    for(let s=0;s<=40;s++) ring.push(hornPt(s/40*TAU,th));
+    wire.push(ring);
+  }
+  /* one (1,n) winding curve per harmonic: 1 toroidal lap, n poloidal wraps —
+     every θ=π crossing threads the central pinch */
+  const curves=[];
+  for(const h of CACHE.spec.slice(0,6)){
+    const pts=[];
+    for(let i=0;i<=384;i++){
+      const u=i/384;
+      pts.push(hornPt(TAU*u+h.ph, TAU*h.n*u));
+    }
+    curves.push({n:h.n, mag:h.mag, pts});
+  }
+  CACHE.torus={wire,curves};
+}
+
+function recompute(){
+  buildWave(); computeSpectrum(); buildSweep(); buildTorusGeom();
+  updateTiles();
+  CACHE.dirty=false;
+}
+function updateTiles(){
+  $('tF').textContent=eng(S.f,'Hz');
+  $('tT').textContent=eng(1/S.f,'s');
+  $('tNote').textContent=S.f>=16?noteName(S.f):'sub-audio';
+  $('tSlow').textContent=dilLabel();
+  $('tHarm').textContent=S.harmonics.length+' active';
+  let bn=1,bm=0;
+  for(const h of CACHE.spec) if(h.mag>bm){bm=h.mag;bn=h.n;}
+  $('tPetal').textContent=bn===1?'1 (circle)':bn+'-fold';
+  $('tRoot').textContent=digitalRoot(S.f)+' (of '+Math.round(S.f)+')';
+}
+
+/* ================= renderers =================
+   Every renderer draws into a target T = {ctx,w,h}; region() lets the guided
+   stage and the dashboard tiles share 100% of the drawing code. */
+function region(T,x,y,w,h,fn){
+  const c=T.ctx;
+  c.save(); c.translate(x,y);
+  c.beginPath(); c.rect(0,0,w,h); c.clip();
+  fn({ctx:c,w,h});
+  c.restore();
+}
+function circle(ctx,x,y,r,style,lw){
+  ctx.strokeStyle=style; ctx.lineWidth=lw||1;
+  ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.stroke();
+}
+function dot(ctx,x,y,r,style){
+  ctx.fillStyle=style; ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.fill();
+}
+/* normalized wave value at u ∈ [0,1) cycles */
+function wv(u){ return CACHE.wnorm[Math.floor(frac(u)*N)%N]; }
+
+/* ---- rung 1–2: phasor / epicycles ---- */
+function drawPhasor(T,o={}){
+  const {ctx,w,h}=T;
+  const cx=o.cx??w/2, cy=o.cy??h/2, R=o.R??Math.min(w,h)*0.40;
+  const harms=o.harms??S.harmonics;
+  const ns=o.harms?1:ampNorm();
+  circle(ctx,cx,cy,R,'#2a3a5f',1);
+  ctx.strokeStyle='#1c2740';
+  ctx.beginPath(); ctx.moveTo(cx-R-6,cy); ctx.lineTo(cx+R+6,cy);
+  ctx.moveTo(cx,cy-R-6); ctx.lineTo(cx,cy+R+6); ctx.stroke();
+  /* trail: last cycle of composite tip positions (deterministic from phi — no buffer) */
+  if(o.trail!==false){
+    const K=120, CH=16;
+    for(let c0=0;c0<K-CH;c0+=CH){
+      ctx.strokeStyle=rgba('#ffa14f',0.55*(1-c0/K));
+      ctx.lineWidth=1.5; ctx.beginPath();
+      for(let k=c0;k<=c0+CH;k++){
+        const p=o.harms?tipOf(harms,CLK.phi-k/K):tipAt(CLK.phi-k/K);
+        const X=cx+p.x*R, Y=cy-p.y*R;
+        k===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+      }
+      ctx.stroke();
+    }
+  }
+  /* epicycle arms, sorted by n */
+  const Hs=[...harms].sort((a,b)=>a.n-b.n);
+  let px=cx, py=cy;
+  for(const hh of Hs){
+    const a=TAU*hh.n*CLK.phi+hh.ph, r=hh.amp*ns*R;
+    const nx=px+r*Math.cos(a), ny=py-r*Math.sin(a);
+    const af=alphaFor(hh.n);
+    circle(ctx,px,py,r,rgba(HCOL(hh.n),0.20*af),1);
+    ctx.strokeStyle=rgba(HCOL(hh.n),0.9*af); ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(nx,ny); ctx.stroke();
+    dot(ctx,nx,ny,2.4,rgba(HCOL(hh.n),af));
+    px=nx; py=ny;
+  }
+  dot(ctx,px,py,4,'#ffffff');
+  /* height guide toward the (adjoining) waveform */
+  if(o.guide){
+    ctx.strokeStyle=rgba('#6fe3a0',0.5); ctx.setLineDash([4,4]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(w-2,py); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  if(o.bigLabel){
+    ctx.fillStyle='#dbe4f5'; ctx.font='600 26px '+'"Cascadia Code",Consolas,monospace';
+    ctx.textAlign='center';
+    ctx.fillText(eng(S.f,'Hz'),cx,cy+R+44);
+    ctx.font='12px "Segoe UI",sans-serif'; ctx.fillStyle='#7f8db0';
+    ctx.fillText('one revolution = one cycle = '+eng(1/S.f,'s'),cx,cy+R+64);
+    ctx.fillText(S.speed>=0.995
+      ? 'true rate: '+fmtRate(S.f)+' rev/s'+(S.f>4?' — your screen strobes it, exactly as a camera would':'')
+      : 'time dilated '+dilLabel()+' → '+fmtRate(S.f*S.speed)+' rev/s on screen',cx,cy+R+80);
+    ctx.textAlign='left';
+  }
+}
+function tipOf(harms,t){
+  let x=0,y=0,tot=0;
+  for(const h of harms){ const a=TAU*h.n*t+h.ph; x+=h.amp*Math.cos(a); y+=h.amp*Math.sin(a); tot+=h.amp; }
+  const s=tot>0?1/tot:1;
+  return {x:x*s,y:y*s};
+}
+
+/* ---- rung 2: waveform ---- */
+function drawWave(T,o={}){
+  const {ctx,w,h}=T;
+  const pad=28, x1=w-8, mid=h/2, amp=h*0.36, per=o.periods??2;
+  ctx.strokeStyle='#1c2740'; ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.moveTo(pad,mid); ctx.lineTo(x1,mid);
+  for(let g=1;g<per;g++){ const x=pad+(x1-pad)*g/per; ctx.moveTo(x,6); ctx.lineTo(x,h-6); }
+  ctx.stroke();
+  ctx.strokeStyle='#2a3a5f'; ctx.strokeRect(pad,4,x1-pad,h-8);
+  /* per-harmonic ghost when spotlighting */
+  if(S.hoverN>0){
+    const hh=S.harmonics.find(x=>x.n===S.hoverN);
+    if(hh){
+      ctx.strokeStyle=rgba(HCOL(hh.n),0.5); ctx.lineWidth=1.2; ctx.beginPath();
+      for(let i=0;i<=220;i++){
+        const u=i/220*per, v=hh.amp*Math.sin(TAU*hh.n*u+hh.ph)/CACHE.wmax;
+        const X=pad+(x1-pad)*i/220, Y=mid-v*amp;
+        i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+      }
+      ctx.stroke();
+    }
+  }
+  /* composite */
+  ctx.strokeStyle=rgba('#ffa14f',S.hoverN?0.35:0.95); ctx.lineWidth=1.8; ctx.beginPath();
+  for(let i=0;i<=260;i++){
+    const X=pad+(x1-pad)*i/260, Y=mid-wv(i/260*per)*amp;
+    i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+  }
+  ctx.stroke();
+  /* phase-locked cursor */
+  if(o.cursor!==false){
+    const cu=frac(CLK.phi/per), X=pad+(x1-pad)*cu, v=wv(cu*per);
+    ctx.strokeStyle=rgba('#6fe3a0',0.6); ctx.beginPath(); ctx.moveTo(X,6); ctx.lineTo(X,h-6); ctx.stroke();
+    dot(ctx,X,mid-v*amp,3.5,'#6fe3a0');
+  }
+  /* real-time axis: period boundaries in actual seconds — they rescale with f */
+  ctx.fillStyle='#7f8db0'; ctx.font='10px "Cascadia Code",Consolas,monospace';
+  ctx.textAlign='center';
+  for(let g=1;g<=per;g++)
+    ctx.fillText(eng(g/S.f,'s'),Math.min(pad+(x1-pad)*g/per,x1-20),h-9);
+  ctx.textAlign='left';
+  ctx.fillText('t →',pad+4,h-9);
+}
+
+/* ---- rung 3: spectrum on an ABSOLUTE log-Hz axis ----
+   The bars sit at n·f in real hertz, so dragging the frequency slider makes
+   the whole harmonic comb glide along the axis: the recipe keeps its shape,
+   frequency decides where it lives. */
+function specX(f,pad,x1){
+  return pad+(x1-pad)*(Math.log10(f)-Math.log10(FMIN))/(Math.log10(FMAX)-Math.log10(FMIN));
+}
+function drawSpectrum(T,o={}){
+  const {ctx,w,h}=T;
+  const pad=26, x1=w-8, base=h-20, top=12;
+  const grow=o.grow??1;
+  /* axis + decade ticks */
+  ctx.strokeStyle='#2a3a5f'; ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(x1,base); ctx.stroke();
+  ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
+  for(const d of [1,10,100,1000,10000]){
+    const X=specX(d,pad,x1);
+    ctx.strokeStyle='#1c2740'; ctx.beginPath(); ctx.moveTo(X,top); ctx.lineTo(X,base); ctx.stroke();
+    if(!o.compact){ ctx.fillStyle='#3a4a6f'; ctx.fillText(d>=1000?(d/1000+'k'):String(d),X,h-7); }
+  }
+  /* fundamental guide: slides with the slider */
+  const Xf=specX(S.f,pad,x1);
+  ctx.strokeStyle=rgba('#ffa14f',0.30); ctx.setLineDash([3,4]);
+  ctx.beginPath(); ctx.moveTo(Xf,top); ctx.lineTo(Xf,base); ctx.stroke(); ctx.setLineDash([]);
+  let over=0;
+  const bwid=clamp((x1-pad)*0.014,3,9);
+  for(let n=1;n<=24;n++){
+    const mag=MAGS[n]||0; if(!mag) continue;
+    const fh=n*S.f;
+    if(fh>FMAX){ over++; continue; }
+    const X=specX(fh,pad,x1);
+    const pulse=1+0.05*Math.sin(TAU*(WCLK.t*0.7+n*0.13));   // wall-clock shimmer, not signal rate
+    const ht=(base-top)*(mag/CACHE.specMax)*pulse*grow;
+    const af=alphaFor(n);
+    ctx.fillStyle=rgba(HCOL(n),0.85*af);
+    ctx.fillRect(X-bwid/2,base-ht,bwid,ht);
+    if(o.lockN===n){ ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.2; ctx.strokeRect(X-bwid/2,base-ht,bwid,ht); }
+    if(!o.compact){
+      ctx.fillStyle=rgba(HCOL(n),Math.max(0.55,af));
+      ctx.fillText(String(n),X,Math.max(top+8,base-ht-4));
+    }
+    if(n===S.hoverN&&!o.compact){
+      ctx.fillStyle='#dbe4f5';
+      ctx.fillText(eng(fh,'Hz'),X,Math.max(top+18,base-ht-15));
+    }
+  }
+  ctx.textAlign='left';
+  if(!o.compact){
+    if(over){ ctx.fillStyle='#7f8db0'; ctx.textAlign='right';
+      ctx.fillText('▸ '+over+' beyond '+eng(FMAX,'Hz'),x1-2,top+8); ctx.textAlign='left'; }
+    ctx.fillStyle='#7f8db0';
+    ctx.fillText('FFT · real frequency, log axis (Hz) — slide f and the comb glides',pad+2,top-2);
+  }
+}
+
+/* ---- rung 3: winding explorer ----
+   Teaching visuals: the wave is sign-coloured (orange +, cyan −) in BOTH the
+   time strip and the wound curve; mass dots show the weight the gold
+   centre-of-mass balances; a lock indicator fires when the winding rate hits
+   a harmonic — the moment all the orange piles onto one side and the
+   centroid jumps. */
+function lockedN(fw){
+  let best=0, bd=0.075;
+  for(const h of CACHE.spec){ const d=Math.abs(fw-h.n); if(d<bd){bd=d;best=h.n;} }
+  return best;
+}
+const sgnCol = v => v>=0?'#ffa14f':'#4fc3f7';
+/* the wave about to be wound — sign-coloured, phase-locked time cursor */
+function drawWaveStrip(T,o={}){
+  const {ctx,w,h}=T;
+  const pad=10, x1=w-10, mid=h*0.55, amp=h*0.28;
+  ctx.strokeStyle='#1c2740'; ctx.beginPath(); ctx.moveTo(pad,mid); ctx.lineTo(x1,mid); ctx.stroke();
+  const M=256, bw=(x1-pad)/M;
+  for(let i=0;i<M;i++){
+    const v=wv(i/M);
+    ctx.fillStyle=rgba(sgnCol(v),0.20);
+    ctx.fillRect(pad+i*bw,Math.min(mid,mid-v*amp),bw+0.5,Math.abs(v*amp));
+  }
+  for(let c0=0;c0<M;c0+=8){
+    ctx.strokeStyle=rgba(sgnCol(wv((c0+4)/M)),0.95); ctx.lineWidth=1.7; ctx.beginPath();
+    for(let i=c0;i<=c0+8;i++){
+      const X=pad+(x1-pad)*i/M, Y=mid-wv(i/M)*amp;
+      i===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+    }
+    ctx.stroke();
+  }
+  if(o.markU!==undefined){
+    const X=pad+(x1-pad)*o.markU;
+    ctx.strokeStyle=rgba('#ffffff',0.5); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(X,6); ctx.lineTo(X,h-4); ctx.stroke();
+    dot(ctx,X,mid-wv(o.markU)*amp,3.5,'#ffffff');
+  }
+  ctx.fillStyle='#7f8db0'; ctx.font='10px "Segoe UI",sans-serif';
+  ctx.fillText('one period = '+eng(1/S.f,'s')+' — orange above zero, cyan below · white dot = the sample being wound',pad+2,10);
+}
+function drawWindCircle(T,o={}){
+  const {ctx,w,h}=T;
+  const R=o.R??Math.min(w,h)*0.375, cx=o.cx??w/2, cy=o.cy??h/2;
+  const fw=o.fw??S.windF;
+  circle(ctx,cx,cy,R,'#2a3a5f',1);
+  ctx.strokeStyle='#1c2740';
+  ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
+  /* wound wave (WIND_P periods), sign-coloured: mismatch = balanced tangle,
+     match = all the orange piles onto one side */
+  for(let c0=0;c0<N;c0+=8){
+    ctx.strokeStyle=rgba(sgnCol(CACHE.wnorm[((c0+4)*WIND_P)%N]),0.7); ctx.lineWidth=1.2; ctx.beginPath();
+    for(let i=c0;i<=c0+8;i++){
+      const r=R*(WIND_BASE+WIND_AMP*CACHE.wnorm[(i*WIND_P)%N]), a=-TAU*fw*WIND_P*i/N;
+      const X=cx+r*Math.cos(a), Y=cy+r*Math.sin(a);
+      i===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+    }
+    ctx.stroke();
+  }
+  /* mass dots — the weight the centroid balances */
+  for(let k=0;k<64;k++){
+    const i=Math.floor(k/64*N), v=CACHE.wnorm[(i*WIND_P)%N];
+    const r=R*(WIND_BASE+WIND_AMP*v), a=-TAU*fw*WIND_P*i/N;
+    dot(ctx,cx+r*Math.cos(a),cy+r*Math.sin(a),1+2.2*Math.abs(v),rgba(sgnCol(v),0.8));
+  }
+  /* time cursor: the sample being wound right now (pairs with the strip cursor) */
+  if(o.markU!==undefined){
+    const iu=Math.floor(o.markU*N/WIND_P);
+    const r=R*(WIND_BASE+WIND_AMP*CACHE.wnorm[(iu*WIND_P)%N]), a=-TAU*fw*WIND_P*iu/N;
+    dot(ctx,cx+r*Math.cos(a),cy+r*Math.sin(a),4,'#ffffff');
+  }
+  /* centroid = centre of mass, magnified ×2.4 */
+  const c=centroid(fw), MAG=2.4;
+  const gx=cx+c.x*R*MAG, gy=cy+c.y*R*MAG;
+  ctx.strokeStyle=rgba('#ffd166',0.95); ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(gx,gy); ctx.stroke();
+  dot(ctx,gx,gy,5,'#ffd166');
+  dot(ctx,cx,cy,1.5,'#3a4a6f');
+  /* lock indicator */
+  const ln=lockedN(fw);
+  if(ln){
+    circle(ctx,cx,cy,R+7,rgba(HCOL(ln),0.45+0.4*Math.sin(TAU*WCLK.t*1.5)),2.5);
+    ctx.fillStyle=HCOL(ln); ctx.font='600 12px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
+    ctx.fillText('⚡ locked: harmonic '+ln+' ('+eng(ln*S.f,'Hz')+')',cx,cy-R-12);
+    ctx.textAlign='left';
+  }
+  ctx.fillStyle='#7f8db0'; ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
+  ctx.fillText('winding '+fw.toFixed(2)+'×f = '+eng(fw*S.f,'Hz')+' · '+WIND_P+' periods · gold = centre of mass',cx,cy+R+16);
+  ctx.textAlign='left';
+}
+function drawSweepPlot(T,o={}){
+  const {ctx,w,h}=T;
+  const px0=26, px1=w-8, py0=14, py1=h-22, rev=clamp(o.reveal??1,0,1);
+  const fw=o.fw??S.windF;
+  const fx=f=>px0+(px1-px0)*(f-SWEEP_LO)/(SWEEP_HI-SWEEP_LO);
+  const fy=m=>py1-(py1-py0-8)*(m/CACHE.sweepMax);
+  ctx.strokeStyle='#2a3a5f'; ctx.strokeRect(px0,py0,px1-px0,py1-py0);
+  ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
+  for(let g=1;g<=SWEEP_HI;g++){
+    const X=fx(g);
+    ctx.strokeStyle=MAGS[g]>0?rgba(HCOL(g),0.30):'#1c2740';
+    ctx.beginPath(); ctx.moveTo(X,py0); ctx.lineTo(X,py1); ctx.stroke();
+    ctx.fillStyle=MAGS[g]>0?'#dbe4f5':'#3a4a6f'; ctx.fillText(String(g),X,h-9);
+  }
+  ctx.textAlign='left';
+  const jm=Math.floor((SWEEP_N-1)*rev);
+  ctx.fillStyle=rgba('#6fe3a0',0.10); ctx.beginPath(); ctx.moveTo(px0,py1);
+  for(let j=0;j<=jm;j++) ctx.lineTo(px0+(px1-px0)*j/(SWEEP_N-1),fy(CACHE.sweep[j]));
+  ctx.lineTo(px0+(px1-px0)*jm/(SWEEP_N-1),py1); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle=rgba('#6fe3a0',0.95); ctx.lineWidth=1.6; ctx.beginPath();
+  for(let j=0;j<=jm;j++){
+    const X=px0+(px1-px0)*j/(SWEEP_N-1);
+    j?ctx.lineTo(X,fy(CACHE.sweep[j])):ctx.moveTo(X,fy(CACHE.sweep[j]));
+  }
+  ctx.stroke();
+  /* coloured peak dots: each spike belongs to a harmonic (same colour as its bar) */
+  if(rev>=1&&CACHE.peakH) for(const hh of CACHE.spec){
+    if(hh.n>SWEEP_HI) continue;
+    dot(ctx,fx(hh.n),fy(CACHE.peakH[hh.n]),3,rgba(HCOL(hh.n),0.95*alphaFor(hh.n)));
+  }
+  /* live marker riding the curve */
+  if(fw>=SWEEP_LO&&fw<=SWEEP_HI){
+    const Xm=fx(fw), j=clamp(Math.round((fw-SWEEP_LO)/(SWEEP_HI-SWEEP_LO)*(SWEEP_N-1)),0,SWEEP_N-1);
+    ctx.strokeStyle=rgba('#ffd166',0.85); ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.moveTo(Xm,py0); ctx.lineTo(Xm,py1); ctx.stroke();
+    if(rev>=1) dot(ctx,Xm,fy(CACHE.sweep[j]),4.5,'#ffd166');
+  }
+  ctx.fillStyle='#7f8db0'; ctx.font='10px "Cascadia Code",Consolas,monospace';
+  ctx.fillText('|centroid| vs winding rate · 1×f = '+eng(S.f,'Hz'),px0+4,py0-3);
+}
+/* combined side-by-side (dashboard tile + morph target) */
+function drawWinding(T,o={}){
+  const {w,h}=T;
+  const cw=Math.min(h,w*0.44);
+  region(T,0,0,cw,h,t=>drawWindCircle(t,o));
+  region(T,cw,0,w-cw,h,t=>drawSweepPlot(t,o));
+}
+
+/* ---- rung 4: mandala ---- */
+function drawMandala(T,o={}){
+  const {ctx,w,h}=T;
+  const cx=o.cx??w/2, cy=o.cy??h/2;
+  const s=(o.scale??Math.min(w,h)*0.335)*(o.scaleMul??1);
+  const coef=o.coef??1, al=o.alpha??1;
+  const rot=n=>TAU*n*WCLK.t*0.04;   // decorative petal drift on wall time (shape is what teaches)
+  /* per-harmonic rose layers: harmonic n = n-fold petals in its own colour */
+  for(const hh of CACHE.spec.slice(0,6)){
+    const af=alphaFor(hh.n);
+    ctx.strokeStyle=rgba(HCOL(hh.n),0.38*al*af); ctx.lineWidth=1.1;
+    ctx.beginPath();
+    for(let i=0;i<=180;i++){
+      const th=i/180*TAU;
+      const r=s*0.92*(hh.mag/CACHE.specMax)*Math.abs(Math.cos((hh.n*th+hh.ph+rot(hh.n))/1))*coef;
+      const X=cx+r*Math.cos(th), Y=cy+r*Math.sin(th);
+      i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+    }
+    ctx.stroke();
+  }
+  /* composite outline: r(θ) = R0 + Σ aₙ·cos(nθ+φₙ+rot) — the spectrum, in polar space */
+  ctx.beginPath();
+  for(let i=0;i<=256;i++){
+    const th=i/256*TAU;
+    let r=0.52;
+    for(const hh of CACHE.spec)
+      r+=coef*0.36*(hh.mag/CACHE.magTot)*Math.cos(hh.n*th+hh.ph+rot(hh.n));
+    r=Math.max(0.04,r)*s;
+    const X=cx+r*Math.cos(th), Y=cy+r*Math.sin(th);
+    i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+  }
+  ctx.closePath();
+  ctx.fillStyle=rgba('#ffa14f',0.06*al); ctx.fill();
+  ctx.strokeStyle=rgba('#ffa14f',0.95*al); ctx.lineWidth=2; ctx.stroke();
+  /* mod-9 digital-root overlay (lore) */
+  if(S.mod9&&(o.mod9!==false)){
+    const r9=s*1.12;
+    ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
+    const pt9=k=>{ const a=-Math.PI/2+(k-1)/9*TAU; return {x:cx+r9*Math.cos(a),y:cy+r9*Math.sin(a)}; };
+    for(let k=1;k<=9;k++){
+      const p=pt9(k);
+      dot(ctx,p.x,p.y,2.5,rgba('#ffd166',([3,6,9].includes(k)?0.9:0.45)*al));
+      ctx.fillStyle=rgba('#ffd166',0.6*al); ctx.fillText(String(k),p.x,p.y-7);
+    }
+    for(const hh of CACHE.spec.slice(0,6)){
+      ctx.strokeStyle=rgba('#ffd166',0.28*al*alphaFor(hh.n)); ctx.lineWidth=1;
+      ctx.beginPath();
+      for(let k=1;k<=9;k++){
+        const p=pt9(digitalRoot(hh.n*k));
+        k===1?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);
+      }
+      ctx.stroke();
+    }
+    ctx.textAlign='left';
+  }
+  dot(ctx,cx,cy,2+1.5*Math.abs(Math.sin(TAU*WCLK.t*0.5)),rgba('#ff5fd7',0.9*al));
+}
+
+/* ---- rung 5: horn torus ---- */
+const view={rx:-1.02, ry:0.6, zoom:1};
+const ITEMS=[];
+function drawTorus(T,o={}){
+  const {ctx,w,h}=T;
+  if(!CACHE.torus) return;
+  const rx=o.camRx??view.rx, ry=o.camRy??view.ry, zs=o.zScale??1, al=o.alpha??1;
+  const scale=Math.min(w,h)*0.235*view.zoom*(o.scaleMul??1);
+  const cx=o.cx??w/2, cy=o.cy??h/2;
+  const cyr=Math.cos(ry), syr=Math.sin(ry), cxr=Math.cos(rx), sxr=Math.sin(rx);
+  const P=p=>{
+    const z=p.z*zs;
+    const x1=p.x*cyr-p.y*syr, y1=p.x*syr+p.y*cyr;
+    const y2=y1*cxr-z*sxr, z2=y1*sxr+z*cxr;
+    const per=1/(1-y2*0.13);
+    return {X:cx+x1*scale*per, Y:cy-z2*scale*per, d:y2};
+  };
+  ITEMS.length=0;
+  for(const ring of CACHE.torus.wire){
+    let prev=null;
+    for(const q of ring){
+      const p=P(q);
+      if(prev) ITEMS.push({d:(p.d+prev.d)/2,a:prev,b:p,col:'rgba(90,110,160,'+(0.16*al).toFixed(3)+')',lw:1});
+      prev=p;
+    }
+  }
+  for(const cv of CACHE.torus.curves){
+    const col=HCOL(cv.n), af=alphaFor(cv.n)*al;
+    let prev=null;
+    for(let i=0;i<cv.pts.length;i++){
+      const p=P(cv.pts[i]);
+      if(prev){
+        const sh=0.35+0.60*clamp(((p.d+prev.d)/2/2.2+1)/2,0,1);
+        ITEMS.push({d:(p.d+prev.d)/2,a:prev,b:p,col:rgba(col,af*sh),lw:1.6});
+      }
+      prev=p;
+    }
+    /* flow dots: fundamental drives one toroidal lap per cycle */
+    const nd=14;
+    for(let k=0;k<nd;k++){
+      const u=frac(k/nd+CLK.phi);
+      const p=P(cv.pts[Math.floor(u*(cv.pts.length-1))]);
+      ITEMS.push({d:p.d,dot:p,col:rgba(col,af),r:2.2});
+    }
+  }
+  const o0=P({x:0,y:0,z:0});
+  ITEMS.push({d:o0.d,dot:o0,col:rgba('#ff5fd7',0.9*al),r:3.2});
+  ITEMS.sort((a,b)=>a.d-b.d);
+  for(const it of ITEMS){
+    if(it.dot) dot(ctx,it.dot.X,it.dot.Y,it.r,it.col);
+    else{
+      ctx.strokeStyle=it.col; ctx.lineWidth=it.lw;
+      ctx.beginPath(); ctx.moveTo(it.a.X,it.a.Y); ctx.lineTo(it.b.X,it.b.Y); ctx.stroke();
+    }
+  }
+  if(o.label!==false){
+    ctx.fillStyle=rgba('#ff5fd7',0.75*al); ctx.font='10px "Cascadia Code",Consolas,monospace';
+    ctx.fillText('◦ central pinch = the vortex',10,h-9);
+  }
+}
+/* torus seen from straight above — computed re-projection, IS the mandala's rose family */
+function drawTop(T){
+  const {ctx,w,h}=T;
+  if(!CACHE.torus) return;
+  const s=Math.min(w,h)*0.22, cx=w/2, cy=h/2;
+  circle(ctx,cx,cy,2*s,'#1c2740',1);
+  for(const cv of CACHE.torus.curves){
+    ctx.strokeStyle=rgba(HCOL(cv.n),0.8*alphaFor(cv.n)); ctx.lineWidth=1.2;
+    ctx.beginPath();
+    for(let i=0;i<cv.pts.length;i++){
+      const q=cv.pts[i], X=cx+q.x*s, Y=cy+q.y*s;
+      i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+    }
+    ctx.stroke();
+  }
+  dot(ctx,cx,cy,2,'#ff5fd7');
+}
+/* height-over-time of the torus flow (= the waveform).
+   Drawn analytically over the last 2 cycles of true signal phase — like a
+   triggered oscilloscope — so it stays a correct depiction at any f instead
+   of aliasing when the frame rate can't keep up. */
+function drawSide(T){
+  const {ctx,w,h}=T;
+  const mid=h/2, amp=h*0.36, K=120;
+  ctx.strokeStyle='#1c2740'; ctx.beginPath(); ctx.moveTo(4,mid); ctx.lineTo(w-4,mid); ctx.stroke();
+  ctx.strokeStyle=rgba('#ffa14f',0.9); ctx.lineWidth=1.4; ctx.beginPath();
+  for(let k=0;k<=K;k++){
+    const y=tipAt(CLK.phi-(K-k)/K*2).y;
+    const X=4+(w-8)*k/K, Y=mid-y*amp;
+    k?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+  }
+  ctx.stroke();
+  dot(ctx,w-4,mid-tipAt(CLK.phi).y*amp,2.8,'#ffa14f');
+}
+
+/* ---- ladder strip (dashboard): the five modes, linked ---- */
+const LNODES=['ƒ','wave','FFT','mandala','torus'];
+let LHIT=[];
+function drawLadder(T){
+  const {ctx,w,h}=T;
+  const y=h/2-4;
+  LHIT=[];
+  const xs=LNODES.map((_,i)=>lerp(56,w-70,i/(LNODES.length-1)));
+  ctx.setLineDash([7,7]);
+  ctx.lineDashOffset=-frac(WCLK.t*0.4)*56;
+  ctx.strokeStyle=rgba('#4fc3f7',0.5); ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(xs[0]+14,y); ctx.lineTo(xs[4]-14,y); ctx.stroke();
+  ctx.setLineDash([]);
+  const pulse=0.55+0.45*Math.sin(TAU*WCLK.t*0.6);
+  ctx.font='11px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
+  for(let i=0;i<LNODES.length;i++){
+    dot(ctx,xs[i],y,9,'#0e1524');
+    circle(ctx,xs[i],y,9,rgba('#ffa14f',0.35+0.5*pulse),1.5);
+    ctx.fillStyle='#dbe4f5'; ctx.fillText(LNODES[i],xs[i],y+4);
+    ctx.fillStyle='#7f8db0'; ctx.fillText('rung '+(i+1),xs[i],h-3);
+    LHIT.push({x:xs[i],y,r:16,rung:i+1});
+  }
+  ctx.textAlign='left';
+  ctx.fillStyle='#7f8db0'; ctx.font='10px "Segoe UI",sans-serif';
+  ctx.fillText('one signal →',4,y+3);
+  ctx.fillText('click a node to study that rung',w-166,y+3);
+}
+
+/* ================= guided mode: rungs, morphs, stepper ================= */
+const RUNGS=[null,
+ {t:'1 · Frequency — a rotation rate',
+  x:'A frequency is just a count: how many times something repeats each second. The cleanest picture of repetition is a point riding a circle f times per second — shown here at its TRUE rate. Above a few hertz your screen can only strobe it (the wagon-wheel effect), exactly as a camera would; drag Time dilation to slow the clock deliberately. Every other view in this tool is this one rotation, dressed differently.',
+  l:'Next: unroll the dot’s height into time →', c:'angle = phase · spin rate = frequency'},
+ {t:'2 · Waveform — rotation unrolled into time',
+  x:'Track only the height of the spinning point and let time flow sideways: a sine wave. Stack more spinners — harmonics at 2f, 3f, … riding tip-to-tail — and their summed height draws any repeating waveform. Add harmonics on the right and watch the shape change.',
+  l:'Next: the wave curls back into a circle — the FFT →', c:'epicycles (left) draw the waveform (right), phase-locked'},
+ {t:'3 · FFT — the recipe, recovered',
+  x:'The FFT asks the wave: which spin rates are hiding in you? The wave (top) is wound around a circle — orange where it is positive, cyan where negative. At most winding rates the colours stay balanced and the gold centre-of-mass sits home. When the rate hits a harmonic, all the orange piles onto one side — the centroid jumps, and that jump is a spectrum bar. Now slide the frequency: the comb glides along the Hz axis. The recipe keeps its shape; frequency only decides where it lives.',
+  l:'Next: each bar folds into petals →', c:'it hunts on its own — grab the winding slider to steer · add harmonics for more spikes'},
+ {t:'4 · Mandala — the spectrum in polar space',
+  x:'Read the recipe in polar coordinates: harmonic n with amplitude aₙ becomes an n-petalled ripple, r(θ) = R₀ + Σ aₙ·cos(nθ+φₙ). Fold-symmetry is frequency ratio drawn in space, and phases rotate the petals. That is all a mandala is — a spectrum you can look at.',
+  l:'Next: the mandala lifts into 3D →', c:'petal count = harmonic number · try the mod-9 overlay (lore)'},
+ {t:'5 · Horn torus — one motion, four shadows',
+  x:'Give the circle its third dimension: a horn torus, whose tube pinches to a central point — the vortex. The fundamental carries particles around the axis; harmonic n threads them n times through the pinch per lap. From above: the mandala. A particle’s height in time: the waveform. Its FFT: the spectrum.',
+  l:'Top of the ladder — switch to Free Play to drive all views at once.', c:'drag to orbit · wheel zooms · insets are computed re-projections'},
+];
+const TRANS={active:false,a:1,dir:1,tau:0,target:1};
+function goRung(r){
+  r=clamp(r,1,5);
+  if(r===S.rung&&!TRANS.active) return;
+  if(TRANS.active||Math.abs(r-S.rung)>1){
+    TRANS.active=false; S.rung=r; syncGuided(); return;
+  }
+  TRANS.active=true; TRANS.a=Math.min(S.rung,r);
+  TRANS.dir=r>S.rung?1:-1; TRANS.tau=TRANS.dir>0?0:1; TRANS.target=r;
+  syncGuided();
+}
+function boxbg(t){ t.ctx.strokeStyle='#2a3a5f'; t.ctx.strokeRect(0.5,0.5,t.w-1,t.h-1); }
+
+function stage1(T){
+  drawPhasor(T,{cx:T.w*0.5,cy:T.h*0.44,R:T.h*0.30,harms:[{n:1,amp:1,ph:0}],bigLabel:true});
+}
+function stage2(T){
+  region(T,0,0,T.w*0.42,T.h,t=>drawPhasor(t,{guide:true}));
+  region(T,T.w*0.42,0,T.w*0.58,T.h,t=>drawWave(t,{periods:1}));
+}
+function stage3Geom(w,h){
+  return {strip:{x:0,y:0,w:w,h:h*0.20},
+          circ:{x:0,y:h*0.22,w:w*0.52,h:h*0.78},
+          sweep:{x:w*0.54,y:h*0.22,w:w*0.46,h:h*0.40},
+          bars:{x:w*0.54,y:h*0.66,w:w*0.46,h:h*0.34}};
+}
+function stage3(T){
+  const g=stage3Geom(T.w,T.h), u=frac(CLK.phi);
+  region(T,g.strip.x,g.strip.y,g.strip.w,g.strip.h,t=>drawWaveStrip(t,{markU:u}));
+  region(T,g.circ.x,g.circ.y,g.circ.w,g.circ.h,t=>drawWindCircle(t,{markU:u}));
+  region(T,g.sweep.x,g.sweep.y,g.sweep.w,g.sweep.h,t=>drawSweepPlot(t));
+  region(T,g.bars.x,g.bars.y,g.bars.w,g.bars.h,t=>drawSpectrum(t,{lockN:lockedN(S.windF)}));
+}
+function stage4(T){
+  drawMandala(T,{scale:Math.min(T.w,T.h)*0.40});
+  region(T,10,8,180,120,t=>{boxbg(t);drawSpectrum(t,{compact:true});});
+}
+function stage5(T){
+  const {ctx,w,h}=T;
+  region(T,0,0,w*0.70,h,t=>drawTorus(t));
+  region(T,w*0.71,16,w*0.28,h*0.38,t=>{boxbg(t);drawTop(t);});
+  region(T,w*0.71,h*0.56,w*0.28,h*0.38,t=>{boxbg(t);drawSide(t);});
+  ctx.fillStyle='#7f8db0'; ctx.font='10px "Segoe UI",sans-serif';
+  ctx.fillText('top view → the mandala',w*0.71,12);
+  ctx.fillText('height over time → the waveform',w*0.71,h*0.56-5);
+}
+/* morphs: MORPHS[a] animates rung a → a+1 with tau ∈ [0,1] */
+const MORPHS={
+  1:function(T,tau){                       /* phasor unrolls into the waveform */
+    const {ctx,w,h}=T;
+    const cx=lerp(w*0.5,w*0.21,tau), cy=lerp(h*0.44,h*0.5,tau), R=lerp(h*0.30,h*0.24,tau);
+    drawPhasor(T,{cx,cy,R,trail:false});
+    const K=200, CH=20, x0=cx+R*1.18, x1=w-26, ampY=lerp(R,h*0.30,tau);
+    for(let c0=0;c0<K;c0+=CH){
+      ctx.strokeStyle=rgba('#ffa14f',0.9*(1-0.6*c0/K)); ctx.lineWidth=1.8; ctx.beginPath();
+      for(let k=c0;k<=Math.min(K,c0+CH);k++){
+        const p=tipAt(CLK.phi-k/K);
+        const X=lerp(cx+p.x*R, x0+(x1-x0)*(k/K), tau);
+        const Y=lerp(cy-p.y*R, cy-p.y*ampY,   tau);
+        k===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+      }
+      ctx.stroke();
+    }
+  },
+  2:function(T,tau){                       /* wave curls into the winding circle; bars grow */
+    const {ctx,w,h}=T;
+    const A=smooth(Math.min(1,tau/0.55)), B=Math.max(0,(tau-0.55)/0.45);
+    const g=stage3Geom(w,h);
+    if(B===0){
+      /* each sign-coloured chunk of the wave flies from the time axis to its wound position */
+      const R=Math.min(g.circ.w,g.circ.h)*0.375;
+      const wcx=g.circ.x+g.circ.w/2, wcy=g.circ.y+g.circ.h/2;
+      const sx0=w*0.42+28, sx1=w-26, smid=h*0.5, samp=h*0.30, K=220;
+      for(let c0=0;c0<K;c0+=10){
+        ctx.strokeStyle=rgba(sgnCol(wv((c0+5)/K)),0.9); ctx.lineWidth=1.6; ctx.beginPath();
+        for(let k=c0;k<=Math.min(K,c0+10);k++){
+          const u=k/K, ang=-TAU*u, rr=R*(WIND_BASE+WIND_AMP*wv(u));
+          const X=lerp(sx0+(sx1-sx0)*u, wcx+rr*Math.cos(ang), A);
+          const Y=lerp(smid-wv(u)*samp, wcy+rr*Math.sin(ang), A);
+          k===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+        }
+        ctx.stroke();
+      }
+    } else {
+      const t3=smooth(B);
+      region(T,g.strip.x,g.strip.y,g.strip.w,g.strip.h,t=>drawWaveStrip(t,{markU:frac(CLK.phi)}));
+      region(T,g.circ.x,g.circ.y,g.circ.w,g.circ.h,t=>drawWindCircle(t,{fw:1}));
+      region(T,g.sweep.x,g.sweep.y,g.sweep.w,g.sweep.h,t=>drawSweepPlot(t,{fw:1,reveal:t3}));
+      region(T,g.bars.x,g.bars.y,g.bars.w,g.bars.h,t=>drawSpectrum(t,{grow:t3}));
+    }
+  },
+  3:function(T,tau){                       /* spectrum bars fold into petals */
+    const {ctx,w,h}=T, t=smooth(tau);
+    ctx.globalAlpha=1-t;
+    region(T,0,0,w*0.60,h,tt=>drawWinding(tt));
+    region(T,w*0.61,0,w*0.39,h,tt=>drawSpectrum(tt));
+    ctx.globalAlpha=1;
+    drawMandala(T,{scale:Math.min(w,h)*0.40,alpha:t,coef:t,scaleMul:lerp(0.35,1,t)});
+  },
+  4:function(T,tau){                       /* the mandala lifts into 3D */
+    const {w,h}=T, t=smooth(tau);
+    if(t<1) drawMandala(T,{cx:lerp(w*0.5,w*0.35,t),cy:h*0.5,scale:Math.min(w,h)*0.40,alpha:1-t,mod9:false});
+    region(T,0,0,w*0.70,h,tt=>drawTorus(tt,{
+      camRx:lerp(-Math.PI/2+0.02,-0.55,t), zScale:t, alpha:lerp(0.25,1,t), label:false}));
+  },
+};
+function drawStage(T){
+  T.ctx.clearRect(0,0,T.w,T.h);
+  if(TRANS.active){ MORPHS[TRANS.a](T,clamp(TRANS.tau,0,1)); return; }
+  [stage1,stage2,stage3,stage4,stage5][S.rung-1](T);
+}
+function buildStepper(){
+  const names=['Frequency','Waveform','FFT / Spectrum','Mandala','Horn Torus'];
+  const box=$('gStepper'); box.innerHTML='';
+  names.forEach((nm,i)=>{
+    const d=document.createElement('div');
+    d.className='step';
+    d.innerHTML='<span class="num">'+(i+1)+'</span>'+nm;
+    d.addEventListener('click',()=>goRung(i+1));
+    box.appendChild(d);
+  });
+}
+function syncGuided(){
+  const r=TRANS.active?TRANS.target:S.rung;
+  if(r===3) DEMO.user=false;               // (re)entering the FFT rung restarts the hunt
+  [...$('gStepper').children].forEach((d,i)=>{
+    d.classList.toggle('cur',i+1===r);
+    d.classList.toggle('done',i+1<r);
+  });
+  const R=RUNGS[r];
+  $('gTitle').textContent=R.t; $('gText').textContent=R.x;
+  $('gLink').textContent=R.l; $('gCaption').textContent=R.c;
+}
+
+/* ================= mode switching & canvas setup ================= */
+let CV={};
+function setupAll(){
+  CV={};
+  const ids=S.mode==='guided'
+    ? ['gStage']
+    : ['dPhasor','dWave','dSpec','dWind','dMandala','dTorus','dTop','dSide','ladder'];
+  for(const id of ids) CV[id]=setupCanvas(id);
+}
+function setMode(m){
+  S.mode=m;
+  $('guidedView').style.display=m==='guided'?'':'none';
+  $('dashView').style.display=m==='dash'?'':'none';
+  $('ctlPanel').style.display='';
+  $(m==='guided'?'guidedCtlSlot':'dashCtlSlot').appendChild($('ctlPanel'));
+  $('tabGuided').classList.toggle('on',m==='guided');
+  $('tabDash').classList.toggle('on',m==='dash');
+  requestAnimationFrame(setupAll);
+}
+
+/* ================= controls ================= */
+const PRESETS={
+  sine:()=>[{n:1,amp:1,ph:0}],
+  square:()=>[1,3,5,7,9,11].map(n=>({n,amp:1/n,ph:0})),
+  saw:()=>[1,2,3,4,5,6,7,8].map(n=>({n,amp:1/n,ph:0})),
+  tri:()=>[1,3,5,7,9].map((n,j)=>({n,amp:1/(n*n),ph:j%2?Math.PI:0})),
+  organ:()=>[{n:1,amp:1,ph:0},{n:2,amp:0.55,ph:0},{n:3,amp:0.35,ph:Math.PI/3},{n:4,amp:0.2,ph:0},{n:6,amp:0.12,ph:Math.PI/2}],
+};
+const WIND={active:false,t:0};
+/* guided rung-3 self-running demo: the winding rate hunts up and down,
+   lingering near harmonics so the lock/jump moment plays out repeatedly */
+const DEMO={dir:1,user:false};
+function renderHarm(){
+  const box=$('harmRows'); box.innerHTML='';
+  for(const hh of [...S.harmonics].sort((a,b)=>a.n-b.n)){
+    const row=document.createElement('div'); row.className='hrow';
+    row.innerHTML='<span class="sw" style="background:'+HCOL(hh.n)+'"></span>'
+      +'<span class="hn">'+hh.n+'×</span>'
+      +'<input type="range" min="0" max="100" value="'+Math.round(hh.amp*100)+'" title="amplitude">'
+      +'<input type="range" min="0" max="360" value="'+Math.round(((hh.ph*180/Math.PI)%360+360)%360)+'" title="phase °">'
+      +(hh.n!==1?'<button class="rm" title="remove">×</button>':'<span></span>');
+    const [ampS,phS]=row.querySelectorAll('input');
+    ampS.addEventListener('input',e=>{hh.amp=+e.target.value/100;markDirty();});
+    phS.addEventListener('input',e=>{hh.ph=+e.target.value*Math.PI/180;markDirty();});
+    const rm=row.querySelector('.rm');
+    if(rm) rm.addEventListener('click',()=>{S.harmonics=S.harmonics.filter(x=>x!==hh);renderHarm();markDirty();});
+    row.addEventListener('mouseenter',()=>S.hoverN=hh.n);
+    row.addEventListener('mouseleave',()=>S.hoverN=0);
+    box.appendChild(row);
+  }
+}
+function buildChips(){
+  const box=$('freqChips');
+  const mk=(f,lore)=>{
+    const b=document.createElement('button');
+    b.dataset.f=f; b.textContent=f===440?'A440':String(f);
+    if(lore) b.className='lore';
+    box.appendChild(b);
+  };
+  mk(440,false);
+  for(const f of [174,285,396,417,528,639,741,852,963]) mk(f,true);
+}
+function syncFreqUI(){
+  $('freqNum').value=Math.round(S.f);
+  $('freqSlider').value=Math.round(1000*Math.log10(S.f/FMIN)/FLOG);
+  refreshLabels();
+}
+function refreshLabels(){
+  $('freqVal').textContent=eng(S.f,'Hz');
+  $('speedVal').textContent=dilLabel();
+  $('windFVal').textContent=S.windF.toFixed(2)+' ×f';
+}
+function togglePause(){ S.paused=!S.paused; $('btnPause').textContent=S.paused?'▶ play':'⏸ pause'; }
+function orbitify(cv,activeFn){
+  let drag=null;
+  cv.addEventListener('pointerdown',e=>{
+    if(!activeFn()) return;
+    drag={x:e.clientX,y:e.clientY}; cv.setPointerCapture(e.pointerId);
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(!drag) return;
+    view.ry+=(e.clientX-drag.x)*0.008;
+    view.rx=clamp(view.rx+(e.clientY-drag.y)*0.008,-Math.PI/2,Math.PI/2);
+    drag={x:e.clientX,y:e.clientY};
+  });
+  cv.addEventListener('pointerup',()=>drag=null);
+  cv.addEventListener('wheel',e=>{
+    if(!activeFn()) return;
+    e.preventDefault();
+    view.zoom=clamp(view.zoom*(e.deltaY<0?1.1:0.9),0.4,3);
+  },{passive:false});
+}
+function wire(){
+  $('freqSlider').addEventListener('input',e=>{
+    S.f=FMIN*Math.pow(10,FLOG*(+e.target.value)/1000);
+    $('freqNum').value=Math.round(S.f); refreshLabels(); markDirty();
+  });
+  $('freqNum').addEventListener('input',e=>{
+    const v=+e.target.value;
+    if(v>=FMIN&&v<=FMAX){ S.f=v; $('freqSlider').value=Math.round(1000*Math.log10(S.f/FMIN)/FLOG); refreshLabels(); markDirty(); }
+  });
+  $('freqChips').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    S.f=+b.dataset.f; syncFreqUI(); markDirty();
+  });
+  $('wfRow').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    S.harmonics=PRESETS[b.dataset.wf]();
+    [...$('wfRow').children].forEach(x=>x.classList.toggle('on',x===b));
+    renderHarm(); markDirty();
+  });
+  $('addHarm').addEventListener('click',()=>{
+    if(S.harmonics.length>=8) return;
+    const used=new Set(S.harmonics.map(h=>h.n));
+    for(let n=2;n<=16;n++) if(!used.has(n)){ S.harmonics.push({n,amp:0.5,ph:0}); break; }
+    renderHarm(); markDirty();
+  });
+  $('speed').addEventListener('input',e=>{ S.speed=Math.pow(10,5*(+e.target.value/1000-1)); refreshLabels(); });
+  $('btnPause').addEventListener('click',togglePause);
+  $('windF').addEventListener('input',e=>{ S.windF=+e.target.value/100; WIND.active=false; DEMO.user=true; refreshLabels(); });
+  $('btnSweep').addEventListener('click',()=>{ WIND.active=true; WIND.t=0; DEMO.user=false; });
+  $('mod9').addEventListener('change',e=>S.mod9=e.target.checked);
+  $('autoRot').addEventListener('change',e=>S.autoRot=e.target.checked);
+  $('tabGuided').addEventListener('click',()=>setMode('guided'));
+  $('tabDash').addEventListener('click',()=>setMode('dash'));
+  $('btnPrev').addEventListener('click',()=>goRung((TRANS.active?TRANS.target:S.rung)-1));
+  $('btnNext').addEventListener('click',()=>goRung((TRANS.active?TRANS.target:S.rung)+1));
+  $('docOpenAll').addEventListener('click',()=>document.querySelectorAll('details.doc').forEach(d=>d.open=true));
+  $('docCloseAll').addEventListener('click',()=>document.querySelectorAll('details.doc').forEach(d=>d.open=false));
+  /* spectrum hover → spotlight that harmonic in every view */
+  const spec=$('dSpec');
+  spec.addEventListener('mousemove',e=>{
+    const r=spec.getBoundingClientRect(), x=e.clientX-r.left;
+    let best=0, bd=9;
+    for(let n=1;n<=24;n++){
+      if(!MAGS[n]||n*S.f>FMAX) continue;
+      const d=Math.abs(x-specX(n*S.f,26,r.width-8));
+      if(d<bd){ bd=d; best=n; }
+    }
+    S.hoverN=best;
+  });
+  spec.addEventListener('mouseleave',()=>S.hoverN=0);
+  /* ladder strip: click a node to study that rung */
+  $('ladder').addEventListener('click',e=>{
+    const r=$('ladder').getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+    for(const nd of LHIT)
+      if(Math.hypot(x-nd.x,y-nd.y)<nd.r){
+        setMode('guided'); TRANS.active=false; S.rung=nd.rung; syncGuided(); break;
+      }
+  });
+  orbitify($('dTorus'),()=>S.mode==='dash');
+  orbitify($('gStage'),()=>S.mode==='guided'&&S.rung===5&&!TRANS.active);
+  $('gStage').addEventListener('click',()=>{ if(TRANS.active) TRANS.tau=TRANS.dir>0?1:0; });
+  window.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT') return;
+    if(e.code==='Space'){ e.preventDefault(); togglePause(); }
+    else if(S.mode==='guided'&&e.key==='ArrowRight') goRung((TRANS.active?TRANS.target:S.rung)+1);
+    else if(S.mode==='guided'&&e.key==='ArrowLeft') goRung((TRANS.active?TRANS.target:S.rung)-1);
+  });
+}
+
+/* ================= persistence ================= */
+function saveState(){
+  try{
+    localStorage.setItem('freqLadder.v1',JSON.stringify({
+      f:S.f,harmonics:S.harmonics,speed:S.speed,mode:S.mode,rung:S.rung,
+      mod9:S.mod9,autoRot:S.autoRot,windF:S.windF}));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem('freqLadder.v1')||'null');
+    if(!s) return;
+    for(const k of ['f','speed','rung','mod9','autoRot','windF']) if(k in s) S[k]=s[k];
+    if(s.mode==='dash') S.mode='dash';
+    S.rung=clamp(Math.round(S.rung)||1,1,5);
+    S.f=clamp(S.f,FMIN,FMAX);
+    S.speed=clamp(S.speed,1e-5,1);
+    S.windF=clamp(S.windF,SWEEP_LO,SWEEP_HI);
+    if(Array.isArray(s.harmonics)&&s.harmonics.length)
+      S.harmonics=s.harmonics.filter(h=>h&&h.n>=1&&h.n<=16&&isFinite(h.amp)).slice(0,8);
+    if(!S.harmonics.some(h=>h.n===1)) S.harmonics.unshift({n:1,amp:1,ph:0});
+  }catch(e){}
+}
+window.addEventListener('beforeunload',saveState);
+
+/* ================= main loop ================= */
+let lastT=0;
+function loop(t){
+  const dt=Math.min(0.05,(t-lastT)/1000)||0.016; lastT=t;
+  if(CACHE.dirty) recompute();
+  WCLK.t+=dt;
+  if(!S.paused){
+    CLK.phi=(CLK.phi+S.f*S.speed*dt)%1e6;      // TRUE rate: f cycles per second
+    if(S.autoRot&&(S.mode==='dash'||S.rung===5)) view.ry+=dt*0.22;
+  }
+  if(WIND.active){
+    WIND.t+=dt;
+    S.windF=lerp(SWEEP_LO,SWEEP_HI,smooth(Math.min(1,WIND.t/6)));
+    $('windF').value=Math.round(S.windF*100);
+    refreshLabels();
+    if(WIND.t>=6) WIND.active=false;
+  } else if(!S.paused&&S.mode==='guided'&&S.rung===3&&!TRANS.active&&!DEMO.user){
+    const maxN=CACHE.spec.length?CACHE.spec[CACHE.spec.length-1].n:1;
+    const hi=Math.min(SWEEP_HI,maxN+0.9);
+    let dmin=9; for(const h of CACHE.spec) dmin=Math.min(dmin,Math.abs(S.windF-h.n));
+    const rate=dmin<0.5?0.12+0.75*dmin:0.55;      // slow down near a harmonic
+    S.windF+=DEMO.dir*rate*dt;
+    if(S.windF>=hi){S.windF=hi;DEMO.dir=-1;}
+    else if(S.windF<=SWEEP_LO){S.windF=SWEEP_LO;DEMO.dir=1;}
+    $('windF').value=Math.round(S.windF*100);
+    refreshLabels();
+  }
+  if(TRANS.active){
+    TRANS.tau+=TRANS.dir*dt/2.2;
+    if((TRANS.dir>0&&TRANS.tau>=1)||(TRANS.dir<0&&TRANS.tau<=0)){
+      TRANS.active=false; S.rung=TRANS.target; syncGuided();
+    }
+  }
+  if(S.mode==='guided'){
+    if(CV.gStage) drawStage(CV.gStage);
+  } else {
+    const D=(id,fn,o)=>{ const T=CV[id]; if(!T) return; T.ctx.clearRect(0,0,T.w,T.h); fn(T,o); };
+    D('dPhasor',drawPhasor,{guide:false});
+    D('dWave',drawWave);
+    D('dSpec',drawSpectrum);
+    D('dWind',drawWinding);
+    D('dMandala',drawMandala);
+    D('dTorus',drawTorus);
+    D('dTop',drawTop);
+    D('dSide',drawSide);
+    D('ladder',drawLadder);
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ================= init ================= */
+function init(){
+  loadState();
+  buildStepper(); buildChips(); renderHarm(); wire(); syncFreqUI();
+  $('speed').value=Math.round(1000*(Math.log10(S.speed)/5+1));
+  $('windF').value=Math.round(S.windF*100);
+  $('mod9').checked=S.mod9; $('autoRot').checked=S.autoRot;
+  refreshLabels();
+  setMode(S.mode); syncGuided();
+  recompute();
+  requestAnimationFrame(loop);
+  let rz;
+  window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(setupAll,150); });
+}
+init();
+</script>
+</body>
+</html>
