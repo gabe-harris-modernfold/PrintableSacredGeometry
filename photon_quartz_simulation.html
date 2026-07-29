@@ -1,0 +1,1820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Photon in Quartz — a computed Gaussian-beam and birefringence simulation from source to retina, with labeled, toggleable interpretive layers that never feed a number.">
+<title>Photon in Quartz — computed optics, labeled interpretation</title>
+<style>
+:root{
+  --paper:#FBFBF9; --panel:#F3F3EF; --ink:#20242A; --ink2:#5A626C; --line:#DCDFDE; --hair:#E8EAE7;
+  --beam:#B87D00; --beam-fill:rgba(214,152,15,.16); --beam-soft:rgba(214,152,15,.42);
+  --eray:#2E6FA3; --eray-fill:rgba(46,111,163,.14);
+  --herm:#A0522A; --herm-fill:rgba(160,82,42,.08);
+  --spec:#7A5EA8; --spec-fill:rgba(122,94,168,.09);
+  --quartz:rgba(120,150,170,.10); --quartz-line:#8FA6B5;
+  --good:#2F7D4F; --warnc:#9A6A00;
+  --serif:Charter,'Sitka Text',Cambria,Georgia,serif;
+  --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code',Consolas,'SF Mono','Roboto Mono',monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#14171A; --panel:#1B1F23; --ink:#E6E9EB; --ink2:#9AA5AE; --line:#2E343A; --hair:#242A2F;
+  --beam:#D69A2E; --beam-fill:rgba(222,166,54,.13); --beam-soft:rgba(232,178,64,.5);
+  --eray:#4796D6; --eray-fill:rgba(71,150,214,.14);
+  --herm:#BF7340; --herm-fill:rgba(191,115,64,.10);
+  --spec:#9379C6; --spec-fill:rgba(147,121,198,.11);
+  --quartz:rgba(130,165,190,.10); --quartz-line:#5E7684;
+  --good:#4FA872; --warnc:#C79A2E;
+}}
+:root[data-theme="dark"]{
+  --paper:#14171A; --panel:#1B1F23; --ink:#E6E9EB; --ink2:#9AA5AE; --line:#2E343A; --hair:#242A2F;
+  --beam:#D69A2E; --beam-fill:rgba(222,166,54,.13); --beam-soft:rgba(232,178,64,.5);
+  --eray:#4796D6; --eray-fill:rgba(71,150,214,.14);
+  --herm:#BF7340; --herm-fill:rgba(191,115,64,.10);
+  --spec:#9379C6; --spec-fill:rgba(147,121,198,.11);
+  --quartz:rgba(130,165,190,.10); --quartz-line:#5E7684;
+  --good:#4FA872; --warnc:#C79A2E;
+}
+:root[data-theme="light"]{
+  --paper:#FBFBF9; --panel:#F3F3EF; --ink:#20242A; --ink2:#5A626C; --line:#DCDFDE; --hair:#E8EAE7;
+  --beam:#B87D00; --beam-fill:rgba(214,152,15,.16); --beam-soft:rgba(214,152,15,.42);
+  --eray:#2E6FA3; --eray-fill:rgba(46,111,163,.14);
+  --herm:#A0522A; --herm-fill:rgba(160,82,42,.08);
+  --spec:#7A5EA8; --spec-fill:rgba(122,94,168,.09);
+  --quartz:rgba(120,150,170,.10); --quartz-line:#8FA6B5;
+  --good:#2F7D4F; --warnc:#9A6A00;
+}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.58;-webkit-text-size-adjust:100%}
+.wrap{max-width:1240px;margin:0 auto;padding:0 22px 60px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,38px);margin:14px 0 6px;line-height:1.1}
+h4{font-family:var(--sans);font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink2);margin:0 0 6px;font-weight:600}
+code,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.9em}
+.eyebrow{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+.eyebrow b{color:var(--beam);font-weight:600}
+header{padding-top:26px}
+.sub{color:var(--ink2);max-width:78ch;margin:2px 0 8px;font-size:15.5px}
+.model{font-size:14px;color:var(--ink2);max-width:96ch;margin:4px 0;padding-left:14px;border-left:2px solid var(--hair)}
+.model b{color:var(--ink);font-family:var(--sans);font-size:12px;letter-spacing:.06em}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px}
+.chip{font-family:var(--sans);font-size:11.5px;color:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--panel)}
+.chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:0}
+/* sim layout */
+.simrow{display:flex;gap:14px;margin-top:16px;align-items:stretch}
+.canvascol{flex:1;min-width:0}
+.figscroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.stack{position:relative}
+.stack canvas{display:block}
+.stack canvas.ovl{position:absolute;left:0;top:0;pointer-events:none}
+.canvascap{font-family:var(--sans);font-size:12px;color:var(--ink2);margin-top:7px}
+.canvascap b{color:var(--ink)}
+/* controls */
+.controls{flex:0 0 246px;display:flex;flex-direction:column;gap:9px;font-family:var(--sans);font-size:13px}
+.ctl{border:1px solid var(--line);border-radius:7px;background:var(--panel);padding:8px 11px}
+.ctl label{display:flex;justify-content:space-between;align-items:baseline;color:var(--ink);font-weight:600;font-size:12.5px}
+.ctl output{font-family:var(--mono);font-weight:400;color:var(--beam);font-size:12.5px}
+.ctl input[type=range]{width:100%;margin:6px 0 1px;accent-color:var(--beam)}
+.ctl.toggle{display:flex;align-items:center;gap:9px}
+.ctl.toggle input{accent-color:var(--herm);width:15px;height:15px}
+.ctl.toggle.spec input{accent-color:var(--spec)}
+.ctl.toggle .tname{font-weight:600;font-size:12.5px}
+.ctl.toggle .tsub{font-size:10.5px;color:var(--ink2);display:block;font-weight:400}
+.ctl.toggle .ldot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
+button{font-family:var(--sans);font-size:13px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);padding:6px 10px;cursor:pointer}
+button:hover{border-color:var(--ink2)}
+.modebtn{font-size:11.5px;padding:4px 9px;flex:1;color:var(--ink2)}
+.modebtn.on{border-color:var(--beam);color:var(--beam);font-weight:600}
+.ctl input[type=range]:disabled{opacity:.3}
+.ctl.dim label{opacity:.45}
+.playrow{display:flex;gap:8px;align-items:center}
+.playrow .spd{flex:1}
+details.adv{border:1px solid var(--line);border-radius:7px;background:var(--panel);padding:7px 11px}
+details.adv summary{cursor:pointer;font-weight:600;font-size:12.5px;color:var(--ink)}
+details.adv .ctl{border:0;padding:7px 0 0;background:transparent}
+/* readouts */
+#readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:12px;margin-top:16px}
+.rgroup{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:11px 14px}
+.rgroup dl{margin:0;font-size:12.5px;font-family:var(--sans)}
+.rgroup .row{display:flex;justify-content:space-between;gap:10px;padding:2.5px 0;border-bottom:1px solid var(--hair)}
+.rgroup .row:last-child{border-bottom:0}
+.rgroup dt{color:var(--ink2);margin:0}
+.rgroup dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap;font-size:12px}
+.rgroup dd.hot{color:var(--beam)}
+.rgroup dd.warn{color:var(--warnc)}
+#status{font-family:var(--sans);font-size:12.5px;color:var(--warnc);margin-top:8px;min-height:18px}
+/* narration */
+#narration{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.narr{border:1px solid var(--line);border-radius:8px;padding:12px 16px;font-size:15px;max-width:none}
+.narr .nh{font-family:var(--sans);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:5px}
+.narr.phys{background:var(--panel)}
+.narr.phys .nh{color:var(--beam)}
+.narr.herm{background:var(--herm-fill);border-color:var(--herm);font-style:italic}
+.narr.herm .nh{color:var(--herm);font-style:normal}
+.narr.spec{background:var(--spec-fill);border-color:var(--spec)}
+.narr.spec .nh{color:var(--spec)}
+.narr .v{font-family:var(--mono);font-style:normal;font-size:.88em;color:var(--beam);font-variant-numeric:tabular-nums}
+.narr.herm .v{color:var(--herm)}
+.narr.spec .v{color:var(--spec)}
+.tag{font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.05em;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--ink2);background:var(--paper);white-space:nowrap}
+/* comparison table */
+#cmp{margin-top:18px;overflow-x:auto}
+#cmp table{border-collapse:collapse;width:100%;font-size:13.5px}
+#cmp th{font-family:var(--sans);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);text-align:left;font-weight:600;padding:7px 10px;border-bottom:1.5px solid var(--ink2)}
+#cmp td{padding:8px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+#cmp tr.rphys td:first-child{color:var(--beam);font-family:var(--sans);font-weight:600;font-size:12px}
+#cmp tr.rherm td:first-child{color:var(--herm);font-family:var(--sans);font-weight:600;font-size:12px}
+#cmp tr.rspec td:first-child{color:var(--spec);font-family:var(--sans);font-weight:600;font-size:12px}
+#cmp tr.rherm td{font-style:italic;background:var(--herm-fill)}
+#cmp tr.rspec td{background:var(--spec-fill)}
+#cmp .v{font-family:var(--mono);font-size:.9em;color:var(--beam)}
+footer{margin-top:34px;border-top:1.5px solid var(--ink2);padding:13px 0 8px;font-size:13px;color:var(--ink2);font-family:var(--sans)}
+@media (max-width:900px){.simrow{flex-direction:column}.controls{flex-direction:row;flex-wrap:wrap}.controls>*{flex:1 1 180px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">single-file simulation · <b>physics computed, interpretation labeled</b></div>
+  <h1>Photon in Quartz</h1>
+  <p class="sub">A lens focuses sodium light into a clear quartz crystal; an observer watches. Everything drawn in ink and amber — source to retina — is computed live from the declared model below and is checkable in the console as <code>window.__derived</code>. The two optional layers narrate the same numbers symbolically: they are labeled, off by default, and never feed a value back.</p>
+  <p class="model"><b>SOURCE</b> — two declared modes, toggled in the controls. <b>Sunlight</b> (default): an extended, incoherent, unpolarized disk of angular diameter 0.533° at infinity, 1 kW/m², broadband — the lens images it to a disk Ø f·θ☉, and single-λ readouts evaluate its 589 nm component. <b>Laboratory</b>: a monochromatic point-like emitter at λ = 589 nm (ν ≈ 508.99 THz, hν ≈ 2.105 eV), waist w₀ = 50 µm — the coherent idealization whose Gaussian focusing Self's equation drives.</p>
+  <p class="model"><b>QUARTZ</b> — a positive uniaxial crystal, n₀ = 1.5443, nₑ = 1.5534 at 589 nm (dispersion not modeled); the optic axis lies at angle θ in the drawing plane (hatch marks in the block). Media change λ and phase velocity, never ν. Birefringence vanishes at θ = 0°.</p>
+  <p class="model"><b>MARKERS &amp; OBSERVER</b> — the animated ticks are wave-front phase markers moving at c/n, not photons; the observer is the Emsley reduced eye (P = 60 D, n′ = 4/3, axial 22.22 mm), accommodating as needed, pupil Ø 4 mm at L = 250 mm.</p>
+  <div class="chips">
+    <span class="chip"><span class="dot" style="background:var(--beam)"></span>beam / o-ray · λ = 589 nm</span>
+    <span class="chip"><span class="dot" style="background:var(--eray)"></span>e-ray — color for identity only</span>
+    <span class="chip">observer: Emsley reduced eye · 60 D</span>
+    <span class="chip"><span class="dot" style="background:var(--herm)"></span>Hermetic layer — off by default</span>
+    <span class="chip"><span class="dot" style="background:var(--spec)"></span>bio-energetic layer — off by default</span>
+  </div>
+</header>
+
+<main>
+  <div class="simrow">
+    <div class="canvascol">
+      <div class="figscroll" id="scroller">
+        <div class="stack" id="stack">
+          <canvas id="cvBg" aria-hidden="true"></canvas>
+          <canvas id="cvStatic" class="ovl" role="img" aria-label="Optical bench, horizontally to scale: source, vesica lens, quartz crystal with o and e rays, exit interference strip, and reduced eye with retinal inset. All values computed."></canvas>
+          <canvas id="cvAnim" class="ovl" aria-hidden="true"></canvas>
+          <!-- Removed by the engine at boot. If you can read this on the page,
+               the embedded script did not run — see the message for why. -->
+          <div id="jsFallback" style="max-width:860px;margin:14px;padding:16px 20px;border:1.5px dashed #b08a2e;border-radius:8px;background:#fdf9ee;color:#3a3a34;font:14px/1.55 'Segoe UI',system-ui,sans-serif">
+            <b>The computed physics model isn't showing because this page's JavaScript didn't run.</b><br>
+            Everything drawn here — the bench, beams, readouts, and animation — is computed live by a script embedded in this file.
+            The usual causes: <b>an email security gateway stripped the script</b> from the .html attachment in transit, or this is a
+            <b>sanitized preview</b> (Outlook / Teams / SharePoint / OneDrive previews block scripts), or the browser has JavaScript disabled.<br><br>
+            <b>To view it working:</b> download the file and double-click it to open directly in Chrome, Edge, or Firefox.
+            <b>To send it to someone:</b> put the .html inside a <b>.zip</b> first — attachments inside archives keep their script —
+            or share the hosted artifact link from the sender instead of the raw file.
+          </div>
+        </div>
+      </div>
+      <div class="canvascap"><b>o / e are colored amber / blue for identity only — both are λ = 589 nm.</b> Wave-front ticks are phase markers (v = c/n), not photons; the photon view shows detection events sampled from the computed intensity — photons have no trajectories. Horizontal axis true to scale; every exaggeration is computed and labeled on the canvas.</div>
+    </div>
+    <aside class="controls" aria-label="Simulation controls">
+      <div class="ctl"><label style="font-size:12.5px">source</label>
+        <div style="display:flex;gap:6px;margin-top:5px">
+          <button id="btnSun" class="modebtn">☀ sunlight</button>
+          <button id="btnPoint" class="modebtn on">589 nm point</button>
+        </div>
+        <span style="font-size:10.5px;color:var(--ink2);display:block;margin-top:5px" id="srcNote">coherent lab idealization — Self's equation applies</span></div>
+      <div class="ctl"><label for="inF">focal length f <output id="outF">45 mm</output></label>
+        <input type="range" id="inF" min="30" max="120" step="1" value="45"></div>
+      <div class="ctl" id="ctlS"><label for="inS">source→lens s <output id="outS">150 mm</output></label>
+        <input type="range" id="inS" min="60" max="300" step="1" value="150"></div>
+      <div class="ctl playrow"><button id="btnPlay" aria-label="Play or pause markers">⏸ pause</button>
+        <div class="spd"><label for="inSpeed" style="font-weight:400;font-size:11px;color:var(--ink2)">speed <output id="outSpeed">1×</output></label>
+        <input type="range" id="inSpeed" min="0.25" max="4" step="0.25" value="1"></div></div>
+      <div class="ctl"><label style="font-size:12.5px">markers</label>
+        <div style="display:flex;gap:6px;margin-top:5px">
+          <button id="btnFronts" class="modebtn on">wave fronts</button>
+          <button id="btnPhotons" class="modebtn">photon arrivals</button>
+        </div>
+        <span style="font-size:10.5px;color:var(--ink2);display:block;margin-top:5px" id="modeNote">phase fronts at c/n — light as a wave</span></div>
+      <label class="ctl toggle"><input type="checkbox" id="tgHerm"><span class="ldot" style="background:var(--herm)"></span>
+        <span><span class="tname">Hermetic layer</span><span class="tsub">interpretive · text only · never feeds a value</span></span></label>
+      <label class="ctl toggle spec"><input type="checkbox" id="tgSpec"><span class="ldot" style="background:var(--spec)"></span>
+        <span><span class="tname">Bio-energetic layer</span><span class="tsub">speculative · text only · never feeds a value</span></span></label>
+      <details class="adv"><summary>▸ Advanced physics</summary>
+        <div class="ctl"><label for="inDlens">lens aperture D (sun) <output id="outDlens">30 mm</output></label>
+          <input type="range" id="inDlens" min="10" max="60" step="2" value="30"></div>
+        <div class="ctl" id="ctlAlpha"><label for="inAlpha">polarization α <output id="outAlpha">45°</output></label>
+          <input type="range" id="inAlpha" min="0" max="90" step="1" value="45"></div>
+        <div class="ctl"><label for="inD">crystal thickness d <output id="outD">40 mm</output></label>
+          <input type="range" id="inD" min="2" max="60" step="1" value="40"></div>
+        <div class="ctl"><label for="inTheta">optic-axis angle θ <output id="outTheta">45°</output></label>
+          <input type="range" id="inTheta" min="0" max="90" step="1" value="45"></div>
+        <div class="ctl"><label for="inL">viewing distance L <output id="outL">250 mm</output></label>
+          <input type="range" id="inL" min="150" max="500" step="5" value="250"></div>
+        <div class="ctl"><label for="inPupil">pupil Ø <output id="outPupil">4 mm</output></label>
+          <input type="range" id="inPupil" min="2" max="8" step="0.25" value="4"></div>
+        <button id="btnReset" style="margin-top:8px">reset defaults</button>
+      </details>
+    </aside>
+  </div>
+
+  <section id="readouts" aria-label="Computed readouts">
+    <div class="rgroup"><h4>Lens &amp; beam</h4><dl id="roBeam"></dl></div>
+    <div class="rgroup"><h4>Crystal</h4><dl id="roCrys"></dl></div>
+    <div class="rgroup"><h4>Wave — frequency &amp; phase</h4><dl id="roWave"></dl></div>
+    <div class="rgroup"><h4>Retardation &amp; exit strip</h4><dl id="roRet"></dl></div>
+    <div class="rgroup"><h4>Observer — reduced eye</h4><dl id="roObs"></dl></div>
+  </section>
+  <div id="status" role="status"></div>
+
+  <section id="narration">
+    <div class="narr phys"><span class="nh">Physics — computed</span><span id="narrPhys"></span></div>
+    <div class="narr herm" id="narrHermBox" hidden><span class="nh">Interpretive — Hermetic · symbolic, computes nothing</span><span id="narrHerm"></span></div>
+    <div class="narr spec" id="narrSpecBox" hidden><span class="nh">Speculative — bio-energetic · not a physical claim</span><span id="narrSpec"></span></div>
+  </section>
+
+  <section id="cmp" hidden aria-label="Layer comparison table">
+    <table>
+      <thead><tr><th></th><th>Focus mechanism</th><th>Quartz function</th><th>Output state</th><th>Observer / reception</th></tr></thead>
+      <tbody>
+        <tr class="rphys"><td>Physics</td>
+          <td id="cmpFocus">…</td>
+          <td>Birefringent medium: o/e split, Δφ retardation</td>
+          <td>Orthogonal o/e pair, fixed Δφ — superposing to <span class="v" id="cmpOut">…</span> where they overlap</td>
+          <td id="cmpObs">Inverted double image on the fovea</td></tr>
+        <tr class="rherm"><td>Hermetic</td>
+          <td>Point of conscious convergence at the Vesica focal node</td>
+          <td>Alchemical tuner aligning macrocosm and microcosm</td>
+          <td>Ordered emanation — Ordo ab Chao</td>
+          <td>The eye as the temple's window — the microcosm receiving the ordered ray</td></tr>
+        <tr class="rspec"><td>Speculative</td>
+          <td>Coherent concentration, by analogy to “biophoton” focusing</td>
+          <td>Lattice as coherence-imprinting matrix</td>
+          <td>Phase-aligned field; toroidal circulation (not computed)</td>
+          <td>Retinal “coherence gating” of aligned phase (not computed, not a measurement)</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  <p>Boundary, restated regardless of toggles: the optics drawn and printed here — source to retina — is computed from the declared model and checkable (<code>window.__derived</code>, <code>window.__selfTest()</code>, <code>window.__isolationCheck()</code>). The Hermetic and bio-energetic layers are labeled interpretation and never feed a number. Perception facts (acuity, cone pitch, Haidinger's brushes) are documented psychophysics, tagged as such. <span id="footTest"></span></p>
+</footer>
+
+</div>
+<script>
+"use strict";
+/* If the engine dies on an incompatible browser, say so visibly instead of
+   leaving a blank canvas (the #jsFallback block is removed on a clean boot). */
+window.addEventListener('error', function(ev){
+  var fb = document.getElementById('jsFallback');
+  if (fb){
+    fb.innerHTML = '<b>The physics engine hit an error and stopped:</b> ' +
+      (ev.message || 'unknown error') +
+      '<br>Please open this file in a current version of Chrome, Edge, or Firefox.';
+  }
+});
+/* ================================================================
+   PHYSICS — one pure function; millimetres everywhere, λ converted once.
+   No formula lives inside a draw function.
+   ================================================================ */
+const PHY = Object.freeze({
+  LAM: 589e-6,          // mm
+  C: 2.99792458e11,     // mm/s — vacuum speed of light
+  EV_NM: 1239.84193,    // eV·nm — photon energy conversion (hc)
+  W0: 0.05,             // mm  (source waist 50 µm)
+  NO: 1.5443, NE: 1.5534,
+  GAP: 45,              // mm  lens → crystal front face
+  P_EYE: 60,            // D   Emsley reduced eye
+  N_EYE: 4/3,
+  DLAM_NA: 0.5974e-6,   // mm  Na-D doublet splitting (589.0/589.6) — model-note only
+  C_LATTICE: 5.405e-7,  // mm — α-quartz c lattice constant (0.5405 nm)
+  E_GAP: 8.9,           // eV — quartz band gap (approx.) — why it is transparent
+  N_AIR: 1.000273,      // air index at 589 nm, 15 °C, 1 atm — the model rounds it to 1
+  BETA_R: 8.8e-9,       // per mm — Rayleigh extinction of air at 589 nm, sea level
+  N_LOSCHMIDT: 2.55e16, // molecules per mm³ of air (15 °C, 1 atm)
+  SUN_TH: 0.00930842,   // rad — solar angular diameter 0.533°
+  SUN_IRR: 1000,        // W/m² — clear-day surface irradiance (AM1.5)
+  SUN_LENS_X: 90,       // mm — lens position on the bench in sun mode (object at ∞)
+  F_EYE: 1000/60,       // 16.667 mm (air-equivalent focal length)
+  AXIAL: (4/3)*(1000/60),  // 22.222 mm
+  CONE: 0.0025,         // mm  foveal cone pitch (documented psychophysics)
+  ACC_AMP: 10,          // D   young-adult accommodation amplitude
+  EX: 50,               // fixed, labeled o/e exaggeration (walk-off AND marker lag)
+  ZR: Math.PI*0.05*0.05/589e-6
+});
+/* DEFAULTS pin the plan's reference lab source — every original assert runs on it.
+   The UI starts in sun mode (the real magnifying-glass scenario). */
+const DEFAULTS = Object.freeze({f:45, s:150, alpha:45, d:40, theta:45, L:250, pupil:4, D:30, src:'point'});
+
+function neTheta(deg){
+  const t = deg*Math.PI/180, c = Math.cos(t), si = Math.sin(t);
+  return 1/Math.sqrt(c*c/(PHY.NO*PHY.NO) + si*si/(PHY.NE*PHY.NE));
+}
+/* Poynting walk-off; positive = e-ray energy tilts TOWARD the optic-axis tilt
+   (quartz is positive uniaxial: tanθ_S = (n₀/nₑ)²·tanθ_k → θ_S < θ_k). */
+function walkoff(deg){
+  const t = deg*Math.PI/180, c = Math.cos(t), si = Math.sin(t);
+  return Math.atan((PHY.NE*PHY.NE - PHY.NO*PHY.NO)*si*c/(PHY.NE*PHY.NE*si*si + PHY.NO*PHY.NO*c*c));
+}
+function wof(z, zw, w0, zr){ return w0*Math.sqrt(1 + ((z-zw)/zr)**2); }
+
+function computePhysics(st){
+  const {LAM, W0, NO, GAP, P_EYE, N_EYE, F_EYE, AXIAL, CONE} = PHY, zR = PHY.ZR;
+  const {f, s, alpha, d, theta, L, pupil} = st;
+  const src = st.src || 'point', D = st.D || 30;
+  const sun = src === 'sun';
+  const dd = s - f;
+  // geometric imaging — readout only
+  const sGeo = dd === 0 ? Infinity : s*f/dd;
+  const m = Number.isFinite(sGeo) ? -sGeo/s : NaN;
+  // Gaussian transform — Self (Applied Optics 1983) — drives the drawing
+  const sEff = dd === 0 ? Infinity : s + zR*zR/dd;
+  const s2 = 1/(1/f - (Number.isFinite(sEff) ? 1/sEff : 0));
+  const mG = f/Math.hypot(dd, zR);
+  const w0p = mG*W0, zRp = mG*mG*zR, thDiv = LAM/(Math.PI*w0p);
+  const focalShift = Number.isFinite(sGeo) ? sGeo - s2 : NaN;
+  // bench positions (absolute mm; sun mode: object at ∞, lens at a fixed bench x)
+  const xLens = sun ? PHY.SUN_LENS_X : s, xFront = xLens + GAP, xBack = xFront + d, xCornea = xBack + L;
+  /* sun mode: the lens images the solar disk at its focal plane — a geometric
+     image Ø f·θ☉, not a Gaussian waist */
+  const airWaist = sun ? xLens + f : s + s2;
+  const zgAbs = sun ? xLens + f : (Number.isFinite(sGeo) ? s + sGeo : Infinity);
+  // polarization split — α from the optic-axis plane; sunlight is unpolarized
+  const aR = alpha*Math.PI/180;
+  const Io = sun ? 0.5 : Math.sin(aR)**2, Ie = sun ? 0.5 : Math.cos(aR)**2;
+  // crystal
+  const neT = neTheta(theta);
+  const rho = walkoff(theta), rhoDeg = rho*180/Math.PI;
+  const sep = d*Math.tan(Math.abs(rho));
+  const depthO = NO*(airWaist - xFront);      // internal o-waist depth behind front face
+  const depthE = neT*(airWaist - xFront);
+  const zwIn = xFront + depthO;
+  const dphi = 2*Math.PI*d*(neT - NO)/LAM;
+  const opd = d*(neT - NO), order = opd/LAM;
+  const lagExit = d*(neT - NO)/(neT || 1);    // true e-front lag at exit (mm)
+  // fan geometry (feeds the fringe strip) — Snell per edge ray
+  const wLens = sun ? D/2 : wof(s, 0, W0, zR);
+  const extSlope = sun ? (D/2)/f : (Number.isFinite(sGeo) ? wLens/Math.abs(sGeo) : 0);
+  const iMax = Math.asin(Math.min(0.99, Math.sin(Math.atan(extSlope)))/NO);  // internal edge inclination
+  const dphiAt = iRad => {
+    const th = theta - iRad*180/Math.PI;
+    return 2*Math.PI*(neTheta(th) - NO)*(d/Math.cos(iRad))/LAM;
+  };
+  let dphiLo = Infinity, dphiHi = -Infinity;
+  for (let k = 0; k <= 24; k++){
+    const v = dphiAt(-iMax + 2*iMax*k/24);
+    if (v < dphiLo) dphiLo = v; if (v > dphiHi) dphiHi = v;
+  }
+  const fringeSpread = (dphiHi - dphiLo)/(2*Math.PI);   // fringes across the fan
+  /* emitted light — the exit polarization state where the o/e beams overlap.
+     The block acts as a high-order wave plate: amplitudes (cosα, sinα) on the
+     (e, o) axes with relative phase δ = Δφ mod 2π (e is the slow ray, nₑ(θ) ≥ n₀).
+     Stokes on the (e, o) basis; S3ccw > 0 ⇔ E rotates counterclockwise viewed
+     toward the source — the same sense the exit inset draws. */
+  const deltaM = ((dphi % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+  const Ae = Math.sqrt(Ie), Ao = Math.sqrt(Io);
+  const S1 = Ie - Io;
+  const S2 = 2*Ae*Ao*Math.cos(deltaM);
+  const S3ccw = 2*Ae*Ao*Math.sin(deltaM);
+  const psiDeg = 0.5*Math.atan2(S2, S1)*180/Math.PI;   // major axis, from the axis plane
+  const ba = Math.tan(0.5*Math.asin(Math.min(1, Math.abs(S3ccw))));  // minor/major
+  const rotCCW = S3ccw > 0;
+  let polState;
+  if (neT - NO < 1e-9)                 polState = 'linear — unchanged (θ = 0°)';
+  else if (Ie < 1e-6 || Io < 1e-6)     polState = 'linear — single ray (α 0°/90°)';
+  else if (Math.abs(S3ccw) < 0.05)     polState = 'linear (Δφ ≈ mπ)';
+  else if (Math.abs(S3ccw) > 0.995)    polState = 'circular';
+  else                                 polState = 'elliptical';
+  if (sun) polState = 'unpolarized — incoherent o/e pair';   // no fixed phase, no ellipse
+  const visNaD = Math.abs(Math.cos(Math.PI*opd*PHY.DLAM_NA/(LAM*LAM)));  // model note
+  /* sun mode — extended-source photometry & coherence (geometric, not Gaussian) */
+  const dSun = f*PHY.SUN_TH;                        // solar image diameter, mm
+  const conc = (D/dSun)**2;                         // concentration ratio
+  const powerW = PHY.SUN_IRR*Math.PI*(D/2000)**2;   // collected power, W
+  const photonRate = powerW/3.6e-19;                // ≈ /s at ⟨hν⟩ ≈ 2.25 eV
+  const cohUm = 0.16*LAM/(PHY.SUN_TH/2)*1e3;        // van Cittert–Zernike (γ = 0.88), µm
+  const etendueMax = 1/Math.sin(PHY.SUN_TH/2)**2;   // concentration ceiling, any lens
+  /* frequency — the invariant no medium changes. Inside any medium the wave
+     keeps ν while λ compresses to λ/n and the phase velocity drops to c/n;
+     the e-wave therefore fits (nₑ(θ) − n₀)·d/λ more cycles across the block
+     than the o-wave — identically the interference order. */
+  const nu = PHY.C/LAM;                        // Hz
+  const omega = 2*Math.PI*nu;                  // rad/s
+  const periodFs = 1e15/nu;                    // fs
+  const ephot = PHY.EV_NM/(LAM*1e6);           // eV (a property of the line — markers stay phase fronts)
+  const lamO = LAM/NO, lamE = LAM/neT, lamVit = LAM/N_EYE;   // in-medium wavelengths, mm
+  const cyclesO = d*NO/LAM, cyclesE = d*neT/LAM;             // wavelengths across the block
+  /* quantum picture in the lattice: hν ≪ band gap → no absorption, only virtual
+     polarization of the SiO₄ helices; each unit cell along the path re-radiates
+     in sequence — the summed phase delay IS the refractive index */
+  const cellsAlong = d/PHY.C_LATTICE;          // unit cells traversed (c-axis constant)
+  const transitO = d*NO/PHY.C;                 // o-wave transit time, s
+  /* the air in the gap — not quite nothing. n_air = 1.000273 (the model rounds
+     it to 1, hiding ≈21λ of path); random molecular positions make its
+     re-radiation incoherent → Rayleigh side-scatter, ≈4×10⁻⁷ over g. */
+  const airOPD = GAP*(PHY.N_AIR - 1);          // optical path the rounding hides, mm
+  const airLam = airOPD/LAM;                   // …in wavelengths
+  const airScatter = PHY.BETA_R*GAP;           // Rayleigh fraction lost in the gap
+  let airVol = 0;                              // beam volume in the gap, mm³
+  for (let k2 = 0; k2 < 32; k2++){
+    const z2 = xLens + GAP*(k2 + 0.5)/32;
+    const wg = sun
+      ? (D/2)*Math.abs(1 - (z2 - xLens)/f) + (dSun/2)*((z2 - xLens)/f)
+      : wof(z2, airWaist, w0p, zRp);
+    airVol += Math.PI*wg*wg*(GAP/32);
+  }
+  const airMol = PHY.N_LOSCHMIDT*airVol;       // molecules the beam threads in g
+  // observer — Emsley reduced eye
+  const zBehind = d - depthO;                 // o-waist → exit face (inside crystal); <0 = waist past exit
+  const zApp = zBehind/NO;                    // apparent depth behind exit face (the n× rule in reverse)
+  const obj = L + zApp;                       // the eye's object distance
+  const objOK = obj > 5;
+  const acc = objOK ? 1000/obj : NaN;
+  const accFlag = objOK && acc > PHY.ACC_AMP;
+  const dTheta = objOK ? sep/obj : NaN;
+  const arcmin = dTheta*3437.7468;
+  const dRet = dTheta*F_EYE;                  // retinal separation, mm (image inverted)
+  const cones = dRet/CONE;
+  const aP = pupil/2;
+  const hCornea = dSun/2 + (D/2)/f*Math.abs(obj);   // sun-cone half-height at the cornea
+  const wCorn = sun ? hCornea : wof(Math.abs(obj), 0, w0p, zRp);
+  const trans = sun ? Math.min(1, (aP/hCornea)**2)
+                    : 1 - Math.exp(-2*aP*aP/(wCorn*wCorn));
+  const fAcc = objOK ? 1000/(P_EYE + acc) : F_EYE;
+  const mgEye = objOK ? fAcc/Math.hypot(obj - fAcc, zRp) : NaN;
+  const wRet = mgEye*w0p;
+  /* sun: pure vergence relay of the geometric image; point: Gaussian relay */
+  const s2Eye = objOK ? (sun ? 1/(1/fAcc - 1/obj)
+                             : 1/(1/fAcc - 1/(obj + zRp*zRp/(obj - fAcc)))) : NaN;
+  const retMiss = objOK ? Math.abs(N_EYE*s2Eye - AXIAL) : NaN;
+  const dSunRet = objOK ? (dSun/obj)*F_EYE : NaN;   // retinal solar-disk diameter
+  const sunArcmin = objOK ? (dSun/obj)*3437.7468 : NaN;
+  /* crystalline-lens anatomy (DRAWN, Gullstrand-style; the vergence chain stays
+     the one Emsley surface). Accommodation bulges the anterior face:
+     rA ≈ 10 mm relaxed → ≈ 5.3 mm at the full ~10 D amplitude. Tilt 0° in this
+     model — plane ⊥ axis, the same orientation as the vesica objective. */
+  const accEff = objOK ? Math.min(Math.max(acc, 0), 10) : 0;
+  const lensRA = 10 - 0.47*accEff;                  // anterior radius, mm
+  const lensRP = 6.0;                               // posterior radius, mm (magnitude)
+  const lensT = 3.6 + 0.05*accEff;                  // thickness, mm
+  const wDiff = LAM/(Math.PI*aP/F_EYE);       // diffraction-limited retinal spot
+  const Mclass = 250/f;
+  return {f, s, alpha, d, theta, L, pupil, src, D, zR, sGeo, m, s2, mG, w0p, zRp, thDiv, focalShift,
+    zgAbs, dSun, conc, powerW, photonRate, cohUm, etendueMax, hCornea, dSunRet, sunArcmin,
+    lensRA, lensRP, lensT,
+    xLens, xFront, xBack, xCornea, airWaist, Io, Ie, neT, rho, rhoDeg, sep,
+    depthO, depthE, zwIn, dphi, opd, order, lagExit, wLens, iMax, dphiAt, fringeSpread,
+    deltaM, stokes: [S1, S2, S3ccw], psiDeg, ba, rotCCW, polState, visNaD,
+    nu, omega, periodFs, ephot, lamO, lamE, lamVit, cyclesO, cyclesE, cellsAlong, transitO,
+    airOPD, airLam, airScatter, airMol,
+    zBehind, zApp, obj, objOK, acc, accFlag, dTheta, arcmin, dRet, cones,
+    wCorn, trans, fAcc, mgEye, wRet, s2Eye, retMiss, wDiff, Mclass};
+}
+
+/* ================================================================
+   FORMATTING
+   ================================================================ */
+const f0 = x => Math.round(x).toString();
+const f1 = x => x.toFixed(1), f2 = x => x.toFixed(2), f3 = x => x.toFixed(3), f4 = x => x.toFixed(4);
+const neg = s => s.replace(/-/g, '−');
+const um = mm => mm*1000;
+const SUP = {'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const sci = x => { const e = Math.floor(Math.log10(x)); const m = x/Math.pow(10, e);
+  return `${m.toFixed(1)}×10${String(e).split('').map(ch => SUP[ch]).join('')}`; };
+
+/* ================================================================
+   STATE + PUB/SUB — the static canvas redraws on state change only;
+   the animation canvas runs on rAF and touches nothing else.
+   ================================================================ */
+const state = {...DEFAULTS};
+const layers = {herm: false, spec: false};   // cosmetic + text only — never read by computePhysics
+let DER = computePhysics(state);
+window.__derived = DER;
+window.computePhysics = computePhysics;
+
+const $ = id => document.getElementById(id);
+const cvBg = $('cvBg'), cvStatic = $('cvStatic'), cvAnim = $('cvAnim');
+const ctxBg = cvBg.getContext('2d'), ctxS = cvStatic.getContext('2d'), ctxA = cvAnim.getContext('2d');
+
+let GEO = null;        // layout geometry, rebuilt on state/resize
+let LANES = null;      // pre-computed marker polylines (animation reads only)
+
+function palette(){
+  const cs = getComputedStyle(document.documentElement);
+  const g = n => cs.getPropertyValue(n).trim();
+  return {paper:g('--paper'), panel:g('--panel'), ink:g('--ink'), ink2:g('--ink2'),
+    line:g('--line'), hair:g('--hair'), beam:g('--beam'), beamFill:g('--beam-fill'),
+    eray:g('--eray'), erayFill:g('--eray-fill'), herm:g('--herm'), hermFill:g('--herm-fill'),
+    spec:g('--spec'), specFill:g('--spec-fill'), quartz:g('--quartz'), quartzLine:g('--quartz-line'),
+    good:g('--good'), warn:g('--warnc')};
+}
+
+/* ---------------- layout ---------------- */
+function layout(){
+  const box = $('scroller');
+  const W = Math.max(960, Math.floor(box.clientWidth) - 2);
+  const H = 540;
+  const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  for (const cv of [cvBg, cvStatic, cvAnim]){
+    cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  }
+  $('stack').style.width = W + 'px'; $('stack').style.height = H + 'px';
+  const d = DER;
+  const cy = 232;
+  const x0 = 16, x1 = Math.round(0.645*W);
+  const worldMin = -15, worldMax = d.xCornea + 8;
+  const hs = (x1 - x0)/(worldMax - worldMin);
+  const X = mm => x0 + (mm - worldMin)*hs;
+  // computed vertical exaggeration for beam widths — fits the largest width in
+  // view (sun mode: fits the aperture; the diverging cone is clipped, labeled)
+  const wAtBack = wBench(d, d.xBack);
+  const wMax = d.src === 'sun'
+    ? Math.max(d.D/2*1.02, state.pupil/2*1.02, wAtBack, 0.3)
+    : Math.max(d.wCorn, d.wLens, wAtBack, state.pupil/2*1.02, 0.3);
+  const vs = 64/wMax;                        // px per mm of beam half-width
+  const eyeR = 84;
+  const breakX = x1 + 12;
+  const eyeCx = breakX + 54 + eyeR, eyeCyR = cy;
+  const eyeScale = 2*eyeR/PHY.AXIAL;         // px per mm inside the eye panel
+  const icx = Math.min(W - 66, eyeCx + eyeR + 58), icy = 404, ir = 50;
+  const halfUm = Math.max(1e-9, (d.src === 'sun' ? (d.dSunRet + d.dRet) : d.dRet)*1000/2);
+  const zoomUm = Math.min(2.6, 33/halfUm);   // px per µm in the retinal inset (adaptive, labeled)
+  return {W, H, dpr, cy, x0, x1, hs, vs, X, worldMin, worldMax,
+    breakX, eyeCx, eyeCyR, eyeR, eyeScale, icx, icy, ir, zoomUm};
+}
+/* beam half-width anywhere on the bench (o-beam), mm */
+function crystalW(d, z){
+  if (z <= d.xFront) return wof(z, d.airWaist, d.w0p, d.zRp);
+  if (z <= d.xBack)  return wof(z, d.zwIn, d.w0p, PHY.NO*d.zRp);
+  return wof((z - d.xBack) + d.zApp, 0, d.w0p, d.zRp);
+}
+function wBench(d, z){
+  if (d.src === 'sun'){
+    /* geometric cone of an extended source: aperture term + solar-disk term,
+       in air-equivalent distance ζ (crystal stretch by n₀) */
+    if (z <= d.xLens) return d.D/2;
+    let zeta = Math.min(z, d.xFront) - d.xLens;
+    if (z > d.xFront) zeta += (Math.min(z, d.xBack) - d.xFront)/PHY.NO;
+    if (z > d.xBack)  zeta += z - d.xBack;
+    return (d.D/2)*Math.abs(1 - zeta/d.f) + (d.dSun/2)*(zeta/d.f);
+  }
+  if (z <= d.xLens) return wof(z, 0, PHY.W0, d.zR);
+  return crystalW(d, z);
+}
+
+/* ================================================================
+   STATIC LAYER — all drawn pixels originate in DER; labels carry the
+   honesty ledger. Redrawn only on state change / resize / theme.
+   ================================================================ */
+function drawStatic(){
+  const d = DER, g = GEO, P = palette();
+  const c = ctxS;
+  c.setTransform(g.dpr, 0, 0, g.dpr, 0, 0);
+  c.clearRect(0, 0, g.W, g.H);
+  const {X, cy, hs, vs} = g;
+  const sans = px => `${px}px ${'"Segoe UI",system-ui,sans-serif'}`;
+  const mono = px => `${px}px ${'Consolas,"Cascadia Code",monospace'}`;
+  const txt = (s, x, y, font, col, align='left') => {
+    c.font = font; c.fillStyle = col; c.textAlign = align; c.fillText(s, x, y); c.textAlign = 'left';
+  };
+  const line = (x1,y1,x2,y2,col,w=1,dash=null,alpha=1) => {
+    c.save(); c.globalAlpha = alpha; c.strokeStyle = col; c.lineWidth = w;
+    if (dash) c.setLineDash(dash);
+    c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke(); c.restore();
+  };
+
+  /* zone band — the whole axis is computed */
+  c.fillStyle = P.beamFill;
+  rr(c, g.x0 - 4, 8, g.W - g.x0 - 8, 22, 4); c.fill();
+  txt(d.src === 'sun' ? 'COMPUTED PHYSICS MODEL — THE SUN → LENS → QUARTZ → RETINA'
+                      : 'COMPUTED PHYSICS MODEL — SOURCE TO RETINA', g.W/2, 23, `600 ${sans(10.5)}`, P.beam, 'center');
+  if (d.src === 'sun')
+    txt(`sunlight: θ☉ = 0.533° · broadband · unpolarized · 1 kW/m² · magnifier f = ${d.f} mm, D = ${d.D} mm · single-λ readouts at the 589 nm component`,
+        g.x0, 44, sans(10), P.ink2);
+
+  /* optical axis */
+  line(X(g.worldMin+2), cy, X(d.xCornea+6), cy, P.ink2, 0.8, null, 0.8);
+
+  /* envelope (translucent, amber) — Self-driven for the lab source; the
+     geometric extended-source cone for sunlight (clipped, labeled) */
+  const capW = d.src === 'sun' ? 95 : 250;
+  const env = (zFrom, zTo, wfn, dashed=false) => {
+    const n = 64; c.save();
+    c.beginPath();
+    for (let i = 0; i <= n; i++){ const z = zFrom + (zTo-zFrom)*i/n;
+      const w = Math.min(wfn(z)*vs, capW);
+      i ? c.lineTo(X(z), cy - w) : c.moveTo(X(z), cy - w); }
+    for (let i = n; i >= 0; i--){ const z = zFrom + (zTo-zFrom)*i/n;
+      const w = Math.min(wfn(z)*vs, capW);
+      c.lineTo(X(z), cy + w); }
+    c.closePath();
+    c.fillStyle = P.beamFill; c.fill();
+    c.strokeStyle = P.beam; c.lineWidth = 1; if (dashed) c.setLineDash([4,3]);
+    c.stroke(); c.restore();
+  };
+  if (d.src === 'sun'){
+    env(g.worldMin + 1, d.xLens, () => d.D/2);
+    env(d.xLens, d.xFront, z => wBench(d, z));
+    env(d.xFront, d.xBack, z => wBench(d, z));
+    env(d.xBack, d.xCornea, z => wBench(d, z));
+  } else {
+    env(0, d.xLens, z => wof(z, 0, PHY.W0, d.zR));
+    env(d.xLens, d.xFront, z => wof(z, d.airWaist, d.w0p, d.zRp));
+    env(d.xFront, d.xBack, z => wof(z, d.zwIn, d.w0p, PHY.NO*d.zRp));
+    env(d.xBack, d.xCornea, z => wof((z - d.xBack) + d.zApp, 0, d.w0p, d.zRp));
+  }
+
+  /* geometric ray fan (thin ink) with per-ray Snell refraction at the crystal */
+  const zg = d.zgAbs;        // absolute geometric crossing (may be ±∞)
+  const effDen = d.src === 'sun' ? d.f : d.sGeo;
+  const yAt = (h, z) => Number.isFinite(zg) ? h*(zg - z)/effDen : h;
+  [-1, -2/3, -1/3, 1/3, 2/3, 1].forEach(fr => {
+    const h = fr*d.wLens;
+    const slopeAir = Number.isFinite(zg) ? -h/effDen : 0;
+    const yF = yAt(h, d.xFront), sInt = slopeAir/PHY.NO;
+    const yB = yF + sInt*d.d;
+    c.save(); c.globalAlpha = 0.28; c.strokeStyle = P.ink; c.lineWidth = 0.9;
+    c.beginPath();
+    if (d.src === 'sun') c.moveTo(X(g.worldMin + 1), cy - h*vs);   // collimated in
+    else c.moveTo(X(0), cy);
+    c.lineTo(X(d.xLens), cy - h*vs);
+    c.lineTo(X(d.xFront), cy - yF*vs);
+    c.lineTo(X(d.xBack), cy - yB*vs);
+    c.lineTo(X(d.xCornea), cy - (yB + slopeAir*(d.xCornea - d.xBack))*vs);
+    c.stroke(); c.restore();
+  });
+  /* virtual-waist back-extension when s < f (dashed, lab source only) */
+  if (d.src !== 'sun' && d.s2 < 0){
+    const xw = X(Math.max(d.airWaist, g.worldMin));
+    line(X(d.xLens), cy - d.wLens*vs, xw, cy - (d.airWaist >= g.worldMin ? 0 : d.wLens*vs*0.15), P.beam, 0.9, [4,4], 0.7);
+    line(X(d.xLens), cy + d.wLens*vs, xw, cy + (d.airWaist >= g.worldMin ? 0 : d.wLens*vs*0.15), P.beam, 0.9, [4,4], 0.7);
+    if (d.airWaist >= g.worldMin){
+      diamond(c, X(d.airWaist), cy, 5, null, P.beam);
+      txt(`virtual waist ${neg(f1(Math.abs(d.s2)))} mm before the lens`, X(d.airWaist), cy - 14, sans(10.5), P.beam, 'center');
+    } else {
+      txt(`← virtual waist ${neg(f1(Math.abs(d.s2)))} mm before the lens (off-canvas)`, X(0)+6, cy - 44, sans(10.5), P.beam);
+    }
+  }
+
+  /* source */
+  if (d.src === 'sun'){
+    const sx0 = X(g.worldMin + 6);
+    c.save(); c.fillStyle = P.beam; c.globalAlpha = 0.9;
+    c.beginPath(); c.arc(sx0, cy, 8, 0, 7); c.fill(); c.globalAlpha = 1;
+    for (let k = 0; k < 12; k++){ const a2 = k*Math.PI/6;
+      line(sx0 + Math.cos(a2)*11, cy + Math.sin(a2)*11, sx0 + Math.cos(a2)*16, cy + Math.sin(a2)*16, P.beam, 1.2); }
+    c.restore();
+  } else {
+    c.fillStyle = P.beam; c.beginPath(); c.arc(X(0), cy, 3.2, 0, 7); c.fill();
+    [[7,0],[-7,0],[0,7],[0,-7],[5,5],[-5,5],[5,-5],[-5,-5]].forEach(([dx,dy]) =>
+      line(X(0)+dx*0.55, cy+dy*0.55, X(0)+dx, cy+dy, P.beam, 1));
+    txt('source · λ = 589 nm', X(0), cy + 30, sans(10.5), P.ink2, 'center');
+    txt('w₀ = 50 µm', X(0), cy + 43, mono(10), P.ink2, 'center');
+    txt('ν ≈ 509 THz', X(0), cy + 56, mono(10), P.ink2, 'center');
+  }
+
+  /* vesica lens — the sacred-geometry silhouette IS the biconvex profile */
+  const lensH = Math.min(d.src === 'sun' ? 94 : 46, Math.max(30, d.wLens*vs*1.35)), sag = lensH*0.26;
+  const R = (lensH*lensH + sag*sag)/(2*sag);
+  c.save(); c.globalAlpha = 0.28; c.strokeStyle = P.ink2; c.setLineDash([3,5]); c.lineWidth = 0.6;
+  c.beginPath(); c.arc(X(d.xLens) - (R - sag), cy, R, 0, 7); c.stroke();
+  c.beginPath(); c.arc(X(d.xLens) + (R - sag), cy, R, 0, 7); c.stroke();
+  c.restore();
+  c.save(); c.fillStyle = P.paper; c.strokeStyle = P.ink; c.lineWidth = 1.4;
+  c.beginPath();
+  c.arc(X(d.xLens) - (R - sag), cy, R, -Math.asin(lensH/R), Math.asin(lensH/R));
+  c.arc(X(d.xLens) + (R - sag), cy, R, Math.PI - Math.asin(lensH/R), Math.PI + Math.asin(lensH/R));
+  c.closePath(); c.fill(); c.stroke(); c.restore();
+  if (d.src !== 'sun'){
+    txt(`vesica lens · f = ${d.f} mm`, X(d.xLens), cy - lensH - 12, sans(11), P.ink, 'center');
+    txt('slider 30–120 mm', X(d.xLens), cy + lensH + 18, sans(9.5), P.ink2, 'center');
+  }
+
+  /* quartz crystal */
+  const cyT = cy - 86, cyB = cy + 86;
+  c.fillStyle = P.quartz; c.fillRect(X(d.xFront), cyT, X(d.xBack) - X(d.xFront), cyB - cyT);
+  c.save();
+  c.beginPath(); c.rect(X(d.xFront), cyT, X(d.xBack) - X(d.xFront), cyB - cyT); c.clip();
+  c.translate((X(d.xFront) + X(d.xBack))/2, cy);
+  c.rotate(-d.theta*Math.PI/180);
+  /* the crystal matrix — SiO₄ tetrahedra in helical chains wound around the
+     c-axis (the optic axis): a motif, not to scale (real cell 0.540 nm, so
+     ≈10⁸ cells span this block). The helix IS why quartz is birefringent. */
+  c.strokeStyle = P.quartzLine; c.fillStyle = P.quartzLine; c.lineWidth = 0.7;
+  for (let v = -216; v <= 216; v += 13){
+    c.globalAlpha = 0.30;
+    c.beginPath();
+    for (let u = -216; u <= 216; u += 4){
+      const yz = v + 2.3*Math.sin(u*0.55 + v*0.8);
+      u === -216 ? c.moveTo(u, yz) : c.lineTo(u, yz);
+    }
+    c.stroke();
+    c.globalAlpha = 0.55;
+    for (let u = -216; u <= 216; u += 9){
+      const yz = v + 2.3*Math.sin(u*0.55 + v*0.8);
+      c.beginPath(); c.arc(u, yz, 1.05, 0, 7); c.fill();   // Si sites
+    }
+  }
+  c.globalAlpha = 1;
+  c.restore();
+  c.strokeStyle = P.quartzLine; c.lineWidth = 1.3;
+  c.strokeRect(X(d.xFront), cyT, X(d.xBack) - X(d.xFront), cyB - cyT);
+  txt(`quartz · d = ${d.d} mm`, X(d.xFront), cyT - 34, sans(11), P.ink);
+  txt(`n₀ 1.5443 · nₑ(θ) ${f4(d.neT)}`, X(d.xFront), cyT - 21, mono(9.5), P.ink2);
+  /* optic-axis glyph — beside the crystal, clear of the waist dash and bracket */
+  const ogx = X(d.xBack) + 42, ogy = cyT + 42, tR = d.theta*Math.PI/180;
+  const ax = Math.cos(tR)*11, ay = -Math.sin(tR)*11;
+  line(ogx - ax, ogy - ay, ogx + ax, ogy + ay, P.ink, 1.6);
+  arrowHead(c, ogx + ax, ogy + ay, Math.atan2(ay, ax), P.ink);
+  arrowHead(c, ogx - ax, ogy - ay, Math.atan2(-ay, -ax), P.ink);
+  txt(`optic axis θ = ${d.theta}° (lattice chains)`, ogx + 16, ogy + 4, sans(10), P.ink2);
+
+  /* air in the gap — sparse molecule motif (deterministic seed; labeled below;
+     real spacing ≈ 3.4 nm, so this is illustration of emptiness, not a census) */
+  const rndA = mulberry(90210);
+  c.save(); c.fillStyle = P.quartzLine;
+  for (let i = 0; i < 26; i++){
+    const zf = d.xLens + 3 + rndA()*(PHY.GAP - 6);
+    const wpx = Math.max(3, Math.min(wBench(d, zf)*vs + 12, 88));
+    const yy = cy + (rndA()*2 - 1)*wpx;
+    c.globalAlpha = 0.32 + 0.3*rndA();
+    c.beginPath(); c.arc(X(zf), yy, 0.9, 0, 7); c.fill();
+  }
+  c.restore();
+
+  /* e-ray center line — ×EX exaggeration, permanent label (honesty ledger) */
+  const sepPx = PHY.EX*d.sep*hs;             // ×50 of the TRUE pixel offset
+  const eEndY = cy - sepPx;
+  if (d.Ie > 0.005 && d.sep > 1e-9){
+    line(X(d.xFront), cy, X(d.xBack), eEndY, P.eray, 1.5, null, 0.35 + 0.6*d.Ie);
+    line(X(d.xBack) + 13, eEndY, X(d.xCornea), eEndY, P.eray, 1.2, [6,4], 0.3 + 0.55*d.Ie);
+  }
+  if (d.Io > 0.005) line(X(d.xFront), cy, X(d.xCornea), cy, P.beam, 1.2, null, 0.25 + 0.4*d.Io);
+  txt(`o/e differences drawn ×${PHY.EX} — true: sep ${f3(d.sep)} mm · exit lag ${f3(d.lagExit)} mm`,
+      X(d.xFront), cyB + 16, sans(10.5), P.beam);
+
+  /* focus markers — "waist" for the Gaussian lab source, "image" for the sun */
+  const wname = d.src === 'sun' ? 'image' : 'waist';
+  if (d.depthO >= -1e-9 && d.depthO <= d.d + 1e-9){
+    c.fillStyle = P.beam; c.beginPath(); c.arc(X(d.zwIn), cy, 3, 0, 7); c.fill();
+    line(X(d.zwIn), cy - 4, X(d.zwIn), cyT - 2, P.beam, 0.8, [3,3]);
+    txt(`o-${wname} ${f1(d.depthO)} mm deep — inside d = ${d.d} ✓`, X(d.zwIn) + 8, cyT - 8, sans(10.5), P.beam);
+    if (d.depthE > 0 && d.depthE < d.d && d.Ie > 0.005){
+      const yE = cy - PHY.EX*Math.tan(Math.abs(d.rho))*d.depthE*hs;
+      c.fillStyle = P.eray; c.beginPath(); c.arc(X(d.xFront + d.depthE), yE, 3, 0, 7); c.fill();
+      if (Math.abs(d.depthE - d.depthO)*hs > 14)
+        txt(`e-${wname} ${f1(d.depthE)} mm`, X(d.xFront + d.depthE) + 6, yE + 14, sans(9.5), P.eray);
+    }
+  } else if ((d.src === 'sun' || d.s2 > 0) && d.airWaist < d.xFront){
+    diamond(c, X(d.airWaist), cy, 5, P.beam);
+    line(X(d.airWaist), cy - 6, X(d.airWaist), cy - 84, P.beam, 0.8, [3,3]);
+    txt(`${wname} ${f1(d.airWaist - d.xLens)} mm after lens — in the air gap`, X(d.airWaist), cy - 92, sans(10.5), P.beam, 'center');
+  } else if (d.zApp < -1e-6){
+    const xw = d.xBack - d.zApp;             // real aerial focus past the exit face
+    if (xw < d.xCornea){
+      diamond(c, X(xw), cy, 5, P.beam);
+      line(X(xw), cy - 6, X(xw), cy - 84, P.beam, 0.8, [3,3]);
+      txt(`${wname} ${f1(-d.zApp)} mm past the exit face (in air)`, X(xw), cy - 92, sans(10.5), P.beam, 'center');
+    } else {
+      txt(`${wname} would form ${f1(-d.zApp)} mm past the exit — beyond the cornea →`, X(d.xBack) + 8, cy - 92, sans(10.5), P.warn);
+    }
+  }
+  /* geometric image marker — real in the air gap, dashed "unrefracted ghost"
+     once the crystal would have bent the rays (the FIG. 3 device) */
+  if (Number.isFinite(zg) && zg > d.xLens + 1 && zg < d.xCornea - 6 &&
+      Math.abs(X(zg) - X(d.zwIn)) > 8){   // suppress when it coincides with the real marker
+    c.save(); c.strokeStyle = P.ink2; c.lineWidth = 1.4;
+    if (zg >= d.xFront) c.setLineDash([3,3]);
+    c.beginPath(); c.arc(X(zg), cy, 4, 0, 7); c.stroke(); c.restore();
+    if (zg < d.xFront)
+      txt(d.src === 'sun' ? `focal plane — sun image Ø ${f3(d.dSun)} mm` : `geometric image s′ = ${f1(d.sGeo)} mm`,
+          X(zg), cy + 22, sans(10), P.ink2, 'center');
+    else if (zg <= d.xBack)
+      txt(`unrefracted ${d.src === 'sun' ? 'image' : 's′'} — ${f1(zg - d.xFront)} mm deep (ghost)`, X(zg) - 9, cy + 22, sans(10), P.ink2, 'right');
+    else
+      txt(`unrefracted ${d.src === 'sun' ? 'image' : 's′'} (ghost — ignores the crystal)`, X(zg) - 9, cy + 22, sans(10), P.ink2, 'right');
+  }
+  /* focal-shift bracket — FIG. 2's teaching feature (Gaussian lab source only) */
+  if (d.src !== 'sun' && Number.isFinite(zg) && d.s2 > 0 && zg < d.xCornea - 6 && X(zg) - X(d.airWaist) > 16){
+    diamond(c, X(d.airWaist), cy, 4, null, P.beam);
+    const by2 = cy - 64;
+    line(X(d.airWaist), cy - 7, X(d.airWaist), by2, P.beam, 0.7, [3,3]);
+    line(X(zg), cy - 7, X(zg), by2, P.ink2, 0.7, [3,3]);
+    line(X(d.airWaist), by2, X(zg), by2, P.ink, 1.3);
+    txt(`focal shift s′ − s″ = ${f2(d.focalShift)} mm`, (X(d.airWaist) + X(zg))/2, by2 - 6, sans(10), P.ink, 'center');
+  }
+
+  /* exit interference strip — derived, not decorative; guardrail per plan */
+  drawFringeStrip(c, d, g, P, sans, mono, txt);
+
+  /* pupil bars + cornea */
+  const pupHalf = state.pupil/2*vs;
+  const px = X(d.xCornea);
+  c.fillStyle = P.ink2;
+  c.fillRect(px - 2.5, cy - pupHalf - 96, 5, 96);
+  c.fillRect(px - 2.5, cy + pupHalf, 5, 96);
+  txt(`pupil Ø ${state.pupil} mm`, px, cy - pupHalf - 102, sans(10.5), P.ink2, 'center');
+  txt(`admits ${d.trans < 0.01 ? (d.trans*100).toFixed(3) : f0(d.trans*100)}% of the power`, px, cy + pupHalf + 108, sans(10.5), P.ink2, 'center');
+  txt(d.src === 'sun'
+      ? `cone Ø ${f0(2*d.hCornea)} mm at the cornea — drawn clipped (computed)`
+      : `beam Ø ${f2(2*d.wCorn)} mm at the cornea`, px - 10, cy - pupHalf - 116, sans(10), P.beam, 'right');
+
+  /* dimension rows */
+  const dimY = 470;
+  [d.src === 'sun' ? g.worldMin + 1 : 0, d.xLens, d.xFront, d.xBack, d.xCornea].forEach(mm =>
+    line(X(mm), cy + 96, X(mm), dimY + 4, P.line, 0.8));
+  const sHint = X(d.xLens) - X(0) > 190 ? ` (slider 60–300)` : ``;
+  const lHint = X(d.xCornea) - X(d.xBack) > 240 ? ` (Advanced 150–500)` : ``;
+  if (d.src === 'sun')
+    dimLine(c, X(g.worldMin + 1), X(d.xLens), dimY,
+      X(d.xLens) - X(g.worldMin + 1) > 175 ? `collimated — object at ∞` : `from ∞`, P, mono);
+  else
+    dimLine(c, X(0), X(d.xLens), dimY, `s = ${d.s} mm${sHint}`, P, mono);
+  dimLine(c, X(d.xLens), X(d.xFront), dimY, `g = ${PHY.GAP}`, P, mono);
+  dimLine(c, X(d.xFront), X(d.xBack), dimY, `d = ${d.d}`, P, mono);
+  dimLine(c, X(d.xBack), X(d.xCornea), dimY, `L = ${d.L} mm${lHint}`, P, mono);
+
+  /* honesty labels — computed, never silent */
+  txt(`air gap: n = 1.000273 (model rounds to 1 — hides ≈${f1(d.airLam)}λ) · dots = molecule motif (≈3.4 nm apart) · flashes = Rayleigh, exaggerated (true ≈ ${sci(d.airScatter)})`,
+      g.x0, g.H - 44, sans(10), P.ink2);
+  txt(`horizontal true scale: 1 px ≈ ${f2(1/hs)} mm · beam widths drawn ×${f0(vs/hs)} vertical (computed, resize-aware)`,
+      g.x0, g.H - 30, sans(10.5), P.beam);
+  txt(state.markerMode === 'photons'
+    ? 'photon view — detection events only: each flash is sampled from the computed intensity |E|² (σ = w(z)/2) · photons have no drawn trajectories; v = c/n describes the field, not a photon path'
+    : 'animated ticks are wave-front phase markers (v = c/n), not photons — they compress and slow by n in media, yet pass any fixed point at the same rate: frequency is invariant',
+    g.x0, g.H - 16, sans(10.5), P.ink2);
+
+  /* special-case banner (right-aligned so it never collides with the sun info line) */
+  const notes = [];
+  if (d.src !== 'sun'){
+    if (!Number.isFinite(d.sGeo)) notes.push('s = f: collimated — geometric image at ∞');
+    else if (d.sGeo < 0) notes.push(`s < f: virtual image ${neg(f1(Math.abs(d.sGeo)))} mm before the lens — beam diverges`);
+  }
+  if (d.neT - PHY.NO < 1e-9) notes.push('θ = 0°: beam along the optic axis — birefringence vanishes, o and e identical');
+  if (!d.objOK) notes.push('apparent focus at/beyond the cornea — observer stage suspended');
+  if (notes.length) txt(notes.join('  ·  '), g.x1, 57, `600 ${sans(10.5)}`, P.warn, 'right');
+  /* sun-mode hazard — honest observer caveat */
+  if (d.src === 'sun')
+    txt('⚠ image luminance ≈ the solar disk — thought experiment only', g.W - 14, g.H - 30, sans(10), P.warn, 'right');
+
+  /* ---- scale break + reduced eye (enlarged, labeled) ---- */
+  const bx = g.breakX;
+  line(bx - 6, cy - 40, bx + 8, cy - 78, P.ink2, 1.4);
+  line(bx + 2, cy - 40, bx + 16, cy - 78, P.ink2, 1.4);
+  line(bx - 6, cy + 78, bx + 8, cy + 40, P.ink2, 1.4);
+  line(bx + 2, cy + 78, bx + 16, cy + 40, P.ink2, 1.4);
+  const {eyeCx, eyeR, eyeScale} = g;
+  txt('OBSERVER — EMSLEY REDUCED EYE', eyeCx, 58, `600 ${sans(10)}`, P.beam, 'center');
+  txt(`scale break — eye ×${f1(eyeScale/hs)} vs bench (computed)`, eyeCx, 72, sans(10), P.ink2, 'center');
+  c.fillStyle = P.quartz; c.strokeStyle = P.ink2; c.lineWidth = 1.3;
+  c.beginPath(); c.arc(eyeCx, cy, eyeR, 0, 7); c.fill(); c.stroke();
+  c.strokeStyle = P.herm; c.lineWidth = 3;   // retina (right cap)
+  c.beginPath(); c.arc(eyeCx, cy, eyeR, -0.7, 0.7); c.stroke();
+  const xV = eyeCx - eyeR, retX = eyeCx + eyeR;
+  const es = eyeScale, prE = state.pupil/2*es;
+  /* cornea — true anatomical curvature r = 7.8 mm (drawn; refraction is still
+     computed at the single Emsley surface) */
+  const rC = 7.8*es, phiC = 0.85;
+  c.strokeStyle = P.ink; c.lineWidth = 3;
+  c.beginPath(); c.arc(xV + rC, cy, rC, Math.PI - phiC, Math.PI + phiC); c.stroke();
+  /* crystalline lens — the eye's own vesica: two construction circles, plane
+     ⊥ the axis (the same orientation as the vesica objective), anterior face
+     bulging with the COMPUTED accommodation */
+  const hL = 4.6*es;
+  const phiA = Math.asin(4.6/d.lensRA), phiP = Math.asin(4.6/d.lensRP);
+  const cxA = xV + (3.5 + d.lensRA)*es;             // anterior-arc circle center
+  const cxP = xV + (3.5 + d.lensT - d.lensRP)*es;   // posterior-arc circle center
+  c.save(); c.globalAlpha = 0.22; c.strokeStyle = P.ink2; c.setLineDash([3,4]); c.lineWidth = 0.8;
+  c.beginPath(); c.arc(cxA, cy, d.lensRA*es, 0, 7); c.stroke();
+  c.beginPath(); c.arc(cxP, cy, d.lensRP*es, 0, 7); c.stroke();
+  c.restore();
+  c.save(); c.fillStyle = P.quartz; c.strokeStyle = P.ink; c.lineWidth = 1.3;
+  c.beginPath();
+  c.arc(cxA, cy, d.lensRA*es, Math.PI - phiA, Math.PI + phiA);
+  c.arc(cxP, cy, d.lensRP*es, -phiP, phiP);
+  c.closePath(); c.fill(); c.stroke(); c.restore();
+  /* iris at its anatomical station, just ahead of the lens */
+  const xI = xV + 3.0*es;
+  c.fillStyle = P.ink2;
+  c.fillRect(xI - 2, cy - hL - 2, 4, hL + 2 - prE);
+  c.fillRect(xI - 2, cy + prE, 4, hL + 2 - prE);
+  if (d.objOK){
+    line(xV + 5, cy - prE, retX - 2, cy, P.beam, 1.2);
+    line(xV + 5, cy + prE, retX - 2, cy, P.beam, 1.2);
+    line(xV + 5, cy - prE + 3, retX - 2, cy - 1, P.eray, 1, [4,3], 0.4 + 0.5*d.Ie);
+    line(xV + 5, cy + prE + 3, retX - 2, cy - 1, P.eray, 1, [4,3], 0.4 + 0.5*d.Ie);
+    c.fillStyle = P.beam; c.beginPath(); c.arc(retX - 2, cy, 2.6, 0, 7); c.fill();
+  }
+  txt('vitreous n′ = 4/3', eyeCx + 14, cy + 16, sans(9.5), P.ink2, 'center');
+  txt('crystalline lens — vesica form', xV + 5.3*es, cy + hL + 14, sans(9), P.ink2, 'center');
+  txt('P = 60 D + A — computed as one Emsley surface', eyeCx, cy - eyeR - 20, sans(9.5), P.ink2, 'center');
+  txt(`drawn anatomy: cornea r 7.8 · lens rA ${f1(d.lensRA)} / rP ${f1(d.lensRP)} mm · tilt 0° ⊥ axis (real 2–7°)`,
+      eyeCx, cy - eyeR - 8, sans(9), P.ink2, 'center');
+  txt(d.objOK ? `accommodation +${f1(d.acc)} D (computed)${d.accFlag ? ' ⚠' : ''}` : 'accommodation — (out of range)',
+      eyeCx, cy + eyeR + 16, sans(10), d.accFlag ? P.warn : P.ink2, 'center');
+  txt('image inverted', retX + 6, cy - 12, sans(9.5), P.ink2);
+  dimLine(c, xV, retX, cy + eyeR + 32, 'axial 22.22 mm', P, mono);
+
+  /* ---- retinal inset — zoom computed & labeled; separations to scale ---- */
+  const {icx, icy, ir, zoomUm} = g;
+  line(retX - 2, cy, icx - ir*0.72, icy - ir*0.7, P.ink2, 0.8, [3,3]);
+  c.fillStyle = P.paper; c.strokeStyle = P.ink2; c.lineWidth = 1.2;
+  c.beginPath(); c.arc(icx, icy, ir, 0, 7); c.fill(); c.stroke();
+  c.save(); c.beginPath(); c.arc(icx, icy, ir - 1, 0, 7); c.clip();
+  const pitch = 2.5*zoomUm;                  // cone pitch 2.5 µm, to scale in the zoom
+  c.fillStyle = P.ink2; c.globalAlpha = 0.26;
+  for (let row = -10; row <= 10; row++) for (let col = -10; col <= 10; col++){
+    const mx = icx + col*pitch + (row % 2 ? pitch/2 : 0), my = icy + row*pitch*0.866;
+    c.beginPath(); c.arc(mx, my, Math.max(1.4, pitch*0.28), 0, 7); c.fill();
+  }
+  c.globalAlpha = 1;
+  if (d.objOK){
+    const half = d.dRet*1000/2*zoomUm;
+    /* e walked toward the axis tilt (up) in the crystal → lands opposite on the retina (inverted) */
+    if (d.src === 'sun'){
+      const rD = Math.max(2, d.dSunRet*1000/2*zoomUm);   // solar-disk image, to scale
+      glowSpot(c, icx, icy - half, rD, P.beam, 0.55);
+      glowSpot(c, icx, icy + half, rD, P.eray, 0.55);
+    } else {
+      const spotR = Math.max(1.3, d.wRet*1000*zoomUm);
+      if (d.Io > 0.005){ glowSpot(c, icx, icy - half, spotR, P.beam, d.Io); }
+      if (d.Ie > 0.005){ glowSpot(c, icx, icy + half, spotR, P.eray, d.Ie); }
+    }
+  }
+  c.restore();
+  const zoomVsEye = zoomUm*1000/eyeScale;
+  txt(`retinal inset ×${f0(zoomVsEye)} vs eye (computed) — cone pitch 2.5 µm to scale`, g.W - 14, icy + ir + 16, sans(9.5), P.ink2, 'right');
+  txt(d.objOK && d.sep > 1e-9
+      ? (d.src === 'sun'
+          ? `sun disks Ø ${f1(um(d.dSunRet))} µm — offset ${f1(um(d.dRet))} µm ⇒ overlapping doubling`
+          : `Δ = ${f1(um(d.dRet))} µm ≈ ${f1(d.cones)} cones ⇒ seen as two`)
+      : (d.objOK ? (d.src === 'sun' ? `single sun disk Ø ${f1(um(d.dSunRet))} µm — no o/e split` : 'single spot — no o/e split') : 'observer out of range'),
+      g.W - 14, icy + ir + 29, sans(9.5), P.ink2, 'right');
+  txt('e opposite its walk-off — inverted · spots at w_ret (computed)', g.W - 14, icy + ir + 42, sans(9.5), P.ink2, 'right');
+
+  /* ---- polarization inset (input) + emitted-light inset (exit state) ---- */
+  drawPolInset(c, d, P, sans, mono, txt);
+  drawExitInset(c, d, P, sans, mono, txt);
+}
+
+function drawFringeStrip(c, d, g, P, sans, mono, txt){
+  const {X, cy, vs} = g;
+  const zg = d.zgAbs;
+  const den = d.src === 'sun' ? d.f : d.sGeo;
+  const fanExt = Number.isFinite(zg) ? d.wLens*Math.abs((zg - d.xBack)/den) : d.wLens;
+  const wG = wBench(d, d.xBack);
+  const extMm = Math.max(fanExt, wG, 0.02);   // physical half-extent of the exit fan
+  const extPx = 80;                           // drawn half-height — own labeled scale
+  const stripScale = extPx/(extMm*vs);        // × taller than the bench beam-width scale
+  const sx = X(d.xBack) + 2, sw = 9;
+  const s2a = Math.sin(2*d.alpha*Math.PI/180)**2;
+  c.save();
+  c.fillStyle = P.ink; c.globalAlpha = 0.28;
+  c.fillRect(sx, cy - extPx, sw, 2*extPx);
+  c.globalAlpha = 1;
+  const fringesPerPx = d.fringeSpread/(2*extPx);
+  let modeLabel;
+  if (d.neT - PHY.NO < 1e-9){
+    modeLabel = 'θ = 0° — no retardation';
+  } else if (d.src === 'sun'){
+    /* broadband + incoherent: per-λ fringes exist but wash out across the spectrum */
+    c.fillStyle = P.beam; c.globalAlpha = 0.25;
+    c.fillRect(sx, cy - extPx, sw, 2*extPx); c.globalAlpha = 1;
+    modeLabel = `white-light washout at order ≈ ${f0(d.order)} → spectrum-averaged`;
+  } else if (s2a < 0.01){
+    modeLabel = 'single ray — no interference (α at 0°/90°)';
+  } else if (fringesPerPx > 0.5){
+    /* resolution guardrail: analytically averaged uniform value, labeled */
+    c.fillStyle = P.beam; c.globalAlpha = 0.5*s2a;
+    c.fillRect(sx, cy - extPx, sw, 2*extPx); c.globalAlpha = 1;
+    modeLabel = `unresolvable (${f2(fringesPerPx)} fr/px) → analytic average`;
+  } else {
+    for (let py = -extPx; py <= extPx; py++){
+      const yMm = (py/extPx)*extMm;           // strip row → position in the exit fan
+      let sInt = Number.isFinite(zg) ? -yMm/(PHY.NO*(zg - d.xBack)) : 0;
+      sInt = Math.max(-d.iMax*1.15, Math.min(d.iMax*1.15, sInt));
+      const I = s2a*Math.sin(d.dphiAt(sInt)/2)**2;
+      c.fillStyle = P.beam; c.globalAlpha = Math.min(1, I*0.95);
+      c.fillRect(sx, cy + py, sw, 1.2);
+    }
+    c.globalAlpha = 1;
+    modeLabel = `spread ≈ ${f1(d.fringeSpread)} fringes — resolvable`;
+  }
+  c.restore();
+  txt(`exit strip — I = sin²2α·sin²(Δφ/2), spans the fan ×${f0(stripScale)} tall (computed)`,
+      X(d.xFront), cy + 86 + 31, sans(10), P.ink2);
+  txt(`order ≈ ${f0(d.order)} · ${modeLabel}`, X(d.xFront), cy + 86 + 45, sans(10), P.ink2);
+  txt(`lattice: SiO₄ helices ∥ c-axis (motif — real cell 0.540 nm ⇒ ≈${(d.cellsAlong/1e7).toFixed(1)}×10⁷ across d) · glints = virtual polarization, no absorption (hν ≪ gap), ~10¹⁴× slower`,
+      X(d.xFront), cy + 86 + 59, sans(9.5), P.quartzLine);
+}
+
+function drawPolInset(c, d, P, sans, mono, txt){
+  const bx = 18, by = 52, bw = 168, bh = 120;
+  c.save();
+  c.fillStyle = P.panel; c.strokeStyle = P.line; c.lineWidth = 1;
+  rr(c, bx, by, bw, bh, 6); c.fill(); c.stroke();
+  txt('polarization split', bx + 9, by + 15, `600 ${sans(10)}`, P.ink);
+  txt(d.src === 'sun' ? 'unpolarized: ⟨I₀⟩ = ⟨Iₑ⟩ = ½' : 'I₀ = sin²α · Iₑ = cos²α', bx + 9, by + 28, mono(8.5), P.ink2);
+  const ccx = bx + 40, ccy = by + 74, r = 26;
+  c.strokeStyle = P.line; c.beginPath(); c.arc(ccx, ccy, r, 0, 7); c.stroke();
+  c.strokeStyle = P.eray; c.lineWidth = 1.2;
+  c.beginPath(); c.moveTo(ccx, ccy - r); c.lineTo(ccx, ccy + r); c.stroke();   // optic-axis plane (e)
+  c.strokeStyle = P.beam;
+  c.beginPath(); c.moveTo(ccx - r, ccy); c.lineTo(ccx + r, ccy); c.stroke();   // o (⊥ plane)
+  if (d.src === 'sun'){
+    /* unpolarized: E takes all orientations — draw a faint fan of E-lines */
+    c.strokeStyle = P.ink; c.lineWidth = 1; c.globalAlpha = 0.4;
+    for (let k = 0; k < 6; k++){ const a2 = k*Math.PI/6;
+      c.beginPath(); c.moveTo(ccx - Math.cos(a2)*r*0.82, ccy - Math.sin(a2)*r*0.82);
+      c.lineTo(ccx + Math.cos(a2)*r*0.82, ccy + Math.sin(a2)*r*0.82); c.stroke(); }
+    c.globalAlpha = 1;
+  } else {
+    const aR = d.alpha*Math.PI/180;
+    const ex = Math.sin(aR)*r*0.9, ey = -Math.cos(aR)*r*0.9;
+    c.strokeStyle = P.ink; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(ccx - ex, ccy - ey); c.lineTo(ccx + ex, ccy + ey); c.stroke();
+    txt('E', ccx + ex + 4, ccy + ey - 2, `600 ${sans(10)}`, P.ink);
+  }
+  txt('e', ccx + 3, ccy - r + 8, sans(9), P.eray);
+  txt('o', ccx + r - 8, ccy - 4, sans(9), P.beam);
+  const bxx = bx + 92, bwid = bw - 100;
+  const bar = (y, frac, col, lbl) => {
+    c.fillStyle = P.hair; c.fillRect(bxx, y, bwid, 9);
+    c.fillStyle = col; c.fillRect(bxx, y, bwid*frac, 9);
+    txt(lbl, bxx, y - 3, mono(9), col);
+  };
+  bar(by + 52, d.Ie, P.eray, `e · ${f0(d.Ie*100)}%`);
+  bar(by + 82, d.Io, P.beam, `o · ${f0(d.Io*100)}%`);
+  txt(d.src === 'sun' ? 'unpolarized input — α has no effect' : `α from the axis plane = ${d.alpha}°`,
+      bx + 9, by + bh - 7, sans(9), P.ink2);
+  c.restore();
+}
+
+/* the emitted light: exit polarization state where the o/e beams overlap —
+   the honest answer to "what comes out of the quartz". Drawn for the beam
+   center; the state varies across the fan (that variation IS the strip). */
+function drawExitInset(c, d, P, sans, mono, txt){
+  const bx = 18, by = 298, bw = 172, bh = 152;
+  c.save();
+  c.fillStyle = P.panel; c.strokeStyle = P.line; c.lineWidth = 1;
+  rr(c, bx, by, bw, bh, 6); c.fill(); c.stroke();
+  txt('emitted light — exit state', bx + 9, by + 15, `600 ${sans(10)}`, P.ink);
+  if (d.src === 'sun'){
+    txt('unpolarized — incoherent o/e pair', bx + 9, by + 29, sans(9.5), P.beam);
+    const scx = bx + 48, scy = by + 84, sr = 30;
+    c.globalAlpha = 0.9; c.lineWidth = 1.6;
+    c.strokeStyle = P.eray;
+    c.beginPath(); c.moveTo(scx, scy - sr); c.lineTo(scx, scy + sr); c.stroke();
+    arrowHead(c, scx, scy - sr, -Math.PI/2, P.eray); arrowHead(c, scx, scy + sr, Math.PI/2, P.eray);
+    c.strokeStyle = P.beam;
+    c.beginPath(); c.moveTo(scx - sr, scy); c.lineTo(scx + sr, scy); c.stroke();
+    arrowHead(c, scx - sr, scy, Math.PI, P.beam); arrowHead(c, scx + sr, scy, 0, P.beam);
+    c.globalAlpha = 1;
+    const tx1 = bx + 96;
+    txt('o · 50%', tx1, by + 62, mono(9), P.beam);
+    txt('e · 50%', tx1, by + 77, mono(9), P.eray);
+    txt('no fixed phase', tx1, by + 92, mono(9), P.ink2);
+    txt('⇒ no ellipse', tx1, by + 107, mono(9), P.ink2);
+    txt('incoherent orthogonal pair — Δφ drifts randomly', bx + 9, by + bh - 20, sans(8.5), P.ink2);
+    txt('the ellipse applies to the coherent 589 nm source', bx + 9, by + bh - 8, sans(8.5), P.ink2);
+    c.restore(); return;
+  }
+  const rotWord = (d.Ie > 1e-6 && d.Io > 1e-6 && Math.abs(d.stokes[2]) >= 0.05)
+    ? (d.rotCCW ? ' · CCW ↺' : ' · CW ↻') : '';
+  txt(d.polState + rotWord, bx + 9, by + 29, sans(9.5), P.beam);
+  /* reference axes — same convention as the input inset: e vertical, o horizontal */
+  const ccx = bx + 48, ccy = by + 84, r = 30;
+  c.globalAlpha = 0.55; c.lineWidth = 1;
+  c.strokeStyle = P.eray;
+  c.beginPath(); c.moveTo(ccx, ccy - r - 4); c.lineTo(ccx, ccy + r + 4); c.stroke();
+  c.strokeStyle = P.beam;
+  c.beginPath(); c.moveTo(ccx - r - 4, ccy); c.lineTo(ccx + r + 4, ccy); c.stroke();
+  c.globalAlpha = 1;
+  /* polarization ellipse: x = o-field (fast), y = e-field (slow, lags by δ) */
+  const Ao = Math.sqrt(d.Io), Ae = Math.sqrt(d.Ie), delta = d.deltaM;
+  const sc = r/Math.max(Ao, Ae, 1e-6);
+  c.strokeStyle = P.ink; c.lineWidth = 2;
+  c.beginPath();
+  for (let k = 0; k <= 72; k++){
+    const t = 2*Math.PI*k/72;
+    const x = ccx + Ao*Math.cos(t)*sc, y = ccy - Ae*Math.cos(t - delta)*sc;
+    k ? c.lineTo(x, y) : c.moveTo(x, y);
+  }
+  c.stroke();
+  if (Ao > 1e-3 && Ae > 1e-3 && Math.abs(Math.sin(delta)) > 0.05){
+    arrowHead(c, ccx + Ao*sc, ccy - Ae*Math.cos(delta)*sc,
+      Math.sin(delta) > 0 ? -Math.PI/2 : Math.PI/2, P.ink);
+  }
+  /* values column */
+  const tx0 = bx + 96;
+  txt(`b/a  ${f2(d.ba)}`, tx0, by + 62, mono(9), P.ink);
+  txt(`ψ    ${neg(f1(d.psiDeg))}°`, tx0, by + 77, mono(9), P.ink);
+  txt(`δ₂π  ${f2(d.deltaM)} rad`, tx0, by + 92, mono(9), P.ink);
+  txt(`V(Na-D) ${f2(d.visNaD)}`, tx0, by + 107, mono(9), P.ink2);
+  txt('beam center — state varies across the fan (strip)', bx + 9, by + bh - 20, sans(8.5), P.ink2);
+  txt('viewed toward the source · e vertical (slow)', bx + 9, by + bh - 8, sans(8.5), P.ink2);
+  c.restore();
+}
+
+/* small drawing helpers */
+function rr(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x+r, y); c.arcTo(x+w, y, x+w, y+h, r);
+  c.arcTo(x+w, y+h, x, y+h, r); c.arcTo(x, y+h, x, y, r); c.arcTo(x, y, x+w, y, r); c.closePath(); }
+function diamond(c, x, y, r, fill, stroke){
+  c.save(); c.beginPath(); c.moveTo(x, y-r); c.lineTo(x+r*0.8, y); c.lineTo(x, y+r); c.lineTo(x-r*0.8, y); c.closePath();
+  if (fill){ c.fillStyle = fill; c.fill(); }
+  if (stroke){ c.strokeStyle = stroke; c.lineWidth = 1.3; c.stroke(); }
+  c.restore(); }
+function arrowHead(c, x, y, ang, col){
+  c.save(); c.fillStyle = col; c.translate(x, y); c.rotate(ang);
+  c.beginPath(); c.moveTo(0,0); c.lineTo(-7,-3); c.lineTo(-7,3); c.closePath(); c.fill(); c.restore(); }
+function dimLine(c, x1, x2, y, label, P, mono){
+  c.save(); c.strokeStyle = P.ink2; c.lineWidth = 1;
+  c.beginPath(); c.moveTo(x1+4, y); c.lineTo(x2-4, y); c.stroke();
+  arrowHead(c, x1+3, y, Math.PI, P.ink2); arrowHead(c, x2-3, y, 0, P.ink2);
+  c.font = mono(10); c.fillStyle = P.ink2; c.textAlign = 'center';
+  c.fillText(label, (x1+x2)/2, y - 5); c.restore(); }
+function glowSpot(c, x, y, r, col, alpha){
+  c.save(); c.globalAlpha = Math.min(1, alpha)*0.35;
+  c.fillStyle = col; c.beginPath(); c.arc(x, y, r*2.2, 0, 7); c.fill();
+  c.globalAlpha = Math.min(1, 0.35 + alpha*0.65);
+  c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); c.restore(); }
+
+/* ================================================================
+   COSMETIC LAYER (separate canvas, behind the physics) — the ONLY
+   pixels the toggles may change. Reads derived numbers, never writes.
+   ================================================================ */
+function mulberry(seed){ let a = seed>>>0; return () => {
+  a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a>>>15, 1 | a);
+  t = t + Math.imul(t ^ t>>>7, 61 | t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }; }
+function drawCosmetic(){
+  const g = GEO, d = DER, P = palette(), c = ctxBg;
+  c.setTransform(g.dpr, 0, 0, g.dpr, 0, 0);
+  c.clearRect(0, 0, g.W, g.H);
+  c.fillStyle = P.panel; c.fillRect(0, 0, g.W, g.H);
+  if (layers.herm){
+    /* Ordo-ab-Chao noise mask — cosmetic, but its clear center tracks the
+       COMPUTED focus coordinate: chaos resolving to order at a real position. */
+    const fx = g.X(Math.max(g.worldMin, Math.min(d.zwIn, d.xCornea))), fy = g.cy;
+    const rnd = mulberry(48271);
+    c.save(); c.fillStyle = P.herm;
+    for (let i = 0; i < 2600; i++){
+      const x = rnd()*g.W, y = rnd()*g.H;
+      const dist = Math.hypot(x - fx, y - fy);
+      const a = Math.max(0, Math.min(1, (dist - 70)/420))*0.10;
+      if (a < 0.004) continue;
+      c.globalAlpha = a*(0.4 + 0.6*rnd());
+      c.fillRect(x, y, 1.4, 1.4);
+    }
+    c.restore();
+    c.font = '9.5px "Segoe UI",system-ui,sans-serif'; c.fillStyle = P.herm; c.globalAlpha = 0.8;
+    c.fillText('Ordo ab Chao — cosmetic noise; clear center follows the computed focus', 18, g.H - 58);
+    c.globalAlpha = 1;
+  }
+  if (layers.spec){
+    /* toroidal flourish — below the axis, off the beam path; computes nothing */
+    const bx0 = g.X(d.xBack) + 14, by0 = 398;
+    const bw0 = Math.max(96, Math.min(272, g.X(d.xCornea) - g.X(d.xBack) - 34)), bh0 = 56;
+    const tx = bx0 + 40, ty = by0 + 28;
+    c.save(); c.strokeStyle = P.spec; c.fillStyle = P.specFill; c.lineWidth = 1;
+    c.setLineDash([4,3]);
+    rr(c, bx0, by0, bw0, bh0, 6); c.fill(); c.stroke();
+    c.beginPath(); c.ellipse(tx, ty, 24, 15, 0, 0, 7); c.stroke();
+    c.beginPath(); c.arc(tx - 10, ty, 8, 0, 7); c.stroke();
+    c.beginPath(); c.arc(tx + 10, ty, 8, 0, 7); c.stroke();
+    c.setLineDash([]);
+    c.font = '9.5px "Segoe UI",system-ui,sans-serif'; c.fillStyle = P.spec;
+    if (bw0 >= 250){
+      c.fillText('toroidal overlay — illustrative analogy,', tx + 36, ty - 8);
+      c.fillText('not computed · speculative — not a', tx + 36, ty + 5);
+      c.fillText('physical or biological measurement', tx + 36, ty + 18);
+    } else {
+      c.fillText('toroidal analogy —', tx + 34, ty - 2);
+      c.fillText('not computed', tx + 34, ty + 11);
+    }
+    c.restore();
+  }
+}
+
+/* ================================================================
+   ANIMATION LANE — rAF only; reads pre-computed polylines; pause
+   freezes markers without disturbing a single readout.
+   ================================================================ */
+function buildLanes(){
+  const d = DER, g = GEO;
+  const neVis = PHY.NO + PHY.EX*(d.neT - PHY.NO);   // e-marker lag drawn ×EX — labeled on canvas
+  const eDrift = PHY.EX*Math.tan(Math.abs(d.rho))*g.hs; // px of e rise per mm of crystal depth
+  const mkSegs = lane => {
+    const segs = [];
+    const push = (x0, x1, n, y0, y1) => segs.push({x0, x1, n, y0, y1, len:(x1-x0)});
+    push(0, d.xLens, 1, g.cy, g.cy);
+    push(d.xLens, d.xFront, 1, g.cy, g.cy);
+    if (lane === 'e'){
+      push(d.xFront, d.xBack, neVis, g.cy, g.cy - eDrift*d.d);
+      push(d.xBack, d.xCornea, 1, g.cy - eDrift*d.d, g.cy - eDrift*d.d);
+    } else {
+      push(d.xFront, d.xBack, PHY.NO, g.cy, g.cy);
+      push(d.xBack, d.xCornea, 1, g.cy, g.cy);
+    }
+    let t = 0; for (const sg of segs){ sg.t0 = t; t += sg.len*sg.n; sg.t1 = t; }
+    return {segs, total: t};
+  };
+  const eye = {x0: g.eyeCx - g.eyeR, x1: g.eyeCx + g.eyeR, n: PHY.N_EYE,
+    lenMm: PHY.AXIAL, total: PHY.AXIAL*PHY.N_EYE};
+  /* lattice sites inside the beam — anchors for the virtual-polarization glints
+     (same helix geometry the static layer draws, same θ rotation) */
+  const th = d.theta*Math.PI/180, cosT = Math.cos(th), sinT = Math.sin(th);
+  const ccx = (g.X(d.xFront) + g.X(d.xBack))/2, ccy = g.cy;
+  const halfW = (g.X(d.xBack) - g.X(d.xFront))/2;
+  const sites = [];
+  for (let v = -216; v <= 216 && sites.length < 600; v += 13)
+    for (let u = -216; u <= 216; u += 9){
+      const yz = v + 2.3*Math.sin(u*0.55 + v*0.8);
+      const px = ccx + u*cosT + yz*sinT, py = ccy - u*sinT + yz*cosT;
+      if (Math.abs(px - ccx) > halfW - 2 || Math.abs(py - ccy) > 84) continue;
+      const wb = wBench(d, g.worldMin + (px - g.x0)/g.hs)*g.vs;
+      if (Math.abs(py - g.cy) > Math.min(wb + 8, 84)) continue;
+      sites.push({x: px, y: py, ph: ((u*7.3 + v*13.7) % 6.283 + 6.283) % 6.283});
+    }
+  LANES = {o: mkSegs('o'), e: mkSegs('e'), eye, sites, spacing: 26};
+  window.__lanes = LANES;
+}
+function lanePos(lane, tau){
+  for (const sg of lane.segs){
+    if (tau <= sg.t1){
+      const fr = (tau - sg.t0)/(sg.t1 - sg.t0 || 1);
+      return {x: sg.x0 + fr*(sg.x1 - sg.x0), y: sg.y0 + fr*(sg.y1 - sg.y0)};
+    }
+  }
+  return null;
+}
+let animT = 0, lastTs = 0, playing = true;
+let photons = [], photonAcc = 0;             // photon-arrival mode event pool
+let scatters = [];                           // Rayleigh side-scatter flashes in the air gap
+if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) playing = false;
+function xFromPx(px){ return GEO.worldMin + (px - GEO.x0)/GEO.hs; }
+/* photon-arrival mode — the honest quantum picture: photons appear only as
+   detection events; each position is SAMPLED from the computed intensity
+   (transverse Gaussian, σ = w(z)/2; o/e identity with probability I₀/Iₑ).
+   No trajectories are drawn — v = c/n describes the field, not a photon path. */
+function renderPhotonFrame(dt, g, d, P, c){
+  if (playing){
+    photonAcc += dt*130*state.speed;
+    while (photonAcc >= 1 && photons.length < 420){
+      photonAcc -= 1;
+      const xm = Math.random()*d.xCornea;
+      const split = d.neT - PHY.NO > 1e-9 && xm >= d.xFront;
+      const lane = split ? (Math.random() < d.Ie ? 'e' : 'o') : 'pre';
+      if (lane === 'o' && d.Io < 1e-6) continue;
+      const w = wBench(d, xm);
+      let yc = g.cy;
+      if (lane === 'e')
+        yc = g.cy - PHY.EX*Math.tan(Math.abs(d.rho))*g.hs*Math.min(Math.max(xm - d.xFront, 0), d.d);
+      /* transverse sample from the computed profile: Gaussian for the coherent
+         source, ~uniform across the geometric cone for the incoherent sun */
+      const yOff = d.src === 'sun'
+        ? (Math.random()*2 - 1)*w
+        : Math.sqrt(-2*Math.log(Math.max(1e-12, Math.random())))*Math.cos(2*Math.PI*Math.random())*(w/2);
+      photons.push({x: g.X(xm), y: yc - Math.max(-90, Math.min(90, yOff*g.vs)), lane, t: 0, life: 0.5});
+    }
+    if (d.objOK && Math.random() < dt*8*state.speed*d.trans)
+      photons.push({x: g.eyeCx + g.eyeR - 2 + (Math.random() - 0.5)*3,
+        y: g.cy + (Math.random() - 0.5)*3, lane: 'ret', t: 0, life: 0.35});
+    for (const p of photons) p.t += dt;
+    photons = photons.filter(p => p.t < p.life);
+  }
+  for (const p of photons){
+    const ph = p.t/p.life, a = ph < 0.25 ? ph/0.25 : (1 - ph)/0.75;
+    c.save(); c.globalAlpha = Math.max(0, a)*0.95;
+    c.fillStyle = p.lane === 'e' ? P.eray : P.beam;
+    c.beginPath(); c.arc(p.x, p.y, p.lane === 'ret' ? 2.2 : 1.7, 0, 7); c.fill();
+    c.restore();
+  }
+}
+function renderAnimFrame(dt){
+  const g = GEO, d = DER, P = palette(), c = ctxA;
+  if (playing) animT += dt*state.speed*80;   // optical path units (mm·n) per second
+  c.setTransform(g.dpr, 0, 0, g.dpr, 0, 0);
+  c.clearRect(0, 0, g.W, g.H);
+  /* quantum activity in the matrix — lattice sites inside the beam shimmer as
+     the field polarizes them (virtual excitation, no absorption: hν ≪ gap).
+     Real oscillation is 509 THz; drawn ~10¹⁴× slower, labeled on canvas. */
+  if (LANES.sites && LANES.sites.length){
+    c.save(); c.fillStyle = P.beam;
+    for (const s2 of LANES.sites){
+      c.globalAlpha = 0.10 + 0.38*(0.5 + 0.5*Math.sin(animT*0.32 + s2.ph));
+      c.beginPath(); c.arc(s2.x, s2.y, 1.25, 0, 7); c.fill();
+    }
+    c.restore();
+  }
+  /* Rayleigh scatter in the air gap — a molecule occasionally re-radiates the
+     field sideways. True fraction over g ≈ 4×10⁻⁷; the flash RATE is hugely
+     exaggerated so the process is visible at all (labeled on canvas). */
+  if (playing && scatters.length < 3 && Math.random() < dt*0.5){
+    const zf = d.xLens + 4 + Math.random()*(PHY.GAP - 8);
+    const wpx = Math.max(2, Math.min(wBench(d, zf)*g.vs, 80));
+    scatters.push({x: g.X(zf), y: g.cy + (Math.random()*2 - 1)*wpx,
+      a: Math.random()*6.283, t: 0, life: 0.7});
+  }
+  if (playing) for (const sc of scatters) sc.t += dt;
+  scatters = scatters.filter(sc => sc.t < sc.life);
+  for (const sc of scatters){
+    const fr = sc.t/sc.life;
+    c.save(); c.strokeStyle = P.beam;
+    c.globalAlpha = (1 - fr)*0.55; c.lineWidth = 1;
+    c.beginPath(); c.arc(sc.x, sc.y, 2 + 12*fr, 0, 7); c.stroke();
+    c.globalAlpha = (1 - fr)*0.7; c.lineWidth = 1.2;
+    c.beginPath(); c.moveTo(sc.x + Math.cos(sc.a)*4, sc.y + Math.sin(sc.a)*4);
+    c.lineTo(sc.x + Math.cos(sc.a)*(6 + 26*fr), sc.y + Math.sin(sc.a)*(6 + 26*fr)); c.stroke();
+    c.restore();
+  }
+  if (state.markerMode === 'photons'){ renderPhotonFrame(dt, g, d, P, c); return; }
+  const period = LANES.spacing;              // optical-path spacing between wave fronts
+  const tick = (x, y, h, col, alpha) => {
+    if (alpha < 0.02) return;
+    c.save(); c.globalAlpha = alpha; c.strokeStyle = col; c.lineWidth = 2;
+    c.lineCap = 'round'; c.shadowColor = col; c.shadowBlur = 3;
+    c.beginPath(); c.moveTo(x, y - h/2); c.lineTo(x, y + h/2); c.stroke(); c.restore();
+  };
+  const split = d.neT - PHY.NO > 1e-9;       // o/e identity exists only when birefringent
+  const maxTotal = Math.max(LANES.o.total, LANES.e.total);
+  const n = Math.ceil(maxTotal/period) + 1;
+  const base = animT % period;
+  for (let k = 0; k < n; k++){
+    const tau = base + k*period;
+    const po = tau <= LANES.o.total ? lanePos(LANES.o, tau) : null;
+    if (po){
+      const xm = xFromPx(po.x);
+      const h = Math.max(6, Math.min(50, 2*wBench(d, Math.min(xm, d.xCornea))*g.vs));
+      const a = (!split || xm < d.xFront) ? 0.95 : (d.Io < 0.01 ? 0 : 0.25 + 0.7*d.Io);
+      tick(po.x, po.y, h, P.beam, a);
+    }
+    const pe = split && tau <= LANES.e.total ? lanePos(LANES.e, tau) : null;
+    if (pe && d.Ie > 0.01 && xFromPx(pe.x) >= d.xFront - 1e-6){
+      const h = Math.max(6, Math.min(50, 2*wBench(d, Math.min(xFromPx(pe.x), d.xCornea))*g.vs));
+      tick(pe.x + 1.5, pe.y, h, P.eray, 0.25 + 0.7*d.Ie);
+    }
+  }
+  /* eye lane — markers continue at c/n′ through the vitreous */
+  if (d.objOK){
+    const el = LANES.eye;
+    const eyeN = Math.ceil(el.total/period) + 1;
+    for (let k = 0; k < eyeN; k++){
+      const tau = base + k*period;
+      if (tau > el.total) continue;
+      const fr = tau/el.total;
+      const x = el.x0 + fr*(el.x1 - el.x0);
+      const h = Math.max(3, (1 - fr)*state.pupil*GEO.eyeScale*0.9);
+      tick(x, GEO.cy, h, P.beam, 0.8);
+    }
+  }
+}
+window.__animFrame = renderAnimFrame;        // testable without the rAF scheduler
+function drawAnim(ts){
+  const dt = Math.min(0.05, (ts - lastTs)/1000 || 0); lastTs = ts;
+  renderAnimFrame(dt);
+  requestAnimationFrame(drawAnim);
+}
+
+/* ================================================================
+   READOUTS + NARRATION + COMPARISON TABLE — text reads numbers,
+   numbers never read text.
+   ================================================================ */
+function row(dl, label, val, cls){
+  const div = document.createElement('div'); div.className = 'row';
+  const dt = document.createElement('dt'); dt.textContent = label;
+  const dd = document.createElement('dd'); dd.innerHTML = val; if (cls) dd.className = cls;
+  div.append(dt, dd); dl.appendChild(div);
+}
+function updateReadouts(){
+  const d = DER;
+  const B = $('roBeam'), C = $('roCrys'), W = $('roWave'), R = $('roRet'), O = $('roObs');
+  for (const el of [B, C, W, R, O]) el.textContent = '';
+  if (d.src === 'sun'){
+    row(B, 'source', 'the Sun — θ☉ 0.533°, at ∞');
+    row(B, 'sun image Ø = f·θ☉', `${f3(d.dSun)} mm`, 'hot');
+    row(B, 'cone speed f/D', `f/${f1(d.f/d.D)}`);
+    row(B, 'collected power (1 kW/m²)', `${f2(d.powerW)} W`);
+    row(B, 'concentration', `≈ ${f0(d.conc)}× (limit ≈ ${f0(d.etendueMax)}×)`, 'hot');
+    row(B, 'irradiance at the image', `${f2(d.conc/1000)} MW/m²`);
+    row(B, 'photons through the lens', `≈ ${(d.photonRate/1e18).toFixed(1)}×10¹⁸ /s`);
+    row(B, 'transverse coherence at lens', `≈ ${f0(d.cohUm)} µm (γ = 0.88)`);
+    row(B, 'classical magnifier 250/f', `${f1(d.Mclass)}×`);
+  } else {
+    const geoStr = !Number.isFinite(d.sGeo) ? '∞ (collimated)'
+      : d.sGeo < 0 ? neg(`${f1(Math.abs(d.sGeo))} mm (virtual)`) : `${f1(d.sGeo)} mm`;
+    row(B, "geometric image s′", geoStr);
+    row(B, 'magnification m', Number.isFinite(d.m) ? neg(f2(d.m)) : '—');
+    row(B, 'Gaussian waist s″ (Self)', d.s2 < 0 ? neg(`${f1(d.s2)} mm (virtual)`) : `${f2(d.s2)} mm`, 'hot');
+    row(B, 'focal shift s′ − s″', Number.isFinite(d.focalShift) ? `${f2(d.focalShift)} mm` : '—');
+    row(B, "waist w₀′", `${f1(um(d.w0p))} µm`, 'hot');
+    row(B, "Rayleigh range zR′", `${f2(d.zRp)} mm`);
+    row(B, "divergence θ′", `${f2(d.thDiv*1000)} mrad`);
+    row(B, 'classical magnifier 250/f', `${f1(d.Mclass)}×`);
+  }
+  row(B, 'air in the gap (model: n = 1)', `n 1.000273 → +${f1(um(d.airOPD))} µm ≈ ${f1(d.airLam)}λ`);
+  row(B, 'molecules threaded in g', `≈ ${sci(d.airMol)}`);
+  row(B, 'Rayleigh loss over g', `≈ ${sci(d.airScatter)} of the power`);
+  const focStr = (d.depthO > 0 && d.depthO < d.d)
+    ? `${f1(d.airWaist - d.xFront)} → ${f1(d.depthO)} mm deep`
+    : (d.airWaist < d.xFront ? 'in the air gap' : (d.zApp < 0 ? `${f1(-d.zApp)} mm past exit` : 'virtual'));
+  row(C, 'nₑ(θ)', f4(d.neT));
+  row(C, 'Δn(θ) = nₑ(θ) − n₀', f4(d.neT - PHY.NO));
+  row(C, 'walk-off ρ', `${f3(Math.abs(d.rhoDeg))}°`);
+  row(C, 'true o/e separation', `${f3(d.sep)} mm`, 'hot');
+  row(C, 'focus (air → in-crystal)', focStr);
+  row(C, 'e-front lag at exit', `${f3(d.lagExit)} mm`);
+  row(C, 'split I₀ / Iₑ', `${f0(d.Io*100)}% / ${f0(d.Ie*100)}%`);
+  row(C, 'lattice (drawn as motif)', 'SiO₄ helices ∥ optic axis');
+  row(C, 'hν vs band gap', `${f3(d.ephot)} ≪ ≈${f1(PHY.E_GAP)} eV — no absorption`);
+  row(C, 'unit cells along path', `≈ ${(d.cellsAlong/1e7).toFixed(1)}×10⁷ (c = 0.540 nm)`);
+  if (d.src === 'sun') row(W, 'spectrum', 'broadband — rows at 589 nm', 'warn');
+  row(W, 'frequency ν = c/λ (invariant)', `${f2(d.nu/1e12)} THz`, 'hot');
+  row(W, 'angular frequency ω', `${f3(d.omega/1e15)} ×10¹⁵ rad/s`);
+  row(W, 'optical period T = 1/ν', `${f3(d.periodFs)} fs`);
+  row(W, 'photon energy hν', `${f3(d.ephot)} eV`);
+  row(W, 'λ in vacuum / o / e', `589 / ${f1(d.lamO*1e6)} / ${f1(d.lamE*1e6)} nm`);
+  row(W, "λ in vitreous (n′ = 4/3)", `${f1(d.lamVit*1e6)} nm`);
+  row(W, 'cycles across d — o / e', `${Math.round(d.cyclesO).toLocaleString('en-US')} / ${Math.round(d.cyclesE).toLocaleString('en-US')}`);
+  row(W, 'transit through d (o-wave)', `${f3(d.transitO*1e9)} ns`);
+  row(W, 'Δcycles (= interference order)', `${f1(d.cyclesE - d.cyclesO)} ✓`, 'hot');
+  row(R, 'Δφ total', `${f1(d.dphi)} rad`);
+  row(R, 'Δφ mod 2π', `${f2(((d.dphi % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI))} rad`);
+  row(R, 'OPD', `${f1(um(d.opd))} µm = ${Math.round(d.opd*1e6).toLocaleString('en-US')} nm`);
+  row(R, 'interference order', `≈ ${f0(d.order)}`, 'hot');
+  row(R, 'fringe spread over fan', `${f2(d.fringeSpread)} fringes`);
+  if (d.src === 'sun'){
+    row(R, 'exit state', 'unpolarized — incoherent o/e', 'hot');
+    row(R, `white-light fringes (order ≈ ${f0(d.order)} ≫ a few)`, 'washed out');
+  } else {
+    const rotStr = (d.Ie > 1e-6 && d.Io > 1e-6 && Math.abs(d.stokes[2]) >= 0.05)
+      ? ` · ${d.rotCCW ? 'CCW ↺' : 'CW ↻'}` : '';
+    row(R, 'exit state (beam center)', `${d.polState.split(' — ')[0]}${rotStr}`, 'hot');
+    row(R, 'axis ratio b/a', f2(d.ba));
+    row(R, 'major axis ψ (from axis plane)', `${neg(f1(d.psiDeg))}°`);
+    row(R, 'Na-D doublet visibility (model note — declared source is one line)', f2(d.visNaD));
+  }
+  const ok = d.objOK;
+  row(O, 'apparent source z_app', ok ? `${f2(d.zApp)} mm behind exit` : '—');
+  row(O, 'object distance L + z_app', ok ? `${f1(d.obj)} mm` : '— (≤ cornea)', ok ? '' : 'warn');
+  row(O, 'accommodation A', ok ? `${f2(d.acc)} D${d.accFlag ? ' ⚠ > 10 D amplitude' : ''}` : '—', d.accFlag ? 'warn' : 'hot');
+  if (d.src === 'sun'){
+    row(O, 'solar disks (o & e)', ok ? `${f1(d.sunArcmin)}′ each · offset ${f2(d.arcmin)}′` : '—', 'hot');
+    row(O, 'retinal disks', ok ? `Ø ${f1(um(d.dSunRet))} µm ×2, offset ${f1(um(d.dRet))} µm` : '—');
+    row(O, 'cone at the cornea', `half-h ${f1(d.hCornea)} mm vs pupil ${state.pupil} mm`);
+    row(O, 'pupil admits', `${(d.trans*100).toFixed(3)}%`);
+    row(O, 'image-to-retina miss', ok ? `${f1(um(d.retMiss))} µm (self-test < 10)` : '—', 'hot');
+    row(O, 'crystalline lens (drawn anatomy)', `rA ${f1(d.lensRA)} / rP ${f1(d.lensRP)} mm · 0° tilt`);
+    row(O, 'hazard — luminance ≈ the solar disk; never view a real solar focus', '⚠ thought experiment', 'warn');
+  } else {
+    row(O, 'o/e subtense Δθ', ok ? `${f2(d.arcmin)} arcmin (acuity ≈ 1′)` : '—', 'hot');
+    row(O, 'retinal separation', ok ? `${f1(um(d.dRet))} µm ≈ ${f1(d.cones)} cones` : '—');
+    row(O, 'beam Ø at cornea', `${f2(2*d.wCorn)} mm vs pupil ${state.pupil} mm`);
+    row(O, 'pupil admits', `${f0(d.trans*100)}%`);
+    row(O, 'retinal spot w_ret', ok ? `${f2(um(d.wRet))} µm (diffr. ${f2(um(d.wDiff))} µm)` : '—');
+    row(O, 'waist-to-retina miss', ok ? `${f1(um(d.retMiss))} µm (self-test < 10)` : '—', 'hot');
+    row(O, 'crystalline lens (drawn anatomy)', `rA ${f1(d.lensRA)} / rP ${f1(d.lensRP)} mm · 0° tilt`);
+  }
+  const notes = [];
+  if (d.src === 'sun') notes.push('Sunlight mode: extended incoherent source — Gaussian-beam readouts replaced by the geometric sun image; s and α have no effect.');
+  else if (!Number.isFinite(d.sGeo)) notes.push('s = f — collimated: geometric image at ∞, Gaussian waist at the focal plane.');
+  else if (d.sGeo < 0) notes.push('s < f — virtual image; the beam diverges after the lens (dashed back-extension drawn).');
+  if (d.neT - PHY.NO < 1e-9) notes.push('θ = 0° — birefringence vanishes: o and e share one index, no walk-off, no retardation.');
+  if (!ok) notes.push('Apparent focus at/beyond the cornea — observer readouts suspended (move L, s, or f).');
+  $('status').textContent = notes.join(' ');
+}
+const V = x => `<span class="v">${x}</span>`;
+function airNarr(d){
+  return `The ${V(PHY.GAP + ' mm')} of air in between is not quite nothing: n_air = ${V('1.000273')} — this model rounds it to 1, hiding ${V(f1(um(d.airOPD)) + ' µm')} ≈ ${V(f1(d.airLam) + 'λ')} of optical path — and the beam threads ≈ ${V(sci(d.airMol))} molecules there, ` +
+    `each re-radiating like the quartz cells but from random positions, so only ≈ ${V(sci(d.airScatter))} of the light Rayleigh-scatters sideways (the flashes; the same process needs kilometres of sky to turn blue)` +
+    (d.src === 'sun' ? `; near a burning focus, heated air would add schlieren shimmer — not modeled. ` : `. `);
+}
+function quantumNarr(d){
+  return `Beneath the indices sits the quantum picture: each ${V(f2(d.ephot) + ' eV')} photon lies far below quartz's ${V('≈8.9 eV')} band gap, so nothing is absorbed — ` +
+    `the field only polarizes the SiO₄ helices (the matrix drawn in the block, wound around the optic axis) through virtual excitations. ` +
+    `The ${V('≈' + (d.cellsAlong/1e7).toFixed(1) + '×10⁷')} unit cells along the path re-radiate in sequence over the ${V(f3(d.transitO*1e9) + ' ns')} transit; ` +
+    `their accumulated phase delay <em>is</em> the refractive index, and its direction-dependence along vs across the helices is the birefringence ` +
+    `<span class="tag">lattice motif — cell 0.540 nm · glints ~10¹⁴× slower</span>. `;
+}
+function sunNarr(d){
+  const ok = d.objOK;
+  const where = (d.depthO >= -1e-9 && d.depthO <= d.d)
+    ? (d.depthO < 0.5 ? `right at the entrance face (f = g = 45 mm — lengthen f to push it deeper)` : `${V(f1(d.depthO) + ' mm')} into the block (the ×n₀ rule)`)
+    : (d.airWaist < d.xFront ? 'in the air gap before the crystal' : `${V(f1(-d.zApp) + ' mm')} past the exit face, in air`);
+  const overlap = d.sep < d.dSun
+    ? `since ${V(f3(d.sep) + ' mm')} ≪ disk Ø ${V(f3(d.dSun) + ' mm')}, they overlap — a smeared doubling, not two clean points`
+    : 'two separate disks';
+  return `Sunlight — an extended, incoherent, unpolarized source of angular diameter ${V('0.533°')} — arrives collimated across the D = ${V(d.D + ' mm')} aperture (f/${V(f1(d.f/d.D))}). ` +
+    `The lens does not focus it to a point: it images the solar disk, Ø f·θ☉ = ${V(f3(d.dSun) + ' mm')}, and refraction parks that image ${where}. ` +
+    airNarr(d) +
+    `Transverse coherence at the lens is only ≈ ${V(f0(d.cohUm) + ' µm')}, so the lab source's Gaussian-beam story does not apply — geometry rules. ` +
+    `The aperture collects ${V(f2(d.powerW) + ' W')} (≈ ${V((d.photonRate/1e18).toFixed(1) + '×10¹⁸ photons/s')}) and concentrates it ≈ ${V(f0(d.conc) + '×')} to ≈ ${V(f2(d.conc/1000) + ' MW/m²')} — the classic burning glass (étendue caps any lens at ≈ ${V(f0(d.etendueMax) + '×')}). ` +
+    `Each spectral component still splits o/e — at 589 nm, Δφ = ${V(f0(d.dphi) + ' rad')} (order ≈ ${V(f0(d.order))}) — but the components are mutually incoherent and white light washes the fringes out (vivid polarization colors need order ≲ a few). ` +
+    quantumNarr(d) +
+    `The o and e solar images exit ${V(f3(d.sep) + ' mm')} apart; ${overlap}. ` +
+    (ok ? `The eye at L = ${V(d.L + ' mm')} accommodates +${V(f1(d.acc) + ' D')} and receives two overlapping disks ${V(f1(d.sunArcmin) + '′')} wide, offset ${V(f2(d.arcmin) + '′')} — on the retina, Ø ${V(f1(um(d.dSunRet)) + ' µm')} disks offset ${V(f1(um(d.dRet)) + ' µm')} <span class="tag">acuity ≈ 1′ — perceptual</span>. ` +
+      `<b>⚠ The image luminance matches the solar surface — the observer stage is a thought experiment; never view a real solar focus.</b>`
+      : 'The image falls at or beyond the cornea, so the reduced-eye stage is suspended at these settings.');
+}
+function updateNarration(){
+  const d = DER, ok = d.objOK;
+  if (d.src === 'sun'){
+    $('narrPhys').innerHTML = sunNarr(d);
+    updateNarrLayers(d);
+    return;
+  }
+  const geoTxt = !Number.isFinite(d.sGeo) ? 'a collimated beam (image at ∞)'
+    : d.sGeo < 0 ? `a virtual image ${V(neg(f1(Math.abs(d.sGeo))) + ' mm')} before the lens`
+    : `the image at s′ = ${V(f1(d.sGeo) + ' mm')}`;
+  const inCrys = d.depthO > 0 && d.depthO < d.d;
+  $('narrPhys').innerHTML =
+    `A λ = 589 nm point source (w₀ = 50 µm, zR = ${V(f1(d.zR) + ' mm')}) meets the f = ${V(d.f + ' mm')} lens at s = ${V(d.s + ' mm')}. ` +
+    `Geometric optics puts ${geoTxt}; Self's equation puts the real waist at s″ = ${V((d.s2 < 0 ? neg(f1(d.s2)) : f2(d.s2)) + ' mm')} with w₀′ = ${V(f1(um(d.w0p)) + ' µm')}. ` +
+    airNarr(d) +
+    (inCrys ? `Refraction at the quartz face carries the focus ${V(f1(d.depthO) + ' mm')} into the block (the ×n₀ rule). ` : '') +
+    `Over d = ${V(d.d + ' mm')} the e-ray walks off ρ = ${V(f3(Math.abs(d.rhoDeg)) + '°')}, exiting ${V(f3(d.sep) + ' mm')} from the o-ray with Δφ = ${V(f0(d.dphi) + ' rad')} (order ≈ ${V(f0(d.order))}). ` +
+    `That retardation is frequency-invariance at work: ν = c/λ = ${V(f1(d.nu/1e12) + ' THz')} (photon energy ${V(f2(d.ephot) + ' eV')}, period ${V(f2(d.periodFs) + ' fs')}) never changes in any medium — only wavelength and phase velocity do. Inside the block λ compresses to ${V(f1(d.lamO*1e6) + ' nm')} (o) and ${V(f1(d.lamE*1e6) + ' nm')} (e), so the slower e-wave fits ${V(f1(d.cyclesE - d.cyclesO))} more cycles across d — that surplus <em>is</em> the interference order. The animated markers show it: they compress and slow in the crystal yet pass any fixed point at the same rate everywhere. ` +
+    quantumNarr(d) +
+    (d.polState === 'elliptical' || d.polState === 'circular'
+      ? `Where the two beams overlap, the block acts as a high-order wave plate: the emitted light at the beam center is ${V(d.polState)} — axis ratio b/a = ${V(f2(d.ba))}, major axis ${V(neg(f1(d.psiDeg)) + '°')} from the optic-axis plane, rotating ${V(d.rotCCW ? 'counterclockwise' : 'clockwise')} viewed toward the source — set by Δφ mod 2π = ${V(f2(d.deltaM) + ' rad')}, and it sweeps linear → circular → linear as θ or d trims the retardation. `
+      : `Where the two beams overlap the emitted light is ${V(d.polState)}, major axis ${V(neg(f1(d.psiDeg)) + '°')} from the optic-axis plane. `) +
+    `If the declared single line were the real Na-D doublet, fringe visibility at this OPD would fall to ${V(f2(d.visNaD))} <span class="tag">model note — declared source: one 589 nm line</span>. ` +
+    (ok ? `The eye at L = ${V(d.L + ' mm')} sees the waist ${V(f1(d.zApp) + ' mm')} behind the exit face and accommodates +${V(f1(d.acc) + ' D')}. ` +
+      `The two beams overlap almost entirely at the cornea (Δ = ${V(f3(d.sep) + ' mm')} ≪ beam Ø ${V(f2(2*d.wCorn) + ' mm')}), yet ` +
+      `the o/e pair subtends ${V(f2(d.arcmin) + ' arcmin')} against the ≈1 arcmin acuity limit <span class="tag">perceptual</span>, landing ` +
+      `${V(f1(um(d.dRet)) + ' µm')} ≈ ${V(f1(d.cones))} cone pitches apart <span class="tag">perceptual — pitch ≈ 2.5 µm</span>, each spot ≈ ${V(f2(um(d.wRet)) + ' µm')} ` +
+      `(diffraction floor ${V(f2(um(d.wDiff)) + ' µm')}). The exit beams are orthogonally polarized — the condition under which Haidinger's brushes can appear ` +
+      `<span class="tag">perceptual — documented psychophysics, not an optical output</span>. ` +
+      (d.arcmin > 1 && d.sep > 1e-9 ? `<b>The observer sees the source doubled.</b>` : d.sep <= 1e-9 ? 'With no o/e split, the observer sees a single point.' : 'Below the acuity limit, the pair fuses into one point.')
+      : 'The apparent focus falls at or beyond the cornea, so the reduced-eye stage is suspended at these settings.');
+  updateNarrLayers(d);
+}
+function updateNarrLayers(d){
+  const ok = d.objOK, sun = d.src === 'sun';
+  const gather = sun ? f3(d.dSun) + ' mm' : f1(um(d.w0p)) + ' µm';
+  $('narrHerm').innerHTML =
+    `Light descends as the macrocosmic active force; at the Vesica's focal node — where the beam gathers to ${V(gather)} — stands the point of conscious convergence. ` +
+    `The quartz is the alchemical tuner, macrocosm and microcosm brought to one measure; from its far face issues ordered emanation — Ordo ab Chao. ` +
+    `The eye is the temple's window; the microcosm receives the ordered ray. <span class="tag">symbolic reading — computes nothing</span>`;
+  $('narrSpec').innerHTML =
+    `By analogy — not measurement: the ${sun ? 'concentrated solar' : 'focused, phase-aligned'} output (Δφ at 589 nm: ${V(f0(d.dphi) + ' rad')}) may be pictured as a coherence-ordering influence, ` +
+    `the lattice as a coherence-imprinting matrix, its circulation sketched as the toroidal figure below the axis <span class="tag">illustrative analogy — not computed</span>. ` +
+    `Retinal reception imagined as “coherence gating” of aligned phase <span class="tag">not computed, not a measurement</span>. ` +
+    `“Biophoton” framing is speculative throughout.`;
+  $('cmpFocus').innerHTML = sun
+    ? `Geometric solar image — Ø f·θ☉ = <span class="v">${f3(d.dSun)} mm</span> (extended incoherent source)`
+    : `Gaussian waist via Self's equation — w₀′ = <span class="v">${f1(um(d.w0p))} µm</span> at current settings`;
+  $('cmpOut').textContent = d.polState === 'elliptical' || d.polState === 'circular'
+    ? `${d.polState} light (b/a ${f2(d.ba)}, ${d.rotCCW ? 'CCW' : 'CW'})`
+    : `${d.polState.split(' — ')[0]} light`;
+  $('cmpObs').innerHTML = ok
+    ? (sun
+      ? `Two overlapping solar disks on the fovea — Ø <span class="v">${f1(um(d.dSunRet))} µm</span>, offset <span class="v">${f1(um(d.dRet))} µm</span> (inverted)`
+      : `Inverted double image on the fovea — <span class="v">${f1(um(d.dRet))} µm</span> apart ≈ <span class="v">${f1(d.cones)}</span> cone pitches; spots ≈ cone-sized`)
+    : 'Observer stage out of range at these settings';
+}
+
+/* ================================================================
+   WIRING — pub/sub; toggles change words, table, flourish, theme —
+   never a computed pixel (see __isolationCheck).
+   ================================================================ */
+state.speed = 1;
+state.markerMode = 'fronts';
+function setSource(mode){
+  state.src = mode;
+  const sun = mode === 'sun';
+  $('btnSun').classList.toggle('on', sun);
+  $('btnPoint').classList.toggle('on', !sun);
+  $('srcNote').textContent = sun
+    ? 'the Sun through the magnifier — extended, incoherent, unpolarized'
+    : 'coherent lab idealization — Self’s equation applies';
+  $('inS').disabled = sun;      $('ctlS').classList.toggle('dim', sun);
+  $('inAlpha').disabled = sun;  $('ctlAlpha').classList.toggle('dim', sun);
+  $('inDlens').disabled = !sun;
+  photons = []; photonAcc = 0;
+  refresh();
+}
+function setMarkerMode(mode){
+  state.markerMode = mode;
+  photons = []; photonAcc = 0;
+  $('btnFronts').classList.toggle('on', mode === 'fronts');
+  $('btnPhotons').classList.toggle('on', mode === 'photons');
+  $('modeNote').textContent = mode === 'photons'
+    ? 'detection events sampled from |E|² — light as photons, honestly'
+    : 'phase fronts at c/n — light as a wave';
+  refresh();                                 // static canvas note swaps with the mode
+}
+function refresh(){
+  DER = computePhysics(state);
+  window.__derived = DER;
+  GEO = layout();
+  drawStatic();
+  drawCosmetic();
+  buildLanes();
+  updateReadouts();
+  updateNarration();
+}
+function bindRange(id, key, outId, fmt){
+  const el = $(id);
+  el.addEventListener('input', () => {
+    state[key] = parseFloat(el.value);
+    $(outId).textContent = fmt(state[key]);
+    refresh();
+  });
+}
+bindRange('inF', 'f', 'outF', v => `${v} mm`);
+bindRange('inS', 's', 'outS', v => `${v} mm`);
+bindRange('inDlens', 'D', 'outDlens', v => `${v} mm`);
+bindRange('inAlpha', 'alpha', 'outAlpha', v => `${v}°`);
+bindRange('inD', 'd', 'outD', v => `${v} mm`);
+bindRange('inTheta', 'theta', 'outTheta', v => `${v}°`);
+bindRange('inL', 'L', 'outL', v => `${v} mm`);
+bindRange('inPupil', 'pupil', 'outPupil', v => `${v} mm`);
+$('inSpeed').addEventListener('input', () => {
+  state.speed = parseFloat($('inSpeed').value);
+  $('outSpeed').textContent = `${state.speed}×`;
+});
+$('btnPlay').addEventListener('click', () => {
+  playing = !playing;
+  $('btnPlay').textContent = playing ? '⏸ pause' : '▶ play';
+});
+$('btnFronts').addEventListener('click', () => setMarkerMode('fronts'));
+$('btnPhotons').addEventListener('click', () => setMarkerMode('photons'));
+$('btnSun').addEventListener('click', () => setSource('sun'));
+$('btnPoint').addEventListener('click', () => setSource('point'));
+if (!playing) $('btnPlay').textContent = '▶ play';
+function setLayer(which, on){
+  layers[which] = on;
+  $(which === 'herm' ? 'tgHerm' : 'tgSpec').checked = on;
+  $(which === 'herm' ? 'narrHermBox' : 'narrSpecBox').hidden = !on;
+  $('cmp').hidden = !(layers.herm || layers.spec);
+  drawCosmetic();                            // cosmetic canvas only — physics canvas untouched
+}
+$('tgHerm').addEventListener('change', e => setLayer('herm', e.target.checked));
+$('tgSpec').addEventListener('change', e => setLayer('spec', e.target.checked));
+$('btnReset').addEventListener('click', () => {
+  Object.assign(state, DEFAULTS); state.speed = 1; state.src = 'sun';
+  $('inF').value = 45; $('outF').textContent = '45 mm';
+  $('inDlens').value = 30; $('outDlens').textContent = '30 mm';
+  $('inS').value = 150; $('outS').textContent = '150 mm';
+  $('inAlpha').value = 45; $('outAlpha').textContent = '45°';
+  $('inD').value = 40; $('outD').textContent = '40 mm';
+  $('inTheta').value = 45; $('outTheta').textContent = '45°';
+  $('inL').value = 250; $('outL').textContent = '250 mm';
+  $('inPupil').value = 4; $('outPupil').textContent = '4 mm';
+  $('inSpeed').value = 1; $('outSpeed').textContent = '1×';
+  setLayer('herm', false); setLayer('spec', false);
+  setMarkerMode('fronts');
+  setSource('sun');
+});
+let resizePending = false;
+new ResizeObserver(() => {
+  if (resizePending) return; resizePending = true;
+  requestAnimationFrame(() => { resizePending = false; refresh(); });
+}).observe($('scroller'));
+if (window.matchMedia){
+  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', refresh);
+}
+new MutationObserver(refresh).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+
+/* ================================================================
+   SELF-TEST — load-time console.asserts on the reference case
+   (f = 50, s = 100) and the defaults; silent when passing.
+   ================================================================ */
+window.__selfTest = function(){
+  let n = 0, fail = 0;
+  const ok = (cond, msg) => { n++; if (!cond){ fail++; console.assert(false, 'self-test: ' + msg); } };
+  const near = (a, b, tol) => Math.abs(a - b) <= tol;
+  const R = computePhysics({f:50, s:100, alpha:45, d:40, theta:45, L:250, pupil:4});
+  ok(near(R.zR, 13.334, 0.005), `zR = ${R.zR} ≠ 13.334`);
+  ok(near(R.sGeo, 100, 0.01), `s' = ${R.sGeo} ≠ 100`);
+  ok(near(R.m, -1, 0.001), `m = ${R.m} ≠ −1`);
+  ok(near(R.s2, 96.68, 0.02), `s'' = ${R.s2} ≠ 96.68 (Self)`);
+  ok(near(R.mG, 0.9662, 0.0005), `mG = ${R.mG} ≠ 0.9662`);
+  ok(near(um(R.w0p), 48.31, 0.05), `w0' = ${um(R.w0p)} µm ≠ 48.31`);
+  ok(near(R.zRp, 12.449, 0.01), `zR' = ${R.zRp} ≠ 12.449`);
+  ok(near(R.focalShift, 3.32, 0.02), `focal shift = ${R.focalShift} ≠ 3.32`);
+  /* bonus assert — beam half-width continuity at the lens, both sides */
+  const wIn = wof(100, 0, PHY.W0, PHY.ZR);
+  const wOut = wof(100, 100 + R.s2, R.w0p, R.zRp);
+  ok(Math.abs(wIn - wOut)/wIn < 1e-9, `lens continuity: ${wIn} vs ${wOut}`);
+  /* crystal constants at θ = 45° */
+  ok(near(neTheta(45), 1.54883, 0.0002), `ne(45) = ${neTheta(45)} ≠ 1.54883`);
+  ok(near(Math.abs(walkoff(45))*180/Math.PI, 0.3366, 0.003), `rho = ${walkoff(45)*180/Math.PI}° ≠ 0.3366°`);
+  const D = computePhysics({...DEFAULTS});
+  ok(near(D.sep, 0.2350, 0.001), `sep = ${D.sep} ≠ 0.2350 (label: 0.235 mm true separation)`);
+  ok(near(um(D.opd), 181.1, 0.5), `OPD = ${um(D.opd)} µm ≠ 181.1 (θ=45° corrected value, not the draft's 360)`);
+  ok(near(D.order, 307.6, 1), `order = ${D.order} ≠ 307.6`);
+  ok(near(D.s2, 63.98, 0.03), `s'' default = ${D.s2} ≠ 63.98`);
+  ok(near(um(D.w0p), 21.26, 0.05), `w0' default = ${um(D.w0p)} ≠ 21.26 µm`);
+  ok(near(D.depthO, 29.31, 0.05), `depth = ${D.depthO} ≠ 29.31 (inside d = 40 ✓)`);
+  ok(near(D.zApp, 6.92, 0.02), `z_app = ${D.zApp} ≠ 6.92`);
+  ok(near(D.acc, 3.89, 0.02), `A = ${D.acc} ≠ 3.89 D`);
+  ok(near(D.arcmin, 3.14, 0.04), `Δθ = ${D.arcmin} ≠ 3.14 arcmin (gate: 3.1)`);
+  ok(near(um(D.dRet), 15.2, 0.15), `Δret = ${um(D.dRet)} ≠ 15.2 µm`);
+  ok(near(D.cones, 6.1, 0.06), `cones = ${D.cones} ≠ 6.1`);
+  ok(near(D.wCorn, 2.266, 0.01), `w_cornea = ${D.wCorn} ≠ 2.266 mm`);
+  ok(near(D.trans, 0.789, 0.01), `pupil transmission = ${D.trans} ≠ 0.789`);
+  ok(near(um(D.wRet), 1.38, 0.03), `w_ret = ${um(D.wRet)} ≠ 1.38 µm`);
+  ok(D.retMiss < 0.01, `retina miss = ${D.retMiss} mm ≥ 0.01 (gate: accommodated waist lands on retina)`);
+  ok(near(um(D.wDiff), 1.56, 0.03), `w_diff = ${um(D.wDiff)} ≠ 1.56 µm`);
+  /* WATCH ITEM (verified): honest per-ray Δφ across the default fan spans ≈ 7
+     fringes — resolvable, so the strip draws them rather than averaging. */
+  ok(near(D.fringeSpread, 7.0, 0.5), `fringe spread = ${D.fringeSpread} ≠ 7.0`);
+  /* frequency — invariant temporal side of the declared line */
+  ok(Math.abs(D.nu/1e12 - 508.985) < 0.02, `ν = ${D.nu/1e12} THz ≠ 508.99`);
+  ok(Math.abs(D.periodFs - 1.9647) < 0.002, `T = ${D.periodFs} fs ≠ 1.9647`);
+  ok(Math.abs(D.ephot - 2.105) < 0.002, `hν = ${D.ephot} eV ≠ 2.105`);
+  ok(Math.abs(D.lamO*1e6 - 381.40) < 0.05, `λ/n₀ = ${D.lamO*1e6} nm ≠ 381.40`);
+  ok(Math.abs(D.lamE*1e6 - 380.29) < 0.05, `λ/nₑ(45°) = ${D.lamE*1e6} nm ≠ 380.29`);
+  ok(Math.abs(D.lamVit*1e6 - 441.75) < 0.05, `λ in vitreous = ${D.lamVit*1e6} nm ≠ 441.75`);
+  ok(Math.abs((D.cyclesE - D.cyclesO) - D.order) < 1e-6, 'Δcycles ≡ interference order (identity)');
+  /* emitted light — exit polarization state */
+  const [S1t, S2t, S3t] = D.stokes;
+  ok(Math.abs(S1t*S1t + S2t*S2t + S3t*S3t - 1) < 1e-9, 'exit state fully polarized (S1²+S2²+S3² = 1)');
+  ok(Math.abs(D.psiDeg + 45) < 0.5 || Math.abs(D.psiDeg - 45) < 0.5, `ψ = ${D.psiDeg} ≠ ±45° at α = 45 (S1 = 0)`);
+  ok(D.rotCCW === (Math.sin(D.deltaM) > 0), 'rotation sense consistent with sin δ');
+  ok(D.polState === 'elliptical' && D.ba > 0.2 && D.ba < 0.9, `exit state at defaults = ${D.polState}, b/a = ${D.ba}`);
+  ok(computePhysics({...DEFAULTS, theta:0}).polState.startsWith('linear — unchanged'), 'θ = 0: exit stays input linear');
+  ok(Math.abs(D.visNaD - 0.557) < 0.02, `Na-D visibility = ${D.visNaD} ≠ 0.557 at defaults`);
+  /* sunlight mode — extended-source physics (the real magnifying-glass scenario) */
+  const SUN = computePhysics({...DEFAULTS, src:'sun'});
+  ok(Math.abs(SUN.dSun - 0.41888) < 0.001, `sun image Ø = ${SUN.dSun} ≠ 0.419 mm (f·θ☉ at f = 45)`);
+  ok(Math.abs(SUN.depthO) < 1e-9, `sun image depth = ${SUN.depthO} — should land ON the front face at f = g = 45`);
+  ok(Math.abs(computePhysics({...DEFAULTS, src:'sun', f:60}).depthO - 23.165) < 0.02, 'f = 60: sun image 23.16 mm deep (×n₀)');
+  ok(Math.abs(SUN.conc - 5130) < 40, `concentration = ${SUN.conc} ≠ ≈5130× (D = 30)`);
+  ok(Math.abs(SUN.powerW - 0.7069) < 0.003, `collected power = ${SUN.powerW} ≠ 0.707 W`);
+  ok(Math.abs(SUN.cohUm - 20.25) < 0.3, `coherence = ${SUN.cohUm} ≠ 20.25 µm (van Cittert–Zernike)`);
+  ok(Math.abs(SUN.etendueMax - 46160) < 300, `étendue limit = ${SUN.etendueMax} ≠ ≈46,160×`);
+  ok(SUN.Io === 0.5 && SUN.Ie === 0.5 && SUN.polState.startsWith('unpolarized'), 'sunlight: unpolarized 50/50 split, α ignored');
+  ok(Math.abs(SUN.acc - 3.6245) < 0.01, `sun-mode accommodation = ${SUN.acc} ≠ 3.62 D`);
+  ok(Math.abs(um(SUN.dSunRet) - 25.31) < 0.15, `retinal sun disk = ${um(SUN.dSunRet)} ≠ 25.3 µm`);
+  ok(SUN.retMiss < 1e-6, 'sun-mode vergence closes on the retina');
+  ok(SUN.sep < SUN.dSun, 'o/e offset < disk Ø — the doubled sun images overlap');
+  /* crystalline-lens anatomy — accommodation-coupled drawing values */
+  ok(Math.abs(D.lensRA - 8.171) < 0.01, `lens rA = ${D.lensRA} ≠ 8.17 mm at A = 3.89 D (lab)`);
+  ok(Math.abs(SUN.lensRA - 8.296) < 0.01, `lens rA = ${SUN.lensRA} ≠ 8.30 mm at A = 3.62 D (sun)`);
+  /* quantum picture in the lattice */
+  ok(Math.abs(D.cellsAlong/1e7 - 7.40) < 0.02, `cells along path = ${D.cellsAlong} ≠ 7.40×10⁷ (d/c-lattice)`);
+  ok(Math.abs(D.transitO*1e9 - 0.206) < 0.001, `o transit = ${D.transitO*1e9} ns ≠ 0.206`);
+  ok(D.ephot < 0.3*PHY.E_GAP, 'hν ≪ band gap — transparent, virtual excitation only');
+  /* the air in the gap */
+  ok(Math.abs(D.airLam - 20.86) < 0.1, `air path over g = ${D.airLam}λ ≠ 20.9λ (n_air 1.000273)`);
+  ok(Math.abs(D.airScatter - 3.96e-7)/3.96e-7 < 0.02, `Rayleigh over g = ${D.airScatter} ≠ 3.96×10⁻⁷`);
+  ok(Math.abs(D.airMol - 5.31e17)/5.31e17 < 0.03, `gap molecules (lab beam) = ${D.airMol} ≠ 5.3×10¹⁷`);
+  ok(Math.abs(SUN.airMol - 2.74e20)/2.74e20 < 0.03, `gap molecules (sun cone) = ${SUN.airMol} ≠ 2.7×10²⁰`);
+  /* edge cases must not throw */
+  const E1 = computePhysics({...DEFAULTS, f:100, s:100});
+  ok(!Number.isFinite(E1.sGeo) && near(E1.s2, 100, 0.001), 's = f: collimated, s″ = f, no errors');
+  const E2 = computePhysics({...DEFAULTS, f:100, s:60});
+  ok(E2.sGeo < 0 && E2.s2 < 0 && Number.isFinite(E2.acc), 's < f: virtual image + finite observer chain');
+  const E3 = computePhysics({...DEFAULTS, theta:0});
+  ok(near(E3.sep, 0, 1e-12) && near(E3.dphi, 0, 1e-9), 'θ = 0: birefringence vanishes');
+  const E4 = computePhysics({...DEFAULTS, alpha:0});
+  ok(near(E4.Io, 0, 1e-12) && near(E4.Ie, 1, 1e-12), 'α = 0: o extinguished');
+  return {asserts: n, failures: fail};
+};
+
+/* isolation check — shipped verification: toggles must not change one
+   computed pixel or printed number. Compares static canvas + readouts + derived. */
+window.__isolationCheck = function(){
+  const snap = () => JSON.stringify({
+    readouts: $('readouts').innerText, status: $('status').textContent,
+    derived: window.__derived, canvas: cvStatic.toDataURL()});
+  const h0 = layers.herm, s0 = layers.spec;
+  setLayer('herm', false); setLayer('spec', false); const a = snap();
+  setLayer('herm', true);  setLayer('spec', true);  const b = snap();
+  setLayer('herm', false); setLayer('spec', false); const c2 = snap();
+  setLayer('herm', h0); setLayer('spec', s0);
+  const pass = a === b && b === c2;
+  console[pass ? 'info' : 'error']('isolation check: ' + (pass
+    ? 'PASS — physics canvas, readouts and derived identical under all toggle states'
+    : 'FAIL — a toggle changed a computed pixel or number'));
+  return pass;
+};
+
+/* boot */
+refresh();
+$('jsFallback')?.remove();   // engine is alive — retire the no-script explainer
+const st = window.__selfTest();
+$('footTest').textContent = `Self-test at load: ${st.asserts} asserts, ${st.failures} failures.`;
+console.info(`Photon in Quartz — self-test: ${st.asserts} asserts, ${st.failures} failures. ` +
+  `Inspect window.__derived · run __selfTest() · __isolationCheck()`);
+setSource('sun');   // the real scenario: the magnifier in the sun (lab source one click away)
+/* shareable state via URL hash, e.g. #f=60&theta=30&src=point&herm=1&theme=dark */
+(function applyHash(){
+  const h = location.hash.replace(/^#/, ''); if (!h) return;
+  const q = new URLSearchParams(h);
+  const sliders = {f:'inF', s:'inS', alpha:'inAlpha', d:'inD', theta:'inTheta', L:'inL', pupil:'inPupil', speed:'inSpeed', D:'inDlens'};
+  for (const k in sliders) if (q.has(k)){ const el = $(sliders[k]); el.value = q.get(k); el.dispatchEvent(new Event('input')); }
+  if (q.get('herm') === '1') setLayer('herm', true);
+  if (q.get('spec') === '1') setLayer('spec', true);
+  if (q.get('markers') === 'photons') setMarkerMode('photons');
+  if (q.get('src') === 'point') setSource('point');
+  else if (q.get('src') === 'sun') setSource('sun');
+  const th = q.get('theme'); if (th === 'light' || th === 'dark') document.documentElement.dataset.theme = th;
+})();
+requestAnimationFrame(drawAnim);
+</script>
+</body>
+</html>
