@@ -1,0 +1,4110 @@
+<title>The Forbidden Symmetry — Mineral Lattices &amp; the Platonic Solids</title>
+
+<style>
+html, body { margin: 0; padding: 0; background: #0B0D14; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   TOKENS — palette derived from birefringence interference colours
+   observed in thin section under crossed polars (Michel-Lévy chart),
+   against the dark field of the petrographic microscope.
+   ═══════════════════════════════════════════════════════════════════ */
+:root{
+  /* grounds — extinction black, biased violet, never neutral grey */
+  --ground:      #0B0D14;
+  --ground-2:    #12151F;
+  --ground-3:    #191D2A;
+  --rule:        #2A3040;
+  --rule-soft:   #1E2331;
+
+  /* inks — the warm off-white of exposed film, not pure white */
+  --ink:         #E9E5DA;
+  --ink-2:       #B4B3AC;
+  --muted:       #868DA1;
+  --faint:       #5A6175;
+
+  /* the five — semantic, permanent, learned by the reader */
+  --fire:        #E2573B;   /* first-order red · hematite      · TETRAHEDRON */
+  --earth:       #CBA52C;   /* sulphur / pyrite brass          · CUBE        */
+  --air:         #79C1DC;   /* cyanotype blue                  · OCTAHEDRON  */
+  --water:       #4E80CA;   /* second-order blue               · ICOSAHEDRON */
+  --aether:      #AC7CD4;   /* second-order magenta-violet     · DODECAHEDRON*/
+
+  --fire-dim:    #6B2A1E;
+  --earth-dim:   #62501A;
+  --air-dim:     #2F5A69;
+  --water-dim:   #263D63;
+  --aether-dim:  #503868;
+
+  /* states */
+  --allow:       #6FBF9A;
+  --forbid:      #D8434F;
+
+  --accent:      var(--aether);
+  --paper-mix:   #000;
+
+  /* type */
+  --serif:  "Palatino Linotype", Palatino, "Iowan Old Style", "Book Antiqua",
+            "URW Palladio L", "Hoefler Text", Georgia, serif;
+  --label:  "Bahnschrift SemiCondensed", "Bahnschrift", "DIN Alternate",
+            "Franklin Gothic Medium", "Avenir Next Condensed",
+            "Roboto Condensed", Corbel, "Segoe UI", sans-serif;
+  --mono:   Consolas, "Cascadia Mono", "SF Mono", Menlo, "DejaVu Sans Mono", monospace;
+
+  --measure: 34.5rem;
+  --shadow-glow: 0 0 0 transparent;
+}
+
+@media (prefers-color-scheme: light){
+  :root{
+    --ground:    #E6E8E3;
+    --ground-2:  #EFF0EC;
+    --ground-3:  #F6F7F4;
+    --rule:      #BFC4BC;
+    --rule-soft: #D5D9D1;
+    --ink:       #14181F;
+    --ink-2:     #3A4048;
+    --muted:     #5D6470;
+    --faint:     #8B929C;
+    --fire:      #B33A22;
+    --earth:     #8A6E0C;
+    --air:       #2C7796;
+    --water:     #27508F;
+    --aether:    #6E3F9B;
+    --fire-dim:  #E9C4B9;
+    --earth-dim: #DCD0A4;
+    --air-dim:   #BCD8E2;
+    --water-dim: #BBC8DE;
+    --aether-dim:#D2C0E2;
+    --allow:     #2C7A56;
+    --forbid:    #A81F2B;
+    --paper-mix: #fff;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B0D14; --ground-2:#12151F; --ground-3:#191D2A;
+  --rule:#2A3040; --rule-soft:#1E2331;
+  --ink:#E9E5DA; --ink-2:#B4B3AC; --muted:#868DA1; --faint:#5A6175;
+  --fire:#E2573B; --earth:#CBA52C; --air:#79C1DC; --water:#4E80CA; --aether:#AC7CD4;
+  --fire-dim:#6B2A1E; --earth-dim:#62501A; --air-dim:#2F5A69;
+  --water-dim:#263D63; --aether-dim:#503868;
+  --allow:#6FBF9A; --forbid:#D8434F; --paper-mix:#000;
+}
+:root[data-theme="light"]{
+  --ground:#E6E8E3; --ground-2:#EFF0EC; --ground-3:#F6F7F4;
+  --rule:#BFC4BC; --rule-soft:#D5D9D1;
+  --ink:#14181F; --ink-2:#3A4048; --muted:#5D6470; --faint:#8B929C;
+  --fire:#B33A22; --earth:#8A6E0C; --air:#2C7796; --water:#27508F; --aether:#6E3F9B;
+  --fire-dim:#E9C4B9; --earth-dim:#DCD0A4; --air-dim:#BCD8E2;
+  --water-dim:#BBC8DE; --aether-dim:#D2C0E2;
+  --allow:#2C7A56; --forbid:#A81F2B; --paper-mix:#fff;
+}
+
+/* ═══════════════════════════ BASE ═══════════════════════════ */
+*{ box-sizing:border-box; }
+.pg{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  padding-bottom:5rem;
+}
+.pg ::selection{ background:var(--aether); color:var(--ground); }
+
+/* strata rail — scroll position as a stratigraphic column */
+.rail{
+  position:fixed; left:0; top:0; bottom:0; width:2.9rem; z-index:40;
+  border-right:1px solid var(--rule-soft);
+  background:linear-gradient(to bottom, var(--ground-2), var(--ground));
+  display:flex; flex-direction:column; align-items:center;
+  padding:0.9rem 0; gap:0.55rem;
+}
+.rail__tick{
+  width:100%; flex:1; position:relative; cursor:pointer;
+  border:0; background:transparent; padding:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.rail__num{
+  font-family:var(--mono); font-size:0.58rem; color:var(--faint);
+  writing-mode:vertical-rl; letter-spacing:0.14em;
+  transition:color .3s ease;
+}
+.rail__tick::after{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:transparent; transition:background .3s ease;
+}
+.rail__tick:hover .rail__num{ color:var(--ink-2); }
+.rail__tick.is-on .rail__num{ color:var(--ink); }
+.rail__tick.is-on::after{ background:var(--accent); }
+.rail__tick:focus-visible{ outline:1px solid var(--accent); outline-offset:-1px; }
+@media (max-width:900px){ .rail{ display:none; } }
+
+.wrap{ padding-left:2.9rem; }
+@media (max-width:900px){ .wrap{ padding-left:0; } }
+
+/* measure column */
+.col{ max-width:var(--measure); margin:0 auto; padding:0 1.35rem; }
+.col--wide{ max-width:60rem; }
+
+/* ═══════════════════════════ TYPE ═══════════════════════════ */
+.eyebrow{
+  font-family:var(--label); text-transform:uppercase;
+  letter-spacing:0.2em; font-size:0.68rem; color:var(--muted);
+  line-height:1.4;
+}
+.lede{
+  font-size:1.16rem; line-height:1.62; color:var(--ink-2);
+  text-wrap:pretty;
+}
+.pg p{ text-wrap:pretty; margin:0; }
+.pg h1,.pg h2,.pg h3,.pg h4{ margin:0; text-wrap:balance; font-weight:400; }
+.h-act{
+  font-size:clamp(2rem,5.2vw,3.1rem); line-height:1.02;
+  letter-spacing:-0.02em; font-weight:400;
+}
+.h-sub{
+  font-size:clamp(1.3rem,2.6vw,1.62rem); line-height:1.2;
+  letter-spacing:-0.012em;
+}
+.h-min{
+  font-family:var(--label); text-transform:uppercase;
+  letter-spacing:0.15em; font-size:0.78rem; color:var(--ink);
+}
+.mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.pg em{ font-style:italic; }
+.pg strong{ font-weight:700; color:var(--ink); }
+.gk{ font-family:var(--serif); font-style:italic; }
+
+/* semantic element colouring, used everywhere consistently */
+.c-fire{ color:var(--fire); } .c-earth{ color:var(--earth); }
+.c-air{ color:var(--air); }   .c-water{ color:var(--water); }
+.c-aether{ color:var(--aether); }
+.c-forbid{ color:var(--forbid); } .c-allow{ color:var(--allow); }
+
+/* prose flow */
+.flow{ display:flex; flex-direction:column; gap:1.1rem; }
+.flow--tight{ gap:0.7rem; }
+.sect{ display:flex; flex-direction:column; gap:2.2rem; padding:4.5rem 0 0; }
+
+/* ═══════════════════════════ PLATE ═══════════════════════════ */
+.plate{
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--ground-2) 92%, var(--paper-mix)), var(--ground));
+  display:flex; flex-direction:column;
+}
+.plate__head{
+  display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap;
+  padding:0.7rem 1.1rem; border-bottom:1px solid var(--rule-soft);
+}
+.plate__no{
+  font-family:var(--mono); font-size:0.66rem; letter-spacing:0.12em;
+  color:var(--accent); white-space:nowrap;
+}
+.plate__ttl{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.17em;
+  font-size:0.7rem; color:var(--ink-2);
+}
+.plate__note{
+  font-size:0.8rem; color:var(--faint); margin-left:auto;
+  font-family:var(--mono);
+}
+.stage{ position:relative; width:100%; display:block; }
+.stage canvas{ display:block; width:100%; height:100%; touch-action:none; }
+.stage__hint{
+  position:absolute; right:0.7rem; top:0.55rem; pointer-events:none;
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.13em;
+  font-size:0.6rem; color:var(--faint); opacity:.75;
+}
+.cap{
+  padding:0.65rem 1.1rem 0.85rem; border-top:1px solid var(--rule-soft);
+  font-size:0.87rem; line-height:1.55; color:var(--muted);
+}
+.cap b{ color:var(--ink-2); font-weight:400; font-family:var(--label);
+        text-transform:uppercase; letter-spacing:0.12em; font-size:0.68rem; }
+
+/* ═══════════════════════ GONIOMETER BAR ═══════════════════════ */
+.gonio{
+  display:flex; flex-wrap:wrap; align-items:center; gap:0 1.4rem;
+  padding:0.5rem 1.1rem; border-top:1px solid var(--rule-soft);
+  background:color-mix(in srgb, var(--ground-3) 70%, transparent);
+}
+.gonio__grp{ display:flex; align-items:center; gap:0.5rem; min-height:2.1rem; }
+.gonio__lab{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.15em;
+  font-size:0.6rem; color:var(--faint); white-space:nowrap;
+}
+.btn{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.11em;
+  font-size:0.66rem; padding:0.34rem 0.62rem; cursor:pointer;
+  background:transparent; color:var(--muted);
+  border:1px solid var(--rule); border-radius:0;
+  transition:color .18s, border-color .18s, background .18s;
+}
+.btn:hover{ color:var(--ink); border-color:var(--muted); }
+.btn.is-on{ color:var(--ground); background:var(--ink); border-color:var(--ink); }
+.btn:focus-visible{ outline:1px solid var(--accent); outline-offset:2px; }
+.btn--fire.is-on{ background:var(--fire); border-color:var(--fire); color:#0B0D14; }
+.btn--earth.is-on{ background:var(--earth); border-color:var(--earth); color:#0B0D14; }
+.btn--air.is-on{ background:var(--air); border-color:var(--air); color:#0B0D14; }
+.btn--water.is-on{ background:var(--water); border-color:var(--water); color:#F2F2EE; }
+.btn--aether.is-on{ background:var(--aether); border-color:var(--aether); color:#0B0D14; }
+.btn--forbid.is-on{ background:var(--forbid); border-color:var(--forbid); color:#F2F2EE; }
+.btn--allow.is-on{ background:var(--allow); border-color:var(--allow); color:#0B0D14; }
+
+.rng{
+  -webkit-appearance:none; appearance:none; background:transparent;
+  width:clamp(7rem,20vw,13rem); height:1.4rem; cursor:pointer;
+}
+.rng::-webkit-slider-runnable-track{ height:1px; background:var(--rule); }
+.rng::-moz-range-track{ height:1px; background:var(--rule); }
+.rng::-webkit-slider-thumb{
+  -webkit-appearance:none; width:3px; height:0.95rem; margin-top:-0.47rem;
+  background:var(--accent); border:0; border-radius:0;
+}
+.rng::-moz-range-thumb{
+  width:3px; height:0.95rem; background:var(--accent); border:0; border-radius:0;
+}
+.rng:focus-visible{ outline:1px solid var(--accent); outline-offset:3px; }
+.rdout{
+  font-family:var(--mono); font-variant-numeric:tabular-nums;
+  font-size:0.74rem; color:var(--ink); min-width:3.4rem;
+}
+
+/* ═══════════════════════ DATA PANELS ═══════════════════════ */
+.grid{ display:grid; gap:1px; background:var(--rule-soft); }
+.grid--5{ grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr)); }
+.grid--3{ grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); }
+.grid--2{ grid-template-columns:repeat(auto-fit,minmax(16rem,1fr)); }
+.cell{
+  background:var(--ground); padding:0.85rem 0.95rem;
+  display:flex; flex-direction:column; gap:0.3rem;
+}
+.cell__k{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.14em;
+  font-size:0.58rem; color:var(--faint);
+}
+.cell__v{ font-family:var(--mono); font-size:0.92rem; color:var(--ink); }
+.cell__n{ font-size:0.82rem; line-height:1.5; color:var(--muted); }
+
+.tbl-scroll{ overflow-x:auto; border-block:1px solid var(--rule); }
+.tbl{
+  width:100%; border-collapse:collapse; font-size:0.84rem;
+  font-variant-numeric:tabular-nums; min-width:34rem;
+}
+.tbl th{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.14em;
+  font-size:0.6rem; color:var(--faint); text-align:left; font-weight:400;
+  padding:0.55rem 0.7rem; border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+.tbl td{
+  padding:0.5rem 0.7rem; border-bottom:1px solid var(--rule-soft);
+  color:var(--ink-2); vertical-align:top;
+}
+.tbl td:first-child{ color:var(--ink); }
+.tbl .num{ font-family:var(--mono); }
+
+/* marginalia / aside */
+.aside{
+  border-left:2px solid var(--rule); padding:0.1rem 0 0.1rem 1rem;
+  font-size:0.92rem; line-height:1.62; color:var(--muted);
+  display:flex; flex-direction:column; gap:0.55rem;
+}
+.aside--fire{ border-color:var(--fire); }
+.aside--aether{ border-color:var(--aether); }
+.aside--forbid{ border-color:var(--forbid); }
+.aside__tag{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.16em;
+  font-size:0.6rem; color:var(--ink-2);
+}
+.pull{
+  font-size:1.32rem; line-height:1.36; color:var(--ink);
+  font-style:italic; letter-spacing:-0.008em;
+}
+.pull__src{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.16em;
+  font-size:0.6rem; color:var(--faint); font-style:normal;
+}
+
+/* epistemic register chips — the seam between physics and metaphor */
+.reg{
+  display:inline-flex; align-items:center; gap:0.35rem;
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.13em;
+  font-size:0.58rem; padding:0.14rem 0.42rem; border:1px solid;
+  white-space:nowrap;
+}
+.reg--proof{ color:var(--allow); border-color:var(--allow); }
+.reg--fact{  color:var(--air);   border-color:var(--air); }
+.reg--myth{  color:var(--aether);border-color:var(--aether); }
+.reg--false{ color:var(--forbid);border-color:var(--forbid); }
+
+/* inline chem/crystallographic notation */
+.hm{ font-family:var(--mono); white-space:nowrap; letter-spacing:0.02em; }
+.ov{ text-decoration:overline; }
+.sub{ font-size:0.78em; vertical-align:-0.22em; }
+.sup{ font-size:0.72em; vertical-align:0.42em; }
+
+hr.div{
+  border:0; border-top:1px solid var(--rule-soft); margin:0;
+}
+.stars{
+  text-align:center; color:var(--faint); letter-spacing:1.2em;
+  font-size:0.7rem; padding:0.4rem 0 0 1.2em;
+}
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
+</style>
+
+<div class="pg" id="pg">
+
+<!-- ══════════════════ STRATA RAIL ══════════════════ -->
+<nav class="rail" id="rail" aria-label="Sections"></nav>
+
+<div class="wrap">
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<header class="plate" id="s0" style="border-top:0">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;0</span>
+    <span class="plate__ttl">Diffraction rosette · reciprocal space</span>
+    <span class="plate__note" id="heroNote">4-fold · permitted</span>
+  </div>
+  <div class="stage" id="stgHero" style="height:min(64vh,540px)">
+    <canvas id="cvHero"></canvas>
+    <span class="stage__hint">drag to precess</span>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Rotational order n</span>
+    <div class="gonio__grp" id="heroBtns"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <span class="gonio__lab">Beam</span>
+      <input class="rng" id="heroZoom" type="range" min="0.55" max="1.9" step="0.01" value="1"
+             aria-label="Beam magnification">
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. 0</b> — Every pattern above is what a beam scattered by an ordered solid
+    would actually record on the plate. Four of these orders can be built from a
+    repeating lattice. One of them cannot — and yet it is sharp, ordered, and real.
+    That contradiction is the whole subject of this page.
+  </div>
+</header>
+
+<section class="col sect" style="padding-top:3.2rem">
+  <div class="flow">
+    <p class="eyebrow">A treatise in nine plates · crystallography &amp; the <span class="gk">Corpus Hermeticum</span></p>
+    <h1 class="h-act">The Forbidden<br>Symmetry</h1>
+    <p class="lede">
+      Plato assigned five solids to five elements. Two thousand years later
+      crystallographers proved that three of those solids can build matter and
+      two of them are geometrically <em>impossible</em> in any repeating crystal.
+      Then, in 1982, one of the impossible two turned up in an aluminium alloy.
+    </p>
+    <p>
+      This page is a workshop, not an essay. Every claim below is attached to
+      something you can rotate, slide, truncate, or break. The five colours are
+      fixed from here to the end — <span class="c-fire">fire</span>,
+      <span class="c-earth">earth</span>, <span class="c-air">air</span>,
+      <span class="c-water">water</span>, <span class="c-aether">aether</span> —
+      so that a shape you meet in Plate II is recognisable when it reappears,
+      unannounced, inside a mineral in Plate VI.
+    </p>
+    <p>
+      And where the two traditions genuinely touch, I have marked it. Where they
+      only rhyme, I have marked that too. Those chips —
+      <span class="reg reg--proof">theorem</span>
+      <span class="reg reg--fact">measured</span>
+      <span class="reg reg--myth">tradition</span>
+      <span class="reg reg--false">false</span>
+      — appear throughout. The most interesting thing about the intersection of
+      Hermetics and solid-state physics is not that everything lines up. It is
+      exactly <em>where</em> the seam falls.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT I — THE FIVE
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s1">
+  <div class="flow">
+    <p class="eyebrow">Act I · the enumeration</p>
+    <h2 class="h-act">Why exactly five</h2>
+    <p class="lede">
+      The number five is not a mystical fact about the universe. It is a
+      subtraction problem, and it takes about forty seconds to do.
+    </p>
+    <p>
+      A regular polyhedron needs identical regular faces meeting identically at
+      every corner. At any corner you need at least three faces, and the face
+      angles gathered there must add to <em>less than</em> a full turn — because
+      the corner has to lift off the plane to close up. That is the entire
+      constraint. A regular <span class="mono">p</span>-gon has interior angle
+      <span class="mono">180(p−2)/p</span>, so with
+      <span class="mono">q</span> faces per corner the test is simply
+      <span class="mono">q · 180(p−2)/p &lt; 360</span>.
+    </p>
+    <p>
+      Run it. Triangles give three solutions, squares one, pentagons one,
+      hexagons none — and there the list stops forever, because at a hexagon you
+      have already spent the whole 360°. Five solids. Not four, not six, and no
+      new ones waiting in higher precision.
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p1">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;I</span>
+    <span class="plate__ttl">The angular defect · why the list closes</span>
+    <span class="plate__note" id="defNote">—</span>
+  </div>
+  <div class="stage" id="stgDefect" style="height:min(52vh,420px)">
+    <canvas id="cvDefect"></canvas>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Face</span>
+    <div class="gonio__grp" id="defP"></div>
+    <span class="gonio__lab" style="margin-left:0.6rem">Faces per corner</span>
+    <div class="gonio__grp" id="defQ"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <button class="btn" id="defFold" type="button">Fold the corner</button>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. I</b> — Faces fanned around one corner, then folded out of the plane.
+    Angle left over is the <em>angular defect</em>: positive, and the corner
+    closes into a solid; zero, and it lies flat forever; negative, and it cannot
+    be built at all. Note what the three <span class="c-forbid">zero-defect</span>
+    failures are — <span class="mono">3·6</span>,
+    <span class="mono">4·4</span>, <span class="mono">6·3</span> — the three
+    regular tilings of the plane. The solids and the wallpapers are the same
+    enumeration, read on either side of the boundary.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="flow">
+    <h3 class="h-sub">Descartes' theorem, and the reason the sphere only has 720° to spend</h3>
+    <p>
+      Add up every angular defect on a convex polyhedron and you always get
+      exactly <strong>720°</strong> — four right angles' worth, no matter the
+      solid. That is Descartes' theorem, and it is the same statement as
+      <span class="mono">V − E + F = 2</span> in disguise. A tetrahedron spends
+      its 720° across four corners, so each is starved of 180°, making it
+      brutally sharp. An icosahedron spreads the same budget over twelve
+      corners — 60° each — so it barely dents, which is precisely why it is the
+      solid that behaves most like a sphere.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      Hold that thought. Every claim later in this page about
+      <span class="c-water">water rolling</span> and
+      <span class="c-fire">fire cutting</span> is a claim about how a fixed 720°
+      is distributed. Plato was doing curvature accounting with no calculus.
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p2">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;II</span>
+    <span class="plate__ttl">The five, their duals, and the road between them</span>
+    <span class="plate__note" id="solNote">tetrahedron · self-dual</span>
+  </div>
+  <div class="stage" id="stgSolid" style="height:min(66vh,560px)">
+    <canvas id="cvSolid"></canvas>
+    <span class="stage__hint">drag to rotate · shift-drag to roll</span>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Solid</span>
+    <div class="gonio__grp" id="solBtns"></div>
+    <div class="gonio__grp">
+      <span class="gonio__lab">Truncate toward dual</span>
+      <input class="rng" id="solTrunc" type="range" min="0" max="1000" step="1" value="0"
+             aria-label="Truncation toward the dual solid">
+      <span class="rdout" id="solTruncOut">0.00</span>
+    </div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <button class="btn is-on" id="solAxes" type="button">Rotation axes</button>
+      <button class="btn" id="solDualCage" type="button">Dual cage</button>
+      <button class="btn is-on" id="solSpin" type="button">Spin</button>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. II</b> — Push the truncation slider and watch a solid walk to its
+    dual through the shape that sits exactly halfway. Cube and octahedron meet at
+    the <em>cuboctahedron</em>; dodecahedron and icosahedron meet at the
+    <em>icosidodecahedron</em>; the tetrahedron walks to itself through the
+    octahedron, because it is its own dual. Nothing is being deformed — each
+    frame is the original solid with its corners sliced back by one honest
+    amount, and every intermediate is a legitimate polyhedron in its own right.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="grid grid--5" id="solidData"></div>
+  <div class="flow">
+    <h3 class="h-sub">Duality is not a resemblance. It is an exchange.</h3>
+    <p>
+      Put a point at the centre of every face and join the points whose faces
+      share an edge. Do that to a cube and an octahedron falls out; do it to the
+      octahedron and you are back at the cube. Faces become corners, corners
+      become faces, and the edge count never moves. Cube and octahedron both have
+      12 edges; dodecahedron and icosahedron both have 30; the tetrahedron's 6
+      map onto themselves.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      This matters more than it looks, because it means a dual pair shares one
+      symmetry group — the same rigid motions carry either shape onto itself.
+      There are therefore only <strong>three</strong> symmetry groups behind the
+      five solids: tetrahedral (order 24), octahedral (48), and icosahedral
+      (120). When a mineralogist says a crystal is "cubic," they are not saying it
+      looks like a cube. They are saying its symmetry is that group — which is
+      exactly why the same species can grow as a cube one day and an octahedron
+      the next, from the identical lattice.
+    </p>
+    <div class="aside aside--aether">
+      <span class="aside__tag">Where the traditions took this</span>
+      <p>
+        Duality gave the Hermetic reading its most durable image: the cube and the
+        octahedron as <span class="c-earth">earth</span> and
+        <span class="c-air">air</span>, matter and mind, each the inside-out of the
+        other and neither able to exist as a form without defining its partner.
+        The geometry says something narrower and stranger than the metaphor — not
+        that the two are opposites, but that they are the <em>same object</em>
+        described from its faces instead of its corners.
+        <span class="reg reg--myth">tradition</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT II — THE TRIANGLE ALPHABET
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s2">
+  <div class="flow">
+    <p class="eyebrow">Act II · <span class="gk">Timaeus</span> 53c–57c</p>
+    <h2 class="h-act">The triangle<br>alphabet</h2>
+    <p class="lede">
+      Almost everyone who repeats "Plato matched the solids to the elements" has
+      stopped one level too early. The solids were never the bottom of his
+      theory. The triangles were.
+    </p>
+    <p>
+      In the <span class="gk">Timaeus</span> Plato calls his components
+      <span class="gk">στοιχεῖα</span> — <em>stoicheia</em>, the same word Greek
+      grammarians used for the <em>letters of the alphabet</em>. He means it
+      literally. Matter is spelled. And the alphabet has just two letters, both
+      right triangles: the <strong>half-equilateral</strong>
+      (<span class="mono">30–60–90</span>) and the <strong>half-square</strong>
+      (<span class="mono">45–45–90</span>).
+    </p>
+    <p>
+      Six half-equilaterals make one equilateral face. Four half-squares make one
+      square face. From there the faces make the solids, and the solids make the
+      world — a strictly combinatorial theory of matter, twenty-three centuries
+      before anyone could weigh an atom.
+      <span class="reg reg--myth">tradition</span>
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p3">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;III</span>
+    <span class="plate__ttl">Transmutation chamber · triangles are conserved</span>
+    <span class="plate__note" id="txNote">idle</span>
+  </div>
+  <div class="stage" id="stgTx" style="height:min(60vh,500px)">
+    <canvas id="cvTx"></canvas>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Reaction</span>
+    <div class="gonio__grp" id="txBtns"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <span class="gonio__lab">Elementary triangles</span>
+      <span class="rdout" id="txCount" style="min-width:5.5rem">120 · 120</span>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. III</b> — Plato's own arithmetic, run as a reaction. Each solid is
+    dismantled into its half-equilaterals, which regroup into different solids.
+    The counter never changes during a reaction, because the triangles are the
+    conserved quantity — the thing that is really there. Each reaction plays
+    once; pick one to run it again, and try the last one.
+    <span class="c-earth">Earth</span> is built from the
+    <em>other</em> letter, so it cannot be spelled with these; the reaction fails
+    and the cube is returned intact.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <thead>
+        <tr><th>Element</th><th>Solid</th><th>Faces</th><th>Letter</th>
+            <th>Per face</th><th>Triangles</th><th>Transmutes?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="c-fire">Fire</td><td>Tetrahedron</td><td class="num">4</td>
+            <td>30–60–90</td><td class="num">6</td><td class="num">24</td>
+            <td class="c-allow">yes</td></tr>
+        <tr><td class="c-air">Air</td><td>Octahedron</td><td class="num">8</td>
+            <td>30–60–90</td><td class="num">6</td><td class="num">48</td>
+            <td class="c-allow">yes</td></tr>
+        <tr><td class="c-water">Water</td><td>Icosahedron</td><td class="num">20</td>
+            <td>30–60–90</td><td class="num">6</td><td class="num">120</td>
+            <td class="c-allow">yes</td></tr>
+        <tr><td class="c-earth">Earth</td><td>Cube</td><td class="num">6</td>
+            <td>45–45–90</td><td class="num">4</td><td class="num">24</td>
+            <td class="c-forbid">never</td></tr>
+        <tr><td class="c-aether">Aether</td><td>Dodecahedron</td><td class="num">12</td>
+            <td>— (pentagonal)</td><td class="num">—</td><td class="num">—</td>
+            <td>set aside</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flow">
+    <h3 class="h-sub">The two sealed compartments</h3>
+    <p>
+      Because fire, air and water are all spelled with the same letter, they
+      convert into one another and the books balance:
+      one water is two airs plus one fire — <span class="mono">120 = 48 + 48 +
+      24</span> — and one air is two fires, <span class="mono">48 = 24 + 24</span>.
+      Earth is spelled with the other letter, so earth in the
+      <span class="gk">Timaeus</span> can be broken and reassembled only into
+      earth. It is chemically sealed.
+    </p>
+    <p>
+      And the dodecahedron is quietly excused from the whole system. Plato does
+      not build it out of triangles, does not assign it a reaction, and gives it
+      one famously evasive line — that the god used it for the whole, embroidering
+      the figures on it. It is the only solid in the dialogue that is
+      <em>mentioned rather than constructed</em>. Every later esoteric tradition
+      that made the dodecahedron the vessel of spirit was reading a gap in the
+      text, and reading it accurately: the gap is really there.
+      <span class="reg reg--myth">tradition</span>
+    </p>
+    <div class="aside aside--fire">
+      <span class="aside__tag">Hold this until Plate VI</span>
+      <p>
+        Plato's partition — <span class="c-fire">tetrahedron</span> and
+        <span class="c-air">octahedron</span> interconvertible, <span
+        class="c-earth">cube</span> sealed off alone, <span
+        class="c-water">icosahedron</span> and <span
+        class="c-aether">dodecahedron</span> semi-detached — is about to be
+        restated, in different words and for entirely different reasons, by the
+        theory of how solids fill space. Tetrahedra and octahedra do tile
+        together. The cube does tile alone. The other two never tile at all.
+        Nobody arranged this. It is worth being unsettled by, and it is not
+        evidence of anything.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT III — THE FORBIDDEN NUMBER
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s3">
+  <div class="flow">
+    <p class="eyebrow">Act III · the crystallographic restriction</p>
+    <h2 class="h-act">The number<br>that cannot be</h2>
+    <p class="lede">
+      A crystal is not defined by being hard, or shiny, or faceted. A crystal is
+      a structure that <em>repeats by translation</em> — pick up the whole
+      thing, shift it by one lattice vector, set it down, and nothing has
+      changed. Everything below follows from that one sentence, including the
+      most surprising prohibition in physical science.
+    </p>
+    <p>
+      Ask what rotations such a structure can have. There is an answer, it is
+      short, and it is a proof rather than an observation:
+      <strong>1, 2, 3, 4 and 6.</strong> No repeating structure in any number of
+      dimensions can have a 5-fold rotation axis. Nor 7-fold, 8-fold, 9-fold, or
+      anything else. The pentagon is locked out of the mineral kingdom.
+    </p>
+    <h3 class="h-sub">First proof: count in the lattice's own coordinates</h3>
+    <p>
+      Describe a rotation using the lattice vectors themselves as your axes.
+      Since the rotation must map lattice points to lattice points, every entry
+      of its matrix is an <em>integer</em>. Traces don't care what basis you use,
+      so compare the integer trace with the trace in ordinary Cartesian
+      coordinates, which is <span class="mono">2 cos θ</span> in the plane. Then
+      <span class="mono">2 cos θ</span> must be a whole number, so
+      <span class="mono">cos θ ∈ {−1, −½, 0, ½, 1}</span>, so
+      <span class="mono">θ ∈ {180°, 120°, 90°, 60°, 360°}</span>. Five values.
+      That is the entire theorem.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <h3 class="h-sub">Second proof: the pentagon is destroyed by its own constant</h3>
+    <p>
+      This one is worth doing slowly, because of what the murder weapon turns out
+      to be. Take the <em>shortest</em> lattice vector <span class="mono">a</span>
+      that exists — a shortest one must exist, since lattice points are discrete.
+      If the lattice has an <span class="mono">n</span>-fold axis, then rotating
+      <span class="mono">a</span> by any multiple of
+      <span class="mono">360°/n</span> gives another lattice vector, and sums of
+      lattice vectors are lattice vectors. So look at
+      <span class="mono">a + a<span class="sub">k</span></span>, where
+      <span class="mono">a<span class="sub">k</span></span> is
+      <span class="mono">a</span> turned through
+      <span class="mono">k·360°/n</span>. Its length squared is
+      <span class="mono">2 + 2 cos(k·360°/n)</span>.
+    </p>
+    <p>
+      For <span class="mono">n = 5</span>, take
+      <span class="mono">k = 2</span>: the angle is 144°, and
+      <span class="mono">2 + 2 cos 144° = 2 − φ = 1/φ²</span>. The new vector has
+      length <span class="mono">1/φ ≈ 0.618</span> — <em>shorter than the
+      shortest vector there is.</em> Contradiction. And you can do it again, and
+      again, shrinking by <span class="mono">1/φ</span> every time, collapsing the
+      lattice into the origin.
+    </p>
+    <p>
+      Read that once more. <strong>The golden ratio is what makes 5-fold
+      symmetry impossible.</strong> The constant that the Pythagoreans guarded,
+      that generates the pentagon and lives in the icosahedron, is the exact
+      factor by which five-fold rotation eats a lattice alive. Not a metaphor —
+      it is the number in the inequality.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p4">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;IV</span>
+    <span class="plate__ttl">The restriction, executed</span>
+    <span class="plate__note" id="resNote">n = 5 · forbidden</span>
+  </div>
+  <div class="stage" id="stgRes" style="height:min(64vh,520px)">
+    <canvas id="cvRes"></canvas>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Order n</span>
+    <div class="gonio__grp" id="resN"></div>
+    <span class="gonio__lab" style="margin-left:0.6rem">Mode</span>
+    <div class="gonio__grp" id="resMode"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <button class="btn" id="resRun" type="button">Run the collapse</button>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. IV</b> — <em>Rosette</em> packs regular
+    <span class="mono">n</span>-gons around a shared corner: 3, 4 and 6 close
+    exactly; 5 leaves a 36° wound that no tiling can dress; 7 and up overlap.
+    <em>Collapse</em> runs the second proof — the shortest vector, its rotated
+    copy, and their sum, shrinking by <span class="mono">1/φ</span> per turn until
+    the lattice annihilates. Switch to <span class="mono">n = 6</span> and run it
+    again: the sum lands at length exactly 1, touching the bound without breaking
+    it. Six survives by a hair, on the equality.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="grid grid--3">
+    <div class="cell"><span class="cell__k">Permitted orders</span>
+      <span class="cell__v c-allow">1 · 2 · 3 · 4 · 6</span>
+      <span class="cell__n">All of crystallography descends from this list.</span></div>
+    <div class="cell"><span class="cell__k">Forbidden orders</span>
+      <span class="cell__v c-forbid">5 · 7 · 8 · 9 · …</span>
+      <span class="cell__n">Every other integer, without exception, in every dimension.</span></div>
+    <div class="cell"><span class="cell__k">Shrink factor at n = 5</span>
+      <span class="cell__v c-aether">1 / φ = 0.6180</span>
+      <span class="cell__n">The golden ratio, acting as the contradiction.</span></div>
+  </div>
+  <div class="flow">
+    <h3 class="h-sub">What the restriction costs the five solids</h3>
+    <p>
+      Now sort the Platonic solids by the rotation axes they carry.
+      The <span class="c-fire">tetrahedron</span> has 3-fold and 2-fold axes;
+      the <span class="c-earth">cube</span> and
+      <span class="c-air">octahedron</span> have 4-fold, 3-fold and 2-fold.
+      Every one of those numbers is on the permitted list — so these three
+      shapes are free to be the symmetry of a real crystal, and they are:
+      diamond, halite, fluorite, garnet, pyrite, gold, salt, silicon.
+    </p>
+    <p>
+      The <span class="c-water">icosahedron</span> and
+      <span class="c-aether">dodecahedron</span> both carry six 5-fold axes.
+      They are therefore excluded — not "rare," not "unstable," but
+      <em>excluded by theorem</em> from the symmetry of any periodic crystal.
+      Plato's <span class="c-water">water</span> and
+      <span class="c-aether">aether</span> are precisely the two elements that
+      matter is forbidden to be shaped like.
+    </p>
+    <div class="aside aside--forbid">
+      <span class="aside__tag">Resist the obvious inference</span>
+      <p>
+        The temptation is to say the ancients encoded this: that they knew the
+        upper two solids were "not of this world." They did not know it — the
+        theorem is 19th-century, and the elemental assignments in the
+        <span class="gk">Timaeus</span> are argued from sharpness, mobility and
+        rolling, not from lattice theory. What is genuinely remarkable is
+        narrower: the tradition drew its dividing line between the same two
+        groups the mathematics later drew it between, from unrelated reasoning.
+        Coincidences of that shape are the reason this subject keeps its grip —
+        but a coincidence is what it is.
+        <span class="reg reg--false">false</span>
+        <span class="reg reg--myth">tradition</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT IV — THE FOURTEEN
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s4">
+  <div class="flow">
+    <p class="eyebrow">Act IV · Bravais, 1848</p>
+    <h2 class="h-act">Fourteen ways<br>to fill space</h2>
+    <p class="lede">
+      If only five rotation orders survive, how many genuinely different
+      repeating scaffolds can exist? Auguste Bravais settled it: fourteen. Not
+      approximately, not "known so far" — fourteen, provably, and the whole of
+      materials science is built on them.
+    </p>
+    <p>
+      A lattice here means the bare skeleton of repetition: an infinite array of
+      points, each with an identical view of every other. The fourteen sort into
+      <strong>seven crystal systems</strong> by the symmetry of their cell shape,
+      then split further by <em>centring</em> — whether extra points sit at the
+      body centre <span class="hm">(I)</span>, on all faces
+      <span class="hm">(F)</span>, or on one pair of faces
+      <span class="hm">(C)</span>, in addition to the corners
+      <span class="hm">(P)</span>.
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p5">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;V</span>
+    <span class="plate__ttl">The fourteen Bravais lattices</span>
+    <span class="plate__note" id="bravNote">cubic F · face-centred</span>
+  </div>
+  <div class="stage" id="stgBrav" style="height:min(60vh,500px)">
+    <canvas id="cvBrav"></canvas>
+    <span class="stage__hint">drag to rotate</span>
+  </div>
+  <div class="gonio" id="bravBar">
+    <span class="gonio__lab">System</span>
+    <div class="gonio__grp" id="bravSys"></div>
+    <span class="gonio__lab" style="margin-left:0.6rem">Centring</span>
+    <div class="gonio__grp" id="bravCen"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <button class="btn is-on" id="bravTile" type="button">Repeat 2×2×2</button>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. V</b> — Corner points in <span style="color:var(--ink-2)">bone
+    white</span>, centring points in <span class="c-aether">violet</span>.
+    Switch on <em>Repeat</em> to see the cell doing its only job: tiling
+    outward, identically, forever. The dropped combinations are dropped because
+    they are not new — a C-centred cubic cell is no longer cubic, and an
+    F-centred tetragonal cell is an I-centred tetragonal cell drawn at 45°
+    with a smaller edge. Bravais's achievement was the eliminating, not the
+    listing.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="grid grid--3">
+    <div class="cell"><span class="cell__k">Crystal systems</span>
+      <span class="cell__v">7</span>
+      <span class="cell__n">Cell shapes, by symmetry.</span></div>
+    <div class="cell"><span class="cell__k">Bravais lattices</span>
+      <span class="cell__v">14</span>
+      <span class="cell__n">Shapes × centring, duplicates removed.</span></div>
+    <div class="cell"><span class="cell__k">Point groups</span>
+      <span class="cell__v">32</span>
+      <span class="cell__n">Symmetries a finite crystal form can have.</span></div>
+    <div class="cell"><span class="cell__k">Space groups</span>
+      <span class="cell__v">230</span>
+      <span class="cell__n">Every possible way to be a periodic crystal.</span></div>
+    <div class="cell"><span class="cell__k">Plane groups</span>
+      <span class="cell__v">17</span>
+      <span class="cell__n">The same census in two dimensions — every wallpaper.</span></div>
+    <div class="cell"><span class="cell__k">Excluded by theorem</span>
+      <span class="cell__v c-forbid">∞</span>
+      <span class="cell__n">Everything with a 5-, 7-, or higher-fold axis.</span></div>
+  </div>
+  <div class="flow">
+    <p>
+      Two-hundred-and-thirty is a closed, finite catalogue of every way matter is
+      permitted to be periodically ordered. Every mineral ever described, every
+      alloy, every protein crystal, every semiconductor wafer is an instance of
+      one of 230 abstract objects — and the enumeration was finished, by hand, in
+      the 1890s, decades before anyone had seen a diffraction pattern to check it
+      against. Fedorov and Schoenflies got there independently and their lists
+      agreed.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      This is the deep sense in which the Hermetic instinct is not silly. The
+      forms available to matter really are fixed in advance, really are countable,
+      and really were derived by pure reasoning about symmetry before observation
+      confirmed a single case. What the tradition calls an archetype, a
+      crystallographer calls a space group, and the structural claim — that the
+      possible is enumerable and prior to the actual — is the same claim.
+      <span class="reg reg--myth">tradition</span>
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT V — FIRE AND AIR CO-TILE
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s5">
+  <div class="flow">
+    <p class="eyebrow">Act V · packing, voids, and the octet</p>
+    <h2 class="h-act">What actually<br>fills the space</h2>
+    <p class="lede">
+      Atoms are not tiny cubes. Treat them as spheres and ask how densely they
+      can be stacked, and the Platonic solids reappear from an entirely different
+      direction — not as the shapes of the parts, but as the shapes of the
+      <em>gaps</em>.
+    </p>
+    <p>
+      Kepler guessed in 1611 that no arrangement of equal spheres beats the
+      greengrocer's stack, at <span class="mono">π/√18 ≈ 74.05%</span>. It took
+      until 1998 for Thomas Hales and Samuel Ferguson to prove him right, and
+      until 2014 for the
+      proof to be machine-verified line by line — one of the longest-open
+      problems in geometry, resolved on the arrangement of oranges.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p6">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;VI</span>
+    <span class="plate__ttl">Close packing · coordination · interstitial solids</span>
+    <span class="plate__note" id="packNote">cubic close-packed · 74.05%</span>
+  </div>
+  <div class="stage" id="stgPack" style="height:min(64vh,540px)">
+    <canvas id="cvPack"></canvas>
+    <span class="stage__hint">drag to rotate</span>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Stacking</span>
+    <div class="gonio__grp" id="packMode"></div>
+    <span class="gonio__lab" style="margin-left:0.6rem">Show</span>
+    <div class="gonio__grp" id="packShow"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <span class="gonio__lab">Sphere radius</span>
+      <input class="rng" id="packR" type="range" min="18" max="100" step="1" value="100"
+             aria-label="Sphere radius">
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. VI</b> — Shrink the spheres to expose the voids between them, then
+    switch on the interstitial solids. Every gap in a close-packed structure is
+    either a <span class="c-fire">tetrahedron</span> or an
+    <span class="c-air">octahedron</span>, in a fixed ratio of two to one, and
+    together they account for all of it. This is the
+    <em>tetrahedral–octahedral honeycomb</em> — and it is the only way to fill
+    space with regular tetrahedra at all.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <thead>
+        <tr><th>Packing</th><th>Coordination</th><th>Neighbour shell is a…</th>
+            <th>Fill</th><th>Example</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cubic close-packed <span class="hm">(F)</span></td><td class="num">12</td>
+            <td>cuboctahedron</td><td class="num">74.05%</td><td>Cu, Al, Au, Ag, Ni</td></tr>
+        <tr><td>Hexagonal close-packed</td><td class="num">12</td>
+            <td>triangular orthobicupola</td><td class="num">74.05%</td><td>Mg, Zn, Ti, Co</td></tr>
+        <tr><td>Body-centred cubic <span class="hm">(I)</span></td><td class="num">8</td>
+            <td>cube</td><td class="num">68.02%</td><td>Fe (α), W, Cr, Na</td></tr>
+        <tr><td>Simple cubic <span class="hm">(P)</span></td><td class="num">6</td>
+            <td>octahedron</td><td class="num">52.36%</td><td>Po (α) — almost unique</td></tr>
+        <tr><td>Diamond cubic</td><td class="num">4</td>
+            <td>tetrahedron</td><td class="num">34.01%</td><td>C, Si, Ge</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flow">
+    <h3 class="h-sub">Two solids, one honeycomb</h3>
+    <p>
+      A single regular tetrahedron cannot tile space — Aristotle claimed it
+      could, and he was wrong, an error that stood for roughly 1,800 years. Five
+      tetrahedra around a shared edge leave a gap of about
+      <span class="mono">7.36°</span>, the same kind of wound the pentagon leaves
+      in the plane. The cube tiles space alone and effortlessly. And the
+      tetrahedron becomes able to tile only when the octahedron joins it, in the
+      ratio 2 : 1.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      So the space-filling census, derived with no reference to Greek philosophy,
+      returns: <span class="c-fire">fire</span> and
+      <span class="c-air">air</span> fill space <em>only in combination with each
+      other</em>; <span class="c-earth">earth</span> fills space
+      <em>alone</em>; <span class="c-water">water</span> and
+      <span class="c-aether">aether</span> <em>never fill space</em>. That is
+      Plato's own partition of the elements into transmutable, sealed, and set
+      apart — the arrangement Act II left you holding.
+    </p>
+    <div class="aside aside--air">
+      <span class="aside__tag">Read the coincidence correctly</span>
+      <p>
+        Both partitions trace back to a shared cause, which is neither
+        coincidence nor secret knowledge: they are both consequences of
+        <em>dihedral angles</em>. Plato sorted by which faces are built from which
+        triangle; space-filling sorts by whether dihedral angles divide 360°. Both
+        criteria are downstream of the same handful of angles, so agreement is
+        less mysterious than it first looks. The honest statement is that the
+        <span class="gk">Timaeus</span> partition is <em>geometrically
+        well-motivated</em> — which is a real compliment, and a much rarer one
+        than "mystically correct."
+        <span class="reg reg--fact">measured</span>
+      </p>
+    </div>
+    <p>
+      One more shape from the voids, because you will need it in two plates'
+      time. Ask which region of space is closer to a given lattice point than to
+      any other — the <em>Wigner–Seitz cell</em>. For body-centred cubic it is
+      the <strong>truncated octahedron</strong>, the one Archimedean solid that
+      tiles space by itself. For cubic close packing it is the
+      <strong>rhombic dodecahedron</strong>: twelve identical rhombic faces,
+      also space-filling. Twelve faces, a dodecahedron in the literal sense —
+      and, unlike Plato's, entirely legal in a crystal, because its faces are
+      rhombi rather than pentagons. Nature has been building
+      <em>a</em> dodecahedron all along. Just not <em>the</em> dodecahedron.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT VI — THE MINERAL WITNESSES
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s6">
+  <div class="flow">
+    <p class="eyebrow">Act VI · habit, cleavage, and one magnificent forgery</p>
+    <h2 class="h-act">The witnesses<br>in the rock</h2>
+    <p class="lede">
+      Minerals do not know the theorem, and they obey it anyway. Pull open a
+      drawer of a mineral collection and you are looking at the permitted
+      symmetries, grown at room temperature out of dirty water, by accident.
+    </p>
+    <p>
+      Two old laws make the connection tight. Steno noticed in 1669 that the
+      <em>angles</em> between corresponding faces of a species are constant even
+      when the crystals are wildly different sizes and shapes — the habit varies,
+      the angles never do. And in 1784 Haüy, having dropped a calcite specimen
+      and studied the fragments, proposed that crystals are stacks of identical
+      units, from which follows the <strong>law of rational indices</strong>:
+      every real crystal face must be a plane through lattice points, so its
+      orientation is describable by small whole numbers.
+      <span class="reg reg--fact">measured</span>
+    </p>
+    <p>
+      Keep that law in hand. In about four hundred words it is going to eliminate
+      the dodecahedron a second time, by a completely different route, using the
+      same number.
+    </p>
+  </div>
+</section>
+
+<section class="col col--wide sect" style="padding-top:1.2rem">
+  <div class="grid grid--2">
+    <div class="cell">
+      <span class="cell__k">Halite · NaCl · <span class="hm">Fm<span class="ov">3</span>m</span></span>
+      <span class="cell__v c-earth">CUBE — habit &amp; cleavage {100}</span>
+      <span class="cell__n">Sodium and chlorine on two interpenetrating
+        face-centred cubic lattices, each ion octahedrally surrounded by six of
+        the other. It cleaves on three perpendicular planes, so table salt
+        arrives in your hand as microscopic cubes. Plato's
+        <span class="c-earth">earth</span>, sitting in a shaker.</span>
+    </div>
+    <div class="cell">
+      <span class="cell__k">Fluorite · CaF₂ · <span class="hm">Fm<span class="ov">3</span>m</span></span>
+      <span class="cell__v c-air">OCTAHEDRON — cleavage {111}</span>
+      <span class="cell__n">Identical space group to halite, yet it cleaves on
+        the four diagonal planes instead of the three axial ones. Strike a
+        fluorite cube and the corners come away as perfect
+        <span class="c-air">octahedra</span>. Same symmetry, opposite solid —
+        duality made destructive.</span>
+    </div>
+    <div class="cell">
+      <span class="cell__k">Diamond · C · <span class="hm">Fd<span class="ov">3</span>m</span></span>
+      <span class="cell__v c-fire">TETRAHEDRON — sp³ framework</span>
+      <span class="cell__n">Every carbon bonded to four others at 109.47°: the
+        <span class="c-fire">tetrahedron</span> repeated without deviation
+        through the whole stone. The hardest natural substance is simply Plato's
+        fire element, tiled. Octahedral habit is the classic rough-diamond
+        form.</span>
+    </div>
+    <div class="cell">
+      <span class="cell__k">Garnet · <span class="hm">Ia<span class="ov">3</span>d</span></span>
+      <span class="cell__v">RHOMBIC DODECAHEDRON {110}</span>
+      <span class="cell__n">Twelve faces, and completely legal — the faces are
+        rhombi, not regular pentagons, so no 5-fold axis is implied. Garnet also
+        grows as the trapezohedron {211}. This is the Wigner–Seitz cell of cubic
+        close packing, from Plate VI, grown to the size of a marble.</span>
+    </div>
+    <div class="cell">
+      <span class="cell__k">Quartz · SiO₂ · <span class="hm">P3₁21 / P3₂21</span></span>
+      <span class="cell__v c-fire">TETRAHEDRA IN A HELIX</span>
+      <span class="cell__n">SiO₄ tetrahedra corner-linked into spirals winding
+        around a 3-fold <em>screw</em> axis — a rotation combined with a shift,
+        which is why there are 230 space groups and not 32. The helix has a
+        handedness, so quartz comes in left and right forms that rotate polarised
+        light in opposite directions.</span>
+    </div>
+    <div class="cell">
+      <span class="cell__k">Beryl · <span class="hm">P6/mcc</span></span>
+      <span class="cell__v">HEXAGONAL PRISM</span>
+      <span class="cell__n">Six-fold — the largest rotation the theorem permits,
+        and conspicuously the one nature reaches for when it wants to look
+        designed: emerald, aquamarine, snowflakes, basalt columns, honeycomb.
+        Six is the ceiling, and it shows.</span>
+    </div>
+  </div>
+  <div class="col flow" style="padding:0 0.2rem">
+    <div class="aside">
+      <span class="aside__tag">Why quartz has no centre, and why that is useful</span>
+      <p>
+        Quartz's structure contains no point of inversion symmetry. Squeeze a
+        crystal without such a centre and the positive and negative charges
+        inside cannot shift symmetrically, so a voltage appears across it — and
+        the effect runs backwards too. That is piezoelectricity, and it is a
+        <em>direct consequence of a missing symmetry element</em>. An entire class
+        of physical behaviour exists only in the gaps of the symmetry catalogue.
+        <span class="reg reg--fact">measured</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="col sect">
+  <div class="flow">
+    <h3 class="h-sub">One refractive index, two, or three — decided before the stone exists</h3>
+    <p>
+      Cleavage tells a cutter where not to cut. But symmetry settles something
+      no cutter can negotiate with at all: <em>how many refractive indices the
+      stone has.</em> Not what they are — how many there are. That count is
+      fixed by the point group, and it was fixed long before anyone picked the
+      rough up.
+    </p>
+    <p>
+      The governing rule is <strong>Neumann's principle</strong>, the most
+      load-bearing sentence in crystal physics: any physical property of a
+      crystal must display at least the symmetry of the crystal's point group. A
+      property cannot be <em>less</em> symmetric than the crystal it belongs to,
+      because nothing in the structure would tell it which direction to prefer.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      Optical behaviour lives in the dielectric tensor, and a symmetric rank-two
+      tensor <em>is</em> an ellipsoid — the <strong>indicatrix</strong>. The
+      length of each semi-axis is literally the refractive index for light
+      vibrating along it. So "how many refractive indices?" becomes "how many
+      different semi-axes may this ellipsoid have?", and Neumann answers from the
+      point group alone, with no measurement:
+    </p>
+    <div class="aside">
+      <p><b style="font-family:var(--label);letter-spacing:.12em;font-size:.68rem;
+         text-transform:uppercase;color:var(--ink-2)">Cubic → a sphere → one index</b><br>
+        Cubic point groups carry four 3-fold axes along the body diagonals. No
+        ellipsoid can hold that much symmetry unless every radius is equal. One
+        radius, one index. Cubic crystals are <em>forbidden</em> to be
+        birefringent — the same shape of prohibition as the 5-fold ban in Act III,
+        issued by the same authority.</p>
+      <p><b style="font-family:var(--label);letter-spacing:.12em;font-size:.68rem;
+         text-transform:uppercase;color:var(--ink-2)">One high axis → a spheroid → two</b><br>
+        Tetragonal, trigonal and hexagonal each have exactly one axis of order 4,
+        3 or 6. That forces a circular cross-section about the unique axis and a
+        different length along it. Two indices: <strong>uniaxial</strong>.</p>
+      <p><b style="font-family:var(--label);letter-spacing:.12em;font-size:.68rem;
+         text-transform:uppercase;color:var(--ink-2)">No high axis → triaxial → three</b><br>
+        Orthorhombic, monoclinic and triclinic have no axis above 2-fold. Three
+        unequal semi-axes are permitted, so three occur:
+        <strong>biaxial</strong>.</p>
+    </div>
+    <p>
+      Seven crystal systems, three optical classes, and the mapping between them
+      is not a tendency or a rule of thumb. It is a consequence.
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p7">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;VII</span>
+    <span class="plate__ttl">The indicatrix · how many indices the symmetry allows</span>
+    <span class="plate__note" id="optNote">cubic · isotropic</span>
+  </div>
+  <div class="stage" id="stgOpt" style="height:min(66vh,560px)">
+    <canvas id="cvOpt"></canvas>
+    <span class="stage__hint">drag to rotate</span>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Crystal system</span>
+    <div class="gonio__grp" id="optSys"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <button class="btn is-on" id="optSect" type="button">Circular section</button>
+      <button class="btn is-on" id="optSpin" type="button">Spin</button>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. VII</b> — The indicatrix for each system, with its principal
+    semi-axes labelled by the refractive index they represent. The
+    <span class="c-aether">violet</span> disc is a <em>circular</em> section: light
+    travelling perpendicular to it meets a single radius and does not split, which
+    is the definition of an optic axis. Cubic has no unique one because
+    <em>every</em> section is circular. The inset is the working test — the back
+    facet edges as seen through the crown, doubled in proportion to the
+    birefringence. Axis lengths are exaggerated; the true indices are printed
+    beside them.
+  </div>
+</div>
+
+<section class="col col--wide sect" style="padding-top:1.4rem">
+  <div id="optTable"></div>
+</section>
+
+<section class="col sect">
+  <div class="flow">
+    <h3 class="h-sub">The test you can run with a loupe</h3>
+    <p>
+      Inside a birefringent crystal a ray splits in two, travelling at different
+      speeds along different paths, so you see two of everything. Look through the
+      table of a cut stone at the back facet edges: in zircon they are visibly
+      doubled, and in diamond they are not — and cannot be, ever, in any diamond,
+      because cubic symmetry forbids it.
+      <span class="reg reg--fact">measured</span>
+    </p>
+    <p>
+      That is not a curiosity, it is the trade's working identification. Moissanite
+      is the most convincing diamond simulant ever manufactured — it beats diamond
+      on fire and very nearly matches it on hardness — and it is hexagonal. It
+      doubles. A ten-power loupe settles a question that thermal probes get wrong,
+      and the reason it settles it is a point group.
+    </p>
+    <p>
+      With one caution, which is the same fact read from the other side: sight
+      exactly along an optic axis and the doubling disappears, because that is the
+      one direction where the section is a circle and the ray does not split. A
+      gemmologist therefore rocks the stone and looks from several angles rather
+      than trusting a single view. Absence of doubling in one orientation proves
+      nothing; absence in every orientation proves the crystal is cubic.
+    </p>
+    <h3 class="h-sub">And magnitude, not just count</h3>
+    <p>
+      The <em>size</em> of the refractive index decides something different:
+      whether the stone gives light back. A ray striking a facet from inside at
+      more than the critical angle, <span class="mono">arcsin(1/n)</span>, cannot
+      leave — it reflects internally instead. Diamond's index is high enough to
+      make that cone very wide, so light admitted through the crown finds it hard
+      to escape downward and comes back to the eye. Ordinary glass has a much
+      narrower cone and leaks through the back, which is why paste never convinced
+      anyone in daylight.
+      <span class="reg reg--fact">measured</span>
+    </p>
+    <p>
+      This is the one place gem cutting genuinely meets crystallography, and the
+      division of labour is worth stating exactly, because it is the kind of seam
+      this page exists to keep honest. <strong>The facet angles are optics.</strong>
+      A brilliant cut works on the critical angle and would behave identically in a
+      glass with no lattice at all. <strong>The orientation is
+      crystallography.</strong> A coloured anisotropic crystal absorbs differently
+      along different vibration directions — pleochroism — so the orientation of
+      the table decides which colours reach the eye. Ruby and sapphire are
+      conventionally cut with the table close to perpendicular to the optic axis
+      to blend the two components into the more attractive face-up hue. Tanzanite
+      is trichroic, and its orientation decides whether the stone comes out blue or
+      violet, and therefore what it sells for. Those are lattice decisions with
+      prices attached.
+    </p>
+    <p>
+      And the giveaway runs both ways. Flame-fusion synthetic sapphire is often cut
+      with the table <em>parallel</em> to the optic axis instead, because that
+      orientation wastes less of the boule — a choice made for yield rather than
+      colour, which leaves visible dichroism through the table and so becomes a
+      clue that the stone was grown rather than found. A cutting angle chosen for
+      economics ends up testifying about the crystal's origin.
+      <span class="reg reg--fact">measured</span>
+    </p>
+    <div class="aside aside--aether">
+      <span class="aside__tag">A confession about this page's colours</span>
+      <p>
+        Every colour used here — the reds, the brass, the two blues, the violet —
+        is taken from birefringence interference tints: what a thin slice of
+        mineral shows between crossed polarising filters. Those colours
+        <em>are</em> the quantity in this plate, made visible. The two rays travel
+        at different speeds, emerge out of step by an amount set by the
+        birefringence and the thickness, and the recombined beam interferes into a
+        colour that reports the difference. The palette of this treatise has been
+        a readout of Δn the entire way down, and now it has been introduced
+        properly.
+        <span class="reg reg--fact">measured</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="col sect">
+  <div class="flow">
+    <h3 class="h-sub">And now the forgery</h3>
+    <p>
+      Pyrite grows twelve-sided crystals with pentagonal faces. They sit in museum
+      cases looking exactly like the dodecahedron of the
+      <span class="gk">Timaeus</span>, and Etruscan examples of carved
+      dodecahedra date to well before Plato. But we have just proved that a
+      crystal cannot have 5-fold symmetry. Both things are true. The resolution
+      is the most instructive object in mineralogy.
+    </p>
+    <p>
+      Pyrite's form is the <strong>pyritohedron</strong>, and its faces are
+      <em>irregular</em> pentagons — four edges of one length, one of another.
+      Its point group is <span class="hm">m<span class="ov">3</span></span>, order
+      24, carrying only 3-fold and 2-fold axes. There is no 5-fold axis anywhere
+      in it. What looks like fivefold symmetry is twelve pentagons arranged with
+      merely cubic symmetry, and the giveaway is visible to the naked eye:
+      pyrite faces are finely striated, and the striations on adjacent faces run
+      at right angles to each other. The stone confesses.
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p8">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;VIII</span>
+    <span class="plate__ttl">The pyritohedron family · one slider, four named solids</span>
+    <span class="plate__note" id="pyrNote">h = 0.5000 · pyrite {210}</span>
+  </div>
+  <div class="stage" id="stgPyr" style="height:min(64vh,540px)">
+    <canvas id="cvPyr"></canvas>
+    <span class="stage__hint">drag to rotate</span>
+  </div>
+  <div class="gonio">
+    <div class="gonio__grp">
+      <span class="gonio__lab">Parameter h</span>
+      <input class="rng" id="pyrH" type="range" min="0" max="1000" step="1" value="500"
+             aria-label="Pyritohedron parameter h">
+      <span class="rdout" id="pyrOut">0.5000</span>
+    </div>
+    <span class="gonio__lab" style="margin-left:0.6rem">Jump to</span>
+    <div class="gonio__grp" id="pyrStops"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <button class="btn is-on" id="pyrFace" type="button">Highlight one face</button>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. VIII</b> — Vertices at
+    <span class="mono">(±1,±1,±1)</span> together with
+    <span class="mono">(0, ±(1+h), ±(1−h²))</span> and its cyclic permutations.
+    The single parameter <span class="mono">h</span> walks a continuous family
+    through four famous solids. Watch the highlighted face: its two edge lengths
+    are equal at only one value of <span class="mono">h</span> in the entire
+    range, and that value is <em>not</em> the one pyrite chooses.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <thead>
+        <tr><th>h</th><th>Solid</th><th>Face normal</th><th>Miller index</th>
+            <th>Rational?</th><th>Occurs in nature?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">0</td><td class="c-earth">Cube</td>
+            <td class="num">(0, 0, 1)</td><td class="num">{100}</td>
+            <td class="c-allow">yes</td><td>halite, pyrite, galena</td></tr>
+        <tr><td class="num">1/2</td><td>Pyritohedron</td>
+            <td class="num">(0, 1, 2)</td><td class="num">{210}</td>
+            <td class="c-allow">yes</td><td>pyrite, cobaltite</td></tr>
+        <tr><td class="num">0.6180…</td><td class="c-aether">Regular dodecahedron</td>
+            <td class="num">(0, 1, φ)</td><td class="c-forbid">none exists</td>
+            <td class="c-forbid">no — irrational</td><td class="c-forbid">never</td></tr>
+        <tr><td class="num">1</td><td>Rhombic dodecahedron</td>
+            <td class="num">(0, 1, 1)</td><td class="num">{110}</td>
+            <td class="c-allow">yes</td><td>garnet, magnetite</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flow">
+    <h3 class="h-sub">The golden ratio, convicted twice</h3>
+    <p>
+      Look at the third row. The regular dodecahedron's faces point along
+      <span class="mono">(0, 1, φ)</span>, and <span class="mono">φ</span> is
+      irrational. Haüy's law of rational indices demands that every crystal face
+      have a direction expressible in whole numbers. An irrational face index is
+      not merely unusual — it is <em>not a lattice plane</em>, and therefore not a
+      face any crystal can grow.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      So the Platonic dodecahedron is barred from the mineral kingdom twice over,
+      by two arguments that share nothing but a constant. The rotation argument
+      kills it because <span class="mono">1/φ &lt; 1</span> shrinks the lattice.
+      The face argument kills it because <span class="mono">φ</span> cannot be
+      written as a ratio of integers. Pyrite's compromise is to sit at the nearest
+      rational neighbour, <span class="mono">h = 1/2</span> against Plato's
+      <span class="mono">h = 0.618…</span> — a difference of about twelve
+      hundredths, invisible across a display case, and the exact width of the gap
+      between the world and the ideal.
+    </p>
+    <div class="aside aside--aether">
+      <span class="aside__tag">The Hermetic reading, stated precisely</span>
+      <p>
+        This is the strongest genuine parallel on the page, so it deserves exact
+        wording. Hermetic and Neoplatonic thought holds that material things are
+        deficient likenesses of intelligible forms, resembling them while falling
+        short by necessity rather than by accident. Pyrite is that claim rendered
+        in iron sulphide: a real object approximating a form it is structurally
+        forbidden to attain, missing by an irrational number. The parallel is
+        real, it is arresting, and it is <em>an analogy</em> — the mineralogy does
+        not license the metaphysics, and does not need to in order to be
+        beautiful.
+        <span class="reg reg--myth">tradition</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT VII — THE SHADOW
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s7">
+  <div class="flow">
+    <p class="eyebrow">Act VII · 8 April 1982</p>
+    <h2 class="h-act">The shadow<br>of a higher space</h2>
+    <p class="lede">
+      Dan Shechtman, working on a rapidly cooled aluminium–manganese alloy at the
+      US National Bureau of Standards, took an electron diffraction pattern and
+      counted ten sharp spots around a ring. He wrote in his notebook that it was
+      tenfold — with three question marks.
+    </p>
+    <p>
+      Sharp spots mean long-range order. Tenfold means 5-fold symmetry. The two
+      together were, by the theorem in Act III, impossible. He was told to reread
+      his textbook, was asked to leave his research group, and was publicly
+      dismissed for years by Linus Pauling, who remarked that there were no
+      quasicrystals, only quasi-scientists. The paper appeared in 1984. The Nobel
+      Prize in Chemistry came in 2011, to Shechtman alone.
+      <span class="reg reg--fact">measured</span>
+    </p>
+    <h3 class="h-sub">Nothing was disproved. A hidden assumption was removed.</h3>
+    <p>
+      The restriction theorem is not wrong and never was. Read its premise again:
+      <em>periodic</em>. Shechtman's alloy is ordered without being periodic.
+      Its atomic arrangement never repeats by translation, yet it is
+      deterministic, gapless, and diffracts as sharply as quartz. The theorem
+      forbids 5-fold <em>periodic</em> crystals, and that is all it ever forbade.
+      The definition of "crystal" was formally rewritten in 1992 to mean a solid
+      with a sharp diffraction pattern, dropping periodicity from the
+      requirements.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      The mathematics for such a thing already existed. Roger Penrose had found,
+      in 1974, two rhombus tiles that cover the plane without ever repeating —
+      built on angles of 36° and 72°, with the ratio of the two tile counts
+      converging on <span class="mono">φ</span>. The forbidden number reappears
+      the moment you give up periodicity, because it was periodicity, not five,
+      that was the obstruction.
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p9">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;IX</span>
+    <span class="plate__ttl">Penrose inflation · order without repetition</span>
+    <span class="plate__note" id="penNote">generation 0</span>
+  </div>
+  <div class="stage" id="stgPen" style="height:min(66vh,560px)">
+    <canvas id="cvPen"></canvas>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Generation</span>
+    <div class="gonio__grp" id="penGen"></div>
+    <div class="gonio__grp" style="margin-left:0.6rem">
+      <button class="btn" id="penInflate" type="button">Inflate</button>
+      <button class="btn is-on" id="penColour" type="button">Colour by tile</button>
+    </div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <span class="gonio__lab">fat : thin</span>
+      <span class="rdout" id="penRatio" style="min-width:6.5rem">—</span>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. IX</b> — Each generation replaces every tile with smaller tiles by
+    a fixed rule, forever. The pattern is completely determined, has exact 5-fold
+    symmetry about its centre, and contains no repeating unit anywhere. Watch the
+    ratio readout: the count of fat to thin rhombs converges on
+    <span class="mono">φ = 1.6180…</span> Any finite patch you can find recurs
+    infinitely often elsewhere in the tiling — yet no shift maps the whole thing
+    onto itself.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="flow">
+    <h3 class="h-sub">Where the extra dimensions come in — and this part is literal</h3>
+    <p>
+      Here is the construction that explains quasicrystals, and it is the single
+      place on this page where a Hermetic phrase turns out to describe a technique
+      rather than a mood.
+    </p>
+    <p>
+      Take a perfectly ordinary <em>periodic</em> lattice in a higher-dimensional
+      space. Draw a lower-dimensional plane through it at an
+      <strong>irrational slope</strong>. Select the lattice points lying within a
+      strip about that plane, and project them onto it. What lands on the plane is
+      ordered, deterministic, and <em>never periodic</em> — because a periodic
+      pattern would require the slope to be a ratio of whole numbers, and it
+      isn't. Rational slope gives a repeating pattern; irrational slope gives a
+      quasicrystal. Nothing else changes.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      Icosahedral quasicrystals are modelled exactly this way, as an irrational
+      cut through a <strong>six-dimensional</strong> periodic hypercubic lattice.
+      In six dimensions, icosahedral symmetry is perfectly compatible with
+      translation. The restriction theorem is satisfied up there. What we call
+      forbidden is a property of the shadow, not of the object.
+    </p>
+    <p>
+      A lower reality patterned by a faithful projection of a higher one, obeying
+      laws that look arbitrary from below and necessary from above, is a
+      recognisable description of the Hermetic doctrine of correspondence. It is
+      also, with no adjustment whatsoever, the cut-and-project method. The page
+      below builds it in one dimension so you can watch the slope go irrational.
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p10">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;X</span>
+    <span class="plate__ttl">Cut and project · as above, so below</span>
+    <span class="plate__note" id="cpNote">slope 1/φ · quasiperiodic</span>
+  </div>
+  <div class="stage" id="stgCP" style="height:min(66vh,560px)">
+    <canvas id="cvCP"></canvas>
+  </div>
+  <div class="gonio">
+    <div class="gonio__grp">
+      <span class="gonio__lab">Slope of the cut</span>
+      <input class="rng" id="cpSlope" type="range" min="200" max="1000" step="1" value="618"
+             aria-label="Slope of the cut">
+      <span class="rdout" id="cpOut">0.6180</span>
+    </div>
+    <span class="gonio__lab" style="margin-left:0.6rem">Snap to</span>
+    <div class="gonio__grp" id="cpStops"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <span class="gonio__lab">L : S</span>
+      <span class="rdout" id="cpRatio" style="min-width:5rem">—</span>
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. X</b> — A 2-D square lattice, an angled strip, and the shadow cast
+    on the line below. Rational slopes (try 1/2, 2/3, 3/5) produce a shadow that
+    repeats — a periodic crystal, with a visible unit cell. The golden slope
+    <span class="mono">1/φ</span> produces the Fibonacci chain: two spacings,
+    long and short, in an order that never repeats, with their counts in the ratio
+    <span class="mono">φ</span>. Every rational stop on that slider is a crystal.
+    The irrational limit of them is a quasicrystal.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="flow">
+    <h3 class="h-sub">The dodecahedron finally arrives</h3>
+    <p>
+      Quasicrystals are not a laboratory curiosity. Al–Cu–Fe and Al–Pd–Mn are
+      thermodynamically stable phases. Holmium–magnesium–zinc grows as
+      near-perfect <strong>pentagonal dodecahedral single grains</strong> —
+      millimetre-scale, faceted, and shaped like the solid the
+      <span class="gk">Timaeus</span> assigned to the cosmos as a whole. And in
+      2009 the first <em>natural</em> quasicrystal was identified in the Khatyrka
+      meteorite from Chukotka: <strong>icosahedrite</strong>,
+      Al<span class="sub">63</span>Cu<span class="sub">24</span>Fe<span class="sub">13</span>,
+      approved as a mineral species in 2010. A second, <strong>decagonite</strong>,
+      followed in 2015 from the same meteorite. Plato's aether arrived on Earth
+      from space, which is an unreasonable thing for reality to have arranged.
+      <span class="reg reg--fact">measured</span>
+    </p>
+    <div class="grid grid--3">
+      <div class="cell"><span class="cell__k">First observed</span>
+        <span class="cell__v">8 Apr 1982</span>
+        <span class="cell__n">Al₈₆Mn₁₄, melt-spun. Published 1984.</span></div>
+      <div class="cell"><span class="cell__k">Nobel, Chemistry</span>
+        <span class="cell__v">2011</span>
+        <span class="cell__n">Shechtman, sole laureate.</span></div>
+      <div class="cell"><span class="cell__k">First natural QC</span>
+        <span class="cell__v c-aether">Icosahedrite</span>
+        <span class="cell__n">Khatyrka meteorite, 2009; IMA-approved 2010.</span></div>
+    </div>
+    <h3 class="h-sub">Three more places the forbidden solids get in</h3>
+    <p>
+      <strong>As a motif, not a lattice.</strong> β-rhombohedral boron and boron
+      carbide are ordinary periodic crystals built from
+      <span class="c-water">B₁₂ icosahedral clusters</span>. There is no
+      contradiction: the theorem constrains the symmetry of the <em>lattice</em>,
+      not the internal symmetry of a group of atoms sitting at a lattice site. A
+      forbidden shape may occupy a permitted address, provided the crystal as a
+      whole never claims its symmetry.
+      <span class="reg reg--fact">measured</span>
+    </p>
+    <p>
+      <strong>As a molecule.</strong> C₆₀ is a truncated icosahedron — twelve
+      pentagons, twenty hexagons, full icosahedral symmetry, sixty carbon atoms.
+      A single molecule has no translation to violate, so it is free to be as
+      5-fold as it likes.
+    </p>
+    <p>
+      <strong>As a shell.</strong> Most spherical viruses build icosahedral
+      capsids, following the Caspar–Klug rule
+      <span class="mono">T = h² + hk + k²</span>: twelve pentamers plus
+      <span class="mono">10(T−1)</span> hexamers. Life reaches for the icosahedron
+      whenever it needs to enclose the most volume with the fewest distinct parts
+      — Plato's argument for that solid, arrived at by natural selection.
+    </p>
+    <div class="aside aside--forbid">
+      <span class="aside__tag">And one correction the tradition has to take</span>
+      <p>
+        Plato assigned the icosahedron to <span class="c-water">water</span>. Real
+        water ice is <span class="hm">P6₃/mmc</span> — hexagonal, six-fold, with
+        each molecule tetrahedrally hydrogen-bonded at about 109.5°. There is
+        nothing icosahedral about it. The element whose assignment we can actually
+        check against the structure of the substance is the one the
+        <span class="gk">Timaeus</span> gets wrong, and the visible proof falls out
+        of the sky every winter with six arms.
+        <span class="reg reg--false">false</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT VIII — THE GOLDEN SCAFFOLD
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s8">
+  <div class="flow">
+    <p class="eyebrow">Act VIII · the interior architecture</p>
+    <h2 class="h-act">Inside the<br>forbidden pair</h2>
+    <p class="lede">
+      One last look at the two excluded solids, because their internal
+      construction is where the golden ratio stops being a decorative fact and
+      becomes the load-bearing member.
+    </p>
+    <p>
+      The twelve vertices of an icosahedron are given by
+      <span class="mono">(0, ±1, ±φ)</span> and its cyclic permutations — which
+      is to say the icosahedron <em>is</em> three identical golden rectangles,
+      interlocked at right angles. Nothing curved, nothing approximated: pin
+      three cards of proportion <span class="mono">1 : φ</span> through each
+      other's centres and the twelve corners are already an icosahedron.
+      <span class="reg reg--proof">theorem</span>
+    </p>
+    <p>
+      And inside the dodecahedron are <strong>five cubes</strong>. Its twenty
+      vertices divide into five groups of eight, each group forming a perfect
+      cube, the five related by rotation. Five cubes of
+      <span class="c-earth">earth</span> hidden inside the solid of
+      <span class="c-aether">aether</span> — a fact that any Renaissance
+      Neoplatonist would have considered the discovery of a lifetime, and which is
+      simply true. The same twenty vertices also carry the compound of five
+      tetrahedra, the first stellation of the icosahedron, which comes in
+      left- and right-handed versions.
+    </p>
+  </div>
+</section>
+
+<div class="plate" id="p11">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;XI</span>
+    <span class="plate__ttl">Golden scaffold · nested solids · Kepler 1596</span>
+    <span class="plate__note" id="goldNote">three golden rectangles</span>
+  </div>
+  <div class="stage" id="stgGold" style="height:min(68vh,580px)">
+    <canvas id="cvGold"></canvas>
+    <span class="stage__hint">drag to rotate</span>
+  </div>
+  <div class="gonio">
+    <span class="gonio__lab">Construction</span>
+    <div class="gonio__grp" id="goldMode"></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <span class="gonio__lab">Assemble</span>
+      <input class="rng" id="goldT" type="range" min="0" max="1000" step="1" value="1000"
+             aria-label="Assembly progress">
+    </div>
+  </div>
+  <div class="cap">
+    <b>Fig. XI</b> — <em>Rectangles</em> builds the icosahedron from three golden
+    cards. <em>Five cubes</em> lights them one at a time inside the dodecahedron.
+    <em>Kepler</em> reconstructs the nested-solid cosmos of the
+    <span class="gk">Mysterium Cosmographicum</span>, in the order he chose:
+    octahedron, icosahedron, dodecahedron, tetrahedron, cube, with a planetary
+    sphere in every gap.
+  </div>
+</div>
+
+<section class="col sect">
+  <div class="flow">
+    <h3 class="h-sub">Kepler's beautiful, wrong, indispensable model</h3>
+    <p>
+      In 1596 Kepler published a cosmos in which the six known planets orbit on
+      spheres nested between the five Platonic solids. Six planets, five gaps,
+      five solids — therefore, he argued, the number of planets is explained, and
+      God is a geometer. It is the most Hermetic proposition ever submitted to
+      measurement, and it is the first cosmology in history that was
+      <em>falsifiable by better data</em>.
+      <span class="reg reg--myth">tradition</span>
+    </p>
+    <p>
+      It failed. The spacings did not fit Tycho's observations, and Kepler —
+      unusually for a mystic — believed the observations. Chasing the residuals in
+      the orbit of Mars is what drove him to abandon circles altogether and arrive
+      at the ellipse. The sacred-geometry model was wrong, and being wrong in a
+      checkable way is what produced Kepler's laws. That is the healthiest
+      possible relationship between the two traditions on this page: one supplies
+      the audacity, the other supplies the arithmetic that kills it.
+    </p>
+    <p>
+      Newton, who finished Kepler's physics, also spent decades on alchemy and
+      left behind an English translation of the Emerald Tablet — the source of
+      "as above, so below" — in his own hand, now Keynes MS 28 at King's College,
+      Cambridge. The founder of classical mechanics wrote out the central
+      Hermetic formula by choice. The disciplines were not separate then, and the
+      separation we inherited is younger than either.
+      <span class="reg reg--fact">measured</span>
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ACT IX — THE SEAM
+     ══════════════════════════════════════════════════════════════ -->
+<section class="col sect" id="s9">
+  <div class="flow">
+    <p class="eyebrow">Act IX · the ledger</p>
+    <h2 class="h-act">Where the<br>seam falls</h2>
+    <p class="lede">
+      A page like this is only worth reading if it will tell you which of its
+      own claims are load-bearing. Here is the audit, in four registers.
+    </p>
+  </div>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <thead>
+        <tr><th style="width:8.5rem">Register</th><th>Claim</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="reg reg--proof">theorem</span></td>
+            <td>Exactly five regular convex polyhedra exist. Angular defects on a
+                convex polyhedron total 720°. Periodic lattices admit only 1-, 2-,
+                3-, 4- and 6-fold rotation. There are 14 Bravais lattices, 32 point
+                groups and 230 space groups. Regular tetrahedra cannot tile space
+                alone; with octahedra at 2:1 they can. Crystal faces must have
+                rational indices, so <span class="mono">(0,1,φ)</span> is not a
+                possible face. An irrational cut through a periodic higher-dimensional
+                lattice projects to a non-periodic ordered set. Neumann's principle
+                fixes the optical class from the point group alone — cubic symmetry
+                forces the dielectric tensor to a multiple of the identity, so a
+                cubic crystal cannot be birefringent, and the optic axis is the
+                normal to a circular section of the indicatrix.</td></tr>
+        <tr><td><span class="reg reg--fact">measured</span></td>
+            <td>Pyrite is <span class="hm">Pa<span class="ov">3</span></span> with
+                {210} pyritohedral faces and no 5-fold axis. Quartz is
+                piezoelectric because it lacks an inversion centre. Shechtman
+                recorded 10-fold diffraction on 8 April 1982; Nobel 2011.
+                Icosahedrite is a natural quasicrystal from the Khatyrka
+                meteorite. β-rhombohedral boron contains B₁₂ icosahedra inside a
+                periodic crystal. C₆₀ is a truncated icosahedron. Viral capsids
+                follow Caspar–Klug. Ice Ih is hexagonal. The refractive indices
+                and birefringences tabulated in Plate VII, and the fact that
+                zircon and moissanite show doubled facet edges where diamond
+                shows none.</td></tr>
+        <tr><td><span class="reg reg--myth">tradition</span></td>
+            <td>The elemental assignments of the <span class="gk">Timaeus</span>.
+                Plato's triangle alphabet and his transmutation arithmetic — a
+                real theory of matter, not a physically correct one. The
+                dodecahedron as vessel of the cosmos, and the gap in the text it
+                grew from. Hippasus and the drowning, which the historians treat
+                as legend. Kepler's nested-solid cosmos. The reading of pyrite as
+                a deficient likeness of a form.</td></tr>
+        <tr><td><span class="reg reg--false">false</span></td>
+            <td>That the ancients knew the crystallographic restriction theorem.
+                That quasicrystals demonstrate an aether, or vindicate sacred
+                geometry — they demonstrate aperiodic order, which is stranger and
+                required no tradition to predict it. That water's structure is
+                icosahedral. That geometric resonance in a lattice confers
+                metaphysical or healing properties; no such effect has ever been
+                measured, and piezoelectricity is not evidence for one.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flow">
+    <h3 class="h-sub">The honest fusion</h3>
+    <p>
+      What survives the audit is not a set of matching answers. It is a matching
+      <em>method</em>, and it is more interesting than the coincidences.
+    </p>
+    <p>
+      Both traditions hold that the possible forms of things are fixed in advance,
+      finite, countable, and derivable by thought before they are found in the
+      world. The Hermetic version says the archetypes are prior to their
+      instances. Crystallography says the same in a form you can check: 230 space
+      groups, enumerated by hand in the 1890s, before there was any instrument
+      capable of confirming one — and every crystal discovered since has been one
+      of them. Fedorov and Schoenflies did, in the strict sense, write down the
+      catalogue of possible material forms in advance of the evidence.
+    </p>
+    <p>
+      Where the traditions part is on what to do when reality declines to fit. The
+      Hermetic move is to preserve the pattern and reinterpret the discrepancy.
+      Kepler's move — and Shechtman's, seventy years of contempt notwithstanding —
+      was to keep the discrepancy and let the pattern break. That is the whole
+      difference, and it is why one of these traditions ended up with the ellipse
+      and the other with a beautiful drawing.
+    </p>
+    <p>
+      And still: a stone in the ground reaching for a shape it is mathematically
+      forbidden to hold, missing it by exactly the golden ratio; a symmetry ruled
+      out in three dimensions that turns out to be a shadow of something perfectly
+      lawful in six. You do not need to embroider those. They are already the
+      strangest true things in this subject, and they are what the mathematics
+      actually says.
+    </p>
+    <p class="pull" style="padding-top:0.8rem">
+      "That which is below corresponds to that which is above."<br>
+      <span class="pull__src">Emerald Tablet · trans. Isaac Newton, Keynes MS 28 · and,
+      as it happens, the cut-and-project method</span>
+    </p>
+  </div>
+  <p class="stars">✧ ✧ ✧</p>
+  <div class="flow flow--tight">
+    <p class="eyebrow">Colophon</p>
+    <p style="font-size:0.86rem;color:var(--muted);line-height:1.6">
+      All geometry on this page is computed live from vertex coordinates —
+      polyhedra, lattices, close packings, Penrose inflation and the
+      cut-and-project construction are generated in the browser, not drawn.
+      Face topology is recovered by convex-hull plane detection, so every
+      intermediate shape you produce with a slider is a genuine polyhedron rather
+      than an interpolation. Diffraction rosettes are computed as integer
+      combinations of star vectors with intensity falling off in perpendicular
+      space — the same construction used to index real quasicrystal patterns.
+      Colour throughout follows birefringence interference tints as seen in thin
+      section under crossed polars.
+    </p>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+</div><!-- /pg -->
+
+<script>
+(function(){
+'use strict';
+const PHI=(1+Math.sqrt(5))/2, TAU=Math.PI*2, D2R=Math.PI/180;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ══════════════════ colour ══════════════════ */
+let C={};
+function readTheme(){
+  const cs=getComputedStyle(document.getElementById('pg'));
+  const g=n=>cs.getPropertyValue(n).trim();
+  C={ground:g('--ground'),ground2:g('--ground-2'),ground3:g('--ground-3'),
+     rule:g('--rule'),ruleSoft:g('--rule-soft'),ink:g('--ink'),ink2:g('--ink-2'),
+     muted:g('--muted'),faint:g('--faint'),
+     fire:g('--fire'),earth:g('--earth'),air:g('--air'),water:g('--water'),aether:g('--aether'),
+     fireDim:g('--fire-dim'),earthDim:g('--earth-dim'),airDim:g('--air-dim'),
+     waterDim:g('--water-dim'),aetherDim:g('--aether-dim'),
+     allow:g('--allow'),forbid:g('--forbid')};
+  C.dark = lum(C.ground)<0.4;
+}
+/* accepts #rgb, #rrggbb and rgb()/rgba() so mix() results can be re-mixed */
+function hx(h){
+  h=(''+h).trim();
+  if(h.charAt(0)==='r'){
+    const m=h.match(/[\d.]+/g)||[0,0,0];
+    return [Math.round(+m[0])||0,Math.round(+m[1])||0,Math.round(+m[2])||0];
+  }
+  h=h.replace('#','');
+  if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  return [parseInt(h.slice(0,2),16)||0,parseInt(h.slice(2,4),16)||0,parseInt(h.slice(4,6),16)||0];
+}
+function lum(h){const c=hx(h);return (0.2126*c[0]+0.7152*c[1]+0.0722*c[2])/255;}
+function mix(a,b,t){const A=hx(a),B=hx(b);
+  return 'rgb('+Math.round(A[0]+(B[0]-A[0])*t)+','+Math.round(A[1]+(B[1]-A[1])*t)+','+Math.round(A[2]+(B[2]-A[2])*t)+')';}
+function al(h,a){const c=hx(h);return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';}
+readTheme();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',readTheme);
+new MutationObserver(readTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ══════════════════ canvas + stage loop ══════════════════ */
+const stages=[];
+function stage(id,draw){
+  const cv=document.getElementById(id); if(!cv) return null;
+  const ctx=cv.getContext('2d');
+  const o={cv,ctx,w:300,h:200,dpr:1,t:0,vis:false};
+  function size(){
+    const r=cv.getBoundingClientRect(); if(!r.width) return;
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    o.w=r.width; o.h=r.height; o.dpr=dpr;
+    cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  size();
+  if(window.ResizeObserver) new ResizeObserver(size).observe(cv);
+  else addEventListener('resize',size);
+  o.draw=draw;
+  new IntersectionObserver(es=>{o.vis=es[0].isIntersecting;},{rootMargin:'150px'}).observe(cv);
+  stages.push(o); return o;
+}
+let prev=performance.now(), themeSig=null;
+function frame(now){
+  const dt=Math.min((now-prev)/1000,0.05); prev=now;
+  /* the observer above catches theme changes a microtask later; this sentinel
+     guarantees no frame is ever painted with the previous theme's colours */
+  let live=false;
+  for(const o of stages) if(o.vis&&o.w){live=true;break;}
+  if(live){
+    const sig=getComputedStyle(document.getElementById('pg')).getPropertyValue('--ground');
+    if(sig!==themeSig){ themeSig=sig; readTheme(); }
+  }
+  for(const o of stages){
+    if(!o.vis||!o.w) continue;
+    o.t+=dt;
+    o.ctx.clearRect(0,0,o.w,o.h);
+    try{ o.draw(o,o.t,dt); }
+    catch(e){ if(!o.__err){o.__err=e; console.error('draw error in '+o.cv.id+': '+e.message);} }
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+function bg(o,inner){
+  const ctx=o.ctx, g=ctx.createRadialGradient(o.w/2,o.h/2,0,o.w/2,o.h/2,Math.max(o.w,o.h)*0.72);
+  g.addColorStop(0,inner||C.ground2); g.addColorStop(1,C.ground);
+  ctx.fillStyle=g; ctx.fillRect(0,0,o.w,o.h);
+}
+function lab(ctx,s,w){ctx.font=(w||500)+' '+s+'px "Bahnschrift SemiCondensed","Bahnschrift","Franklin Gothic Medium","Roboto Condensed",Corbel,sans-serif';}
+function mn(ctx,s){ctx.font=s+'px Consolas,"SF Mono",Menlo,monospace';}
+
+/* ══════════════════ 3-D ══════════════════ */
+function rot(p,rx,ry,rz){
+  let x=p[0],y=p[1],z=p[2],c,s,t;
+  if(rz){c=Math.cos(rz);s=Math.sin(rz);t=x*c-y*s;y=x*s+y*c;x=t;}
+  c=Math.cos(ry);s=Math.sin(ry);t=x*c+z*s;z=-x*s+z*c;x=t;
+  c=Math.cos(rx);s=Math.sin(rx);t=y*c-z*s;z=y*s+z*c;y=t;
+  return [x,y,z];
+}
+function mkProj(o,scale,dist){
+  const cx=o.w/2, cy=o.h/2, d=dist||4.2;
+  return p=>{const z=p[2]+d, f=(d*scale)/Math.max(z,0.12);
+    return [cx+p[0]*f, cy-p[1]*f, z];};
+}
+function orbit(o,st,ax,ay){
+  st.rx=ax===undefined?-0.36:ax; st.ry=ay===undefined?0.62:ay; st.rz=0;
+  st.drag=false; st.spin=true; st.vy=0;
+  let px=0,py=0,shift=false;
+  o.cv.style.cursor='grab';
+  o.cv.addEventListener('pointerdown',e=>{
+    st.drag=true; shift=e.shiftKey; px=e.clientX; py=e.clientY;
+    o.cv.setPointerCapture(e.pointerId); o.cv.style.cursor='grabbing';
+  });
+  o.cv.addEventListener('pointermove',e=>{
+    if(!st.drag) return;
+    const dx=(e.clientX-px)/160, dy=(e.clientY-py)/160;
+    px=e.clientX; py=e.clientY;
+    if(shift) st.rz+=dx; else {st.ry+=dx; st.rx=Math.max(-1.5,Math.min(1.5,st.rx+dy));}
+    st.vy=dx*0.6;
+  });
+  const up=e=>{st.drag=false;o.cv.style.cursor='grab';};
+  o.cv.addEventListener('pointerup',up); o.cv.addEventListener('pointercancel',up);
+  st.tick=dt=>{ if(!st.drag&&st.spin&&!RM) st.ry+=0.16*dt+st.vy*dt*3;
+                st.vy*=Math.pow(0.02,dt); };
+  return st;
+}
+
+/* ══════════════════ hull faces ══════════════════ */
+function hullFaces(V){
+  const n=V.length, seen=new Set(), faces=[], eps=1e-7, gt=2e-5;
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)for(let k=j+1;k<n;k++){
+    const a=V[i],b=V[j],c=V[k];
+    const b0=b[0]-a[0],b1=b[1]-a[1],b2=b[2]-a[2];
+    const c0=c[0]-a[0],c1=c[1]-a[1],c2=c[2]-a[2];
+    let nx=b1*c2-b2*c1, ny=b2*c0-b0*c2, nz=b0*c1-b1*c0;
+    const L=Math.hypot(nx,ny,nz); if(L<1e-8) continue;
+    nx/=L;ny/=L;nz/=L;
+    let d=nx*a[0]+ny*a[1]+nz*a[2];
+    let up=0,dn=0;
+    for(let m=0;m<n;m++){const t=nx*V[m][0]+ny*V[m][1]+nz*V[m][2]-d;
+      if(t>eps)up++; else if(t<-eps)dn++;}
+    if(up&&dn) continue;
+    if(up){nx=-nx;ny=-ny;nz=-nz;d=-d;}
+    const key=Math.round(nx*8e3)+','+Math.round(ny*8e3)+','+Math.round(nz*8e3)+','+Math.round(d*8e3);
+    if(seen.has(key)) continue; seen.add(key);
+    const idx=[];
+    for(let m=0;m<n;m++) if(Math.abs(nx*V[m][0]+ny*V[m][1]+nz*V[m][2]-d)<gt) idx.push(m);
+    if(idx.length<3) continue;
+    const cen=[0,0,0];
+    for(const m of idx){cen[0]+=V[m][0];cen[1]+=V[m][1];cen[2]+=V[m][2];}
+    cen[0]/=idx.length;cen[1]/=idx.length;cen[2]/=idx.length;
+    const rf=Math.abs(nx)<0.9?[1,0,0]:[0,1,0];
+    let u=[ny*rf[2]-nz*rf[1],nz*rf[0]-nx*rf[2],nx*rf[1]-ny*rf[0]];
+    const ul=Math.hypot(u[0],u[1],u[2]); u=[u[0]/ul,u[1]/ul,u[2]/ul];
+    const w=[ny*u[2]-nz*u[1],nz*u[0]-nx*u[2],nx*u[1]-ny*u[0]];
+    const ang=m=>{const A=[V[m][0]-cen[0],V[m][1]-cen[1],V[m][2]-cen[2]];
+      return Math.atan2(A[0]*w[0]+A[1]*w[1]+A[2]*w[2],A[0]*u[0]+A[1]*u[1]+A[2]*u[2]);};
+    idx.sort((p,q)=>ang(p)-ang(q));
+    faces.push(idx);
+  }
+  return faces;
+}
+function edgesOf(faces){
+  const s=new Set(), E=[];
+  for(const f of faces) for(let i=0;i<f.length;i++){
+    const a=f[i],b=f[(i+1)%f.length], k=Math.min(a,b)+'_'+Math.max(a,b);
+    if(!s.has(k)){s.add(k);E.push([a,b]);}
+  }
+  return E;
+}
+/* Newell's method — robust when a face carries collinear runs of coplanar
+   points, e.g. the cube faces of the pyritohedron family at h = 0, where the
+   first three vertices are corner → edge-midpoint → corner and a naive
+   three-point cross product degenerates to zero. */
+function normOf(V,f){
+  let nx=0,ny=0,nz=0;
+  for(let i=0;i<f.length;i++){
+    const a=V[f[i]], b=V[f[(i+1)%f.length]];
+    nx+=(a[1]-b[1])*(a[2]+b[2]);
+    ny+=(a[2]-b[2])*(a[0]+b[0]);
+    nz+=(a[0]-b[0])*(a[1]+b[1]);
+  }
+  const L=Math.hypot(nx,ny,nz)||1;
+  return [nx/L,ny/L,nz/L];
+}
+function scaleTo(V,r){
+  let m=0; for(const v of V) m=Math.max(m,Math.hypot(v[0],v[1],v[2]));
+  const k=r/(m||1); return V.map(v=>[v[0]*k,v[1]*k,v[2]*k]);
+}
+const LIGHT=(function(){const l=[0.36,0.72,0.58],L=Math.hypot(l[0],l[1],l[2]);return l.map(v=>v/L);})();
+
+/* ══════════════════ motion ══════════════════ */
+const E={
+  out:t=>1-Math.pow(1-t,3),
+  outQ:t=>1-Math.pow(1-t,5),
+  inOut:t=>t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,
+  smooth:t=>t*t*(3-2*t),
+  back:t=>{const c=1.70158;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);},
+  elastic:t=>t<=0?0:t>=1?1:Math.pow(2,-11*t)*Math.sin((t*10-0.75)*(TAU/3))+1,
+  pulse:t=>Math.sin(Math.min(1,Math.max(0,t))*Math.PI)
+};
+/* a value that eases toward a target every frame */
+function spring(v,rate){
+  return {v:v,t:v,rate:rate||7,
+    set(x){this.t=x;return this;}, jump(x){this.v=this.t=x;return this;},
+    step(dt){this.v+=(this.t-this.v)*Math.min(1,dt*this.rate);return this.v;},
+    get done(){return Math.abs(this.t-this.v)<1e-4;}};
+}
+/* per-item progress with an index-based delay, so groups arrive as a wave */
+function stag(p,i,n,spread){
+  spread=spread==null?0.55:spread;
+  const d=n<=1?0:(i/(n-1))*spread;
+  return Math.max(0,Math.min(1,(p-d)/Math.max(1e-6,1-spread)));
+}
+function glowOn(ctx,col,blur){ctx.shadowColor=col;ctx.shadowBlur=blur;}
+function glowOff(ctx){ctx.shadowColor='transparent';ctx.shadowBlur=0;}
+/* soft contact shadow so a solid is seated rather than floating */
+function seat(o,cx,cy,rx,a){
+  const ctx=o.ctx, g=ctx.createRadialGradient(cx,cy,0,cx,cy,rx);
+  g.addColorStop(0,al(C.dark?'#000000':'#6b7280',a==null?0.42:a));
+  g.addColorStop(0.55,al(C.dark?'#000000':'#6b7280',(a==null?0.42:a)*0.35));
+  g.addColorStop(1,al(C.dark?'#000000':'#6b7280',0));
+  ctx.save(); ctx.translate(cx,cy); ctx.scale(1,0.24); ctx.translate(-cx,-cy);
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,rx,0,TAU); ctx.fill(); ctx.restore();
+}
+
+function renderPoly(o,V,faces,opt){
+  opt=opt||{};
+  const ctx=o.ctx, st=opt.st, P=opt.proj;
+  const R=V.map(v=>rot(v,st.rx,st.ry,st.rz));
+  const S=R.map(P);
+  const list=[];
+  let zmin=1e9,zmax=-1e9;
+  for(let i=0;i<faces.length;i++){
+    const f=faces[i];
+    let z=0; for(const m of f) z+=R[m][2]; z/=f.length;
+    if(z<zmin)zmin=z; if(z>zmax)zmax=z;
+    list.push({f,z,i});
+  }
+  list.sort((a,b)=>b.z-a.z);
+  const base=opt.color||C.ink2, dim=opt.dim||C.ground3;
+  const A0=opt.alpha==null?1:opt.alpha;
+  const zr=Math.max(1e-6,zmax-zmin);
+  /* screen-space light direction (canvas y grows downward) */
+  const lx=LIGHT[0], ly=-LIGHT[1], ll=Math.hypot(lx,ly)||1;
+  const ldx=lx/ll, ldy=ly/ll;
+  for(const it of list){
+    const f=it.f, nrm=normOf(R,f);
+    const back=nrm[2]>0;
+    if(opt.cull&&back) continue;
+    const lm=Math.max(0,-(nrm[0]*LIGHT[0]+nrm[1]*LIGHT[1]-nrm[2]*LIGHT[2]));
+    const spec=Math.pow(lm,16);                       /* tight highlight   */
+    const rim=Math.pow(1-Math.abs(nrm[2]),3.2);       /* grazing-angle edge */
+    const fog=(it.z-zmin)/zr;                          /* 0 near … 1 far    */
+    const hi=(opt.hiFace!=null&&it.i===opt.hiFace);
+    const tint=hi?(opt.hiColor||C.aether):base;
+    /* facet body, then a gradient across it so each face has a sheen */
+    let mid=mix(dim,tint,0.16+0.80*lm);
+    if(fog>0) mid=mix(mid,C.ground,fog*0.30);
+    const bright=mix(mid,C.dark?'#ffffff':'#ffffff',0.06+0.34*spec+0.10*lm+0.16*rim);
+    const dark=mix(mid,dim,0.34);
+    ctx.beginPath();
+    for(let k=0;k<f.length;k++){const p=S[f[k]]; k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);}
+    ctx.closePath();
+    let cx=0,cy=0,rad=0;
+    for(const m of f){cx+=S[m][0];cy+=S[m][1];}
+    cx/=f.length; cy/=f.length;
+    for(const m of f) rad=Math.max(rad,Math.hypot(S[m][0]-cx,S[m][1]-cy));
+    rad=Math.max(rad,0.75);
+    const g=ctx.createLinearGradient(cx-ldx*rad,cy-ldy*rad,cx+ldx*rad,cy+ldy*rad);
+    g.addColorStop(0,dark); g.addColorStop(0.52,mid); g.addColorStop(1,bright);
+    ctx.globalAlpha=A0*(back?0.30:1);
+    ctx.fillStyle=g; ctx.fill();
+    if(opt.edge!==false){
+      ctx.globalAlpha=A0*(back?0.26:0.95);
+      ctx.lineWidth=hi?1.7:(opt.lw||0.85);
+      if(hi){ glowOn(ctx,opt.hiColor||C.aether,11); ctx.strokeStyle=opt.hiColor||C.aether; }
+      else ctx.strokeStyle=al(C.dark?'#ffffff':'#101318',C.dark?0.26:0.32);
+      ctx.stroke();
+      glowOff(ctx);
+    }
+    ctx.globalAlpha=1;
+  }
+  if(opt.dots){
+    for(let i=0;i<S.length;i++){
+      if(R[i][2]>0.02) continue;
+      ctx.fillStyle=al(opt.dotColor||C.ink,0.9);
+      ctx.beginPath(); ctx.arc(S[i][0],S[i][1],opt.dots,0,TAU); ctx.fill();
+    }
+  }
+  return {R,S};
+}
+function wire(o,V,E,st,P,col,lw,a){
+  const ctx=o.ctx;
+  ctx.lineWidth=lw||0.8; ctx.globalAlpha=a==null?0.85:a; ctx.strokeStyle=col;
+  ctx.beginPath();
+  for(const e of E){
+    const p=P(rot(V[e[0]],st.rx,st.ry,st.rz)), q=P(rot(V[e[1]],st.rx,st.ry,st.rz));
+    ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]);
+  }
+  ctx.stroke(); ctx.globalAlpha=1;
+}
+
+/* ══════════════════ base solids ══════════════════ */
+function cyc3(a,b,c){
+  const out=[], sg=[1,-1];
+  for(const s1 of sg)for(const s2 of sg){
+    out.push([a?a*0:0, b*s1, c*s2]);
+  }
+  return out;
+}
+function permSet(x,y,z){
+  const P=[], S=[-1,1], trip=[[x,y,z],[z,x,y],[y,z,x]];
+  for(const t of trip){
+    for(const s0 of S)for(const s1 of S)for(const s2 of S){
+      const v=[t[0]*s0,t[1]*s1,t[2]*s2];
+      P.push(v);
+    }
+  }
+  const seen=new Set(), out=[];
+  for(const v of P){
+    const k=v.map(q=>Math.round(q*1e5)).join(',');
+    if(!seen.has(k)){seen.add(k);out.push(v);}
+  }
+  return out;
+}
+const SOLIDS={
+  tetra:{name:'Tetrahedron',el:'fire',V:[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]],
+         sch:'{3,3}',v:4,e:6,f:4,grp:'T<sub>d</sub>',ord:24,dual:'self',dih:'70.53°',def:'180°'},
+  cube:{name:'Cube',el:'earth',V:permSet(1,1,1),
+         sch:'{4,3}',v:8,e:12,f:6,grp:'O<sub>h</sub>',ord:48,dual:'octahedron',dih:'90°',def:'90°'},
+  octa:{name:'Octahedron',el:'air',V:permSet(1,0,0),
+         sch:'{3,4}',v:6,e:12,f:8,grp:'O<sub>h</sub>',ord:48,dual:'cube',dih:'109.47°',def:'120°'},
+  dodeca:{name:'Dodecahedron',el:'aether',V:permSet(1,1,1).concat(permSet(0,1/PHI,PHI)),
+         sch:'{5,3}',v:20,e:30,f:12,grp:'I<sub>h</sub>',ord:120,dual:'icosahedron',dih:'116.57°',def:'36°'},
+  icosa:{name:'Icosahedron',el:'water',V:permSet(0,1,PHI),
+         sch:'{3,5}',v:12,e:30,f:20,grp:'I<sub>h</sub>',ord:120,dual:'dodecahedron',dih:'138.19°',def:'60°'}
+};
+for(const k in SOLIDS){const s=SOLIDS[k];s.V=scaleTo(s.V,1);s.F=hullFaces(s.V);s.E=edgesOf(s.F);}
+const ECOL={fire:['fire','fireDim'],earth:['earth','earthDim'],air:['air','airDim'],
+            water:['water','waterDim'],aether:['aether','aetherDim']};
+
+/* ══════════════════ UI helpers ══════════════════ */
+function mkBtns(host,items,onPick,init){
+  if(!host) return null;
+  host.innerHTML='';
+  const bs=items.map((it,i)=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='btn'+(it.cls?' btn--'+it.cls:'');
+    b.innerHTML=it.label;
+    b.addEventListener('click',()=>{set(i);onPick(it.value,i);});
+    host.appendChild(b); return b;
+  });
+  function set(i){bs.forEach((b,j)=>b.classList.toggle('is-on',j===i));}
+  set(init||0);
+  return {set,bs,items};
+}
+function toggle(el,on,fn){
+  if(!el) return;
+  el.classList.toggle('is-on',!!on);
+  el.addEventListener('click',()=>{
+    const now=!el.classList.contains('is-on');
+    el.classList.toggle('is-on',now); fn(now);
+  });
+}
+function note(id,txt){const e=document.getElementById(id); if(e) e.textContent=txt;}
+
+/* ══════════════════ strata rail ══════════════════ */
+(function(){
+  const rail=document.getElementById('rail'); if(!rail) return;
+  const acts=[['s0','0'],['s1','I · FIVE'],['s2','II · ALPHABET'],['s3','III · FORBIDDEN'],
+              ['s4','IV · FOURTEEN'],['s5','V · PACKING'],['s6','VI · MINERALS'],
+              ['s7','VII · SHADOW'],['s8','VIII · GOLDEN'],['s9','IX · SEAM']];
+  const ticks=acts.map(a=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='rail__tick';
+    b.innerHTML='<span class="rail__num">'+a[1]+'</span>';
+    b.setAttribute('aria-label','Go to '+a[1]);
+    b.addEventListener('click',()=>{
+      const el=document.getElementById(a[0]);
+      if(el) el.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'});
+    });
+    rail.appendChild(b); return b;
+  });
+  function upd(){
+    const mid=innerHeight*0.34; let best=0;
+    acts.forEach((a,i)=>{
+      const el=document.getElementById(a[0]); if(!el) return;
+      if(el.getBoundingClientRect().top<=mid) best=i;
+    });
+    ticks.forEach((t,i)=>t.classList.toggle('is-on',i===best));
+  }
+  addEventListener('scroll',upd,{passive:true}); upd();
+})();
+
+/* ══════════════════ PLATE 0 · diffraction rosette ══════════════════ */
+(function(){
+  const o=stage('cvHero',draw); if(!o) return;
+  const st={rot:0,drag:false,spots:[],n:4,zoom:1,pulse:0};
+  let px=0;
+  o.cv.style.cursor='grab';
+  o.cv.addEventListener('pointerdown',e=>{st.drag=true;px=e.clientX;o.cv.setPointerCapture(e.pointerId);o.cv.style.cursor='grabbing';});
+  o.cv.addEventListener('pointermove',e=>{if(st.drag){st.rot+=(e.clientX-px)/220;px=e.clientX;}});
+  const up=()=>{st.drag=false;o.cv.style.cursor='grab';};
+  o.cv.addEventListener('pointerup',up); o.cv.addEventListener('pointercancel',up);
+
+  function build(n){
+    const spots=new Map();
+    const per=[2,3,4,6].indexOf(n)>=0;
+    if(per){
+      let b1,b2;
+      if(n===4){b1=[1,0];b2=[0,1];}
+      else if(n===2){b1=[1,0];b2=[0.42,0.9];}
+      else {b1=[1,0];b2=[0.5,Math.sqrt(3)/2];}
+      for(let i=-9;i<=9;i++)for(let j=-9;j<=9;j++){
+        const kx=i*b1[0]+j*b2[0], ky=i*b1[1]+j*b2[1];
+        const r=Math.hypot(kx,ky); if(r>7.4) continue;
+        spots.set(i+'_'+j,{x:kx,y:ky,I:(i||j)?Math.exp(-r*0.20):1.6});
+      }
+    }else{
+      const q=(n%2===0)?n/2:n;
+      let qp=2; while(gcd(qp,n)!==1||qp===1) qp++;
+      const e=[],ep=[];
+      for(let j=0;j<q;j++){
+        const a=TAU*j/n; e.push([Math.cos(a),Math.sin(a)]);
+        const b=TAU*j*qp/n; ep.push([Math.cos(b),Math.sin(b)]);
+      }
+      let M=2; while(Math.pow(2*M+1,q)>9000&&M>0) M--;
+      const m=new Array(q).fill(-M);
+      const total=Math.pow(2*M+1,q);
+      for(let c=0;c<total;c++){
+        let kx=0,ky=0,px2=0,py2=0;
+        for(let j=0;j<q;j++){kx+=m[j]*e[j][0];ky+=m[j]*e[j][1];px2+=m[j]*ep[j][0];py2+=m[j]*ep[j][1];}
+        const r=Math.hypot(kx,ky);
+        if(r<=7.4){
+          const pr=Math.hypot(px2,py2);
+          const I=Math.exp(-(pr*pr)/5.2)*Math.exp(-r*0.13);
+          if(I>0.006){
+            const k=Math.round(kx*400)+'_'+Math.round(ky*400);
+            const ex=spots.get(k);
+            if(!ex||ex.I<I) spots.set(k,{x:kx,y:ky,I:(r<1e-6?1.6:I)});
+          }
+        }
+        for(let j=0;j<q;j++){ if(++m[j]<=M) break; m[j]=-M; }
+      }
+    }
+    /* order by distance from the beam centre so the exposure blooms outward */
+    st.spots=[...spots.values()].sort((a,b)=>Math.hypot(a.x,a.y)-Math.hypot(b.x,b.y));
+    st.spots.forEach((s,i)=>{s.ph=(i*2.3999)%TAU; s.rr=Math.hypot(s.x,s.y);});
+    st.per=per; st.expose=0; st.ring=0;
+  }
+  function gcd(a,b){while(b){const t=a%b;a=b;b=t;}return a;}
+
+  const opts=[{label:'3',value:3,cls:'allow'},{label:'4',value:4,cls:'allow'},
+              {label:'6',value:6,cls:'allow'},{label:'5',value:5,cls:'forbid'},
+              {label:'8',value:8,cls:'forbid'},{label:'10',value:10,cls:'forbid'},
+              {label:'12',value:12,cls:'forbid'}];
+  const ui=mkBtns(document.getElementById('heroBtns'),opts,v=>{
+    st.n=v; build(v); st.pulse=1;
+    note('heroNote',v+'-fold · '+(st.per?'permitted':'FORBIDDEN in any lattice'));
+  },1);
+  const zr=document.getElementById('heroZoom');
+  if(zr) zr.addEventListener('input',()=>{st.zoom=parseFloat(zr.value);});
+  build(4); note('heroNote','4-fold · permitted');
+
+  function draw(o,t,dt){
+    bg(o,C.dark?C.ground2:C.ground3);
+    const ctx=o.ctx;
+    if(!st.drag&&!RM) st.rot+=0.055*dt;
+    st.pulse=Math.max(0,st.pulse-dt*1.4);
+    const cx=o.w/2, cy=o.h/2;
+    const R=Math.min(o.w,o.h)*0.44*st.zoom;
+    const ca=Math.cos(st.rot), sa=Math.sin(st.rot);
+    /* faint reciprocal-space rings */
+    ctx.strokeStyle=al(C.dark?'#7f8aa5':'#6a7280',0.10); ctx.lineWidth=0.7;
+    for(let r=1;r<=7;r++){ctx.beginPath();ctx.arc(cx,cy,R*r/7.4,0,TAU);ctx.stroke();}
+    const spotCol = st.per? (C.dark?'#CFE4F2':'#1a3550') : C.aether;
+    /* exposure builds outward from the beam centre */
+    st.expose=Math.min(1,st.expose+dt*(RM?6:0.9));
+    st.ring=Math.min(1,st.ring+dt*1.1);
+    const N=st.spots.length;
+    /* the shock ring that races out when the order changes */
+    if(st.ring<1){
+      const rp=E.outQ(st.ring);
+      ctx.globalAlpha=(1-st.ring)*0.5;
+      ctx.strokeStyle=st.per?C.allow:C.aether; ctx.lineWidth=1.6;
+      glowOn(ctx,st.per?C.allow:C.aether,16);
+      ctx.beginPath(); ctx.arc(cx,cy,rp*R*1.15,0,TAU); ctx.stroke();
+      glowOff(ctx); ctx.globalAlpha=1;
+    }
+    for(let i=0;i<N;i++){
+      const s=st.spots[i];
+      const p=E.outQ(stag(st.expose,i,N,0.78));
+      if(p<=0.001) continue;
+      const x=cx+(s.x*ca-s.y*sa)*R/7.4, y=cy-(s.x*sa+s.y*ca)*R/7.4;
+      const tw=RM?1:0.86+0.14*Math.sin(t*1.9+s.ph);
+      let rr=Math.pow(Math.min(s.I,1.6),0.42)*(R*0.030)+0.35;
+      if(s.I>1.5) rr*=1.5;
+      rr*=p*tw;
+      if(rr<0.30) continue;
+      const a0=Math.min(1,Math.pow(Math.min(s.I,1),0.5)*p*(1+st.pulse*0.45));
+      const g=ctx.createRadialGradient(x,y,0,x,y,rr*2.4);
+      g.addColorStop(0,al(spotCol,a0));
+      g.addColorStop(0.30,al(spotCol,a0*0.88));
+      g.addColorStop(0.52,al(spotCol,a0*0.26));
+      g.addColorStop(1,al(spotCol,0));
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,rr*2.4,0,TAU); ctx.fill();
+      /* brightest reflections get a cross-flare, as on a real plate */
+      if(s.I>0.55&&rr>1.6){
+        ctx.globalAlpha=a0*0.5; ctx.strokeStyle=al(spotCol,0.9); ctx.lineWidth=0.7;
+        const fl=rr*3.4;
+        ctx.beginPath();
+        ctx.moveTo(x-fl,y);ctx.lineTo(x+fl,y);ctx.moveTo(x,y-fl);ctx.lineTo(x,y+fl);
+        ctx.stroke(); ctx.globalAlpha=1;
+      }
+    }
+    /* direct beam */
+    {
+      const bg2=ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.13);
+      bg2.addColorStop(0,al(spotCol,0.5*st.expose));
+      bg2.addColorStop(1,al(spotCol,0));
+      ctx.fillStyle=bg2; ctx.beginPath(); ctx.arc(cx,cy,R*0.13,0,TAU); ctx.fill();
+    }
+    lab(ctx,11,600);
+    ctx.fillStyle=st.per?C.allow:C.forbid;
+    ctx.textAlign='left';
+    ctx.fillText(st.per?'PERMITTED BY THE LATTICE':'NO PERIODIC LATTICE CAN DO THIS',14,o.h-14);
+    ctx.fillStyle=C.faint; mn(ctx,10);
+    ctx.fillText(st.spots.length+' reflections'+(st.per?'':' · dense, self-similar'),14,o.h-30);
+    ctx.textAlign='right'; lab(ctx,26,600);
+    ctx.fillStyle=al(st.per?C.ink:C.aether,0.9);
+    ctx.fillText(st.n+'-FOLD',o.w-14,o.h-14);
+  }
+})();
+
+/* ══════════════════ PLATE I · angular defect ══════════════════ */
+(function(){
+  const o=stage('cvDefect',draw); if(!o) return;
+  const st={p:5,q:3,fold:0,target:1,appear:0};
+  orbit(o,st,-0.5,0.5); st.spin=false;
+  const fb=document.getElementById('defFold');
+  /* every change re-plays the demonstration: faces arrive one by one, then fold */
+  const replay=()=>{st.appear=0;st.fold=0;st.target=1;if(fb)fb.classList.add('is-on');};
+  mkBtns(document.getElementById('defP'),
+    [3,4,5,6,7].map(v=>({label:v+'-gon',value:v})),v=>{st.p=v;replay();upd();},2);
+  mkBtns(document.getElementById('defQ'),
+    [3,4,5,6].map(v=>({label:''+v,value:v})),v=>{st.q=v;replay();upd();},0);
+  toggle(fb,true,on=>{st.target=on?1:0;});
+  const NAMES={'3_3':'TETRAHEDRON','3_4':'OCTAHEDRON','3_5':'ICOSAHEDRON',
+               '4_3':'CUBE','5_3':'DODECAHEDRON'};
+  function alpha(){return Math.PI*(st.p-2)/st.p;}
+  function sin2th(){return (1-Math.cos(alpha()))/(1-Math.cos(TAU/st.q));}
+  function upd(){
+    const tot=st.q*alpha()*180/Math.PI, def=360-tot;
+    const nm=NAMES[st.p+'_'+st.q];
+    note('defNote', st.p+'-gons, '+st.q+' per corner · Σ = '+tot.toFixed(1)+'° · defect '+
+      (def>0.01?('+'+def.toFixed(1)+'° → '+(nm||'solid')):(Math.abs(def)<0.01?'0° → PLANE TILING':def.toFixed(1)+'° → IMPOSSIBLE')));
+  }
+  upd();
+  function corner(theta){
+    const A=[0,0,0], q=st.q, a=alpha(), pts=[], sp=[];
+    for(let i=0;i<q;i++){
+      const az=TAU*i/q;
+      sp.push([Math.sin(theta)*Math.cos(az),Math.sin(theta)*Math.sin(az),-Math.cos(theta)+Math.cos(theta)]);
+    }
+    for(let i=0;i<q;i++){
+      const az=TAU*i/q;
+      sp[i]=[Math.sin(theta)*Math.cos(az),Math.sin(theta)*Math.sin(az),Math.cos(theta)-1];
+    }
+    for(let i=0;i<q;i++){
+      const P=sp[i], Q=sp[(i+1)%q];
+      let u=[P[0],P[1],P[2]];
+      const ul=Math.hypot(u[0],u[1],u[2])||1; u=[u[0]/ul,u[1]/ul,u[2]/ul];
+      let w=[Q[0],Q[1],Q[2]];
+      const dp=w[0]*u[0]+w[1]*u[1]+w[2]*u[2];
+      w=[w[0]-dp*u[0],w[1]-dp*u[1],w[2]-dp*u[2]];
+      const wl=Math.hypot(w[0],w[1],w[2])||1; w=[w[0]/wl,w[1]/wl,w[2]/wl];
+      const poly=[[0,0,0]];
+      let dir=0, cur=[0,0,0];
+      for(let k=0;k<st.p;k++){
+        cur=[cur[0]+Math.cos(dir)*u[0]+Math.sin(dir)*w[0],
+             cur[1]+Math.cos(dir)*u[1]+Math.sin(dir)*w[1],
+             cur[2]+Math.cos(dir)*u[2]+Math.sin(dir)*w[2]];
+        poly.push(cur);
+        dir+=Math.PI-a;
+      }
+      poly.pop();
+      pts.push(poly);
+    }
+    return pts;
+  }
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx;
+    st.tick(dt);
+    st.appear=Math.min(1,st.appear+dt*(RM?9:2.5));
+    if(st.appear>0.90) st.fold+=(st.target-st.fold)*Math.min(1,dt*3.6);
+    const s2=sin2th(), imposs=s2>1.0001, flat=Math.abs(s2-1)<1e-4;
+    const s2c=Math.min(1,s2);
+    const thFlat=Math.PI/2, thF=Math.asin(Math.sqrt(s2c));
+    const theta=thFlat+(thF-thFlat)*(imposs?0:st.fold);
+    const polys=corner(theta);
+    const P=mkProj(o,Math.min(o.w,o.h)*0.20,4.6);
+    const tris=[];
+    for(let i=0;i<polys.length;i++){
+      const R=polys[i].map(v=>rot([v[0],v[1],v[2]+0.5],st.rx,st.ry,st.rz));
+      let z=0; for(const r of R) z+=r[2]; z/=R.length;
+      tris.push({R,z,i});
+    }
+    tris.sort((a,b)=>b.z-a.z);
+    const ok=!imposs;
+    const base=imposs?C.forbid:(flat?C.earth:C.air);
+    const dim=imposs?C.fireDim:(flat?C.earthDim:C.airDim);
+    for(const tr of tris){
+      const ap=E.out(stag(st.appear,tr.i,polys.length,0.58));
+      if(ap<=0.002) continue;
+      const S=tr.R.map(P);
+      ctx.beginPath();
+      S.forEach((p,k)=>k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
+      ctx.closePath();
+      let cx2=0,cy2=0,rr2=0;
+      for(const p of S){cx2+=p[0];cy2+=p[1];}
+      cx2/=S.length; cy2/=S.length;
+      for(const p of S) rr2=Math.max(rr2,Math.hypot(p[0]-cx2,p[1]-cy2));
+      const shade=0.32+0.46*(tr.i/polys.length);
+      const gg=ctx.createLinearGradient(cx2,cy2-rr2,cx2,cy2+rr2);
+      gg.addColorStop(0,mix(dim,base,Math.min(1,shade+0.22)));
+      gg.addColorStop(1,mix(dim,base,Math.max(0,shade-0.14)));
+      ctx.globalAlpha=(imposs?0.52:0.92)*ap;
+      ctx.fillStyle=gg; ctx.fill();
+      ctx.globalAlpha=0.9*ap; ctx.lineWidth=1;
+      ctx.strokeStyle=al(C.dark?'#ffffff':'#101318',0.36);
+      if(imposs){glowOn(ctx,C.forbid,10);ctx.strokeStyle=al(C.forbid,0.85);}
+      ctx.stroke(); glowOff(ctx);
+      ctx.globalAlpha=1;
+    }
+    /* the defect wedge — the angle the corner still has to spend to close */
+    if(st.fold<0.55&&!imposs&&!flat&&st.appear>0.9){
+      const a=alpha()*st.q, gap=TAU-a;
+      const c=P(rot([0,0,0.5],st.rx,st.ry,st.rz));
+      const fade=(1-st.fold/0.55)*(0.82+0.18*Math.sin(t*2.6));
+      ctx.beginPath(); ctx.moveTo(c[0],c[1]);
+      const rr=Math.min(o.w,o.h)*0.13;
+      ctx.arc(c[0],c[1],rr,-a,-a-gap,true); ctx.closePath();
+      ctx.globalAlpha=fade;
+      ctx.fillStyle=al(C.allow,0.32); ctx.fill();
+      glowOn(ctx,C.allow,12);
+      ctx.strokeStyle=C.allow; ctx.lineWidth=1.2; ctx.stroke();
+      glowOff(ctx); ctx.globalAlpha=1;
+    }
+    const tot=st.q*alpha()*180/Math.PI, def=360-tot;
+    lab(ctx,12,600); ctx.textAlign='left';
+    ctx.fillStyle=def>0.01?C.allow:(Math.abs(def)<0.01?C.earth:C.forbid);
+    ctx.fillText('DEFECT  '+(def>=0?'+':'')+def.toFixed(2)+'°',14,24);
+    mn(ctx,10); ctx.fillStyle=C.faint;
+    ctx.fillText(st.q+' × '+(alpha()*180/Math.PI).toFixed(2)+'°  =  '+tot.toFixed(2)+'°',14,40);
+    const nm=NAMES[st.p+'_'+st.q];
+    if(nm){lab(ctx,20,600);ctx.fillStyle=al(C.ink,0.85);ctx.textAlign='right';
+           ctx.fillText(nm,o.w-14,o.h-16);}
+    else{lab(ctx,14,600);ctx.textAlign='right';
+         ctx.fillStyle=al(Math.abs(def)<0.01?C.earth:C.forbid,0.9);
+         ctx.fillText(Math.abs(def)<0.01?'TILES THE PLANE — NEVER CLOSES':'CANNOT BE BUILT',o.w-14,o.h-16);}
+  }
+})();
+
+/* ══════════════════ PLATE II · the five ══════════════════ */
+(function(){
+  const o=stage('cvSolid',draw); if(!o) return;
+  const st={key:'tetra',s:0,sTgt:0,axes:true,cage:false,cache:null,
+            sv:spring(0,13),pop:spring(1,9),axA:spring(1,8),cgA:spring(0,8),flash:0};
+  orbit(o,st);
+  const keys=['tetra','cube','octa','dodeca','icosa'];
+  mkBtns(document.getElementById('solBtns'),
+    keys.map(k=>({label:SOLIDS[k].name.slice(0,5).toUpperCase(),value:k,cls:SOLIDS[k].el})),
+    v=>{st.key=v;st.cache=null;st.pop.jump(0.52);st.pop.set(1);st.flash=1;
+        st.ry+=0.55;upd();},0);
+  const tr=document.getElementById('solTrunc'), tro=document.getElementById('solTruncOut');
+  if(tr) tr.addEventListener('input',()=>{st.sTgt=parseInt(tr.value,10)/1000;
+    st.sv.set(st.sTgt); if(tro) tro.textContent=st.sTgt.toFixed(2); upd();});
+  toggle(document.getElementById('solAxes'),true,on=>{st.axes=on;st.axA.set(on?1:0);});
+  toggle(document.getElementById('solDualCage'),false,on=>{st.cage=on;st.cgA.set(on?1:0);});
+  toggle(document.getElementById('solSpin'),true,on=>{st.spin=on;});
+
+  function dualOf(k){return k==='tetra'?'tetra':SOLIDS[k].dual==='cube'?'cube':
+    ({cube:'octa',octa:'cube',dodeca:'icosa',icosa:'dodeca',tetra:'tetra'})[k];}
+  const MID={tetra:'octahedron',cube:'cuboctahedron',octa:'cuboctahedron',
+             dodeca:'icosidodecahedron',icosa:'icosidodecahedron'};
+  function upd(){
+    const S=SOLIDS[st.key], d=dualOf(st.key);
+    let txt=S.name.toLowerCase();
+    if(st.s<0.02) txt+=' · dual '+S.dual;
+    else if(Math.abs(st.s-0.5)<0.02) txt=MID[st.key]+' · the rectified form';
+    else if(st.s>0.98) txt=(st.key==='tetra'?'inverted tetrahedron':SOLIDS[d].name.toLowerCase())+' · the dual';
+    else txt='truncated · '+(st.s*100).toFixed(0)+'% toward '+(st.key==='tetra'?'itself':S.dual);
+    note('solNote',txt);
+  }
+  upd();
+  function build(){
+    const key=st.key, s=st.s;
+    const A=SOLIDS[key], d=dualOf(key);
+    let srcV,srcE,t,inv=false;
+    if(s<=0.5){srcV=A.V;srcE=A.E;t=s;}
+    else{
+      if(key==='tetra'){srcV=A.V.map(v=>[-v[0],-v[1],-v[2]]);srcE=A.E;inv=true;}
+      else{srcV=SOLIDS[d].V;srcE=SOLIDS[d].E;}
+      t=1-s;
+    }
+    const tc=Math.max(0.016,Math.min(0.484,t));
+    const V=[];
+    for(const e of srcE){
+      const a=srcV[e[0]],b=srcV[e[1]];
+      V.push([a[0]+(b[0]-a[0])*tc,a[1]+(b[1]-a[1])*tc,a[2]+(b[2]-a[2])*tc]);
+      V.push([b[0]+(a[0]-b[0])*tc,b[1]+(a[1]-b[1])*tc,b[2]+(a[2]-b[2])*tc]);
+    }
+    let VV=scaleTo(V,1);
+    const sig=key+'|'+(s<=0.5?'a':'b')+'|'+(Math.abs(t-0.5)<0.02?'mid':'gen');
+    if(!st.cache||st.cache.sig!==sig){
+      if(Math.abs(t-0.5)<0.02){
+        const M=[]; const seen=new Set();
+        for(const e of srcE){
+          const a=srcV[e[0]],b=srcV[e[1]];
+          const m=[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2];
+          const k=m.map(q=>Math.round(q*1e4)).join(',');
+          if(!seen.has(k)){seen.add(k);M.push(m);}
+        }
+        const MV=scaleTo(M,1);
+        st.cache={sig,F:hullFaces(MV),fixed:MV};
+      } else st.cache={sig,F:hullFaces(VV),fixed:null};
+    }
+    if(st.cache.fixed) VV=st.cache.fixed;
+    return {V:VV,F:st.cache.F};
+  }
+  function axesOf(key){
+    const S=SOLIDS[key], out=[], seen=new Set();
+    const add=(v,ord)=>{
+      const L=Math.hypot(v[0],v[1],v[2]); if(L<1e-8) return;
+      let u=[v[0]/L,v[1]/L,v[2]/L];
+      if(u[0]<-1e-6||(Math.abs(u[0])<1e-6&&(u[1]<-1e-6||(Math.abs(u[1])<1e-6&&u[2]<0))))
+        u=[-u[0],-u[1],-u[2]];
+      const k=u.map(q=>Math.round(q*1e3)).join(',');
+      if(seen.has(k)) return; seen.add(k); out.push({u,ord});
+    };
+    for(const f of S.F){
+      const c=[0,0,0]; for(const m of f){c[0]+=S.V[m][0];c[1]+=S.V[m][1];c[2]+=S.V[m][2];}
+      add(c,f.length);
+    }
+    const deg={};
+    for(const f of S.F) for(const m of f) deg[m]=(deg[m]||0)+1;
+    for(let i=0;i<S.V.length;i++) add(S.V[i],deg[i]||3);
+    for(const e of S.E){
+      const a=S.V[e[0]],b=S.V[e[1]];
+      add([(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],2);
+    }
+    return out;
+  }
+  const AXC={2:'muted',3:'air',4:'earth',5:'aether',6:'water'};
+  const axCache={};
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx; st.tick(dt);
+    st.s=st.sv.step(dt);
+    const pop=st.pop.step(dt), axA=st.axA.step(dt), cgA=st.cgA.step(dt);
+    st.flash=Math.max(0,st.flash-dt*2.2);
+    const G=build(), S=SOLIDS[st.key], ec=ECOL[S.el];
+    const sc=Math.min(o.w,o.h)*0.30*(0.55+0.45*E.back(Math.min(1,pop))), P=mkProj(o,sc,4.3);
+    seat(o,o.w/2,o.h*0.90,sc*0.95,0.32*Math.min(1,pop));
+    if(axA>0.01){
+      if(!axCache[st.key]) axCache[st.key]=axesOf(st.key);
+      for(const a of axCache[st.key]){
+        const A=P(rot([a.u[0]*1.42,a.u[1]*1.42,a.u[2]*1.42],st.rx,st.ry,st.rz));
+        const B=P(rot([-a.u[0]*1.42,-a.u[1]*1.42,-a.u[2]*1.42],st.rx,st.ry,st.rz));
+        ctx.globalAlpha=axA*(a.ord>=4?0.62:0.32);
+        ctx.strokeStyle=C[AXC[a.ord]||'muted'];
+        ctx.lineWidth=a.ord>=4?1.15:0.7;
+        if(a.ord>=5) glowOn(ctx,C.aether,9);
+        ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.lineTo(B[0],B[1]);ctx.stroke();
+        glowOff(ctx);
+      }
+      ctx.globalAlpha=1;
+    }
+    if(cgA>0.01){
+      const D=SOLIDS[dualOf(st.key)];
+      wire(o,scaleTo(D.V,1.02),D.E,st,P,al(C.ink2,0.55),0.85,0.6*cgA);
+    }
+    renderPoly(o,G.V,G.F,{st,proj:P,color:C[ec[0]],dim:C[ec[1]],
+      alpha:0.94*Math.min(1,pop*1.4),lw:0.9,dots:2.0,dotColor:C[ec[0]]});
+    if(st.flash>0.01){
+      ctx.globalAlpha=st.flash*0.45; ctx.strokeStyle=C[ec[0]]; ctx.lineWidth=1.5;
+      glowOn(ctx,C[ec[0]],18);
+      ctx.beginPath();ctx.arc(o.w/2,o.h/2,sc*(0.9+E.outQ(1-st.flash)*1.5),0,TAU);ctx.stroke();
+      glowOff(ctx); ctx.globalAlpha=1;
+    }
+    lab(ctx,11,600); ctx.textAlign='left'; ctx.fillStyle=C.faint;
+    let y=o.h-14;
+    if(st.axes){
+      const orders=[...new Set((axCache[st.key]||[]).map(a=>a.ord))].sort();
+      const cnt={}; (axCache[st.key]||[]).forEach(a=>cnt[a.ord]=(cnt[a.ord]||0)+1);
+      let x=14;
+      for(const or of orders){
+        ctx.fillStyle=C[AXC[or]||'muted'];
+        const s2=cnt[or]+' × '+or+'-fold';
+        ctx.fillText(s2,x,y); x+=ctx.measureText(s2).width+16;
+      }
+    }
+    lab(ctx,13,600); ctx.textAlign='right'; ctx.fillStyle=al(C[ec[0]],0.95);
+    ctx.fillText(S.sch+'  ·  '+S.el.toUpperCase(),o.w-14,o.h-14);
+  }
+  /* data grid */
+  const host=document.getElementById('solidData');
+  if(host){
+    host.innerHTML=keys.map(k=>{
+      const s=SOLIDS[k];
+      return '<div class="cell"><span class="cell__k">'+s.sch+' · '+s.el+'</span>'+
+        '<span class="cell__v c-'+s.el+'">'+s.name.toUpperCase()+'</span>'+
+        '<span class="cell__n mono">V '+s.v+' · E '+s.e+' · F '+s.f+'<br>'+
+        'V−E+F = '+(s.v-s.e+s.f)+'</span>'+
+        '<span class="cell__n">Group '+s.grp+', order '+s.ord+'<br>'+
+        'Dual: '+s.dual+'<br>Dihedral '+s.dih+'<br>Defect/vertex '+s.def+
+        ' × '+s.v+' = 720°</span></div>';
+    }).join('');
+  }
+})();
+
+/* ══════════════════ PLATE III · transmutation ══════════════════ */
+(function(){
+  const o=stage('cvTx',draw); if(!o) return;
+  const st={rx:-0.34,ry:0.5,rz:0,drag:false,spin:true,vy:0,
+            phase:'run',p:0,rxn:0,tris:null};
+  orbit(o,st);
+  function triangulate(key){
+    const S=SOLIDS[key], out=[];
+    for(const f of S.F){
+      const c=[0,0,0];
+      for(const m of f){c[0]+=S.V[m][0];c[1]+=S.V[m][1];c[2]+=S.V[m][2];}
+      c[0]/=f.length;c[1]/=f.length;c[2]/=f.length;
+      for(let i=0;i<f.length;i++){
+        const a=S.V[f[i]], b=S.V[f[(i+1)%f.length]];
+        const m=[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2];
+        out.push([c,a.slice(),m]);
+        out.push([c,m,b.slice()]);
+      }
+    }
+    return out;
+  }
+  const TRI={};
+  for(const k in SOLIDS) TRI[k]=triangulate(k);
+  function shift(tris,off,sc){
+    return tris.map(T=>T.map(p=>[p[0]*sc+off[0],p[1]*sc+off[1],p[2]*sc+off[2]]));
+  }
+  const RXN=[
+    {label:'water → 2 air + fire', from:[['icosa',[0,0,0],1]],
+     to:[['octa',[-1.35,0.55,0],0.72],['octa',[1.35,0.55,0],0.72],['tetra',[0,-1.25,0],0.72]],
+     note:'120 = 48 + 48 + 24', ok:true},
+    {label:'air → 2 fire', from:[['octa',[0,0,0],1]],
+     to:[['tetra',[-0.95,0,0],0.8],['tetra',[0.95,0,0],0.8]],
+     note:'48 = 24 + 24', ok:true},
+    {label:'2 fire → air', from:[['tetra',[-0.95,0,0],0.8],['tetra',[0.95,0,0],0.8]],
+     to:[['octa',[0,0,0],1]], note:'24 + 24 = 48', ok:true},
+    {label:'earth → fire?', from:[['cube',[0,0,0],0.95]],
+     to:[['cube',[0,0,0],0.95]], note:'WRONG LETTER — 45–45–90', ok:false}
+  ];
+  function prep(i){
+    const R=RXN[i];
+    let A=[],B=[];
+    for(const [k,off,sc] of R.from) A=A.concat(shift(TRI[k],off,sc));
+    for(const [k,off,sc] of R.to)   B=B.concat(shift(TRI[k],off,sc));
+    const elA=R.from.map(f=>SOLIDS[f[0]].el), elB=R.to.map(f=>SOLIDS[f[0]].el);
+    const ea=[],eb=[];
+    R.from.forEach((f,j)=>{for(let q=0;q<TRI[f[0]].length;q++) ea.push(SOLIDS[f[0]].el);});
+    R.to.forEach((f,j)=>{for(let q=0;q<TRI[f[0]].length;q++) eb.push(SOLIDS[f[0]].el);});
+    const n=Math.max(A.length,B.length);
+    st.tris={A,B,ea,eb,n,ok:R.ok,note:R.note,cA:A.length,cB:B.length};
+    note('txNote',R.label+' · '+R.note);
+    const cc=document.getElementById('txCount');
+    if(cc) cc.textContent=A.length+' · '+B.length;
+  }
+  mkBtns(document.getElementById('txBtns'),
+    RXN.map((r,i)=>({label:r.label,value:i,cls:r.ok?'':'forbid'})),
+    v=>{st.rxn=v;prep(v);st.p=0;st.phase='run';},0);
+  prep(0);
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx; st.tick(dt);
+    const T=st.tris; if(!T) return;
+    /* plays once and settles; pick a reaction to run it again */
+    if(st.phase==='run'){
+      st.p+=dt*(RM?3:0.46);
+      if(st.p>=1){st.p=1;st.phase='done';}
+    }
+    const gp=Math.max(0,Math.min(1,st.p));
+    const sc=Math.min(o.w,o.h)*0.215, P=mkProj(o,sc,4.9);
+    const list=[];
+    for(let i=0;i<T.n;i++){
+      const a=T.A[i%T.A.length], b=T.B[i%T.B.length];
+      /* each triangle has its own delay, so the change sweeps as a wave */
+      let pi=E.inOut(stag(gp,i,T.n,0.5));
+      if(!T.ok) pi=E.pulse(pi)*0.40;
+      const air=Math.sin(pi*Math.PI);
+      const arc=air*0.62*((i%7)-3)/3;
+      const tw=air*(((i%5)-2)*0.62);     /* tumble in flight */
+      const ct=Math.cos(tw), stt=Math.sin(tw);
+      const mid=[0,0,0];
+      const raw=[0,1,2].map(k=>[
+        a[k][0]+(b[k][0]-a[k][0])*pi,
+        a[k][1]+(b[k][1]-a[k][1])*pi,
+        a[k][2]+(b[k][2]-a[k][2])*pi+arc]);
+      for(const p of raw){mid[0]+=p[0]/3;mid[1]+=p[1]/3;mid[2]+=p[2]/3;}
+      const V=raw.map(p=>{
+        const dx=p[0]-mid[0], dy=p[1]-mid[1];
+        return rot([mid[0]+dx*ct-dy*stt, mid[1]+dx*stt+dy*ct, p[2]],st.rx,st.ry,st.rz);
+      });
+      const z=(V[0][2]+V[1][2]+V[2][2])/3;
+      const e1=ECOL[T.ea[i%T.ea.length]], e2=ECOL[T.eb[i%T.eb.length]];
+      const land=pi>0.88?1-(pi-0.88)/0.12:0;
+      list.push({V,z,e1,e2,pi,air,land});
+    }
+    list.sort((x,y)=>y.z-x.z);
+    for(const it of list){
+      const S=it.V.map(P);
+      ctx.beginPath();
+      S.forEach((p,k)=>k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
+      ctx.closePath();
+      const nx=(it.V[1][0]-it.V[0][0])*(it.V[2][1]-it.V[0][1])-(it.V[1][1]-it.V[0][1])*(it.V[2][0]-it.V[0][0]);
+      const shade=0.30+0.55*Math.min(1,Math.abs(nx)/1.1);
+      const c1=mix(C[it.e1[1]],C[it.e1[0]],shade), c2=mix(C[it.e2[1]],C[it.e2[0]],shade);
+      let col=mix(hex(c1),hex(c2),it.pi);
+      if(it.land>0.01) col=mix(hex(col),C.dark?'#ffffff':'#ffffff',it.land*0.45);
+      ctx.fillStyle=col;
+      ctx.globalAlpha=0.93; ctx.fill();
+      /* airborne triangles catch the light */
+      if(it.air>0.12){
+        ctx.globalAlpha=it.air*0.55; ctx.lineWidth=0.9;
+        glowOn(ctx,mix(hex(c1),hex(c2),it.pi),9);
+        ctx.strokeStyle=al(C.dark?'#ffffff':'#ffffff',0.5); ctx.stroke();
+        glowOff(ctx);
+      }
+      ctx.globalAlpha=1; ctx.lineWidth=0.55;
+      ctx.strokeStyle=al(C.dark?'#ffffff':'#0d1014',0.22); ctx.stroke();
+    }
+    lab(ctx,12,600); ctx.textAlign='left';
+    ctx.fillStyle=T.ok?C.allow:C.forbid;
+    ctx.fillText(T.note,14,24);
+    mn(ctx,10); ctx.fillStyle=C.faint;
+    ctx.fillText('triangles conserved: '+T.cA+' → '+T.cB,14,40);
+    if(!T.ok){lab(ctx,13,600);ctx.textAlign='right';ctx.fillStyle=C.forbid;
+      ctx.fillText('REACTION REFUSED · CUBE RETURNED',o.w-14,o.h-14);}
+  }
+  function hex(rgbstr){
+    const m=rgbstr.match(/\d+/g);
+    return '#'+m.slice(0,3).map(v=>('0'+parseInt(v,10).toString(16)).slice(-2)).join('');
+  }
+})();
+
+window.__mineralCore={stage,orbit,mkProj,rot,hullFaces,edgesOf,renderPoly,wire,scaleTo,
+  SOLIDS,ECOL,mkBtns,toggle,note,bg,lab,mn,al,mix,hx,PHI,TAU,RM,getC:()=>C,mkStages:stages,
+  E,spring,stag,glowOn,glowOff,seat,normOf};
+})();
+</script>
+
+<script>
+(function(){
+'use strict';
+const K=window.__mineralCore; if(!K) return;
+const {stage,orbit,mkProj,rot,hullFaces,edgesOf,renderPoly,wire,scaleTo,
+       SOLIDS,ECOL,mkBtns,toggle,note,bg,lab,mn,al,mix,PHI,TAU,RM,
+       E,spring,stag,glowOn,glowOff,seat}=K;
+const getC=K.getC;
+
+/* ══════════════════ PLATE IV · the restriction ══════════════════ */
+(function(){
+  const o=stage('cvRes',draw); if(!o) return;
+  const st={n:5,mode:'rosette',prog:0,run:false,ap:0};
+  mkBtns(document.getElementById('resN'),
+    [3,4,5,6,7,8].map(v=>({label:''+v,value:v,cls:[3,4,6].indexOf(v)>=0?'allow':'forbid'})),
+    v=>{st.n=v;st.prog=0;st.ap=0;upd();},2);
+  mkBtns(document.getElementById('resMode'),
+    [{label:'Rosette',value:'rosette'},{label:'Collapse',value:'collapse'}],
+    v=>{st.mode=v;st.prog=0;st.ap=0;st.run=(v==='collapse');upd();},0);
+  const rb=document.getElementById('resRun');
+  if(rb) rb.addEventListener('click',()=>{st.mode='collapse';st.prog=0;st.run=true;
+    const g=document.getElementById('resMode');
+    if(g) g.querySelectorAll('.btn').forEach((b,i)=>b.classList.toggle('is-on',i===1));
+    upd();});
+  function shrink(n){
+    let best=null;
+    for(let k=1;k<n;k++){
+      const L2=2+2*Math.cos(TAU*k/n);
+      if(L2>1e-9&&(best===null||L2<best.L2)) best={k,L2};
+    }
+    return best||{k:1,L2:4};
+  }
+  function upd(){
+    const s=shrink(st.n), f=Math.sqrt(s.L2);
+    note('resNote','n = '+st.n+' · '+(f<0.999?('shrinks ×'+f.toFixed(4)+' — FORBIDDEN'):
+      (Math.abs(f-1)<1e-3?'reaches exactly 1 — permitted':'never shrinks — permitted')));
+  }
+  upd();
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx, C=getC();
+    const cx=o.w/2, cy=o.h/2, R=Math.min(o.w,o.h)*0.34;
+    const n=st.n, allow=[3,4,6].indexOf(n)>=0;
+    if(st.mode==='rosette'){
+      const a=Math.PI*(n-2)/n, fit=TAU/a, k=Math.floor(fit+1e-9);
+      const total=Math.ceil(fit-1e-9);
+      const cx2=cx, cy2=cy+R*0.12;
+      /* the polygons are laid around the corner one at a time */
+      st.ap=Math.min(1,st.ap+dt*(RM?9:1.2));
+      for(let i=0;i<total;i++){
+        const ap=E.out(stag(st.ap,i,total,0.66));
+        if(ap<=0.01) continue;
+        const over=(i+1)*a>TAU+1e-9;
+        const pts=[[0,0]]; let dir=i*a, cur=[0,0];
+        for(let q=0;q<n;q++){
+          cur=[cur[0]+Math.cos(dir),cur[1]+Math.sin(dir)];
+          pts.push(cur.slice()); dir+=Math.PI-a;
+        }
+        pts.pop();
+        const sc=R*0.62/(1/(2*Math.sin(Math.PI/n)))*0.5*ap;
+        ctx.beginPath();
+        pts.forEach((p,q)=>{const X=cx2+p[0]*sc, Y=cy2-p[1]*sc;
+          q?ctx.lineTo(X,Y):ctx.moveTo(X,Y);});
+        ctx.closePath();
+        ctx.globalAlpha=(over?0.45:0.88)*ap;
+        ctx.fillStyle=over?mix(C.fireDim,C.forbid,0.6):mix(C.airDim,C.air,0.32+0.14*i);
+        ctx.fill();
+        ctx.globalAlpha=ap; ctx.lineWidth=over?1.4:1;
+        if(over) glowOn(ctx,C.forbid,12);
+        ctx.strokeStyle=over?C.forbid:al(C.dark?'#fff':'#0d1014',0.4);
+        ctx.stroke(); glowOff(ctx);
+        ctx.globalAlpha=1;
+      }
+      const gap=TAU-k*a;
+      if(gap>1e-6&&gap<TAU-1e-6){
+        ctx.beginPath(); ctx.moveTo(cx2,cy2);
+        ctx.arc(cx2,cy2,R*0.34,-k*a,-TAU,true); ctx.closePath();
+        ctx.fillStyle=al(allow?C.allow:C.forbid,0.28); ctx.fill();
+        ctx.strokeStyle=allow?C.allow:C.forbid; ctx.lineWidth=1.2; ctx.stroke();
+        lab(ctx,12,600); ctx.fillStyle=allow?C.allow:C.forbid; ctx.textAlign='center';
+        const mid=-k*a-gap/2;
+        ctx.fillText((gap*180/Math.PI).toFixed(1)+'° GAP',
+          cx2+Math.cos(mid)*R*0.48, cy2+Math.sin(mid)*R*0.48);
+      }
+      lab(ctx,12,600); ctx.textAlign='left';
+      ctx.fillStyle=Math.abs(fit-k)<1e-6?C.allow:C.forbid;
+      ctx.fillText('360° / '+(Math.PI*(n-2)/n*180/Math.PI).toFixed(2)+'° = '+fit.toFixed(4),14,24);
+      mn(ctx,10); ctx.fillStyle=C.faint;
+      ctx.fillText(Math.abs(fit-k)<1e-6?'whole number — the rosette closes':
+        'not a whole number — no vertex figure exists',14,40);
+    } else {
+      const s=shrink(n), f=Math.sqrt(s.L2), bad=f<0.999;
+      if(st.run&&!RM) st.prog=Math.min(11,st.prog+dt*1.5);
+      else if(st.run) st.prog=11;
+      const steps=Math.max(1,Math.floor(st.prog)+1);
+      ctx.strokeStyle=al(C.muted,0.35); ctx.lineWidth=1;
+      ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,TAU); ctx.stroke();
+      ctx.setLineDash([]);
+      lab(ctx,10,500); ctx.fillStyle=C.muted; ctx.textAlign='left';
+      ctx.fillText('|a| — THE SHORTEST VECTOR THAT EXISTS',cx+R*0.06,cy-R-8);
+      let len=1, ang=-0.35;
+      for(let j=0;j<steps;j++){
+        const frac=Math.min(1,st.prog-j+1);
+        const A=[Math.cos(ang)*len,Math.sin(ang)*len];
+        const th=TAU*s.k/n;
+        const B=[Math.cos(ang+th)*len,Math.sin(ang+th)*len];
+        const S=[A[0]+B[0],A[1]+B[1]];
+        const cur=(j===steps-1);
+        const px=(v)=>[cx+v[0]*R,cy-v[1]*R];
+        const drawVec=(v,col,w,a2,dash)=>{
+          const p=px(v);
+          ctx.globalAlpha=a2; ctx.strokeStyle=col; ctx.lineWidth=w;
+          if(dash) ctx.setLineDash([3,3]);
+          ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(p[0],p[1]); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle=col; ctx.beginPath(); ctx.arc(p[0],p[1],w*1.5,0,TAU); ctx.fill();
+          ctx.globalAlpha=1;
+        };
+        const fade=cur?1:0.20;
+        drawVec(A,C.ink2,cur?2:1,fade);
+        if(cur&&frac>0.15){
+          drawVec(B,C.air,1.6,0.85,true);
+          ctx.globalAlpha=0.35; ctx.strokeStyle=C.faint; ctx.lineWidth=0.7;
+          ctx.setLineDash([2,3]);
+          const pa=px(A),pb=px(B),ps=px(S);
+          ctx.beginPath();ctx.moveTo(pa[0],pa[1]);ctx.lineTo(ps[0],ps[1]);
+          ctx.moveTo(pb[0],pb[1]);ctx.lineTo(ps[0],ps[1]);ctx.stroke();
+          ctx.setLineDash([]); ctx.globalAlpha=1;
+        }
+        if(cur&&frac>0.4) drawVec(S,bad?C.forbid:C.allow,2.4,1);
+        else if(!cur) drawVec(S,al(bad?C.forbid:C.allow,0.25),1,0.35);
+        len*=f; ang+=0.62;
+        if(len<0.004) break;
+      }
+      lab(ctx,12,600); ctx.textAlign='left';
+      ctx.fillStyle=bad?C.forbid:C.allow;
+      ctx.fillText('|a + a'+String.fromCharCode(8342)+'|  =  √('+s.L2.toFixed(4)+')  =  '+f.toFixed(4)+' |a|',14,24);
+      mn(ctx,10); ctx.fillStyle=C.faint;
+      ctx.fillText('k = '+s.k+'   angle = '+(360*s.k/n).toFixed(1)+'°',14,40);
+      ctx.fillText(bad?('after '+Math.floor(st.prog+1)+' turns: |a| = '+
+        Math.pow(f,Math.floor(st.prog+1)).toExponential(2)):'no shorter vector is ever produced',14,56);
+      lab(ctx,14,600); ctx.textAlign='right'; ctx.fillStyle=bad?C.forbid:C.allow;
+      ctx.fillText(bad?'LATTICE ANNIHILATED':'CONTRADICTION AVOIDED — n IS ALLOWED',o.w-14,o.h-14);
+      if(n===5){lab(ctx,11,600);ctx.fillStyle=C.aether;
+        ctx.fillText('shrink factor = 1/φ exactly',o.w-14,o.h-32);}
+    }
+  }
+})();
+
+/* ══════════════════ PLATE V · Bravais ══════════════════ */
+(function(){
+  const o=stage('cvBrav',draw); if(!o) return;
+  const SYS={
+    triclinic:{p:[1,.82,1.16,74,86,68],c:['P'],lbl:'triclinic'},
+    monoclinic:{p:[1,.76,1.22,90,104,90],c:['P','C'],lbl:'monoclinic'},
+    orthorhombic:{p:[1,.78,1.26,90,90,90],c:['P','C','I','F'],lbl:'orthorhombic'},
+    tetragonal:{p:[1,1,1.46,90,90,90],c:['P','I'],lbl:'tetragonal'},
+    rhombohedral:{p:[1,1,1,72,72,72],c:['R'],lbl:'rhombohedral'},
+    hexagonal:{p:[1,1,1.55,90,90,120],c:['P'],lbl:'hexagonal'},
+    cubic:{p:[1,1,1,90,90,90],c:['P','I','F'],lbl:'cubic'}
+  };
+  const CEN={P:'primitive',C:'base-centred',I:'body-centred',F:'face-centred',R:'rhombohedral'};
+  const st={sys:'cubic',cen:'F',tile:true,grow:0};
+  orbit(o,st,-0.42,0.7);
+  const keys=Object.keys(SYS);
+  let cenUI=null;
+  const sysUI=mkBtns(document.getElementById('bravSys'),
+    keys.map(k=>({label:SYS[k].lbl.slice(0,6).toUpperCase(),value:k})),
+    v=>{st.sys=v; if(SYS[v].c.indexOf(st.cen)<0) st.cen=SYS[v].c[0];
+        st.grow=0; buildCen(); upd();},6);
+  function buildCen(){
+    cenUI=mkBtns(document.getElementById('bravCen'),
+      SYS[st.sys].c.map(c=>({label:c,value:c})),
+      v=>{st.cen=v;st.grow=0;upd();},Math.max(0,SYS[st.sys].c.indexOf(st.cen)));
+  }
+  buildCen();
+  toggle(document.getElementById('bravTile'),true,on=>{st.tile=on;});
+  function upd(){
+    const n=Object.keys(SYS).reduce((s,k)=>s+SYS[k].c.length,0);
+    note('bravNote',SYS[st.sys].lbl+' '+st.cen+' · '+CEN[st.cen]+'  ('+n+' in all)');
+  }
+  upd();
+  function basis(){
+    const [a,b,c,al1,be,ga]=SYS[st.sys].p;
+    const A=al1*Math.PI/180,B=be*Math.PI/180,G=ga*Math.PI/180;
+    const va=[a,0,0];
+    const vb=[b*Math.cos(G),b*Math.sin(G),0];
+    const cx2=c*Math.cos(B);
+    const cy2=c*(Math.cos(A)-Math.cos(B)*Math.cos(G))/Math.sin(G);
+    const cz=Math.sqrt(Math.max(0.02,c*c-cx2*cx2-cy2*cy2));
+    return [va,vb,[cx2,cy2,cz]];
+  }
+  function centres(){
+    if(st.cen==='I') return [[.5,.5,.5]];
+    if(st.cen==='F') return [[.5,.5,0],[.5,0,.5],[0,.5,.5]];
+    if(st.cen==='C') return [[.5,.5,0]];
+    return [];
+  }
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx, C=getC(); st.tick(dt);
+    const B=basis();
+    const mid=[(B[0][0]+B[1][0]+B[2][0])/2,(B[0][1]+B[1][1]+B[2][1])/2,(B[0][2]+B[1][2]+B[2][2])/2];
+    const reps=st.tile?[0,1]:[0];
+    let maxr=0;
+    const pt=(u,v,w)=>[B[0][0]*u+B[1][0]*v+B[2][0]*w-mid[0],
+                       B[0][1]*u+B[1][1]*v+B[2][1]*w-mid[1],
+                       B[0][2]*u+B[1][2]*v+B[2][2]*w-mid[2]];
+    const cells=[];
+    for(const i of reps)for(const j of reps)for(const k of reps) cells.push([i,j,k]);
+    const off=st.tile?[-0.5,-0.5,-0.5]:[0,0,0];
+    const atoms=[], lines=[];
+    for(const cl of cells){
+      const base=[cl[0]+off[0],cl[1]+off[1],cl[2]+off[2]];
+      const corner=(u,v,w)=>pt(base[0]+u,base[1]+v,base[2]+w);
+      const prim=(cl[0]===0&&cl[1]===0&&cl[2]===0)||!st.tile;
+      for(const u of [0,1])for(const v of [0,1])for(const w of [0,1]){
+        atoms.push({p:corner(u,v,w),k:'c',prim});
+      }
+      for(const c2 of centres()) atoms.push({p:corner(c2[0],c2[1],c2[2]),k:'x',prim});
+      const E=[[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1],
+               [1,0,0,1,1,0],[1,0,0,1,0,1],[0,1,0,1,1,0],[0,1,0,0,1,1],
+               [0,0,1,1,0,1],[0,0,1,0,1,1],[1,1,0,1,1,1],[1,0,1,1,1,1],[0,1,1,1,1,1]];
+      for(const e of E) lines.push({a:corner(e[0],e[1],e[2]),b:corner(e[3],e[4],e[5]),prim});
+    }
+    for(const a of atoms) maxr=Math.max(maxr,Math.hypot(a.p[0],a.p[1],a.p[2]));
+    const sc=Math.min(o.w,o.h)*0.40/maxr, P=mkProj(o,sc,5.4*Math.max(1,maxr/1.4));
+    /* the cell assembles outward from the origin corner */
+    st.grow=Math.min(1,st.grow+dt*(RM?9:1.15));
+    const pOf=p=>{
+      const d=Math.hypot(p[0],p[1],p[2])/(maxr||1);
+      return Math.max(0,Math.min(1,(st.grow-d*0.52)/0.48));
+    };
+    ctx.lineWidth=0.9;
+    for(const L of lines){
+      const pa=pOf(L.a), pb=pOf(L.b), pm=Math.min(pa,pb);
+      if(pm<=0.01) continue;
+      const p=P(rot(L.a,st.rx,st.ry,st.rz)), q=P(rot(L.b,st.rx,st.ry,st.rz));
+      /* edges draw themselves in */
+      const f=E.out(pm);
+      ctx.globalAlpha=(L.prim?0.85:0.20)*pm;
+      ctx.strokeStyle=L.prim?al(C.ink2,0.85):al(C.muted,0.5);
+      ctx.beginPath();ctx.moveTo(p[0],p[1]);
+      ctx.lineTo(p[0]+(q[0]-p[0])*f,p[1]+(q[1]-p[1])*f);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    const drawn=atoms.map(a=>{const r=rot(a.p,st.rx,st.ry,st.rz);
+      return {a,r,s:P(r),p:E.back(pOf(a.p))};});
+    drawn.sort((x,y)=>y.r[2]-x.r[2]);
+    for(const d of drawn){
+      if(d.p<=0.02) continue;
+      const col=d.a.k==='x'?C.aether:C.ink2;
+      const rr=(d.a.k==='x'?5.4:4.6)*(d.a.prim?1:0.62)*Math.min(1.6,sc/60)*Math.max(0.05,d.p);
+      const g=ctx.createRadialGradient(d.s[0]-rr*0.35,d.s[1]-rr*0.4,rr*0.1,d.s[0],d.s[1],rr);
+      g.addColorStop(0,mix(col,'#ffffff',0.62));
+      g.addColorStop(0.5,col);
+      g.addColorStop(1,mix(col,C.ground,0.6));
+      ctx.globalAlpha=(d.a.prim?1:0.38)*Math.min(1,d.p);
+      if(d.a.k==='x'&&d.a.prim) glowOn(ctx,C.aether,9);
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(d.s[0],d.s[1],rr,0,TAU); ctx.fill();
+      glowOff(ctx);
+    }
+    ctx.globalAlpha=1;
+    lab(ctx,12,600); ctx.textAlign='left'; ctx.fillStyle=C.ink2;
+    ctx.fillText(SYS[st.sys].lbl.toUpperCase()+'  '+st.cen,14,24);
+    const p=SYS[st.sys].p; mn(ctx,10); ctx.fillStyle=C.faint;
+    ctx.fillText('a:b:c = 1 : '+p[1].toFixed(2)+' : '+p[2].toFixed(2),14,40);
+    ctx.fillText('α β γ = '+p[3]+'° '+p[4]+'° '+p[5]+'°',14,56);
+    lab(ctx,13,600); ctx.textAlign='right'; ctx.fillStyle=al(C.aether,0.9);
+    ctx.fillText(CEN[st.cen].toUpperCase(),o.w-14,o.h-14);
+  }
+})();
+
+/* ══════════════════ PLATE VI · packing ══════════════════ */
+(function(){
+  const o=stage('cvPack',draw); if(!o) return;
+  const st={mode:'ccp',show:'spheres',rf:1,build:0,vb:0};
+  orbit(o,st,-0.4,0.65);
+  /* group atoms into stacking layers so the packing can assemble itself */
+  function layerize(P,dir){
+    const pr=P.map(p=>p[0]*dir[0]+p[1]*dir[1]+p[2]*dir[2]);
+    const keys=[...new Set(pr.map(v=>Math.round(v*1000)/1000))].sort((a,b)=>a-b);
+    const ix=new Map(); keys.forEach((k,i)=>ix.set(k,i));
+    return {lay:pr.map(v=>ix.get(Math.round(v*1000)/1000)),n:keys.length};
+  }
+  const MODES={
+    ccp:{lbl:'CCP (F)',fill:'74.05%',cn:12,poly:'cuboctahedron'},
+    hcp:{lbl:'HCP',fill:'74.05%',cn:12,poly:'triangular orthobicupola'},
+    bcc:{lbl:'BCC (I)',fill:'68.02%',cn:8,poly:'cube'},
+    sc:{lbl:'Simple',fill:'52.36%',cn:6,poly:'octahedron'},
+    dia:{lbl:'Diamond',fill:'34.01%',cn:4,poly:'tetrahedron'}
+  };
+  mkBtns(document.getElementById('packMode'),
+    Object.keys(MODES).map(k=>({label:MODES[k].lbl,value:k})),
+    v=>{st.mode=v;st.build=(st.show==='spheres')?0:1;st.vb=0;upd();},0);
+  mkBtns(document.getElementById('packShow'),
+    [{label:'Spheres',value:'spheres'},{label:'Voids',value:'voids'},
+     {label:'Coordination',value:'coord'}],
+    v=>{st.show=v;st.build=(v==='spheres')?0:1;st.vb=0;upd();},0);
+  const rr=document.getElementById('packR');
+  if(rr) rr.addEventListener('input',()=>{st.rf=parseInt(rr.value,10)/100;});
+  function upd(){
+    const M=MODES[st.mode];
+    let s=M.lbl+' · '+M.fill+' · CN '+M.cn;
+    if(st.show==='coord') s+=' · '+M.poly;
+    if(st.show==='voids'&&st.mode!=='ccp') s='voids shown for CCP only';
+    note('packNote',s);
+  }
+  upd();
+  function atoms(){
+    const m=st.mode, out=[];
+    const N=2;
+    if(st.show==='voids'&&m==='ccp'){
+      /* one cell, but with a margin of neighbouring atoms — the octahedral holes
+         on the cell edges are shared with adjacent cells and need them to close */
+      const bs=[[0,0,0],[.5,.5,0],[.5,0,.5],[0,.5,.5]], seen=new Set();
+      for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++)for(let k=-1;k<=2;k++)for(const b of bs){
+        const p=[i+b[0],j+b[1],k+b[2]];
+        if(p[0]<-0.55||p[0]>1.55||p[1]<-0.55||p[1]>1.55||p[2]<-0.55||p[2]>1.55) continue;
+        const key=p.map(q=>Math.round(q*1e3)).join(',');
+        if(seen.has(key)) continue; seen.add(key); out.push(p);
+      }
+      return {P:out,d:Math.SQRT1_2,a:1,voidMode:true};
+    }
+    if(m==='hcp'){
+      const a1=[1,0,0], a2=[0.5,Math.sqrt(3)/2,0], h=Math.sqrt(2/3);
+      for(let L=0;L<=2;L++)for(let i=0;i<=2;i++)for(let j=0;j<=2;j++){
+        const sh=(L%2)?[1/3*(a1[0]+a2[0]),1/3*(a1[1]+a2[1]),0]:[0,0,0];
+        out.push([i*a1[0]+j*a2[0]+sh[0], i*a1[1]+j*a2[1]+sh[1], L*h]);
+      }
+      return {P:out,d:1,a:1};
+    }
+    let basis;
+    if(m==='ccp') basis=[[0,0,0],[.5,.5,0],[.5,0,.5],[0,.5,.5]];
+    else if(m==='bcc') basis=[[0,0,0],[.5,.5,.5]];
+    else if(m==='sc') basis=[[0,0,0]];
+    else basis=[[0,0,0],[.5,.5,0],[.5,0,.5],[0,.5,.5],
+                [.25,.25,.25],[.75,.75,.25],[.75,.25,.75],[.25,.75,.75]];
+    const seen=new Set();
+    for(let i=0;i<=N;i++)for(let j=0;j<=N;j++)for(let k=0;k<=N;k++)
+      for(const b of basis){
+        const p=[i+b[0],j+b[1],k+b[2]];
+        if(p[0]>N+1e-9||p[1]>N+1e-9||p[2]>N+1e-9) continue;
+        const key=p.map(q=>Math.round(q*1e3)).join(',');
+        if(seen.has(key)) continue; seen.add(key); out.push(p);
+      }
+    const d=m==='ccp'?Math.SQRT1_2:m==='bcc'?Math.sqrt(3)/2:m==='sc'?1:Math.sqrt(3)/4;
+    return {P:out,d,a:1};
+  }
+  function voids(A){
+    const tet=[],oct=[];
+    const near=(h,r)=>{const out=[];
+      for(const p of A.P){const dd=Math.hypot(p[0]-h[0],p[1]-h[1],p[2]-h[2]);
+        if(Math.abs(dd-r)<0.04) out.push(p);} return out;};
+    /* the 4 octahedral sites belonging to one cell: 1 body centre + 3 edge centres */
+    for(const b of [[.5,.5,.5],[.5,0,0],[0,.5,0],[0,0,.5]]){
+      const v=near(b,0.5);
+      if(v.length===6) oct.push(v);
+    }
+    /* the 8 tetrahedral sites, all interior */
+    for(const x of [.25,.75])for(const y of [.25,.75])for(const z of [.25,.75]){
+      const v=near([x,y,z],Math.sqrt(3)/4);
+      if(v.length===4) tet.push(v);
+    }
+    return {tet,oct};
+  }
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx, C=getC(); st.tick(dt);
+    const A=atoms();
+    const vm=!!A.voidMode;
+    const V=vm?voids(A):null;
+    let cen;
+    if(vm) cen=[0.5,0.5,0.5];
+    else{
+      cen=[0,0,0];
+      for(const p of A.P){cen[0]+=p[0];cen[1]+=p[1];cen[2]+=p[2];}
+      cen=cen.map(v=>v/A.P.length);
+    }
+    const Q=A.P.map(p=>[p[0]-cen[0],p[1]-cen[1],p[2]-cen[2]]);
+    let maxr=0;
+    if(vm){
+      for(const g of V.tet.concat(V.oct)) for(const p of g)
+        maxr=Math.max(maxr,Math.hypot(p[0]-cen[0],p[1]-cen[1],p[2]-cen[2]));
+    } else for(const p of Q) maxr=Math.max(maxr,Math.hypot(p[0],p[1],p[2]));
+    const sc=Math.min(o.w,o.h)*0.40/Math.max(1,maxr), P=mkProj(o,sc,5.6*Math.max(1,maxr/1.5));
+    const rad=A.d/2*st.rf;
+
+    if(vm){
+      const solids=[];
+      for(const g of V.oct) solids.push({v:g.map(p=>[p[0]-cen[0],p[1]-cen[1],p[2]-cen[2]]),el:'air'});
+      for(const g of V.tet) solids.push({v:g.map(p=>[p[0]-cen[0],p[1]-cen[1],p[2]-cen[2]]),el:'fire'});
+      /* octahedra arrive first, then the tetrahedra fill in between them */
+      st.vb=Math.min(1,st.vb+dt*(RM?9:0.85));
+      const items=solids.map((s,ix)=>{
+        const R=s.v.map(p=>rot(p,st.rx,st.ry,st.rz));
+        let z=0; for(const r of R) z+=r[2]; z/=R.length;
+        return {s,R,z,ix};
+      });
+      items.sort((a,b)=>b.z-a.z);
+      for(const it of items){
+        const p=stag(st.vb,it.ix,solids.length,0.62);
+        if(p<=0.01) continue;
+        const gp=E.back(p);
+        const cn=[0,0,0];
+        for(const q of it.s.v){cn[0]+=q[0]/it.s.v.length;cn[1]+=q[1]/it.s.v.length;cn[2]+=q[2]/it.s.v.length;}
+        const VV=it.s.v.map(q=>[cn[0]+(q[0]-cn[0])*gp,cn[1]+(q[1]-cn[1])*gp,cn[2]+(q[2]-cn[2])*gp]);
+        const F=hullFaces(it.s.v);
+        const ec=ECOL[it.s.el];
+        renderPoly(o,VV,F,{st,proj:P,color:C[ec[0]],dim:C[ec[1]],
+          alpha:0.62*Math.min(1,p*1.5),lw:0.7});
+      }
+      lab(ctx,12,600); ctx.textAlign='left'; ctx.fillStyle=C.fire;
+      ctx.fillText(V.tet.length+' TETRAHEDRAL VOIDS',14,24);
+      ctx.fillStyle=C.air; ctx.fillText(V.oct.length+' OCTAHEDRAL VOIDS',14,40);
+      mn(ctx,10); ctx.fillStyle=C.allow;
+      ctx.fillText(V.tet.length+' : '+V.oct.length+'  =  '+
+        (V.tet.length/Math.max(1,V.oct.length)).toFixed(0)+' : 1   — together they fill all of it',14,56);
+    }
+
+    let hi=null, poly=null;
+    if(st.show==='coord'){
+      let bi=0,bd=1e9;
+      for(let i=0;i<Q.length;i++){const dd=Math.hypot(Q[i][0],Q[i][1],Q[i][2]);
+        if(dd<bd){bd=dd;bi=i;}}
+      const c0=Q[bi], nb=[];
+      for(let i=0;i<Q.length;i++){
+        if(i===bi) continue;
+        const dd=Math.hypot(Q[i][0]-c0[0],Q[i][1]-c0[1],Q[i][2]-c0[2]);
+        if(Math.abs(dd-A.d)<0.05) nb.push(i);
+      }
+      hi={c:bi,nb:new Set(nb)};
+      if(nb.length>=4){
+        const rel=nb.map(i=>[Q[i][0]-c0[0],Q[i][1]-c0[1],Q[i][2]-c0[2]]);
+        const F=hullFaces(rel);
+        const shifted=rel.map(p=>[p[0]+c0[0],p[1]+c0[1],p[2]+c0[2]]);
+        renderPoly(o,shifted,F,{st,proj:P,color:C.aether,dim:C.aetherDim,alpha:0.30,lw:0.9});
+        poly=nb.length;
+      }
+    }
+
+    if(!vm){
+      /* close-packed layers settle into place in stacking order */
+      const sdir=(st.mode==='ccp')?[0.57735,0.57735,0.57735]:[0,0,1];
+      const LZ=layerize(A.P,sdir);
+      st.build=Math.min(1,st.build+dt*(RM?9:0.72));
+      const dr=Q.map((p,i)=>{
+        const pl=E.out(stag(st.build,LZ.lay[i],LZ.n,0.74));
+        const fall=(1-pl)*2.1;
+        const q=[p[0]+sdir[0]*fall,p[1]+sdir[1]*fall,p[2]+sdir[2]*fall];
+        const r=rot(q,st.rx,st.ry,st.rz);
+        return {i,r,s:P(r),pl,lay:LZ.lay[i]};
+      });
+      dr.sort((a,b)=>b.r[2]-a.r[2]);
+      const nRep=(st.mode==='ccp')?3:(st.mode==='hcp')?2:1;
+      for(const d of dr){
+        if(d.pl<=0.004) continue;
+        const isC=hi&&d.i===hi.c, isN=hi&&hi.nb.has(d.i);
+        /* lightness cycles with the layer, so ABCABC and ABAB read at a glance */
+        const step=nRep>1?(d.lay%nRep)/(nRep-1):0;
+        const shade=mix(C.ink2,C.ground,step*0.42);
+        const col=isC?C.aether:isN?C.air:shade;
+        const R2=Math.max(1.2,rad*sc*0.98);
+        const g=ctx.createRadialGradient(d.s[0]-R2*0.34,d.s[1]-R2*0.38,R2*0.06,d.s[0],d.s[1],R2);
+        g.addColorStop(0,mix(col,'#ffffff',0.66));
+        g.addColorStop(0.42,mix(col,'#ffffff',0.12));
+        g.addColorStop(1,mix(col,C.ground,0.66));
+        ctx.globalAlpha=(hi?(isC||isN?1:0.28):0.96)*d.pl;
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(d.s[0],d.s[1],R2,0,TAU); ctx.fill();
+        /* a small specular catch-light seats each sphere */
+        if(R2>3){
+          ctx.globalAlpha=0.5*d.pl;
+          ctx.fillStyle=al('#ffffff',0.75);
+          ctx.beginPath();
+          ctx.arc(d.s[0]-R2*0.33,d.s[1]-R2*0.36,Math.max(0.6,R2*0.15),0,TAU);
+          ctx.fill();
+        }
+        ctx.globalAlpha=1;
+        ctx.lineWidth=0.5; ctx.strokeStyle=al(C.ground,0.6);
+        ctx.beginPath(); ctx.arc(d.s[0],d.s[1],R2,0,TAU); ctx.stroke();
+      }
+      if(nRep>1){
+        lab(ctx,11,600); ctx.textAlign='left';
+        const seq=[]; for(let i=0;i<6;i++) seq.push(String.fromCharCode(65+(i%nRep)));
+        ctx.fillStyle=C.faint;
+        ctx.fillText('STACKING  '+seq.join(' ')+'  …',14,o.h-46);
+      }
+    }
+    const M=MODES[st.mode];
+    lab(ctx,12,600); ctx.textAlign='right'; ctx.fillStyle=C.ink2;
+    ctx.fillText('FILL '+M.fill+'   ·   CN '+M.cn,o.w-14,o.h-30);
+    if(st.show==='coord'&&poly){ctx.fillStyle=C.aether;
+      ctx.fillText(poly+' NEIGHBOURS FORM A '+M.poly.toUpperCase(),o.w-14,o.h-14);}
+    else if(st.show==='voids'&&st.mode!=='ccp'){ctx.fillStyle=C.forbid;
+      ctx.fillText('SWITCH TO CCP TO SEE THE VOIDS',o.w-14,o.h-14);}
+    else{ctx.fillStyle=C.faint;ctx.fillText(A.P.length+' ATOMS',o.w-14,o.h-14);}
+  }
+})();
+
+/* ══════════════════ PLATE VII · pyritohedron ══════════════════ */
+(function(){
+  const o=stage('cvPyr',draw); if(!o) return;
+  const st={h:0,face:true,cache:null,auto:true,el:0,flash:0,lastStop:-1};
+  orbit(o,st,-0.35,0.5);
+  const sl=document.getElementById('pyrH'), out=document.getElementById('pyrOut');
+  function setH(h,user){
+    if(user) st.auto=false;
+    st.h=h; st.cache=null;
+    if(sl) sl.value=Math.round(h*1000);
+    if(out) out.textContent=h.toFixed(4);
+    upd();
+  }
+  if(sl) sl.addEventListener('input',()=>setH(parseInt(sl.value,10)/1000,true));
+  mkBtns(document.getElementById('pyrStops'),
+    [{label:'CUBE',value:0,cls:'earth'},{label:'PYRITE ½',value:0.5},
+     {label:'PLATO 1/φ',value:1/PHI,cls:'aether'},{label:'GARNET 1',value:1}],
+    v=>setH(v,true),1);
+  /* a guided tour of the family, dwelling at each named solid, until you take over */
+  const TOUR=[[0,1.1],[0.5,1.9],[1/PHI,2.3],[1,1.4],[0.5,1e9]], MOVE=1.7;
+  function tourH(el){
+    let acc=0;
+    for(let i=0;i<TOUR.length;i++){
+      if(el<acc+TOUR[i][1]) return {h:TOUR[i][0],stop:i};
+      acc+=TOUR[i][1];
+      if(i===TOUR.length-1) break;
+      if(el<acc+MOVE) return {h:TOUR[i][0]+(TOUR[i+1][0]-TOUR[i][0])*E.inOut((el-acc)/MOVE),stop:-1};
+      acc+=MOVE;
+    }
+    return {h:0.5,stop:-1};
+  }
+  toggle(document.getElementById('pyrFace'),true,on=>{st.face=on;});
+  function verts(h){
+    const u=1+h, v=1-h*h, V=[];
+    for(const x of[-1,1])for(const y of[-1,1])for(const z of[-1,1]) V.push([x,y,z]);
+    const S=[-1,1];
+    for(const s1 of S)for(const s2 of S){
+      V.push([0,u*s1,v*s2]); V.push([v*s2,0,u*s1]); V.push([u*s1,v*s2,0]);
+    }
+    const seen=new Set(), out2=[];
+    for(const p of V){const k=p.map(q=>Math.round(q*1e5)).join(',');
+      if(!seen.has(k)){seen.add(k);out2.push(p);}}
+    return out2;
+  }
+  function build(){
+    if(st.cache&&Math.abs(st.cache.h-st.h)<1e-9) return st.cache;
+    const V=scaleTo(verts(st.h),1);
+    const F=hullFaces(V);
+    let idx=0, best=-1;
+    for(let i=0;i<F.length;i++) if(F[i].length>best){best=F[i].length;idx=i;}
+    const f=F[idx], L=[];
+    for(let i=0;i<f.length;i++){
+      const a=V[f[i]],b=V[f[(i+1)%f.length]];
+      L.push(Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]));
+    }
+    st.cache={h:st.h,V,F,hi:idx,L,sides:best};
+    return st.cache;
+  }
+  function upd(){
+    const G=build();
+    const mn2=Math.min.apply(null,G.L), mx=Math.max.apply(null,G.L);
+    let nm='pyritohedron';
+    if(st.h<=0) nm='cube {100}';
+    else if(Math.abs(st.h-0.5)<0.006) nm='pyrite pyritohedron {210}';
+    else if(Math.abs(st.h-1/PHI)<0.004) nm='REGULAR DODECAHEDRON — no crystal may hold it';
+    else if(st.h>0.996) nm='rhombic dodecahedron {110} — garnet';
+    note('pyrNote','h = '+st.h.toFixed(4)+' · '+nm+' · edge ratio '+(mx/mn2).toFixed(4));
+  }
+  upd();
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx, C=getC(); st.tick(dt);
+    if(st.auto){
+      st.el+=dt*(RM?4:1);
+      const r=tourH(st.el);
+      if(r.stop>=0&&r.stop!==st.lastStop){st.lastStop=r.stop;st.flash=1;}
+      setH(r.h,false);
+    }
+    st.flash=Math.max(0,st.flash-dt*1.5);
+    const G=build();
+    const sc=Math.min(o.w,o.h)*0.32, P=mkProj(o,sc,4.4);
+    const isPlato=Math.abs(st.h-1/PHI)<0.004;
+    seat(o,o.w/2,o.h*0.90,sc*0.95,0.30);
+    renderPoly(o,G.V,G.F,{st,proj:P,
+      color:isPlato?C.aether:C.earth, dim:isPlato?C.aetherDim:C.earthDim,
+      alpha:0.95,lw:0.9,hiFace:st.face?G.hi:null,hiColor:C.aether,
+      dots:1.9,dotColor:isPlato?C.aether:C.earth});
+    /* arriving at a named solid announces itself */
+    if(st.flash>0.01){
+      const fc=isPlato?C.aether:C.allow;
+      ctx.globalAlpha=st.flash*0.5; ctx.lineWidth=1.5;
+      glowOn(ctx,fc,20); ctx.strokeStyle=fc;
+      ctx.beginPath();ctx.arc(o.w/2,o.h/2,sc*(0.95+E.outQ(1-st.flash)*1.35),0,TAU);ctx.stroke();
+      glowOff(ctx); ctx.globalAlpha=1;
+    }
+    const mn2=Math.min.apply(null,G.L), mx=Math.max.apply(null,G.L);
+    lab(ctx,12,600); ctx.textAlign='left'; ctx.fillStyle=C.ink2;
+    ctx.fillText('h = '+st.h.toFixed(4),14,24);
+    mn(ctx,10); ctx.fillStyle=C.faint;
+    ctx.fillText(G.sides+'-sided faces · edges '+mn2.toFixed(4)+' and '+mx.toFixed(4),14,40);
+    ctx.fillStyle=(mx/mn2<1.0005)?C.aether:C.muted;
+    ctx.fillText('edge ratio '+(mx/mn2).toFixed(5)+((mx/mn2<1.0005)?'  ← REGULAR':''),14,56);
+    lab(ctx,12,600); ctx.textAlign='right';
+    if(isPlato){ctx.fillStyle=C.forbid;
+      ctx.fillText('FACE NORMAL (0, 1, φ) — IRRATIONAL, NOT A LATTICE PLANE',o.w-14,o.h-14);}
+    else if(Math.abs(st.h-0.5)<0.006){ctx.fillStyle=C.allow;
+      ctx.fillText('FACE NORMAL (0, 1, 2) — RATIONAL {210} · PYRITE',o.w-14,o.h-14);}
+    else if(st.h<=0){ctx.fillStyle=C.allow;ctx.fillText('{100} · CUBE — THE FAMILY BEGINS HERE',o.w-14,o.h-14);}
+    else if(st.h>0.996){ctx.fillStyle=C.allow;ctx.fillText('{110} · RHOMBIC DODECAHEDRON',o.w-14,o.h-14);}
+    else{ctx.fillStyle=C.faint;ctx.fillText('general pyritohedron',o.w-14,o.h-14);}
+  }
+})();
+
+/* ══════════════════ PLATE VII · the optical indicatrix ══════════════════
+   Single source of truth for every refractive index quoted on the page:
+   the canvas readouts and the HTML table below are both generated from OPT.
+   Values are for sodium light (~589 nm), as used in gemmology.            */
+const OPT=[
+ {sys:'Cubic',        cls:'isotropic', sign:'—', gem:'Diamond',    n:[2.417],
+  others:'spinel 1.718 · fluorite 1.434 · garnet 1.72–1.94 · cubic zirconia ≈2.16',
+  note:'birefringence forbidden outright by the point group — though strain can '+
+       'produce weak anomalous birefringence, which is not the same thing'},
+ {sys:'Tetragonal',   cls:'uniaxial',  sign:'+', gem:'Zircon',     n:[1.925,1.984],
+  others:'rutile · scheelite · apophyllite',
+  note:'doubling plainly visible through the crown'},
+ {sys:'Trigonal',     cls:'uniaxial',  sign:'−', gem:'Corundum',   n:[1.768,1.760],
+  others:'quartz 1.544/1.553 · tourmaline 1.624/1.644 · calcite 1.658/1.486',
+  note:'table cut near-perpendicular to the optic axis, for colour'},
+ {sys:'Hexagonal',    cls:'uniaxial',  sign:'+', gem:'Moissanite', n:[2.648,2.691],
+  others:'beryl 1.577/1.583 · apatite',
+  note:'the doubling that betrays it as not-diamond'},
+ {sys:'Orthorhombic', cls:'biaxial',   sign:'+', gem:'Peridot',    n:[1.654,1.670,1.690],
+  others:'topaz 1.619/1.627 · tanzanite 1.691/1.700 · chrysoberyl',
+  note:'doubled back facets are a classic peridot tell; its 2V is so near 90° '+
+       'that the optic sign is indeterminate in routine testing'},
+ {sys:'Monoclinic',   cls:'biaxial',   sign:'+', gem:'Spodumene',  n:[1.660,1.666,1.676],
+  others:'orthoclase · diopside · gypsum',
+  note:'cleavage makes it notoriously difficult to cut'},
+ {sys:'Triclinic',    cls:'biaxial',   sign:'−', gem:'Kyanite',    n:[1.716,1.722,1.731],
+  others:'labradorite · axinite · microcline',
+  note:'lowest symmetry — three unrelated indices'}
+];
+function biref(e){ return e.n.length===1?0:Math.abs(Math.max.apply(null,e.n)-Math.min.apply(null,e.n)); }
+function meanN(e){ let s=0; for(const v of e.n) s+=v; return s/e.n.length; }
+/* Visibility bands are approximate. There is no standardised threshold for when
+   facet doubling becomes detectable, and it also depends on viewing direction —
+   nothing doubles when sighted along an optic axis. */
+function verdict(b){
+  if(b===0) return ['impossible','forbid'];
+  if(b>=0.030) return ['obvious','aether'];
+  if(b>=0.018) return ['readily seen','aether'];
+  return ['hard to see','muted'];
+}
+/* semi-axes of the indicatrix, exaggerated so a 0.008 difference is visible */
+function indAxes(e){
+  const n=e.n;
+  if(n.length===1) return {v:[1,1,1],K:1,vals:[n[0],n[0],n[0]]};
+  const vals = n.length===2 ? [n[0],n[0],n[1]]
+                            : n.slice().sort((a,b)=>a-b);
+  const m=(vals[0]+vals[1]+vals[2])/3;
+  let mx=0; for(const q of vals) mx=Math.max(mx,Math.abs(q-m)/m);
+  const K=mx>1e-9?0.40/mx:1;
+  return {v:vals.map(q=>1+(q-m)/m*K),K,vals};
+}
+/* the circular section, derived rather than recalled:
+   in the x–z plane the radius equals b when
+   sin²θ = (1/b² − 1/a²) / (1/c² − 1/a²).                                  */
+function circSection(a,b,c){
+  const d=1/(c*c)-1/(a*a);
+  if(Math.abs(d)<1e-12) return null;              /* sphere — every section */
+  let s2=(1/(b*b)-1/(a*a))/d;
+  s2=Math.max(0,Math.min(1,s2));
+  const th=Math.asin(Math.sqrt(s2));
+  return {th, u:[Math.cos(th),0,Math.sin(th)], vv:[0,1,0],
+          axis:[-Math.sin(th),0,Math.cos(th)], r:b};
+}
+(function(){
+  const o=stage('cvOpt',draw); if(!o) return;
+  const st={i:0,sect:true,pop:spring(1,9)};
+  orbit(o,st,-0.34,0.6);
+  mkBtns(document.getElementById('optSys'),
+    OPT.map((e,i)=>({label:e.sys.slice(0,6).toUpperCase(),value:i,
+      cls:e.cls==='isotropic'?'earth':e.cls==='uniaxial'?'air':'aether'})),
+    v=>{st.i=v;st.pop.jump(0.55);st.pop.set(1);upd();},0);
+  toggle(document.getElementById('optSect'),true,on=>{st.sect=on;});
+  toggle(document.getElementById('optSpin'),true,on=>{st.spin=on;});
+  function upd(){
+    const e=OPT[st.i], b=biref(e);
+    note('optNote',e.sys.toLowerCase()+' · '+e.cls+
+      (e.cls==='isotropic'?'':' ('+e.sign+')')+' · '+e.n.length+
+      (e.n.length===1?' index':' indices'));
+  }
+  upd();
+  /* ellipsoid as a lat/long quad mesh — normals are analytic, no hull needed */
+  function mesh(a,b,c,nu,nv){
+    const V=[],F=[];
+    for(let i=0;i<=nv;i++){
+      const th=Math.PI*i/nv;
+      for(let j=0;j<nu;j++){
+        const ph=TAU*j/nu;
+        V.push([a*Math.sin(th)*Math.cos(ph), b*Math.cos(th), c*Math.sin(th)*Math.sin(ph)]);
+      }
+    }
+    for(let i=0;i<nv;i++)for(let j=0;j<nu;j++)
+      F.push([i*nu+j, i*nu+(j+1)%nu, (i+1)*nu+(j+1)%nu, (i+1)*nu+j]);
+    return {V,F};
+  }
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx, C=getC(); st.tick(dt);
+    const e=OPT[st.i], A=indAxes(e), b=biref(e);
+    const pop=st.pop.step(dt);
+    const sc=Math.min(o.w,o.h)*0.29*(0.6+0.4*E.back(Math.min(1,pop)));
+    const P=mkProj(o,sc,4.5);
+    /* indicatrix axes are (x,y,z) = (a,b,c); for a spheroid z is the unique one */
+    const ax=A.v[0], ay=A.v[1], az=A.v[2];
+    seat(o,o.w/2,o.h*0.90,sc*0.95,0.28*Math.min(1,pop));
+    const M=mesh(ax,ay,az,30,18);
+    const col=e.cls==='isotropic'?C.earth:e.cls==='uniaxial'?C.air:C.water;
+    const dim=e.cls==='isotropic'?C.earthDim:e.cls==='uniaxial'?C.airDim:C.waterDim;
+    renderPoly(o,M.V,M.F,{st,proj:P,color:col,dim,alpha:0.42*Math.min(1,pop),edge:false});
+    /* the three principal sections */
+    const ell=(i1,i2,r1,r2,cc,lw,a2)=>{
+      ctx.strokeStyle=cc; ctx.lineWidth=lw; ctx.globalAlpha=a2;
+      ctx.beginPath();
+      for(let k=0;k<=72;k++){
+        const g=TAU*k/72, p=[0,0,0];
+        p[i1]=r1*Math.cos(g); p[i2]=r2*Math.sin(g);
+        const s=P(rot(p,st.rx,st.ry,st.rz));
+        k?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]);
+      }
+      ctx.stroke(); ctx.globalAlpha=1;
+    };
+    ell(0,1,ax,ay,al(C.ink2,0.5),0.9,0.75*pop);
+    ell(1,2,ay,az,al(C.ink2,0.5),0.9,0.75*pop);
+    ell(0,2,ax,az,al(C.ink2,0.5),0.9,0.75*pop);
+    /* principal axes, labelled with the real indices */
+    const NM = e.n.length===1?['n','n','n']
+             : e.n.length===2?['nω','nω','nε']
+             : ['nα','nβ','nγ'];
+    const AXV=[[ax,0,0],[0,ay,0],[0,0,az]];
+    for(let k=0;k<3;k++){
+      const p1=P(rot(AXV[k].map(q=>q*1.30),st.rx,st.ry,st.rz));
+      const p2=P(rot(AXV[k].map(q=>-q*1.30),st.rx,st.ry,st.rz));
+      ctx.globalAlpha=0.72*pop; ctx.strokeStyle=al(C.muted,0.8); ctx.lineWidth=0.8;
+      ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.stroke();
+      ctx.globalAlpha=pop; mn(ctx,10); ctx.fillStyle=C.ink2; ctx.textAlign='center';
+      ctx.fillText(NM[k]+' '+A.vals[k].toFixed(3),p1[0],p1[1]-6);
+      ctx.globalAlpha=1;
+    }
+    /* circular section(s) and the optic axes normal to them */
+    if(st.sect){
+      const CS=circSection(ax,ay,az);
+      const drawCirc=(u,vv,r,flip)=>{
+        ctx.globalAlpha=0.30*pop; ctx.fillStyle=C.aether;
+        ctx.beginPath();
+        for(let k=0;k<=72;k++){
+          const g=TAU*k/72;
+          const p=[r*(Math.cos(g)*u[0]*(flip?-1:1))+r*Math.sin(g)*vv[0],
+                   r*(Math.cos(g)*u[1]*(flip?-1:1))+r*Math.sin(g)*vv[1],
+                   r*(Math.cos(g)*u[2]*(flip?-1:1))+r*Math.sin(g)*vv[2]];
+          const s=P(rot(p,st.rx,st.ry,st.rz));
+          k?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]);
+        }
+        ctx.closePath(); ctx.fill();
+        ctx.globalAlpha=0.95*pop; ctx.strokeStyle=C.aether; ctx.lineWidth=1.4;
+        glowOn(ctx,C.aether,10); ctx.stroke(); glowOff(ctx);
+        ctx.globalAlpha=1;
+      };
+      const drawAxis=(u)=>{
+        const p1=P(rot(u.map(q=>q*1.55),st.rx,st.ry,st.rz));
+        const p2=P(rot(u.map(q=>-q*1.55),st.rx,st.ry,st.rz));
+        ctx.globalAlpha=0.9*pop; ctx.strokeStyle=C.aether; ctx.lineWidth=1.5;
+        ctx.setLineDash([4,3]);
+        glowOn(ctx,C.aether,8);
+        ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.stroke();
+        glowOff(ctx); ctx.setLineDash([]); ctx.globalAlpha=1;
+      };
+      if(!CS){
+        /* isotropic — draw three of the infinitely many circular sections */
+        ell(0,1,ax,ay,C.aether,1.5,0.85*pop);
+        ell(1,2,ay,az,C.aether,1.5,0.85*pop);
+        ell(0,2,ax,az,C.aether,1.5,0.85*pop);
+      }else{
+        drawCirc(CS.u,CS.vv,CS.r,false); drawAxis(CS.axis);
+        if(CS.th>1e-4){ /* biaxial — a second section, mirrored */
+          drawCirc([CS.u[0],CS.u[1],-CS.u[2]],CS.vv,CS.r,false);
+          drawAxis([-CS.axis[0],CS.axis[1],-CS.axis[2]]);
+        }
+      }
+    }
+    /* ── inset: the working test ── */
+    const bw=Math.min(o.w*0.34,210), bh=96;
+    const bx=o.w-bw-14, by=o.h-bh-14;
+    ctx.fillStyle=al(C.ground,0.88); ctx.fillRect(bx,by,bw,bh);
+    ctx.strokeStyle=al(C.rule,1); ctx.lineWidth=1; ctx.strokeRect(bx,by,bw,bh);
+    lab(ctx,9,600); ctx.fillStyle=C.faint; ctx.textAlign='left';
+    ctx.fillText('THROUGH THE CROWN',bx+8,by+14);
+    const sep=b*240;
+    for(let k=0;k<3;k++){
+      const yy=by+34+k*18, x0=bx+10, x1=bx+bw-10;
+      const sk=(k-1)*7;
+      ctx.strokeStyle=al(C.ink2,0.9); ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(x0+sk,yy);ctx.lineTo(x1-sk,yy+4);ctx.stroke();
+      if(sep>0.4){
+        ctx.strokeStyle=al(C.aether,0.85); ctx.lineWidth=1.4;
+        ctx.beginPath();
+        ctx.moveTo(x0+sk+sep*0.5,yy+sep);ctx.lineTo(x1-sk+sep*0.5,yy+4+sep);
+        ctx.stroke();
+      }
+    }
+    const vd=verdict(b);
+    mn(ctx,9.5); ctx.fillStyle=b===0?C.forbid:C.aether;
+    ctx.fillText(b===0?'Δn = 0 · no doubling possible'
+                      :'Δn = '+b.toFixed(3)+' · '+vd[0],bx+8,by+bh-8);
+    /* ── readouts ── */
+    lab(ctx,12,600); ctx.textAlign='left'; ctx.fillStyle=C.ink2;
+    ctx.fillText(e.sys.toUpperCase()+'  ·  '+e.cls.toUpperCase()+
+      (e.cls==='isotropic'?'':'  ('+e.sign+')'),14,24);
+    mn(ctx,10); ctx.fillStyle=C.faint;
+    ctx.fillText(e.gem+'   '+e.n.map(v=>v.toFixed(3)).join(' / '),14,40);
+    const mnN=meanN(e), crit=Math.asin(Math.min(1,1/mnN))*180/Math.PI;
+    ctx.fillText('critical angle  arcsin(1/n) = '+crit.toFixed(1)+'°',14,56);
+    if(A.K>1.0001){
+      ctx.fillStyle=al(C.muted,0.9);
+      ctx.fillText('shape exaggerated ×'+A.K.toFixed(0)+' — axes are the true indices',14,72);
+    }
+    lab(ctx,12,600); ctx.textAlign='left';
+    ctx.fillStyle=e.cls==='isotropic'?C.forbid:C.aether;
+    ctx.fillText(e.cls==='isotropic'
+      ? 'EVERY SECTION IS A CIRCLE — NO OPTIC AXIS, NO SPLITTING'
+      : (e.cls==='uniaxial'?'ONE CIRCULAR SECTION → ONE OPTIC AXIS'
+                           :'TWO CIRCULAR SECTIONS → TWO OPTIC AXES'),14,o.h-16);
+  }
+  /* generated table — same data, so it can never disagree with the plate */
+  const host=document.getElementById('optTable');
+  if(host){
+    host.innerHTML='<div class="tbl-scroll"><table class="tbl"><thead><tr>'+
+      '<th>System</th><th>Optical class</th><th>Indices</th><th>Example</th>'+
+      '<th>Refractive index</th><th>Δn</th><th>Doubling</th></tr></thead><tbody>'+
+      OPT.map(e=>{
+        const b=biref(e), v=verdict(b);
+        const cc=e.cls==='isotropic'?'c-earth':e.cls==='uniaxial'?'c-air':'c-water';
+        return '<tr><td>'+e.sys+'</td>'+
+          '<td class="'+cc+'">'+e.cls+(e.cls==='isotropic'?'':' ('+e.sign+')')+'</td>'+
+          '<td class="num">'+e.n.length+'</td>'+
+          '<td>'+e.gem+'</td>'+
+          '<td class="num">'+e.n.map(x=>x.toFixed(3)).join(' / ')+'</td>'+
+          '<td class="num">'+(b===0?'0':b.toFixed(3))+'</td>'+
+          '<td class="'+(b===0?'c-forbid':'')+'">'+v[0]+'</td></tr>'+
+          '<tr><td></td><td colspan="6" style="color:var(--faint);font-size:.78rem">'+
+          e.note+' — also '+e.others+'</td></tr>';
+      }).join('')+'</tbody></table></div>'+
+      '<p style="font-size:.82rem;line-height:1.55;color:var(--faint);padding:.7rem 0 0">'+
+      'Indices are for sodium light, ≈589&nbsp;nm. The doubling column gives '+
+      'approximate bands only: there is no standardised threshold at which facet '+
+      'doubling becomes visible, and it vanishes altogether when a stone is sighted '+
+      'along an optic axis — which is why a gemmologist rocks the stone rather than '+
+      'looking once. Quoted values are representative; most species span a range '+
+      'across their varieties.</p>';
+  }
+})();
+
+/* ══════════════════ PLATE IX · Penrose ══════════════════ */
+(function(){
+  const o=stage('cvPen',draw); if(!o) return;
+  const st={gen:4,colour:true,fade:0,tris:null};
+  function seed(){
+    const T=[];
+    for(let i=0;i<10;i++){
+      let B=[Math.cos((2*i-1)*Math.PI/10),Math.sin((2*i-1)*Math.PI/10)];
+      let Cc=[Math.cos((2*i+1)*Math.PI/10),Math.sin((2*i+1)*Math.PI/10)];
+      if(i%2===0){const tm=B;B=Cc;Cc=tm;}
+      T.push([0,[0,0],B,Cc]);
+    }
+    return T;
+  }
+  function deflate(T){
+    const out=[];
+    for(const t of T){
+      const ty=t[0],A=t[1],B=t[2],Cc=t[3];
+      if(ty===0){
+        const Pp=[A[0]+(B[0]-A[0])/PHI,A[1]+(B[1]-A[1])/PHI];
+        out.push([0,Cc,Pp,B]); out.push([1,Pp,Cc,A]);
+      }else{
+        const Qq=[B[0]+(A[0]-B[0])/PHI,B[1]+(A[1]-B[1])/PHI];
+        const Rr=[B[0]+(Cc[0]-B[0])/PHI,B[1]+(Cc[1]-B[1])/PHI];
+        out.push([1,Rr,Cc,A]); out.push([1,Qq,Rr,B]); out.push([0,Rr,Qq,A]);
+      }
+    }
+    return out;
+  }
+  function build(g){
+    let T=seed();
+    for(let i=0;i<g;i++) T=deflate(T);
+    /* order by distance from the centre so the inflation reads as a wave */
+    T.sort((a,b)=>
+      Math.hypot((a[1][0]+a[2][0]+a[3][0])/3,(a[1][1]+a[2][1]+a[3][1])/3)-
+      Math.hypot((b[1][0]+b[2][0]+b[3][0])/3,(b[1][1]+b[2][1]+b[3][1])/3));
+    st.tris=T; st.fade=0;
+    let n0=0,n1=0; for(const t of T) t[0]?n1++:n0++;
+    const r=document.getElementById('penRatio');
+    if(r) r.textContent=n1+' : '+n0+'  = '+(n1/Math.max(1,n0)).toFixed(4);
+    note('penNote','generation '+g+' · '+T.length+' Robinson triangles');
+  }
+  const genUI=mkBtns(document.getElementById('penGen'),
+    [0,1,2,3,4,5,6].map(v=>({label:''+v,value:v})),v=>{st.gen=v;build(v);},4);
+  const ib=document.getElementById('penInflate');
+  if(ib) ib.addEventListener('click',()=>{
+    st.gen=Math.min(6,st.gen+1); build(st.gen);
+    if(genUI) genUI.set(st.gen);
+  });
+  toggle(document.getElementById('penColour'),true,on=>{st.colour=on;});
+  build(4);
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx, C=getC();
+    if(st.fade<1) st.fade=Math.min(1,st.fade+dt*(RM?9:0.85));
+    const T=st.tris; if(!T) return;
+    const R=Math.min(o.w,o.h)*0.455, cx=o.w/2, cy=o.h/2;
+    const px=p=>[cx+p[0]*R,cy-p[1]*R];
+    const N=T.length;
+    for(let i=0;i<N;i++){
+      const tr=T[i];
+      const pr=stag(st.fade,i,N,0.80);
+      if(pr<=0.003) continue;
+      const gp=E.back(pr);
+      /* grow each tile out of its own centroid */
+      const mx=(tr[1][0]+tr[2][0]+tr[3][0])/3, my=(tr[1][1]+tr[2][1]+tr[3][1])/3;
+      const sp=p=>px([mx+(p[0]-mx)*gp, my+(p[1]-my)*gp]);
+      const A=sp(tr[1]),B=sp(tr[2]),Cc=sp(tr[3]);
+      ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(Cc[0],Cc[1]);
+      ctx.closePath();
+      const d=Math.hypot(mx,my);
+      if(st.colour){
+        const base=tr[0]?C.aether:C.water, dim=tr[0]?C.aetherDim:C.waterDim;
+        ctx.fillStyle=mix(dim,base,Math.max(0,Math.min(1,0.28+0.5*(1-d))));
+      } else ctx.fillStyle=tr[0]?mix(C.ground2,C.ink2,0.22):mix(C.ground2,C.ink2,0.09);
+      ctx.globalAlpha=0.92*pr; ctx.fill();
+      ctx.globalAlpha=0.26*pr; ctx.lineWidth=0.5;
+      ctx.strokeStyle=al(C.dark?'#0b0d14':'#ffffff',0.7);
+      ctx.beginPath();ctx.moveTo(Cc[0],Cc[1]);ctx.lineTo(A[0],A[1]);ctx.stroke();
+      ctx.globalAlpha=0.9*pr; ctx.lineWidth=Math.max(0.4,1.6-st.gen*0.2);
+      ctx.strokeStyle=al(C.dark?'#0b0d14':'#20242c',0.85);
+      ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.lineTo(B[0],B[1]);
+      ctx.lineTo(Cc[0],Cc[1]);ctx.stroke();
+      ctx.globalAlpha=1;
+    }
+    /* the inflation front */
+    if(st.fade<1){
+      ctx.globalAlpha=0.30*(1-st.fade); ctx.lineWidth=1.6;
+      glowOn(ctx,C.aether,18); ctx.strokeStyle=C.aether;
+      ctx.beginPath(); ctx.arc(cx,cy,E.out(st.fade)*R*1.05,0,TAU); ctx.stroke();
+      glowOff(ctx); ctx.globalAlpha=1;
+    }
+    let n0=0,n1=0; for(const tr of T) tr[0]?n1++:n0++;
+    lab(ctx,12,600); ctx.textAlign='left'; ctx.fillStyle=C.aether;
+    ctx.fillText('fat : thin  =  '+(n1/Math.max(1,n0)).toFixed(5),14,24);
+    mn(ctx,10); ctx.fillStyle=C.faint;
+    ctx.fillText('φ = '+PHI.toFixed(5)+'   ·   '+T.length+' tiles   ·   gen '+st.gen,14,40);
+    lab(ctx,12,600); ctx.textAlign='right'; ctx.fillStyle=C.forbid;
+    ctx.fillText('EXACT 5-FOLD · NO TRANSLATIONAL PERIOD ANYWHERE',o.w-14,o.h-14);
+  }
+})();
+
+/* ══════════════════ PLATE X · cut and project ══════════════════ */
+(function(){
+  const o=stage('cvCP',draw); if(!o) return;
+  const st={m:1/PHI,off:0,rat:null,dp:0};
+  const sl=document.getElementById('cpSlope'), out=document.getElementById('cpOut');
+  function setM(m,rat){
+    st.m=m; st.rat=rat||null; st.dp=0;
+    if(sl) sl.value=Math.round(m*1000);
+    if(out) out.textContent=m.toFixed(4);
+    note('cpNote','slope '+(rat?rat:m.toFixed(4))+' · '+(rat?'RATIONAL → periodic crystal':'irrational → quasiperiodic'));
+  }
+  if(sl) sl.addEventListener('input',()=>setM(parseInt(sl.value,10)/1000,null));
+  mkBtns(document.getElementById('cpStops'),
+    [{label:'1/2',value:[0.5,'1/2'],cls:'allow'},{label:'2/3',value:[2/3,'2/3'],cls:'allow'},
+     {label:'3/5',value:[0.6,'3/5'],cls:'allow'},{label:'5/8',value:[0.625,'5/8'],cls:'allow'},
+     {label:'1/φ',value:[1/PHI,null],cls:'aether'}],
+    v=>setM(v[0],v[1]),4);
+  setM(1/PHI,null);
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx, C=getC();
+    if(!RM) st.off+=dt*0.045;
+    const m=st.m, L=Math.hypot(1,m), u=[1/L,m/L], v=[-m/L,1/L];
+    const W=Math.abs(v[0])+Math.abs(v[1]);
+    const off=(st.off%W);
+    const N=13;
+    const gx=o.w*0.045, gy=o.h*0.90, cell=Math.min(o.w/(N+2.6),(o.h*0.62)/(N+1.2));
+    const px=(i,j)=>[gx+i*cell, gy-j*cell];
+    /* lattice */
+    ctx.strokeStyle=al(C.muted,0.13); ctx.lineWidth=0.6;
+    for(let i=0;i<=N;i++){
+      let p=px(i,0),q=px(i,N); ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(q[0],q[1]);ctx.stroke();
+      p=px(0,i);q=px(N,i); ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(q[0],q[1]);ctx.stroke();
+    }
+    /* strip */
+    const sel=[];
+    for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){
+      const pv=i*v[0]+j*v[1]-off;
+      if(pv>=0&&pv<W) sel.push({i,j,c:i*u[0]+j*u[1]});
+    }
+    const drawLine=(a,b,col,w,dash,a2)=>{
+      ctx.globalAlpha=a2==null?1:a2; ctx.strokeStyle=col; ctx.lineWidth=w;
+      if(dash)ctx.setLineDash(dash);
+      ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha=1;
+    };
+    const lineAt=c=>{
+      const t0=-2, t1=N+2;
+      const A=[t0, m*t0+c], B=[t1, m*t1+c];
+      return [px(A[0],A[1]),px(B[0],B[1])];
+    };
+    const cUp=off/ (v[1]) , cLo=(off+W)/v[1];
+    const b0=lineAt(off/v[1]), b1=lineAt((off+W)/v[1]);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(b0[0][0],b0[0][1]);ctx.lineTo(b0[1][0],b0[1][1]);
+    ctx.lineTo(b1[1][0],b1[1][1]);ctx.lineTo(b1[0][0],b1[0][1]);
+    ctx.closePath();
+    ctx.fillStyle=al(st.rat?C.allow:C.aether,0.10); ctx.fill();
+    ctx.restore();
+    drawLine(b0[0],b0[1],al(st.rat?C.allow:C.aether,0.55),0.9,[4,4]);
+    drawLine(b1[0],b1[1],al(st.rat?C.allow:C.aether,0.55),0.9,[4,4]);
+    const mid=lineAt((off+W/2)/v[1]);
+    drawLine(mid[0],mid[1],st.rat?C.allow:C.aether,1.6);
+    /* points */
+    for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){
+      const p=px(i,j);
+      ctx.fillStyle=al(C.muted,0.30);
+      ctx.beginPath();ctx.arc(p[0],p[1],1.5,0,TAU);ctx.fill();
+    }
+    /* projections */
+    sel.sort((a,b)=>a.c-b.c);
+    const py=o.h*0.955;
+    const c0=sel.length?sel[0].c:0, c1=sel.length?sel[sel.length-1].c:1;
+    const spanPx=o.w-gx*2;
+    const mapc=c=>gx+(c-c0)/Math.max(1e-6,(c1-c0))*spanPx;
+    drawLine([gx,py],[gx+spanPx,py],al(C.ink2,0.5),1);
+    /* the selected points rain down onto the line, sweeping along it */
+    st.dp=Math.min(1,st.dp+dt*(RM?9:0.85));
+    const acc=st.rat?C.allow:C.aether;
+    for(let si=0;si<sel.length;si++){
+      const s=sel[si];
+      const dp=E.out(stag(st.dp,si,sel.length,0.70));
+      if(dp<=0.01) continue;
+      const p=px(s.i,s.j), q=[mapc(s.c),py];
+      drawLine(p,[p[0]+(q[0]-p[0])*dp,p[1]+(q[1]-p[1])*dp],al(acc,0.18),0.6);
+      ctx.globalAlpha=Math.min(1,dp*1.6);
+      glowOn(ctx,acc,7);
+      ctx.fillStyle=acc;
+      ctx.beginPath();ctx.arc(p[0],p[1],2.9,0,TAU);ctx.fill();
+      glowOff(ctx);
+      ctx.globalAlpha=1;
+      if(dp>0.90){
+        const tk=(dp-0.90)/0.10;
+        ctx.globalAlpha=tk;
+        ctx.beginPath();ctx.moveTo(q[0],py-5);ctx.lineTo(q[0],py+5);
+        ctx.strokeStyle=acc;ctx.lineWidth=1.4;ctx.stroke();
+        ctx.globalAlpha=1;
+      }
+    }
+    /* gap sequence */
+    const gaps=[];
+    for(let i=1;i<sel.length;i++) gaps.push(sel[i].c-sel[i-1].c);
+    let big=0,small=1e9;
+    for(const g of gaps){big=Math.max(big,g);small=Math.min(small,g);}
+    let nL=0,nS=0,seq='';
+    for(const g of gaps){
+      const isL=Math.abs(g-big)<Math.abs(g-small);
+      if(isL){nL++;seq+='L';} else {nS++;seq+='S';}
+    }
+    const rr=document.getElementById('cpRatio');
+    if(rr) rr.textContent=nL+' : '+nS+(nS?'  '+(nL/nS).toFixed(3):'');
+    mn(ctx,11); ctx.textAlign='left'; ctx.fillStyle=st.rat?C.allow:C.aether;
+    ctx.fillText(seq.slice(0,Math.floor((o.w-40)/7.2)),gx,py-16);
+    lab(ctx,12,600); ctx.fillStyle=st.rat?C.allow:C.aether;
+    ctx.fillText(st.rat?('SLOPE '+st.rat+' — SHADOW REPEATS · A CRYSTAL'):
+      'SLOPE 1/φ — SHADOW NEVER REPEATS · A QUASICRYSTAL',gx,24);
+    mn(ctx,10); ctx.fillStyle=C.faint;
+    ctx.fillText('L = '+big.toFixed(4)+'   S = '+small.toFixed(4)+
+      '   L/S = '+(big/Math.max(1e-9,small)).toFixed(4)+
+      (st.rat?'':'   → φ'),gx,40);
+  }
+})();
+
+/* ══════════════════ PLATE XI · golden scaffold ══════════════════ */
+(function(){
+  const o=stage('cvGold',draw); if(!o) return;
+  const st={mode:'rect',T:0,auto:true};
+  orbit(o,st,-0.35,0.55);
+  const sl=document.getElementById('goldT');
+  mkBtns(document.getElementById('goldMode'),
+    [{label:'Rectangles',value:'rect',cls:'water'},
+     {label:'Five cubes',value:'cubes',cls:'aether'},
+     {label:'Kepler 1596',value:'kepler'}],
+    v=>{st.mode=v;st.T=0;st.auto=true;if(sl)sl.value=0;upd();},0);
+  /* it assembles itself; touching the slider hands control over to you */
+  if(sl) sl.addEventListener('input',()=>{st.auto=false;st.T=parseInt(sl.value,10)/1000;});
+  function upd(){
+    note('goldNote',st.mode==='rect'?'three golden rectangles → icosahedron':
+      st.mode==='cubes'?'five cubes inscribed in the dodecahedron':
+      'Mysterium Cosmographicum · octa · icosa · dodeca · tetra · cube');
+  }
+  upd();
+  /* five cubes: rotate the (±1,±1,±1) cube about a 5-fold axis */
+  function rodrigues(ax,th){
+    const L=Math.hypot(ax[0],ax[1],ax[2]), k=[ax[0]/L,ax[1]/L,ax[2]/L];
+    const c=Math.cos(th),s=Math.sin(th),t=1-c;
+    return [[t*k[0]*k[0]+c, t*k[0]*k[1]-s*k[2], t*k[0]*k[2]+s*k[1]],
+            [t*k[0]*k[1]+s*k[2], t*k[1]*k[1]+c, t*k[1]*k[2]-s*k[0]],
+            [t*k[0]*k[2]-s*k[1], t*k[1]*k[2]+s*k[0], t*k[2]*k[2]+c]];
+  }
+  function apply(M,p){return [M[0][0]*p[0]+M[0][1]*p[1]+M[0][2]*p[2],
+                              M[1][0]*p[0]+M[1][1]*p[1]+M[1][2]*p[2],
+                              M[2][0]*p[0]+M[2][1]*p[1]+M[2][2]*p[2]];}
+  const CUBES=(function(){
+    /* a 5-fold axis of the dodecahedron is the direction of any face centroid —
+       derive it rather than assume it, so the rotation is a true symmetry */
+    const dd=SOLIDS.dodeca, f=dd.F[0], ax=[0,0,0];
+    for(const m of f){ax[0]+=dd.V[m][0];ax[1]+=dd.V[m][1];ax[2]+=dd.V[m][2];}
+    const R=rodrigues(ax,TAU/5);
+    let V=SOLIDS.cube.V.map(p=>p.slice());
+    const out=[V];
+    for(let i=0;i<4;i++){V=V.map(p=>apply(R,p));out.push(V.map(p=>p.slice()));}
+    return out;
+  })();
+  const KEP=(function(){
+    const order=['octa','icosa','dodeca','tetra','cube'];
+    const planets=['Mercury','Venus','Earth','Mars','Jupiter','Saturn'];
+    const shells=[]; let r=0.30;
+    for(let i=0;i<order.length;i++){
+      const S=SOLIDS[order[i]];
+      let rin=1e9;
+      for(const f of S.F){
+        const c=[0,0,0]; for(const m of f){c[0]+=S.V[m][0];c[1]+=S.V[m][1];c[2]+=S.V[m][2];}
+        rin=Math.min(rin,Math.hypot(c[0],c[1],c[2])/f.length);
+      }
+      let rc=0; for(const p of S.V) rc=Math.max(rc,Math.hypot(p[0],p[1],p[2]));
+      const k=r/rin;
+      shells.push({key:order[i],scale:k,rIn:r,rOut:rc*k,pIn:planets[i],pOut:planets[i+1]});
+      r=rc*k;
+    }
+    const mx=shells[shells.length-1].rOut;
+    for(const s of shells){s.scale/=mx;s.rIn/=mx;s.rOut/=mx;}
+    return shells;
+  })();
+  function draw(o,t,dt){
+    bg(o); const ctx=o.ctx, C=getC(); st.tick(dt);
+    if(st.auto){
+      st.T=Math.min(1,st.T+dt*(RM?6:0.42));
+      if(sl) sl.value=Math.round(st.T*1000);
+    }
+    const sc=Math.min(o.w,o.h)*(st.mode==='kepler'?0.40:0.30);
+    const P=mkProj(o,sc,st.mode==='kepler'?5.0:4.3);
+    if(st.mode==='rect'){
+      const ic=SOLIDS.icosa;
+      const g=st.T;
+      const rects=[
+        {v:[[0,1,PHI],[0,-1,PHI],[0,-1,-PHI],[0,1,-PHI]],c:'fire',pr:[1,2]},
+        {v:[[1,PHI,0],[-1,PHI,0],[-1,-PHI,0],[1,-PHI,0]],c:'air',pr:[0,1]},
+        {v:[[PHI,0,1],[PHI,0,-1],[-PHI,0,-1],[-PHI,0,1]],c:'earth',pr:[0,2]}
+      ];
+      const nk=1/Math.hypot(0,1,PHI);
+      const wv=Math.max(0,Math.min(1,(g-0.62)/0.34));
+      if(wv>0) wire(o,ic.V,ic.E,st,P,al(C.water,0.9),1.35,wv);
+      const items=rects.map((r,i)=>{
+        /* each card swings into place in turn */
+        const p=E.out(stag(g,i,3,0.52));
+        const ang=(1-p)*1.35;
+        const ca=Math.cos(ang), sa2=Math.sin(ang);
+        const V=r.v.map(q=>{
+          const s2=[q[0]*nk*p,q[1]*nk*p,q[2]*nk*p];
+          const a=s2[r.pr[0]], b=s2[r.pr[1]];
+          s2[r.pr[0]]=a*ca-b*sa2; s2[r.pr[1]]=a*sa2+b*ca;
+          return s2;
+        });
+        const R=V.map(q=>rot(q,st.rx,st.ry,st.rz));
+        let z=0;for(const q of R)z+=q[2];
+        return {r,V,R,z:z/4,i,p};
+      });
+      items.sort((a,b)=>b.z-a.z);
+      for(const it of items){
+        if(it.p<=0.01) continue;
+        const S=it.R.map(P);
+        ctx.beginPath();S.forEach((p,k)=>k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
+        ctx.closePath();
+        ctx.globalAlpha=0.22*it.p; ctx.fillStyle=C[it.r.c]; ctx.fill();
+        ctx.globalAlpha=0.95*it.p; ctx.lineWidth=1.7;
+        glowOn(ctx,C[it.r.c],10); ctx.strokeStyle=C[it.r.c]; ctx.stroke(); glowOff(ctx);
+        ctx.globalAlpha=it.p;
+        for(const p of S){
+          ctx.fillStyle=C.water; ctx.beginPath();
+          ctx.arc(p[0],p[1],3.1*(0.4+0.6*it.p),0,TAU); ctx.fill();
+        }
+        ctx.globalAlpha=1;
+      }
+      lab(ctx,12,600);ctx.textAlign='left';ctx.fillStyle=C.aether;
+      ctx.fillText('THREE RECTANGLES  1 : φ  =  1 : '+PHI.toFixed(5),14,24);
+      mn(ctx,10);ctx.fillStyle=C.faint;
+      ctx.fillText('12 corners = 12 icosahedron vertices  (0, ±1, ±φ)',14,40);
+    }
+    else if(st.mode==='cubes'){
+      const dd=SOLIDS.dodeca;
+      wire(o,dd.V,dd.E,st,P,al(C.aether,0.9),1.2,0.85);
+      const cols=['earth','fire','air','water','aether'];
+      let shown=0;
+      for(let i=0;i<5;i++){
+        const p=E.out(stag(st.T,i,5,0.72));
+        if(p<=0.01) continue;
+        shown++;
+        const V=scaleTo(CUBES[i],1).map(q=>[q[0]*p,q[1]*p,q[2]*p]);
+        const fresh=p<0.6?1-p/0.6:0;
+        if(fresh>0) glowOn(ctx,C[cols[i]],10+fresh*14);
+        wire(o,V,SOLIDS.cube.E,st,P,C[cols[i]],1.5,0.9*p);
+        glowOff(ctx);
+      }
+      lab(ctx,12,600);ctx.textAlign='left';ctx.fillStyle=C.aether;
+      ctx.fillText(shown+' OF 5 CUBES INSCRIBED',14,24);
+      mn(ctx,10);ctx.fillStyle=C.faint;
+      ctx.fillText('20 dodecahedron vertices · each cube takes 8 · each vertex in 2 cubes',14,40);
+    }
+    else{
+      const cols={octa:'air',icosa:'water',dodeca:'aether',tetra:'fire',cube:'earth'};
+      const cc=mkProj(o,sc,5.0)([0,0,0]);
+      for(let i=0;i<5;i++){
+        const p=E.out(stag(st.T,i,5,0.74));
+        if(p<=0.01) continue;
+        const sh=KEP[i], S=SOLIDS[sh.key];
+        /* each planetary sphere is drawn as it is reached */
+        ctx.globalAlpha=0.24*p; ctx.strokeStyle=C.muted; ctx.lineWidth=0.8;
+        ctx.beginPath();ctx.arc(cc[0],cc[1],sh.rIn*sc,-Math.PI/2,-Math.PI/2+TAU*p);ctx.stroke();
+        ctx.beginPath();ctx.arc(cc[0],cc[1],sh.rOut*sc,-Math.PI/2,-Math.PI/2+TAU*p);ctx.stroke();
+        ctx.globalAlpha=1;
+        wire(o,scaleTo(S.V,sh.rOut*(0.34+0.66*p)),S.E,st,P,C[cols[sh.key]],1.25,0.88*p);
+        lab(ctx,9,500); ctx.fillStyle=al(C.faint,p); ctx.textAlign='center';
+        ctx.fillText(sh.pOut.toUpperCase(),cc[0],cc[1]-sh.rOut*sc-4);
+      }
+      lab(ctx,12,600);ctx.textAlign='left';ctx.fillStyle=C.ink2;
+      ctx.fillText('KEPLER · MYSTERIUM COSMOGRAPHICUM · 1596',14,24);
+      mn(ctx,10);ctx.fillStyle=C.faint;
+      ctx.fillText('six planets, five gaps, five solids — and it did not fit the data',14,40);
+    }
+  }
+})();
+})();
+</script>

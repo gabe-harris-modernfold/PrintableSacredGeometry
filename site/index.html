@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Promethean Theoria — Interactive Studies in Sacred Geometry &amp; Computed Physics</title>
+<meta name="description" content="Six self-contained interactive studies at the seam between measured physics and the Hermetic tradition. Physics computed live; interpretation clearly labeled.">
+<meta property="og:title" content="Promethean Theoria">
+<meta property="og:description" content="Interactive studies in sacred geometry &amp; computed physics — the physics is computed live, the interpretation is labeled.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/conception_sacred_geometry.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/">
+<style>
+  :root {
+    --bg: #0b0e14;
+    --card: #131826;
+    --card-hover: #182031;
+    --text: #e6e9f0;
+    --muted: #97a0b5;
+    --accent: #7fd4c1;
+    --gold: #d4b87f;
+    --border: #222b3f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+    min-height: 100vh;
+    padding: 3.5rem 1.25rem 5rem;
+  }
+  main { max-width: 1080px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 1.6rem; }
+  h1 {
+    font-size: 2.3rem;
+    font-weight: normal;
+    letter-spacing: 0.06em;
+  }
+  .tagline {
+    color: var(--gold);
+    font-style: italic;
+    font-size: 1.02rem;
+    margin-top: 0.5rem;
+    letter-spacing: 0.03em;
+  }
+  .divider {
+    width: 70px; height: 1px;
+    background: var(--accent);
+    margin: 1.5rem auto;
+    opacity: 0.55;
+  }
+  .intro {
+    max-width: 640px;
+    margin: 0 auto 3rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
+  .intro b { color: var(--text); font-weight: normal; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+  a.card {
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+  }
+  a.card:hover {
+    background: var(--card-hover);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .shot {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    background: #05070c;
+  }
+  .shot img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+  }
+  .body { padding: 1.15rem 1.35rem 1.3rem; display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
+  .name {
+    font-size: 1.28rem;
+    color: var(--accent);
+    line-height: 1.25;
+  }
+  .name em { color: var(--gold); font-size: 0.95rem; letter-spacing: 0.02em; }
+  .blurb {
+    color: var(--muted);
+    font-size: 0.93rem;
+    line-height: 1.6;
+    flex: 1;
+  }
+  .meta {
+    color: var(--gold);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-top: 0.2rem;
+  }
+  footer {
+    margin-top: 3.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-style: italic;
+    opacity: 0.8;
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Promethean Theoria</h1>
+    <div class="tagline">interactive studies in sacred geometry &amp; computed physics</div>
+    <div class="divider"></div>
+  </header>
+
+  <p class="intro">
+    Six self-contained studies at the seam between measured physics and the Hermetic tradition.
+    Each page follows one rule: <b>the physics is computed live, and the interpretation is labeled</b> —
+    you can always tell which register a claim belongs to. Everything runs in your browser,
+    nothing to install; the simulations are best experienced on a desktop screen.
+  </p>
+
+  <div class="grid">
+
+    <a class="card" href="conception_sacred_geometry.html">
+      <div class="shot"><img src="previews/conception_sacred_geometry.webp" alt="A translucent 3D oocyte sphere with construction circles, beside a panel separating observed, ideal, and Hermetic readings" loading="lazy"></div>
+      <div class="body">
+        <div class="name">The Vesica at Conception <em>— seven movements</em></div>
+        <div class="blurb">
+          A metaphysical study of fertilisation in seven movements, from the Monad — the oocyte alone —
+          to the Egg of Life. Every movement is told three times and never merged: observed biology with
+          citations, the ideal geometry, and what the Hermetic tradition made of it.
+        </div>
+        <div class="meta">3D scene &middot; scrub 7 movements &middot; three registers kept apart</div>
+      </div>
+    </a>
+
+    <a class="card" href="embryonic_torus_heart.html">
+      <div class="shot"><img src="previews/embryonic_torus_heart.webp" alt="A 3D blastocyst sphere with labeled cell layers above a ten-stage embryology timeline" loading="lazy"></div>
+      <div class="body">
+        <div class="name">The Toroidal Embryo <em>— where the heart begins</em></div>
+        <div class="blurb">
+          Weeks 1&ndash;4 of human embryology in interactive 3D: a hollow ball of cells folds inward until,
+          for a few days, the embryo is genuinely a torus — and the heart is built on the rim of that passage.
+          Scrub ten stages from blastocyst to the first beat; a notes panel keeps textbook fact separate from idealized form.
+        </div>
+        <div class="meta">Interactive 3D &middot; 10-stage timeline &middot; cross-sections &amp; blood vortex</div>
+      </div>
+    </a>
+
+    <a class="card" href="photon_quartz_simulation.html">
+      <div class="shot"><img src="previews/photon_quartz_simulation.webp" alt="An optical bench diagram in ink and amber: source, lens, quartz crystal, and a model human eye with live readouts" loading="lazy"></div>
+      <div class="body">
+        <div class="name">Photon in Quartz <em>— computed optics, labeled interpretation</em></div>
+        <div class="blurb">
+          A complete optical bench drawn live: sodium light focused into a birefringent quartz crystal, split
+          into o- and e-rays, and traced all the way to a model human eye. Every number on screen is computed
+          from the declared physics; two symbolic overlay layers stay off until you ask, and never feed a value back.
+        </div>
+        <div class="meta">Live computed optics &middot; adjustable bench &middot; optional symbolic layers</div>
+      </div>
+    </a>
+
+    <a class="card" href="frequency-ladder-teaching-tool.html">
+      <div class="shot"><img src="previews/frequency-ladder-teaching-tool.webp" alt="A guided teaching dashboard showing a rotating phasor at 220 Hz with signal controls and a five-rung ladder menu" loading="lazy"></div>
+      <div class="body">
+        <div class="name">Frequency Ladder <em>— one signal, four shadows</em></div>
+        <div class="blurb">
+          One signal seen four ways, all phase-locked: a spinning point unrolls into a waveform, the FFT recovers
+          its recipe, the spectrum blooms into a polar mandala, and a horn torus carries the whole thing in 3D.
+          Climb the guided five-rung ladder, or open Free Play and stack harmonics yourself.
+        </div>
+        <div class="meta">Guided &amp; free-play modes &middot; live FFT &middot; 3D horn torus</div>
+      </div>
+    </a>
+
+    <a class="card" href="bifilar-rodin-coil-simulator.html">
+      <div class="shot"><img src="previews/bifilar-rodin-coil-simulator.webp" alt="A dense simulator dashboard: 3D star-wound coil with field lines, oscilloscope traces, and live electrical readouts" loading="lazy"></div>
+      <div class="body">
+        <div class="name">Bifilar Rodin Coil <em>— digital twin</em></div>
+        <div class="blurb">
+          A 12-pole, counter-wound bifilar Rodin coil driven like bench hardware: set waveform, frequency and
+          power, then read the oscilloscope, the impedance sweep, and a numerically integrated Biot&ndash;Savart
+          field map. The model equations — and an honest section on what to trust — are right on the page.
+        </div>
+        <div class="meta">Circuit + field simulation &middot; live readouts &middot; documented model</div>
+      </div>
+    </a>
+
+    <a class="card" href="mineral-lattices-platonic-solids.html">
+      <div class="shot"><img src="previews/mineral-lattices-platonic-solids.webp" alt="A diffraction rosette of glowing dots on a dark plate, labeled four-fold, permitted" loading="lazy"></div>
+      <div class="body">
+        <div class="name">The Forbidden Symmetry <em>— mineral lattices &amp; the Platonic solids</em></div>
+        <div class="blurb">
+          A treatise in nine interactive plates, spanning crystallography and the <i>Corpus Hermeticum</i>:
+          why exactly five Platonic solids exist, which of them can build matter, why five-fold symmetry is
+          impossible in any repeating crystal — and the 1982 aluminium alloy where it turned up anyway.
+          Every claim wears a chip: theorem, measured, tradition, or false.
+        </div>
+        <div class="meta">Nine plates &middot; long read + interaction &middot; every claim labeled</div>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>Where the traditions genuinely touch, it is marked. Where they only rhyme, that is marked too.</footer>
+</main>
+</body>
+</html>

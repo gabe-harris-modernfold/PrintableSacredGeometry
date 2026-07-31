@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="A 3D developmental animation: the human embryo passes from a hollow sphere to a torus, and the heart forms on the rim of the new passage. Real embryological milestones, labeled topological idealization.">
+<title>The Toroidal Embryo — where the heart begins</title>
+<style>
+:root{
+  --bg0:#07080D; --bg1:#0E1018; --bg2:#151827;
+  --ink:#E8EAF0; --ink2:#9AA2B4; --ink3:#646C80;
+  --line:rgba(150,165,200,.16); --hair:rgba(150,165,200,.09);
+  --panel:rgba(12,14,22,.74);
+  --heart:#FF5C72; --heart2:#FFA48C;
+  --body:#8FA8D8; --gold:#E8B75A; --teal:#54D6C4;
+  --serif:Charter,'Sitka Text',Cambria,Georgia,serif;
+  --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code',Consolas,'SF Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg0); color:var(--ink); font-family:var(--sans);
+  overflow:hidden; -webkit-font-smoothing:antialiased;
+}
+#stage{position:fixed; inset:0}
+canvas{position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none}
+#leaders{position:absolute; inset:0; pointer-events:none}
+#labels{position:absolute; inset:0; pointer-events:none}
+
+.lab{
+  position:absolute; transform:translate(-50%,-50%);
+  font-size:11.5px; letter-spacing:.02em; line-height:1.32;
+  padding:5px 9px; border-radius:5px; white-space:nowrap;
+  background:rgba(8,10,16,.80); border:1px solid var(--line);
+  color:var(--ink); backdrop-filter:blur(4px);
+}
+.lab b{display:block; font-weight:600; font-size:11.5px}
+.lab i{display:block; font-style:normal; font-size:10px; color:var(--ink2); margin-top:1px}
+.lab.heart{border-color:rgba(255,92,114,.45)} .lab.heart b{color:var(--heart2)}
+.lab.gold{border-color:rgba(232,183,90,.40)} .lab.gold b{color:var(--gold)}
+.lab.teal{border-color:rgba(84,214,196,.38)} .lab.teal b{color:var(--teal)}
+
+/* ---------- title ---------- */
+#title{position:absolute; top:26px; left:30px; max-width:min(420px,42vw); pointer-events:none}
+#title h1{
+  font-family:var(--serif); font-weight:500; font-size:26px; line-height:1.15;
+  margin:0 0 7px; letter-spacing:-.01em;
+}
+#title h1 em{font-style:italic; color:var(--gold)}
+#title p{margin:0; font-size:12.5px; line-height:1.5; color:var(--ink2); max-width:36em}
+
+/* ---------- stage panel ---------- */
+#panel{
+  position:absolute; top:26px; right:26px; width:330px;
+  background:var(--panel); border:1px solid var(--line); border-radius:9px;
+  backdrop-filter:blur(12px); overflow:hidden;
+}
+#pHead{padding:14px 16px 12px; border-bottom:1px solid var(--hair)}
+#pDay{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.10em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:5px;
+}
+#pName{font-family:var(--serif); font-size:19px; line-height:1.2; margin:0 0 4px}
+#pSub{font-size:11px; color:var(--ink3); font-family:var(--mono); letter-spacing:.02em}
+#pBody{padding:13px 16px 15px; font-size:12.5px; line-height:1.62; color:#CDD3E0}
+#pBody .topo{
+  margin-top:11px; padding-top:10px; border-top:1px solid var(--hair);
+  font-size:11.5px; color:var(--ink2); display:flex; gap:8px; align-items:baseline;
+}
+#pBody .topo span:first-child{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink3); flex:0 0 52px; padding-top:1px;
+}
+#pProg{height:2px; background:rgba(150,165,200,.12)}
+#pProgFill{height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--heart)); transition:width .1s linear}
+
+/* ---------- genus flash ---------- */
+#genus{
+  position:absolute; left:50%; top:22%; transform:translate(-50%,-50%) scale(.96);
+  text-align:center; pointer-events:none; opacity:0; transition:opacity .28s ease, transform .28s ease;
+}
+#genus.on{opacity:1; transform:translate(-50%,-50%) scale(1)}
+#genus div:first-child{
+  font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold);
+}
+#genus div:last-child{font-family:var(--serif); font-size:23px; margin-top:5px; color:#FFF2D6}
+
+/* ---------- transport ---------- */
+#transport{
+  position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
+  width:min(940px, calc(100vw - 60px));
+  background:var(--panel); border:1px solid var(--line); border-radius:9px;
+  backdrop-filter:blur(12px); padding:11px 16px 9px;
+}
+#ticks{position:relative; height:34px; margin:0 6px 2px}
+.tick{
+  position:absolute; transform:translateX(-50%); bottom:0; text-align:center;
+  background:none; border:0; padding:0 3px; cursor:pointer; color:var(--ink3);
+  font-family:var(--mono); font-size:9px; letter-spacing:.04em; line-height:1.25;
+}
+.tick b{display:block; font-weight:400; font-size:8.5px; color:inherit; white-space:nowrap}
+.tick s{
+  display:block; text-decoration:none; width:1px; height:9px; margin:4px auto 0;
+  background:currentColor; opacity:.55;
+}
+.tick:hover{color:var(--ink2)}
+.tick.act{color:var(--gold)} .tick.act s{opacity:1; height:12px}
+.tick.coda b{font-style:italic}
+
+#scrubRow{display:flex; align-items:center; gap:12px}
+#scrub{
+  -webkit-appearance:none; appearance:none; flex:1; height:16px; background:none; cursor:pointer; margin:0;
+}
+#scrub::-webkit-slider-runnable-track{height:3px; border-radius:2px; background:rgba(150,165,200,.20)}
+#scrub::-webkit-slider-thumb{
+  -webkit-appearance:none; width:13px; height:13px; margin-top:-5px; border-radius:50%;
+  background:var(--gold); border:2px solid #14161F; box-shadow:0 0 0 1px rgba(232,183,90,.5);
+}
+#scrub::-moz-range-track{height:3px; border-radius:2px; background:rgba(150,165,200,.20)}
+#scrub::-moz-range-thumb{
+  width:13px;height:13px;border-radius:50%;background:var(--gold);border:2px solid #14161F;
+}
+.btn{
+  background:rgba(150,165,200,.09); border:1px solid var(--line); color:var(--ink);
+  border-radius:5px; cursor:pointer; font-family:var(--sans); font-size:11px;
+  padding:5px 10px; letter-spacing:.02em;
+}
+.btn:hover{background:rgba(150,165,200,.17)}
+.btn.icon{width:29px; padding:5px 0; text-align:center; font-size:12px}
+#play{width:34px; color:var(--gold)}
+
+#toggles{display:flex; gap:6px; flex-wrap:wrap; margin-top:9px; padding-top:9px; border-top:1px solid var(--hair)}
+.tg{
+  background:none; border:1px solid var(--line); color:var(--ink3);
+  border-radius:20px; cursor:pointer; font-size:10.5px; padding:4px 11px; letter-spacing:.03em;
+  font-family:var(--sans);
+}
+.tg:hover{color:var(--ink2); border-color:rgba(150,165,200,.28)}
+.tg.on{color:#0B0D14; background:var(--gold); border-color:var(--gold); font-weight:600}
+#bpm{
+  margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--ink3);
+  letter-spacing:.06em; align-self:center; opacity:0; transition:opacity .4s
+}
+#bpm.on{opacity:1; color:var(--heart)}
+#bpm b{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--heart);
+  vertical-align:-1px; margin-right:5px}
+
+/* ---------- notes ---------- */
+#notesBtn{
+  position:absolute; left:30px; bottom:24px;
+  background:var(--panel); border:1px solid var(--line); color:var(--ink2);
+  border-radius:6px; cursor:pointer; font-size:11px; padding:7px 12px; backdrop-filter:blur(10px);
+  font-family:var(--sans);
+}
+#notesBtn:hover{color:var(--ink)}
+#notes{
+  position:absolute; left:30px; bottom:24px; width:min(500px, calc(100vw - 60px));
+  max-height:min(66vh, 560px); overflow:auto;
+  background:rgba(10,12,19,.94); border:1px solid var(--line); border-radius:9px;
+  backdrop-filter:blur(14px); padding:18px 20px 20px; display:none;
+}
+#notes.on{display:block}
+#notes h2{font-family:var(--serif); font-size:16px; font-weight:500; margin:0 0 3px}
+#notes h3{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--gold); margin:16px 0 6px; font-weight:400;
+}
+#notes h3:first-of-type{margin-top:14px}
+#notes p{font-size:12px; line-height:1.66; color:#C3CAD8; margin:0 0 8px}
+#notes ul{margin:0; padding-left:16px}
+#notes li{font-size:12px; line-height:1.62; color:#C3CAD8; margin-bottom:5px}
+#notes .cl{color:var(--teal); font-weight:600}
+#notes .id{color:var(--gold); font-weight:600}
+#notes code{font-family:var(--mono); font-size:11px; color:var(--ink)}
+#nClose{position:absolute; top:12px; right:14px; background:none; border:0; color:var(--ink3);
+  font-size:17px; cursor:pointer; line-height:1; padding:2px 5px}
+#nClose:hover{color:var(--ink)}
+#hint{
+  position:absolute; right:26px; bottom:24px; font-size:10.5px; color:var(--ink3);
+  font-family:var(--mono); letter-spacing:.04em; text-align:right; line-height:1.7; pointer-events:none;
+}
+#fail{
+  position:absolute; inset:0; display:none; place-items:center; text-align:center; padding:40px;
+  font-size:14px; color:var(--ink2); line-height:1.7;
+}
+@media (max-width:1080px){
+  #panel{width:290px; top:auto; bottom:150px; right:18px}
+  #title{max-width:min(340px,52vw); left:20px; top:18px}
+  #title h1{font-size:21px}
+  #hint{display:none}
+  #notesBtn,#notes{left:20px; bottom:18px}
+}
+@media (max-width:760px){
+  #panel{position:absolute; left:14px; right:14px; width:auto; bottom:auto; top:120px}
+  #pBody{font-size:12px; padding:11px 14px 13px}
+  #title{max-width:none; right:14px; left:14px; top:14px}
+  #transport{width:calc(100vw - 24px); bottom:12px; padding:9px 11px 8px}
+  #ticks{height:30px}
+  .tick b{display:none}
+  #notesBtn{bottom:auto; top:14px; right:14px; left:auto}
+  #notes{left:12px; right:12px; width:auto; bottom:auto; top:60px}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <svg id="leaders"></svg>
+  <div id="labels"></div>
+
+  <div id="title">
+    <h1>The Toroidal Embryo<br><em>— where the heart begins</em></h1>
+    <p>A hollow ball of cells folds inward until the fold breaks through. For a few days the
+       embryo is a torus, and the heart is built on the rim of that passage. Then the ring
+       opens and the body lets the torus go — the gut gives it back, and the heart never
+       gave it up at all.</p>
+  </div>
+
+  <div id="genus"><div id="gA">topology changes</div><div id="gB">genus 0 &rarr; genus 1</div></div>
+
+  <div id="panel">
+    <div id="pHead">
+      <div id="pDay">Day 5–6</div>
+      <h2 id="pName">Blastocyst</h2>
+      <div id="pSub">≈120–250 cells</div>
+    </div>
+    <div id="pBody">
+      <div id="pText"></div>
+      <div class="topo"><span>form</span><span id="pTopo"></span></div>
+    </div>
+    <div id="pProg"><div id="pProgFill"></div></div>
+  </div>
+
+  <div id="transport">
+    <div id="ticks"></div>
+    <div id="scrubRow">
+      <button class="btn icon" id="prev" title="Previous stage (←)">‹</button>
+      <button class="btn" id="play" title="Play / pause (space)">▶</button>
+      <button class="btn icon" id="next" title="Next stage (→)">›</button>
+      <input id="scrub" type="range" min="0" max="9" step="0.0005" value="0">
+    </div>
+    <div id="toggles">
+      <button class="tg" id="tCut">Cross-section <b style="font-weight:400;opacity:.6">C</b></button>
+      <button class="tg on" id="tCells">Cell walls <b style="font-weight:400;opacity:.6">E</b></button>
+      <button class="tg on" id="tLab">Labels <b style="font-weight:400;opacity:.6">L</b></button>
+      <button class="tg" id="tFlow">Blood vortex <b style="font-weight:400;opacity:.6">F</b></button>
+      <button class="tg on" id="tSpin">Auto-orbit <b style="font-weight:400;opacity:.6">R</b></button>
+      <span id="bpm"><b></b><span id="bpmN">65</span> bpm</span>
+    </div>
+  </div>
+
+  <button id="notesBtn">What&rsquo;s literal, what&rsquo;s idealized</button>
+  <div id="notes">
+    <button id="nClose" title="Close">×</button>
+    <h2>What&rsquo;s literal, what&rsquo;s idealized</h2>
+    <p>This page mixes two kinds of statement. They are kept separate on purpose.</p>
+
+    <h3><span class="cl">Literal</span> — standard human embryology</h3>
+    <ul>
+      <li><b>Embryo, not fetus.</b> Everything here happens in weeks 1–4. The fetal period
+          only starts at week 9, by which point the heart already has four chambers. The
+          torus and the heart both belong to the embryo.</li>
+      <li>The days, cell layers, and cavities: blastocyst at day 5–6; bilaminar disc at day 8–9;
+          primitive streak at day 15–16; notochordal process at day 16–17.</li>
+      <li>The <b>neurenteric canal</b> — a transient passage that briefly connects the amniotic
+          cavity to the yolk sac straight through the embryo around day 17–18. This is a real
+          through-hole, and it is the first time the embryo is topologically a torus.</li>
+      <li>The <b>cardiogenic crescent</b>: a horseshoe of splanchnic mesoderm at the cranial end
+          of the disc, in front of the future mouth, from about day 18.</li>
+      <li>Paired endocardial tubes fusing at the midline into one heart tube by day 21; first
+          contractions about day 22, making the heart the first organ to function; dextral
+          looping over days 23–28.</li>
+      <li>That head folding <b>carries the cardiogenic field around the cranial rim</b>, rotating it
+          nearly 180° so the heart ends up ventral and caudal to the mouth — in the chest.
+          The heart&rsquo;s final position is produced by the folding.</li>
+      <li>In a filled ventricle, inflow rolls up into a <b>toroidal vortex ring</b> — measured with
+          4D-flow MRI and echo particle-image velocimetry, not a metaphor.</li>
+      <li>The torus is <b>transient, then permanent</b>. The neurenteric canal seals within a day
+          or two, so the embryo spends weeks 3–8 as a bent tube with no hole at all. The mouth
+          opens ~day 24–26 and the anal membrane ~week 8; only then does one passage run clear
+          from end to end, and it stays that way for life.</li>
+    </ul>
+
+    <h3><span class="id">Idealized</span> — the shape morph itself</h3>
+    <ul>
+      <li>The smooth family <code>sphere → spindle torus → horn torus → ring torus</code> is a
+          <b>topological schematic</b>. It is the shortest continuous path from genus&nbsp;0 to
+          genus&nbsp;1, chosen here so the genus change is visible as one motion. A real embryo
+          reaches the same topology by an asymmetric route: invagination, then cephalocaudal and
+          lateral folding.</li>
+      <li>The embryo is not rotationally symmetric and never looks like a machined ring. Axis
+          assignments here are schematic.</li>
+      <li><b>How the ring opens here.</b> In the animation the hole disappears because the ring
+          is pinched off and pulled apart into a C-shaped tube. In the real embryo the hole
+          disappears because the neurenteric canal <i>seals</i> — a local closure, not a
+          global unzipping. Both end at genus 0; the route shown is the schematic one.</li>
+      <li>The C-shaped stage here is a tapered bent tube, not an anatomical embryo — no limb
+          buds, somites, pharyngeal arches or optic cups. Head and tail ends are marked only
+          to show that they never meet.</li>
+      <li>The <b>gut</b> is drawn as a plain cylinder on the body&rsquo;s centreline. A real gut tube
+          is regionalised into pharynx, foregut, midgut and hindgut, is slung on a mesentery,
+          and herniates into the umbilical cord before rotating back.</li>
+      <li>The final panel is a coda, not day 28. The vortex ring belongs to a filled,
+          four-chambered heart, long after looping. The embryonic tube pumps peristaltically
+          instead.</li>
+      <li>The ventricular muscle has been <i>described</i> as a single band wound helically
+          (Torrent-Guasp). It is a real and useful description, and still debated — treat it as
+          a model, not settled anatomy.</li>
+    </ul>
+
+    <h3>The honest version of the claim</h3>
+    <p>Not &ldquo;the torus creates the heart.&rdquo; Rather: the same folding that turns a closed
+       ball of cells into a body with a passage running through it is the folding that positions
+       and fuses the heart tube. The heart is built on the rim of that passage, and it arrives
+       there because of that fold. The topology and the organ have one shared cause.</p>
+    <p>The second half of the timeline is worth as much as the first. The embryo does
+       <i>not</i> stay a torus — the ring is a phase, and it passes. What survives it is the
+       loop the heart made while the ring was still there: the tube stays looped, the blood
+       turns in a closed ring, the muscle winds back on itself. The body borrows the form for
+       a few days and then hands it to the organ, which keeps it for a lifetime.</p>
+  </div>
+
+  <div id="hint">drag&nbsp;·&nbsp;orbit &nbsp; scroll&nbsp;·&nbsp;zoom<br>space&nbsp;·&nbsp;play &nbsp; ←→&nbsp;·&nbsp;step</div>
+  <div id="fail">This page needs WebGL, which this browser or device has turned off.</div>
+</div>
+
+<script>
+"use strict";
+/* ══════════════════════════════════════════════════════════════════════════
+   THE TOROIDAL EMBRYO
+   Self-contained WebGL. No external dependencies.
+
+   Body surface is one parametric family:
+       x = (R + r·cos v)·cos u
+       y = (R + r·cos v)·sin u
+       z =      r·sin v ·sq
+   R = 0    → sphere            (blastocyst: closed surface, genus 0)
+   0<R<r    → spindle torus     (invagination: a pit, not yet through)
+   R = r    → horn torus        (the instant the passage opens — genus changes)
+   R > r    → ring torus        (a passage runs clear through — genus 1)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const TAU = Math.PI * 2;
+const clamp = (x,a,b) => x<a?a:(x>b?b:x);
+const lerp  = (a,b,t) => a + (b-a)*t;
+const smooth= t => t*t*(3-2*t);
+
+/* ─────────────────────────── mat4 ─────────────────────────── */
+function m4perspective(fovy, aspect, near, far){
+  const f = 1/Math.tan(fovy/2), nf = 1/(near-far);
+  return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]);
+}
+function m4lookAt(eye, ctr, up){
+  let zx=eye[0]-ctr[0], zy=eye[1]-ctr[1], zz=eye[2]-ctr[2];
+  let l=Math.hypot(zx,zy,zz)||1; zx/=l; zy/=l; zz/=l;
+  let xx=up[1]*zz-up[2]*zy, xy=up[2]*zx-up[0]*zz, xz=up[0]*zy-up[1]*zx;
+  l=Math.hypot(xx,xy,xz)||1; xx/=l; xy/=l; xz/=l;
+  const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
+  return new Float32Array([
+    xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0,
+    -(xx*eye[0]+xy*eye[1]+xz*eye[2]),
+    -(yx*eye[0]+yy*eye[1]+yz*eye[2]),
+    -(zx*eye[0]+zy*eye[1]+zz*eye[2]), 1]);
+}
+function m4mul(a,b){
+  const o = new Float32Array(16);
+  for(let i=0;i<4;i++) for(let j=0;j<4;j++){
+    let s=0; for(let k=0;k<4;k++) s += a[k*4+j]*b[i*4+k];
+    o[i*4+j]=s;
+  }
+  return o;
+}
+/* world → screen pixels; returns null when behind the camera */
+function project(mvp, p, W, H){
+  const x=p[0],y=p[1],z=p[2];
+  const cw = mvp[3]*x + mvp[7]*y + mvp[11]*z + mvp[15];
+  if(cw <= 0.001) return null;
+  const cx = mvp[0]*x + mvp[4]*y + mvp[8]*z  + mvp[12];
+  const cy = mvp[1]*x + mvp[5]*y + mvp[9]*z  + mvp[13];
+  return [(cx/cw*0.5+0.5)*W, (1-(cy/cw*0.5+0.5))*H];
+}
+
+/* ─────────────────────────── stages ─────────────────────────── */
+/* p: R ring radius · sq flatten along z · bulge cranial thickening
+      streak/pit primitive-streak groove · cellU/cellV cell density
+      op body opacity · hp heart presence · fuse · loop · beat · flow
+      dist camera distance · look camera target blend toward heart      */
+const S = [
+{ day:'Day 5–6', name:'Blastocyst', sub:'≈120–250 cells',
+  topo:'sphere · genus 0 · one closed surface',
+  text:'A hollow ball. The first cavity — the blastocoel — has opened inside, so the embryo already has a definite inside and outside. But the surface is unbroken: no passage, no hole. Every path across it can be shrunk to a point.',
+  p:{R:0.00, sq:1.00, bulge:0.00, streak:0, pit:0, cellU:14, cellV:16, op:0.62, hp:0, fuse:0, loop:0, beat:0, flow:0, dist:5.2, look:0},
+  labs:[{a:'top', t:'Trophoblast', s:'outer cell layer', c:''},
+        {a:'in',  t:'Blastocoel', s:'first cavity', c:'teal'}] },
+
+{ day:'Day 8–9', name:'Bilaminar disc', sub:'epiblast + hypoblast',
+  topo:'oblate sphere · still genus 0',
+  text:'The inner cell mass sorts into two sheets and flattens into a plate. A cavity opens above it — the amniotic cavity — and the yolk sac hangs below. Two bubbles pressed against a two-layered disc. The surface is still closed.',
+  p:{R:0.00, sq:0.30, bulge:0.06, streak:0, pit:0, cellU:22, cellV:24, op:0.64, hp:0, fuse:0, loop:0, beat:0, flow:0, dist:5.0, look:0},
+  labs:[{a:'top', t:'Epiblast', s:'amniotic cavity above', c:''},
+        {a:'bot', t:'Hypoblast', s:'yolk sac below', c:''}] },
+
+{ day:'Day 15–16', name:'Gastrulation begins', sub:'primitive streak',
+  topo:'disc with a groove · genus 0',
+  text:'A furrow appears on the epiblast, running down the midline. Cells crowd toward it, dive through, and spread out underneath — laying down mesoderm and definitive endoderm. Two layers become three. This inward stream is the first fold.',
+  p:{R:0.07, sq:0.27, bulge:0.10, streak:1, pit:1, cellU:30, cellV:30, op:0.64, hp:0, fuse:0, loop:0, beat:0, flow:0, dist:5.1, look:0},
+  labs:[{a:'streak', t:'Primitive streak', s:'cells stream inward here', c:'gold'},
+        {a:'node',   t:'Primitive node', s:'cranial end of the streak', c:'gold'}] },
+
+{ day:'Day 16–17', name:'The fold drives inward', sub:'notochordal process',
+  topo:'spindle torus · hole forming, not yet through',
+  text:'The inward stream extends into a blind-ended tube — the notochordal process — pushing head-ward beneath the disc. Geometrically the embryo is now a spindle torus: the pit has real depth and the far side is dimpling to meet it, but nothing passes through yet.',
+  p:{R:0.56, sq:0.36, bulge:0.12, streak:0.70, pit:0.55, cellU:36, cellV:34, op:0.62, hp:0, fuse:0, loop:0, beat:0, flow:0, dist:5.5, look:0},
+  labs:[{a:'streak', t:'Notochordal process', s:'blind-ended, driving cranially', c:'gold'},
+        {a:'in',     t:'Not yet a hole', s:'two pits, still separated', c:'teal'}] },
+
+{ day:'Day 17–18', name:'It breaks through', sub:'neurenteric canal',
+  topo:'ring torus · genus 1 · a passage runs through',
+  text:'The two pits meet and open. For a short while the neurenteric canal runs clear through the embryo, joining the amniotic cavity to the yolk sac. Nothing was added and nothing was cut — a fold simply went deep enough. From this moment the form is a torus.',
+  p:{R:1.08, sq:0.54, bulge:0.12, streak:0.32, pit:0, cellU:42, cellV:38, op:0.56, hp:0, fuse:0, loop:0, beat:0, flow:0, dist:5.8, look:0},
+  labs:[{a:'hole', t:'Neurenteric canal', s:'amniotic cavity ↔ yolk sac', c:'gold'},
+        {a:'rim',  t:'The rim', s:'new inner surface', c:'teal'}] },
+
+{ day:'Day 18–19', name:'Heart cells take the rim', sub:'cardiogenic crescent',
+  topo:'ring torus · crescent on the inner rim',
+  text:'A horseshoe of splanchnic mesoderm appears at the cranial end of the disc, ahead of the future mouth — wrapped around the rim of the new passage. Inside it, two endocardial tubes hollow out side by side. The heart does not begin as a heart. It begins as a curve on a rim.',
+  p:{R:1.46, sq:0.72, bulge:0.14, streak:0.14, pit:0, cellU:48, cellV:40, op:0.36, hp:1, fuse:0, loop:0, beat:0, flow:0, dist:5.7, look:0.20},
+  labs:[{a:'heart', t:'Cardiogenic crescent', s:'two endocardial tubes', c:'heart'},
+        {a:'hole',  t:'The passage', s:'the crescent follows its rim', c:'gold'}] },
+
+{ day:'Day 20–21', name:'The tubes fuse', sub:'single heart tube',
+  topo:'ring torus · one tube on the rim',
+  text:'Lateral folding sweeps the two endocardial tubes toward the midline, where they meet and fuse into one. At the same time head folding carries the whole field around the rim, turning it almost 180° — so the heart, which started in front of the mouth, ends up beneath and behind it. In the chest.',
+  p:{R:1.63, sq:0.86, bulge:0.13, streak:0.05, pit:0, cellU:54, cellV:42, op:0.28, hp:1, fuse:1, loop:0, beat:0, flow:0, dist:5.4, look:0.42},
+  labs:[{a:'heart', t:'Heart tube', s:'fused at the midline', c:'heart'},
+        {a:'rim',   t:'Carried by the fold', s:'≈180° around the rim', c:'gold'}] },
+
+{ day:'Day 22', name:'First beat', sub:'≈65 bpm · first organ to function',
+  topo:'a tube on a torus, contracting',
+  text:'The tube begins to squeeze — a peristaltic wave running from inflow to outflow, the way a throat swallows. There are no chambers yet, no valves, no separate circulations. Nothing else in the body is working. This is the first function any human organ performs.',
+  p:{R:1.71, sq:0.92, bulge:0.12, streak:0, pit:0, cellU:58, cellV:44, op:0.24, hp:1, fuse:1, loop:0, beat:1, flow:0, dist:5.1, look:0.58},
+  labs:[{a:'heart', t:'Peristaltic wave', s:'inflow → outflow', c:'heart'}] },
+
+{ day:'Day 23–28', name:'Dextral looping', sub:'C-loop → S-loop',
+  topo:'the tube folds on itself',
+  text:'The straight tube bends to the right and folds back on itself, stacking what will become the chambers into the order they need to be in. The same instinct as before — grow, fold, meet — applied now to the tube instead of the disc. A tube becomes a pump.',
+  p:{R:1.75, sq:0.96, bulge:0.11, streak:0, pit:0, cellU:62, cellV:46, op:0.17, hp:1, fuse:1, loop:1, beat:1, flow:0, dist:5.0, look:0.70},
+  labs:[{a:'heart', t:'Looped heart tube', s:'chambers stacking', c:'heart'},
+        {a:'vent',  t:'Future ventricle', s:'outer curve of the loop', c:'heart'}] },
+
+{ day:'Day 26–30', name:'The ring pinches', sub:'the hole starts to close',
+  topo:'pinched ring · about to lose the hole',
+  text:'The neurenteric canal sealed days ago, and the embryo is now elongating rather than spreading. The far side of the ring narrows to a waist, then to a point. The passage the heart was built around is closing.',
+  p:{R:1.74, sq:0.96, bulge:0.14, cellU:62, cellV:46, op:0.24, hp:1, fuse:1, loop:1, beat:1,
+     arc:0.995, cs:0.52, tube:0.88, dist:5.2, look:0.62},
+  labs:[{a:'tail',  t:'Narrowing to a point', s:'the ring is pinching off', c:'gold'},
+        {a:'heart', t:'The heart keeps looping', s:'it does not un-loop', c:'heart'}] },
+
+{ day:'Week 5–6', name:'No longer a torus', sub:'genus 1 → genus 0',
+  topo:'open C-tube · no hole at all',
+  text:'The ends come apart. What is left is a tapered tube curled into a C — a head at one end, a tail at the other, and they never meet. Topologically the embryo is a simple closed surface again. The body has let the torus go. The heart has not.',
+  p:{R:1.72, sq:0.98, bulge:0.10, cellU:64, cellV:48, op:0.22, hp:1, fuse:1, loop:1, beat:1,
+     arc:0.62, cs:1, tube:0.62, dist:5.4, look:0.55},
+  labs:[{a:'head',  t:'Head end', s:'free', c:'gold'},
+        {a:'tail',  t:'Tail end', s:'never meets the head', c:'gold'},
+        {a:'heart', t:'Heart tube', s:'still a loop', c:'heart'}] },
+
+{ day:'Week 8', name:'The torus returns — for life', sub:'gut open at both ends',
+  topo:'bent tube, through-passage · genus 1 again',
+  text:'The mouth opened when the oropharyngeal membrane broke down around day 24–26; the anal membrane goes at about week 8. With both ends open, one passage runs from mouth to anus straight through the body. From here on the human form is toroidal permanently — the ring closed by the gut rather than by the skin.',
+  p:{R:1.72, sq:0.98, bulge:0.10, cellU:64, cellV:48, op:0.15, hp:1, fuse:1, loop:1, beat:1,
+     arc:0.62, cs:1, tube:0.62, gut:1, dist:5.6, look:0.45},
+  labs:[{a:'gutHead', t:'Mouth', s:'oropharyngeal membrane, ~day 24–26', c:'teal'},
+        {a:'gutTail', t:'Anus', s:'anal membrane, ~week 8', c:'teal'},
+        {a:'gut',     t:'One passage, straight through', s:'genus 1, permanently', c:'teal'}] },
+
+{ day:'The pump', name:'The heart’s own torus', sub:'coda · vortex ring + helical winding', coda:true,
+  topo:'a torus of moving blood inside a wound loop',
+  text:'Close in on the heart. Blood entering the filled ventricle rolls up on itself into a closed vortex ring — a torus of moving fluid, measured with 4D-flow MRI. The muscle around it has been modelled as a single band wound helically, entering and leaving as one loop. The fold that first opened a hole in a ball of cells is still the shape doing the work.',
+  p:{R:1.72, sq:0.98, bulge:0.10, cellU:64, cellV:48, op:0.05, hp:1, fuse:1, loop:1, beat:1,
+     arc:0.62, cs:1, tube:0.62, flow:1, band:1, dist:2.7, look:1.0},
+  labs:[{a:'vort', t:'Vortex ring', s:'a torus of moving blood', c:'teal'},
+        {a:'band', t:'Helical winding', s:'a model, not settled anatomy', c:'heart'}] }
+];
+const NS = S.length;
+
+/* interpolate the whole parameter set at fractional stage t.
+   DEF holds a default for every key, so a stage only lists what it changes —
+   and a key added later can't silently vanish from stages that predate it.   */
+const DEF = {R:0, sq:1, bulge:0, streak:0, pit:0, cellU:40, cellV:40, op:0.5,
+             hp:0, fuse:0, loop:0, beat:0, flow:0, dist:5, look:0,
+             arc:1, cs:0, tube:1, gut:0, band:0};
+const P = {r:1.0};
+function evalParams(t){
+  const i = clamp(Math.floor(t), 0, NS-1), j = Math.min(i+1, NS-1);
+  const f = smooth(clamp(t-i, 0, 1));
+  const a = S[i].p, b = S[j].p;
+  for(const k in DEF){
+    const av = a[k] !== undefined ? a[k] : DEF[k];
+    const bv = b[k] !== undefined ? b[k] : DEF[k];
+    P[k] = lerp(av, bv, f);
+  }
+  P.r = 1.0;
+  /* Sweep v only over the part of the profile circle that lies off the axis:
+     v ∈ [-vspan, vspan] with cos(vspan) = -R/r.  R=0 → vspan=π/2, a half-circle,
+     so revolving it gives the sphere exactly once — no double cover, no z-fight.
+     R→r → vspan→π, the two axis apexes meet.  R≥r → vspan=π, the full ring.     */
+  const vm = Math.acos(clamp(-P.R/(P.r*P.tube), -1, 1));
+  P.vspan = vm >= Math.PI - 1e-4 ? Math.PI : vm*0.9985;   // nudge off the cone apex
+  return P;
+}
+
+/* ─────────────────────── surface + normals ─────────────────────── */
+const NU = 168, NV = 84;                 // quads around ring / around tube
+const GU = NU+1, GV = NV+1;              // duplicated seam for clean UVs
+const VCOUNT = GU*GV;
+const gPos = new Float32Array(VCOUNT*3);
+const gNor = new Float32Array(VCOUNT*3);
+const gUV  = new Float32Array(VCOUNT*2);
+const gIdx = new Uint16Array(NU*NV*6);   // max index 14364 — fits, so no uint-index ext
+{ let k=0;
+  for(let i=0;i<NU;i++) for(let j=0;j<NV;j++){
+    const a=i*GV+j, b=(i+1)*GV+j, c=(i+1)*GV+j+1, d=i*GV+j+1;
+    gIdx[k++]=a; gIdx[k++]=b; gIdx[k++]=c;
+    gIdx[k++]=a; gIdx[k++]=c; gIdx[k++]=d;
+  }
+  for(let i=0;i<GU;i++) for(let j=0;j<GV;j++){
+    const o=(i*GV+j)*2; gUV[o]=i/NU; gUV[o+1]=j/NV;
+  }
+}
+function wrapPi(a){ a = (a+Math.PI)%TAU; if(a<0) a+=TAU; return a-Math.PI; }
+
+function surf(u, v, p, out){
+  const cu=Math.cos(u), su=Math.sin(u), cv=Math.cos(v), sv=Math.sin(v);
+  /* s ∈ [0,1] runs head → tail along the swept arc */
+  const s = u/(TAU*p.arc) + 0.5;
+  /* cs opens the ring: taper pinches both ends of the arc to a point, and the
+     head-to-tail gradient makes one end fat and the other thin, so what is left
+     once `arc` pulls the ends apart reads as a curled body rather than a donut. */
+  const pin = Math.min(1, p.cs*2.2);
+  const taper = pin < 0.002 ? 1
+    : lerp(1, Math.pow(Math.max(Math.sin(Math.PI*s), 1e-4), 0.45), pin);
+  const rr  = p.r*p.tube*(1 + p.bulge*cu)*(1 + 0.42*p.cs*(1 - 2*s))*taper;
+  const rad = p.R + rr*cv;
+  out[0] = rad*cu; out[1] = rad*su; out[2] = rr*sv*p.sq;
+  if(p.streak > 0.002){
+    /* v > 0 is the epiblast face; the groove is a line across it at u ≈ 0 */
+    const du = wrapPi(u);
+    const wu = Math.exp(-(du*du)/0.0512);              // σ≈0.16 — a line, not a ring
+    const wv = Math.max(0, sv);                        // nothing at the outer equator
+    out[2] -= p.streak*0.30*wu*wv*p.r;
+    if(p.pit > 0.002){
+      const dv = v - Math.min(p.vspan, Math.PI/2);     // node at the face centre
+      out[2] -= p.pit*0.36*Math.exp(-(du*du)/0.0338 - (dv*dv)/0.18)*p.r;
+    }
+  }
+}
+const _a=[0,0,0], _b=[0,0,0], _c=[0,0,0], _d=[0,0,0];
+function buildBody(p){
+  const span = p.vspan;
+  const h = TAU*p.arc/NU*0.7, g = span*2/NV*0.7;
+  for(let i=0;i<GU;i++){
+    const u = (i/NU - 0.5)*TAU*p.arc;      // arc<1 leaves a gap: no hole, genus 0
+    for(let j=0;j<GV;j++){
+      const v = (j/NV*2 - 1)*span, o=(i*GV+j)*3;
+      surf(u, v, p, _a);
+      gPos[o]=_a[0]; gPos[o+1]=_a[1]; gPos[o+2]=_a[2];
+      /* central differences on the analytic surface — cos/sin make v continue safely */
+      surf(u+h, v, p, _b); surf(u-h, v, p, _c);
+      const tu0=_b[0]-_c[0], tu1=_b[1]-_c[1], tu2=_b[2]-_c[2];
+      surf(u, v+g, p, _b); surf(u, v-g, p, _d);
+      const tv0=_b[0]-_d[0], tv1=_b[1]-_d[1], tv2=_b[2]-_d[2];
+      let nx = tu1*tv2 - tu2*tv1,
+          ny = tu2*tv0 - tu0*tv2,
+          nz = tu0*tv1 - tu1*tv0;
+      const L = Math.hypot(nx,ny,nz);
+      if(L > 1e-9){ nx/=L; ny/=L; nz/=L; } else { nx=0; ny=0; nz=1; }
+      gNor[o]=nx; gNor[o+1]=ny; gNor[o+2]=nz;
+    }
+  }
+}
+
+/* ─────────────────────── heart tube geometry ─────────────────────── */
+const HS = 96, HA = 22;                       // spine samples / ring segments
+const HVC = HS*(HA+1);
+const hPos = new Float32Array(HVC*3);
+const hNor = new Float32Array(HVC*3);
+const hUV  = new Float32Array(HVC*2);
+const hIdx = new Uint16Array((HS-1)*HA*6);
+{ let k=0;
+  for(let i=0;i<HS-1;i++) for(let j=0;j<HA;j++){
+    const a=i*(HA+1)+j, b=(i+1)*(HA+1)+j, c=(i+1)*(HA+1)+j+1, d=i*(HA+1)+j+1;
+    hIdx[k++]=a; hIdx[k++]=b; hIdx[k++]=c;
+    hIdx[k++]=a; hIdx[k++]=c; hIdx[k++]=d;
+  }
+  for(let i=0;i<HS;i++) for(let j=0;j<=HA;j++){
+    const o=(i*(HA+1)+j)*2; hUV[o]=i/(HS-1)*7; hUV[o+1]=j/HA;
+  }
+}
+/* spine of the heart tube, hugging the inner rim of the torus.
+   side: -1 / +1 for the two pre-fusion endocardial tubes, 0 for the fused tube */
+function heartSpine(s, p, side, phase, out){
+  const half = lerp(1.24, lerp(0.80, 0.58, p.loop), p.fuse);
+  /* as the ring opens into a C, slide the heart up toward the head end */
+  const uc = lerp(0, -Math.PI*p.arc + 0.66, p.cs);
+  const u  = uc + lerp(-half, half, s);
+  const zo = side * 0.34*(1-p.fuse)*Math.max(0.35, p.sq);
+  let radial = p.R - p.r*p.tube*0.58;
+  let z = 0.20*p.sq + zo;
+  if(p.loop > 0.002){                            // dextral loop: C then S
+    const L = p.loop, w = Math.sin(Math.PI*s);
+    radial += L*0.46*w;                          // ventral bulge
+    z      += L*(0.52*w + 0.26*Math.sin(TAU*s));
+  }
+  out[0] = radial*Math.cos(u); out[1] = radial*Math.sin(u); out[2] = z;
+}
+function heartRadius(s, p, phase){
+  let rr = lerp(0.125, 0.165, p.fuse);
+  if(p.loop > 0.002){                            // thin inflow, fat ventricle
+    const g = Math.exp(-Math.pow((s-0.56)/0.24, 2));
+    rr *= 1 + p.loop*(0.85*g - 0.22*(1-g));
+  }
+  if(p.beat > 0.002){
+    if(p.loop < 0.5)                             // travelling peristaltic wave
+      rr *= 1 + 0.17*p.beat*(1-p.loop)*Math.sin(TAU*(s*1.4 - phase));
+    rr *= 1 + 0.11*p.beat*p.loop*(beatEnv(phase) - 0.35);
+  }
+  return rr;
+}
+function beatEnv(ph){                            // systole spike + smaller echo
+  ph = ph - Math.floor(ph);
+  return Math.exp(-Math.pow((ph-0.14)/0.058,2)) + 0.42*Math.exp(-Math.pow((ph-0.33)/0.080,2));
+}
+const _s0=[0,0,0], _s1=[0,0,0], _sp=[];
+for(let i=0;i<HS;i++) _sp.push([0,0,0]);
+/* Sweep a tube of radius radFn(s) along spineFn(s) with parallel-transported
+   frames (no Frenet flips). Shared by the heart, the gut, the vortex-ring
+   envelope and the muscle band — they differ only in those two callbacks.   */
+function sweepTube(spineFn, radFn){
+  for(let i=0;i<HS;i++) spineFn(i/(HS-1), _sp[i]);
+  let nx=0, ny=0, nz=1;                          // seed frame normal
+  for(let i=0;i<HS;i++){
+    const a = _sp[Math.max(i-1,0)], b = _sp[Math.min(i+1,HS-1)];
+    let tx=b[0]-a[0], ty=b[1]-a[1], tz=b[2]-a[2];
+    let L=Math.hypot(tx,ty,tz)||1; tx/=L; ty/=L; tz/=L;
+    const dot = nx*tx + ny*ty + nz*tz;           // re-project onto ⟂ plane
+    nx -= dot*tx; ny -= dot*ty; nz -= dot*tz;
+    L = Math.hypot(nx,ny,nz);
+    if(L < 1e-6){ nx = -ty; ny = tx; nz = 0; L = Math.hypot(nx,ny,nz)||1; }
+    nx/=L; ny/=L; nz/=L;
+    const bx = ty*nz-tz*ny, by = tz*nx-tx*nz, bz = tx*ny-ty*nx;
+    const rr = radFn(i/(HS-1));
+    const c  = _sp[i];
+    for(let j=0;j<=HA;j++){
+      const ang=j/HA*TAU, ca=Math.cos(ang), sa=Math.sin(ang);
+      const ex=nx*ca+bx*sa, ey=ny*ca+by*sa, ez=nz*ca+bz*sa;
+      const o=(i*(HA+1)+j)*3;
+      hPos[o]=c[0]+ex*rr; hPos[o+1]=c[1]+ey*rr; hPos[o+2]=c[2]+ez*rr;
+      hNor[o]=ex; hNor[o+1]=ey; hNor[o+2]=ez;
+    }
+  }
+}
+function buildHeart(p, side, phase){
+  sweepTube((s,o) => heartSpine(s, p, side, phase, o),
+            s     => heartRadius(s, p, phase));
+}
+
+/* ── the gut: one passage running the length of the body, open at both ends ── */
+function gutSpine(s, p, out){
+  const u = (s - 0.5)*TAU*p.arc*1.15;            // protrudes past both pinched tips
+  out[0] = p.R*Math.cos(u); out[1] = p.R*Math.sin(u); out[2] = 0;
+}
+function buildGut(p){
+  sweepTube((s,o) => gutSpine(s, p, o), () => 0.30*p.r*p.tube);
+}
+
+/* ── vortex ring: centre, axis, and an in-plane basis, taken from the tube ── */
+const _vc=[0,0,0], _vt=[0,0,0], _va=[0,0,0], _vb=[0,0,0];
+function vortexFrame(p, phase){
+  heartSpine(0.50, p, 0, phase, _s0);
+  heartSpine(0.62, p, 0, phase, _s1);
+  let tx=_s1[0]-_s0[0], ty=_s1[1]-_s0[1], tz=_s1[2]-_s0[2];
+  let L=Math.hypot(tx,ty,tz)||1;
+  _vt[0]=tx/L; _vt[1]=ty/L; _vt[2]=tz/L;
+  let ax=-_vt[1], ay=_vt[0], az=0;
+  L=Math.hypot(ax,ay,az); if(L < 1e-5){ ax=1; ay=0; az=0; L=1; }
+  _va[0]=ax/L; _va[1]=ay/L; _va[2]=az/L;
+  _vb[0]=_vt[1]*_va[2]-_vt[2]*_va[1];
+  _vb[1]=_vt[2]*_va[0]-_vt[0]*_va[2];
+  _vb[2]=_vt[0]*_va[1]-_vt[1]*_va[0];
+  heartSpine(0.56, p, 0, phase, _vc);            // ring sits in the ventricle
+}
+const VR = 0.150, VCORE = 0.058;                 // ring radius, core radius
+function ringPoint(s, out){
+  const th = s*TAU, ct=Math.cos(th), st=Math.sin(th);
+  out[0] = _vc[0] + (_va[0]*ct + _vb[0]*st)*VR;
+  out[1] = _vc[1] + (_va[1]*ct + _vb[1]*st)*VR;
+  out[2] = _vc[2] + (_va[2]*ct + _vb[2]*st)*VR;
+}
+/* the ring's own envelope, drawn as a translucent torus so its shape is plain */
+function buildVortexEnvelope(p, phase){
+  vortexFrame(p, phase);
+  sweepTube(ringPoint, () => VCORE);
+}
+
+/* ── helical muscle band wound round the ventricle (Torrent-Guasp model) ── */
+function bandPoint(s, p, phase, out){
+  const ss = lerp(0.24, 0.88, s);
+  heartSpine(ss, p, 0, phase, _s0);
+  heartSpine(Math.min(ss + 0.02, 1), p, 0, phase, _s1);
+  let tx=_s1[0]-_s0[0], ty=_s1[1]-_s0[1], tz=_s1[2]-_s0[2];
+  let L=Math.hypot(tx,ty,tz)||1; tx/=L; ty/=L; tz/=L;
+  let ax=-ty, ay=tx, az=0;
+  L=Math.hypot(ax,ay,az); if(L < 1e-5){ ax=1; ay=0; az=0; L=1; }
+  ax/=L; ay/=L; az/=L;
+  const bx=ty*az-tz*ay, by=tz*ax-tx*az, bz=tx*ay-ty*ax;
+  const w = heartRadius(ss, p, phase) + 0.038;
+  const ang = s*TAU*2.35, ca=Math.cos(ang), sa=Math.sin(ang);
+  out[0]=_s0[0]+(ax*ca+bx*sa)*w;
+  out[1]=_s0[1]+(ay*ca+by*sa)*w;
+  out[2]=_s0[2]+(az*ca+bz*sa)*w;
+}
+function buildBand(p, phase){
+  sweepTube((s,o) => bandPoint(s, p, phase, o), () => 0.030);
+}
+
+/* ─────────────────────── vortex-ring particles ─────────────────────── */
+const NP = 2400;
+const pSeed = new Float32Array(NP*3);            // ring angle · core angle · radius jitter
+for(let i=0;i<NP;i++){
+  pSeed[i*3]   = Math.random()*TAU;
+  pSeed[i*3+1] = Math.random()*TAU;
+  pSeed[i*3+2] = 0.55 + Math.random()*0.85;
+}
+const pPos = new Float32Array(NP*3);
+const pAtt = new Float32Array(NP*2);             // size · brightness
+function buildFlow(p, time, phase){
+  vortexFrame(p, phase);
+  const spin = time*1.5 + beatEnv(phase)*0.9;
+  for(let i=0;i<NP;i++){
+    const th = pSeed[i*3]   + time*0.18;               // slow drift around the ring
+    const ph = pSeed[i*3+1] + spin;                    // roll through the core
+    const jr = pSeed[i*3+2];
+    const cr = VR + VCORE*jr*Math.cos(ph);             // ring-local radius
+    const h  =      VCORE*jr*Math.sin(ph);             // along the ring axis
+    const ct=Math.cos(th), st=Math.sin(th);
+    const o=i*3;
+    pPos[o]   = _vc[0] + (_va[0]*ct + _vb[0]*st)*cr + _vt[0]*h;
+    pPos[o+1] = _vc[1] + (_va[1]*ct + _vb[1]*st)*cr + _vt[1]*h;
+    pPos[o+2] = _vc[2] + (_va[2]*ct + _vb[2]*st)*cr + _vt[2]*h;
+    pAtt[i*2]   = 1.5 + 2.2*(1 - jr*0.6);
+    pAtt[i*2+1] = 0.40 + 0.60*(0.5 + 0.5*Math.sin(ph));
+  }
+}
+
+/* ─────────────────────── GL boot ─────────────────────── */
+/* NOTE: the actual boot call lives at the very bottom of this script — every
+   const it depends on (shader sources especially) must be initialised first. */
+const cv = document.getElementById('gl');
+const gl = cv.getContext('webgl2', {antialias:true, alpha:false, premultipliedAlpha:false})
+        || cv.getContext('webgl',  {antialias:true, alpha:false, premultipliedAlpha:false});
+
+function sh(type, src){
+  const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)+'\n'+src);
+  return s;
+}
+function prog(vs, fs){
+  const p=gl.createProgram();
+  gl.attachShader(p, sh(gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const o={p, u:{}, a:{}};
+  const nu=gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for(let i=0;i<nu;i++){ const n=gl.getActiveUniform(p,i).name.replace(/\[0\]$/,''); o.u[n]=gl.getUniformLocation(p,n); }
+  const na=gl.getProgramParameter(p, gl.ACTIVE_ATTRIBUTES);
+  for(let i=0;i<na;i++){ const n=gl.getActiveAttrib(p,i).name; o.a[n]=gl.getAttribLocation(p,n); }
+  return o;
+}
+
+/* ── surface shader ── */
+const V_SURF = `
+attribute vec3 aPos; attribute vec3 aNor; attribute vec2 aUV;
+uniform mat4 uProj, uView;
+varying vec3 vP, vN; varying vec2 vUV;
+void main(){ vP=aPos; vN=aNor; vUV=aUV; gl_Position = uProj*uView*vec4(aPos,1.0); }`;
+
+const F_SURF = `
+precision highp float;
+varying vec3 vP, vN; varying vec2 vUV;
+uniform vec3  uCam, uColA, uColB, uEmisC, uCutN;
+uniform vec2  uCell;
+uniform float uOpacity, uCellMix, uEmis, uRim, uSpec, uCutOn, uCutD, uInner, uGlow;
+
+vec2 hash2(vec2 p){
+  p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3)));
+  return fract(sin(p)*43758.5453123);
+}
+/* periodic F2-F1 voronoi — cell walls, wraps seamlessly on integer uCell */
+vec2 cellF(vec2 uv, vec2 sc){
+  vec2 p = uv*sc, i = floor(p), f = p - i;
+  float d1 = 8.0, d2 = 8.0;
+  for(int y=-1; y<=1; y++){
+    for(int x=-1; x<=1; x++){
+      vec2 g = vec2(float(x), float(y));
+      vec2 o = hash2(mod(i+g, sc));
+      float d = length(g + o - f);
+      if(d < d1){ d2 = d1; d1 = d; } else if(d < d2){ d2 = d; }
+    }
+  }
+  return vec2(d2 - d1, d1);
+}
+void main(){
+  /* cut away the half nearest the camera, so orbiting always shows the interior */
+  if(uCutOn > 0.5 && dot(vP, uCutN) > uCutD) discard;
+  vec3 N = normalize(vN);
+  bool front = gl_FrontFacing;
+  if(!front) N = -N;
+  vec3 V  = normalize(uCam - vP);
+  vec3 L1 = normalize(vec3(-0.42, 0.66, 0.86));
+  vec3 L2 = normalize(vec3( 0.72,-0.30, 0.28));
+  float d1 = max(dot(N,L1), 0.0), d2 = max(dot(N,L2), 0.0);
+  float fres = pow(1.0 - max(dot(N,V), 0.0), 2.5);
+
+  vec3 base = mix(uColA, uColB, clamp(0.5 + 0.55*N.z, 0.0, 1.0));
+  if(uCellMix > 0.003){
+    vec2 c = cellF(vUV, uCell);
+    float wall = 1.0 - smoothstep(0.008, 0.070, c.x);
+    float nuc  = 1.0 - smoothstep(0.055, 0.150, c.y);
+    base = mix(base, base*0.34, wall*uCellMix);
+    base = mix(base, base*1.55 + vec3(0.05,0.03,0.07), nuc*uCellMix*0.45);
+  }
+  vec3 col = base*(0.26 + 0.92*d1 + 0.30*d2);
+  col += vec3(1.0,0.95,0.88)*pow(max(dot(reflect(-L1,N),V),0.0), 40.0)*uSpec;
+  col += mix(uColB, vec3(0.72,0.84,1.0), 0.45)*fres*uRim;
+  col += uEmisC*uEmis;
+  if(!front) col *= uInner;
+
+  float a = clamp(uOpacity*(1.0 + fres*0.80) + uGlow*fres, 0.0, 1.0);
+  gl_FragColor = vec4(col, a);
+}`;
+
+/* ── background gradient ── */
+const V_BG = `attribute vec2 aP; varying vec2 vT;
+void main(){ vT = aP*0.5+0.5; gl_Position = vec4(aP,0.999,1.0); }`;
+const F_BG = `precision highp float; varying vec2 vT; uniform float uAsp, uWarm;
+void main(){
+  vec2 q = (vT - vec2(0.52,0.56)); q.x *= uAsp;
+  float d = length(q);
+  vec3 c = mix(vec3(0.075,0.085,0.130), vec3(0.026,0.030,0.052), smoothstep(0.06,0.95,d));
+  c += vec3(0.13,0.05,0.07)*uWarm*(1.0 - smoothstep(0.0,0.62,d));
+  c += vec3(0.020,0.026,0.048)*(1.0 - smoothstep(0.0,0.30,d));
+  gl_FragColor = vec4(c,1.0);
+}`;
+
+/* ── particles ── */
+const V_PT = `attribute vec3 aPos; attribute vec2 aAtt;
+uniform mat4 uProj, uView; uniform float uDpr;
+varying float vB;
+void main(){
+  vec4 mv = uView*vec4(aPos,1.0);
+  gl_Position = uProj*mv;
+  gl_PointSize = aAtt.x*uDpr*7.0/max(-mv.z, 0.4);
+  vB = aAtt.y;
+}`;
+const F_PT = `precision highp float; varying float vB; uniform float uAmt; uniform vec3 uC;
+void main(){
+  vec2 d = gl_PointCoord - 0.5;
+  float r = length(d);
+  if(r > 0.5) discard;
+  float a = pow(1.0 - r*2.0, 1.9)*vB*uAmt;
+  gl_FragColor = vec4(uC*(0.55 + 0.9*vB), a);
+}`;
+
+/* ─────────────────────── main ─────────────────────── */
+function main(){
+  const pSurf = prog(V_SURF, F_SURF), pBg = prog(V_BG, F_BG), pPt = prog(V_PT, F_PT);
+
+  function buf(data, usage){
+    const b=gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, data, usage||gl.DYNAMIC_DRAW);
+    return b;
+  }
+  function ibuf(data){
+    const b=gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    return b;
+  }
+  const B = {
+    bPos:buf(gPos), bNor:buf(gNor), bUV:buf(gUV, gl.STATIC_DRAW), bIdx:ibuf(gIdx),
+    hPos:buf(hPos), hNor:buf(hNor), hUV:buf(hUV, gl.STATIC_DRAW), hIdx:ibuf(hIdx),
+    pPos:buf(pPos), pAtt:buf(pAtt),
+    quad:buf(new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW)
+  };
+  function bindAttr(pr, name, b, n){
+    const loc = pr.a[name]; if(loc === undefined || loc < 0) return;
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, n, gl.FLOAT, false, 0, 0);
+  }
+  function upload(b, data){
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
+  }
+
+  /* ── view state ── */
+  const cam = {az:-0.62, el:0.44, zoom:1, tx:0, ty:0, tz:0};
+  let W=1, H=1, dpr=1;
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+    const svg = document.getElementById('leaders');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('width', W); svg.setAttribute('height', H);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* drag / wheel / touch */
+  let drag=null;
+  cv.addEventListener('pointerdown', e => {
+    drag = {x:e.clientX, y:e.clientY, az:cam.az, el:cam.el};
+    cv.setPointerCapture(e.pointerId); UI.spin = false; syncTg();
+  });
+  cv.addEventListener('pointermove', e => {
+    if(!drag) return;
+    cam.az = drag.az + (e.clientX-drag.x)*0.0068;
+    cam.el = clamp(drag.el + (e.clientY-drag.y)*0.0062, -1.45, 1.45);
+  });
+  const endDrag = () => { drag = null; };
+  cv.addEventListener('pointerup', endDrag);
+  cv.addEventListener('pointercancel', endDrag);
+  cv.addEventListener('wheel', e => {
+    e.preventDefault();
+    cam.zoom = clamp(cam.zoom * Math.exp(e.deltaY*0.0011), 0.42, 3.0);
+  }, {passive:false});
+
+  /* ── UI ── */
+  const UI = {t:0, playing:false, dwell:0, cut:false, cells:true, labels:true, flow:false, spin:true};
+  const el = id => document.getElementById(id);
+  const scrub = el('scrub');
+  scrub.max = NS - 1;          // driven by the stage list, never hard-coded
+
+  /* deep-link:  #t=6  jumps to a stage,  &cut=1 &flow=1 &spin=0  set toggles */
+  {
+    const q = location.hash.slice(1) + '&' + location.search.slice(1);
+    const get = k => { const m = new RegExp('(?:^|&)'+k+'=(-?[\\d.]+)').exec(q); return m ? +m[1] : null; };
+    const t = get('t');   if(t !== null && isFinite(t)) UI.t = clamp(t, 0, NS-1);
+    const c = get('cut'); if(c !== null) UI.cut  = !!c;
+    const f = get('flow');if(f !== null) UI.flow = !!f;
+    const s = get('spin');if(s !== null) UI.spin = !!s;
+    const a = get('az');  if(a !== null) cam.az  = a;
+  }
+
+  const ticksBox = el('ticks');
+  S.forEach((s,i) => {
+    const b = document.createElement('button');
+    b.className = 'tick' + (s.coda ? ' coda' : '');
+    b.style.left = (i/(NS-1)*100) + '%';
+    b.innerHTML = `<b>${s.day}</b><s></s>`;
+    b.title = s.name;
+    b.onclick = () => goto(i);
+    ticksBox.appendChild(b);
+  });
+  const tickEls = [...ticksBox.children];
+
+  function goto(i){ UI.t = clamp(i,0,NS-1); UI.playing = false; UI.dwell = 0; syncPlay(); refresh(); }
+  function syncPlay(){ el('play').textContent = UI.playing ? '❚❚' : '▶'; }
+  function syncTg(){
+    el('tCut').classList.toggle('on', UI.cut);
+    el('tCells').classList.toggle('on', UI.cells);
+    el('tLab').classList.toggle('on', UI.labels);
+    el('tFlow').classList.toggle('on', UI.flow);
+    el('tSpin').classList.toggle('on', UI.spin);
+  }
+  el('play').onclick = () => {
+    if(!UI.playing && UI.t >= NS-1-1e-4) UI.t = 0;
+    UI.playing = !UI.playing; UI.dwell = 0; syncPlay();
+  };
+  el('prev').onclick = () => goto(Math.ceil(UI.t - 1.0001));
+  el('next').onclick = () => goto(Math.floor(UI.t + 1.0001));
+  scrub.oninput = () => { UI.t = +scrub.value; UI.playing = false; UI.dwell = 0; syncPlay(); refresh(); };
+  el('tCut').onclick   = () => { UI.cut   = !UI.cut;   syncTg(); };
+  el('tCells').onclick = () => { UI.cells = !UI.cells; syncTg(); };
+  el('tLab').onclick   = () => { UI.labels= !UI.labels; syncTg(); refresh(); };
+  el('tFlow').onclick  = () => { UI.flow  = !UI.flow;  syncTg(); };
+  el('tSpin').onclick  = () => { UI.spin  = !UI.spin;  syncTg(); };
+  el('notesBtn').onclick = () => { el('notes').classList.add('on'); el('notesBtn').style.display='none'; };
+  el('nClose').onclick   = () => { el('notes').classList.remove('on'); el('notesBtn').style.display=''; };
+  window.addEventListener('keydown', e => {
+    if(e.target.tagName === 'INPUT' && e.key !== 'Escape') return;
+    const k = e.key.toLowerCase();
+    if(e.code === 'Space'){ e.preventDefault(); el('play').click(); }
+    else if(e.key === 'ArrowRight'){ e.preventDefault(); el('next').click(); }
+    else if(e.key === 'ArrowLeft'){ e.preventDefault(); el('prev').click(); }
+    else if(k === 'c') el('tCut').click();
+    else if(k === 'e') el('tCells').click();
+    else if(k === 'l') el('tLab').click();
+    else if(k === 'f') el('tFlow').click();
+    else if(k === 'r') el('tSpin').click();
+    else if(e.key === 'Escape') el('nClose').click();
+  });
+
+  /* stage text */
+  let shownStage = -1;
+  function refresh(){
+    const i = clamp(Math.round(UI.t - 0.30), 0, NS-1);
+    el('pProgFill').style.width = (UI.t/(NS-1)*100) + '%';
+    scrub.value = UI.t;
+    tickEls.forEach((t,k) => t.classList.toggle('act', k === i));
+    if(i === shownStage) return;
+    shownStage = i;
+    const s = S[i];
+    el('pDay').textContent  = s.day;
+    el('pName').textContent = s.name;
+    el('pSub').textContent  = s.sub;
+    el('pText').textContent = s.text;
+    el('pTopo').textContent = s.topo;
+    buildLabels(s);
+  }
+
+  /* ── labels ── */
+  const labBox = el('labels'), svg = el('leaders');
+  let labs = [];
+  const OFFSETS = [[132,-70],[-142,66],[148,74],[-136,-78],[0,-116]];
+  function buildLabels(s){
+    labBox.innerHTML = ''; svg.innerHTML = ''; labs = [];
+    (s.labs||[]).forEach((L,k) => {
+      const d = document.createElement('div');
+      d.className = 'lab' + (L.c ? ' '+L.c : '');
+      d.innerHTML = `<b>${L.t}</b><i>${L.s}</i>`;
+      labBox.appendChild(d);
+      const ln = document.createElementNS('http://www.w3.org/2000/svg','path');
+      ln.setAttribute('fill','none'); ln.setAttribute('stroke-width','1');
+      ln.setAttribute('stroke', L.c === 'heart' ? 'rgba(255,92,114,.55)'
+                             : L.c === 'gold'  ? 'rgba(232,183,90,.55)'
+                             : L.c === 'teal'  ? 'rgba(84,214,196,.50)'
+                             : 'rgba(150,165,200,.40)');
+      svg.appendChild(ln);
+      const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('r','2.4');
+      dot.setAttribute('fill', ln.getAttribute('stroke').replace(/[\d.]+\)$/,'.95)'));
+      svg.appendChild(dot);
+      labs.push({def:L, div:d, line:ln, dot, off:OFFSETS[k % OFFSETS.length]});
+    });
+  }
+  const _anc = [0,0,0];
+  function anchorPoint(kind, p, phase, out){
+    const fc = Math.min(p.vspan, Math.PI*0.5);      // centre of the epiblast face
+    switch(kind){
+      case 'top':   surf(0, fc*0.95, p, out); break;
+      case 'bot':   surf(Math.PI, -fc*0.95, p, out); break;
+      case 'in':    out[0]=0; out[1]=0; out[2]=0; break;
+      case 'hole':  out[0]=0; out[1]=0; out[2]=0; break;
+      case 'streak':surf(0.34, fc*0.72, p, out); break;
+      case 'node':  surf(0, fc*0.92, p, out); break;
+      case 'rim':   surf(-0.9, p.vspan, p, out); break;
+      case 'head': surf(-Math.PI*p.arc*0.90, 0, p, out); break;
+      case 'tail': surf( Math.PI*p.arc*0.90, 0, p, out); break;
+      case 'gut':     gutSpine(0.42,  p, out); break;
+      case 'gutHead': gutSpine(0.012, p, out); break;
+      case 'gutTail': gutSpine(0.988, p, out); break;
+      case 'band':  bandPoint(0.30, p, phase, out); break;
+      case 'heart': heartSpine(0.5, p, 0, phase, out); out[2] += 0.16; break;
+      case 'vent':  heartSpine(0.60, p, 0, phase, out); break;
+      case 'vort':  heartSpine(0.56, p, 0, phase, out); break;
+      default:      out[0]=out[1]=out[2]=0;
+    }
+    return out;
+  }
+  function layoutLabels(mvp, p, phase, heartAmt){
+    const show = UI.labels;
+    /* keep cards off the two text panels, whatever the breakpoint put them at */
+    const avoid = [el('panel').getBoundingClientRect(), el('title').getBoundingClientRect()];
+    const placed = [];                       // cards already positioned this frame
+    const hits = (x,y) =>
+      avoid.some(r => x > r.left-64 && x < r.right+64 && y > r.top-24 && y < r.bottom+24) ||
+      placed.some(q => Math.abs(x-q.x) < 152 && Math.abs(y-q.y) < 34);
+    for(const L of labs){
+      const kindHeart = /heart|vent|vort/.test(L.def.a);
+      const vis = show && (!kindHeart || heartAmt > 0.35);
+      if(!vis){ L.div.style.display='none'; L.line.style.display='none'; L.dot.style.display='none'; continue; }
+      anchorPoint(L.def.a, p, phase, _anc);
+      const sp = project(mvp, _anc, W, H);
+      if(!sp){ L.div.style.display='none'; L.line.style.display='none'; L.dot.style.display='none'; continue; }
+      /* try the preferred offset, then reflections, then a wider push */
+      const dx = L.off[0], dy = L.off[1];
+      const cand = [[dx,dy], [-dx,dy], [dx,-dy], [-dx,-dy],
+                    [dx*1.6,dy*1.5], [-dx*1.6,dy*1.5], [dx*1.6,-dy*1.5], [-dx*1.6,-dy*1.5]];
+      let lx = sp[0]+dx, ly = sp[1]+dy;
+      for(const c of cand){
+        const x = sp[0]+c[0], y = sp[1]+c[1];
+        if(!hits(x, y)){ lx = x; ly = y; break; }
+      }
+      lx = clamp(lx, 100, W-100);
+      ly = clamp(ly, 56, H-150);
+      placed.push({x:lx, y:ly});
+      L.div.style.display=''; L.line.style.display=''; L.dot.style.display='';
+      L.div.style.left = lx+'px'; L.div.style.top = ly+'px';
+      const mx = (sp[0]+lx)/2, my = (sp[1]+ly)/2;
+      const bend = 16*(lx > sp[0] ? 1 : -1);
+      L.line.setAttribute('d', `M${sp[0].toFixed(1)},${sp[1].toFixed(1)} Q${(mx+bend).toFixed(1)},${my.toFixed(1)} ${(lx - Math.sign(lx-sp[0])*8).toFixed(1)},${ly.toFixed(1)}`);
+      L.dot.setAttribute('cx', sp[0].toFixed(1)); L.dot.setAttribute('cy', sp[1].toFixed(1));
+    }
+  }
+
+  /* ── banner at each genus change along the timeline ── */
+  const genusEl = el('genus'), gA = el('gA'), gB = el('gB');
+  function genusCheck(p){
+    let a = null, b = null;
+    if(Math.abs(p.R - 1) < 0.06 && p.cs < 0.10){     // horn torus: hole opens
+      a = 'the passage opens'; b = 'genus 0 → genus 1';
+    } else if(p.cs > 0.45 && p.cs < 0.68 && p.gut < 0.20){   // ring pinches off
+      a = 'the ring opens'; b = 'genus 1 → genus 0';
+    } else if(p.gut > 0.35 && p.gut < 0.80){         // gut runs clear through
+      a = 'the gut runs through'; b = 'genus 1 — for life';
+    }
+    genusEl.classList.toggle('on', a !== null);
+    if(a){ gA.textContent = a; gB.textContent = b; }
+  }
+
+  /* ── draw helpers ── */
+  function setSurfCommon(proj, view, camPos, cutOn, cutN, cutD){
+    gl.useProgram(pSurf.p);
+    gl.uniformMatrix4fv(pSurf.u.uProj, false, proj);
+    gl.uniformMatrix4fv(pSurf.u.uView, false, view);
+    gl.uniform3f(pSurf.u.uCam, camPos[0], camPos[1], camPos[2]);
+    gl.uniform1f(pSurf.u.uCutOn, cutOn ? 1 : 0);
+    gl.uniform3f(pSurf.u.uCutN, cutN[0], cutN[1], cutN[2]);
+    gl.uniform1f(pSurf.u.uCutD, cutD);
+  }
+  function drawIndexed(count){ gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, 0); }
+
+  /* ── frame ── */
+  let t0 = performance.now(), phase = 0, cutAnim = 0, flowAnim = 0, heartPhaseRate = 0;
+  syncTg(); syncPlay(); refresh();
+
+  function frame(now){
+    const dt = Math.min((now - t0)/1000, 0.05); t0 = now;
+    const time = now/1000;
+
+    /* timeline advance with a short dwell at each stage */
+    if(UI.playing){
+      if(UI.dwell > 0){ UI.dwell -= dt; }
+      else {
+        const prev = UI.t;
+        UI.t = Math.min(UI.t + dt*0.26, NS-1);
+        if(Math.floor(UI.t) !== Math.floor(prev) && UI.t < NS-1) UI.dwell = 1.15;
+        if(UI.t >= NS-1){ UI.playing = false; syncPlay(); }
+      }
+      refresh();
+    }
+    if(UI.spin && !drag) cam.az += dt*0.085;
+
+    const p = evalParams(UI.t);
+    const heartAmt = clamp(p.hp, 0, 1);
+
+    /* heartbeat phase — slower at first contractions, quicker once looped */
+    const bpm = lerp(65, 132, clamp((UI.t - 7)/2.2, 0, 1));
+    heartPhaseRate = bpm/60;
+    phase += dt*heartPhaseRate*(p.beat > 0.02 ? 1 : 0);
+    const bpmOn = p.beat > 0.25;
+    el('bpm').classList.toggle('on', bpmOn);
+    if(bpmOn) el('bpmN').textContent = Math.round(bpm);
+
+    /* floor the easing step: some headless/virtual-time hosts advance
+       performance.now() by microseconds per frame and these never converge */
+    const edt = Math.max(dt, 1/240);
+    cutAnim  = lerp(cutAnim,  UI.cut ? 1 : 0, 1 - Math.exp(-edt*9));
+    const flowWant = (UI.flow || p.flow > 0.5) && heartAmt > 0.5 ? 1 : 0;
+    flowAnim = lerp(flowAnim, flowWant, 1 - Math.exp(-edt*5));
+
+    genusCheck(p);
+
+    /* camera */
+    const tgt = [0,0,0];
+    if(heartAmt > 0.01 && p.look > 0.01){
+      heartSpine(0.5, p, 0, phase, _s0);
+      tgt[0] = _s0[0]*p.look; tgt[1] = _s0[1]*p.look; tgt[2] = _s0[2]*p.look;
+    }
+    const dist = p.dist*cam.zoom;
+    const ce = Math.cos(cam.el), se = Math.sin(cam.el);
+    const eye = [tgt[0] + dist*ce*Math.cos(cam.az),
+                 tgt[1] + dist*ce*Math.sin(cam.az),
+                 tgt[2] + dist*se];
+    const proj = m4perspective(0.80, Math.max(W/H, 0.35), 0.06, 60);
+    const view = m4lookAt(eye, tgt, [0,0,1]);
+    const mvp  = m4mul(proj, view);
+
+    /* geometry */
+    buildBody(p);
+    upload(B.bPos, gPos); upload(B.bNor, gNor);
+
+    /* ── render ── */
+    gl.viewport(0,0,cv.width,cv.height);
+    gl.disable(gl.DEPTH_TEST); gl.disable(gl.BLEND);
+    gl.useProgram(pBg.p);
+    gl.uniform1f(pBg.u.uAsp, Math.max(W/H,0.35));
+    gl.uniform1f(pBg.u.uWarm, heartAmt*clamp(p.beat+0.3,0,1));
+    bindAttr(pBg, 'aP', B.quad, 2);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    /* section plane: normal points at the camera, sited on the camera target,
+       so the near half vanishes and the interior faces us however we orbit */
+    const cutOn = cutAnim > 0.5;
+    let cnx = eye[0]-tgt[0], cny = eye[1]-tgt[1];
+    const cnl = Math.hypot(cnx, cny) || 1; cnx /= cnl; cny /= cnl;
+    const cutN = [cnx, cny, 0], cutD = tgt[0]*cnx + tgt[1]*cny;
+    setSurfCommon(proj, view, eye, cutOn, cutN, cutD);
+
+    /* heart tubes — opaque, drawn first so the body glazes over them */
+    if(heartAmt > 0.01){
+      gl.depthMask(true);
+      gl.disable(gl.CULL_FACE);
+      bindAttr(pSurf,'aPos',B.hPos,3); bindAttr(pSurf,'aNor',B.hNor,3); bindAttr(pSurf,'aUV',B.hUV,2);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, B.hIdx);
+      gl.uniform3f(pSurf.u.uColA, 0.92,0.18,0.29);
+      gl.uniform3f(pSurf.u.uColB, 1.00,0.60,0.52);
+      gl.uniform3f(pSurf.u.uEmisC,0.92,0.15,0.22);
+      gl.uniform2f(pSurf.u.uCell, 40, 9);
+      gl.uniform1f(pSurf.u.uCellMix, UI.cells ? 0.55 : 0.0);
+      gl.uniform1f(pSurf.u.uSpec, 0.60);
+      gl.uniform1f(pSurf.u.uRim,  0.58);
+      gl.uniform1f(pSurf.u.uInner,0.42);
+      gl.uniform1f(pSurf.u.uGlow, 0.0);
+      const pulse = p.beat > 0.02 ? 0.17 + 0.30*beatEnv(phase) : 0.11;
+
+      const twoAmt = clamp(1 - (p.fuse-0.62)/0.34, 0, 1);   // crossfade two → one
+      const oneAmt = clamp((p.fuse-0.62)/0.34, 0, 1);
+      if(twoAmt > 0.01){
+        for(const side of [-1, 1]){
+          buildHeart(p, side, phase);
+          upload(B.hPos, hPos); upload(B.hNor, hNor);
+          gl.uniform1f(pSurf.u.uOpacity, heartAmt*twoAmt);
+          gl.uniform1f(pSurf.u.uEmis, pulse*heartAmt*twoAmt);
+          drawIndexed(hIdx.length);
+        }
+      }
+      if(oneAmt > 0.01){
+        buildHeart(p, 0, phase);
+        upload(B.hPos, hPos); upload(B.hNor, hNor);
+        gl.uniform1f(pSurf.u.uOpacity, heartAmt*oneAmt);
+        gl.uniform1f(pSurf.u.uEmis, pulse*heartAmt*oneAmt);
+        drawIndexed(hIdx.length);
+      }
+      /* helical muscle band, wound round the ventricle */
+      if(p.band > 0.01){
+        buildBand(p, phase);
+        upload(B.hPos, hPos); upload(B.hNor, hNor);
+        gl.uniform3f(pSurf.u.uColA, 1.00,0.54,0.22);
+        gl.uniform3f(pSurf.u.uColB, 1.00,0.86,0.60);
+        gl.uniform3f(pSurf.u.uEmisC,0.90,0.46,0.14);
+        gl.uniform1f(pSurf.u.uCellMix, 0.0);
+        gl.uniform1f(pSurf.u.uOpacity, p.band);
+        gl.uniform1f(pSurf.u.uEmis, 0.20*p.band);
+        drawIndexed(hIdx.length);
+      }
+    }
+
+    /* the gut — one passage the length of the body, protruding at both ends */
+    if(p.gut > 0.01){
+      buildGut(p);
+      upload(B.hPos, hPos); upload(B.hNor, hNor);
+      bindAttr(pSurf,'aPos',B.hPos,3); bindAttr(pSurf,'aNor',B.hNor,3); bindAttr(pSurf,'aUV',B.hUV,2);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, B.hIdx);
+      gl.uniform3f(pSurf.u.uColA, 0.10,0.46,0.44);
+      gl.uniform3f(pSurf.u.uColB, 0.50,0.94,0.88);
+      gl.uniform3f(pSurf.u.uEmisC,0.10,0.40,0.38);
+      gl.uniform2f(pSurf.u.uCell, 52, 10);
+      gl.uniform1f(pSurf.u.uCellMix, UI.cells ? 0.45 : 0.0);
+      gl.uniform1f(pSurf.u.uSpec, 0.34);
+      gl.uniform1f(pSurf.u.uRim,  0.48);
+      gl.uniform1f(pSurf.u.uEmis, 0.10*p.gut);
+      gl.uniform1f(pSurf.u.uInner,0.45);
+      gl.uniform1f(pSurf.u.uGlow, 0.0);
+      gl.uniform1f(pSurf.u.uOpacity, p.gut);
+      gl.disable(gl.CULL_FACE);
+      gl.depthMask(true);
+      drawIndexed(hIdx.length);
+    }
+
+    /* body — translucent, depth-read only, back faces then front faces */
+    bindAttr(pSurf,'aPos',B.bPos,3); bindAttr(pSurf,'aNor',B.bNor,3); bindAttr(pSurf,'aUV',B.bUV,2);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, B.bIdx);
+    gl.uniform3f(pSurf.u.uColA, 0.30,0.40,0.66);
+    gl.uniform3f(pSurf.u.uColB, 0.72,0.78,0.96);
+    gl.uniform3f(pSurf.u.uEmisC,0.10,0.14,0.26);
+    /* cellV counts divisions over a full 2π profile — scale to the swept arc
+       so the cells stay roughly square whatever vspan is doing */
+    gl.uniform2f(pSurf.u.uCell, Math.round(p.cellU),
+                 Math.max(4, Math.round(p.cellV*p.vspan/Math.PI)));
+    gl.uniform1f(pSurf.u.uCellMix, UI.cells ? 0.92 : 0.0);
+    gl.uniform1f(pSurf.u.uSpec, 0.30);
+    gl.uniform1f(pSurf.u.uRim,  0.52);
+    gl.uniform1f(pSurf.u.uEmis, 0.045);
+    if(cutOn){
+      /* sectioned solid: opaque, both faces, interior in a cooler shade */
+      gl.uniform1f(pSurf.u.uInner, 0.78);
+      gl.uniform1f(pSurf.u.uGlow, 0.0);
+      gl.uniform1f(pSurf.u.uOpacity, 1.0);
+      gl.disable(gl.CULL_FACE);
+      gl.depthMask(true);
+      drawIndexed(gIdx.length);
+    } else {
+      /* translucent glaze: far shell, then near shell, depth-read only */
+      gl.uniform1f(pSurf.u.uInner, 0.55);
+      gl.uniform1f(pSurf.u.uGlow, 0.10);
+      gl.uniform1f(pSurf.u.uOpacity, p.op);
+      gl.depthMask(false);
+      gl.enable(gl.CULL_FACE);
+      gl.cullFace(gl.FRONT);  drawIndexed(gIdx.length);
+      gl.cullFace(gl.BACK);   drawIndexed(gIdx.length);
+      gl.disable(gl.CULL_FACE);
+      gl.depthMask(true);
+    }
+
+    /* vortex ring: a translucent envelope torus so the shape is unmistakable,
+       then the particles circulating inside it */
+    if(flowAnim > 0.01){
+      buildVortexEnvelope(p, phase);
+      upload(B.hPos, hPos); upload(B.hNor, hNor);
+      bindAttr(pSurf,'aPos',B.hPos,3); bindAttr(pSurf,'aNor',B.hNor,3); bindAttr(pSurf,'aUV',B.hUV,2);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, B.hIdx);
+      gl.uniform3f(pSurf.u.uColA, 0.18,0.62,0.66);
+      gl.uniform3f(pSurf.u.uColB, 0.56,0.98,0.98);
+      gl.uniform3f(pSurf.u.uEmisC,0.20,0.70,0.72);
+      gl.uniform1f(pSurf.u.uCellMix, 0.0);
+      gl.uniform1f(pSurf.u.uSpec, 0.20);
+      gl.uniform1f(pSurf.u.uRim,  0.95);
+      gl.uniform1f(pSurf.u.uEmis, 0.14*flowAnim);
+      gl.uniform1f(pSurf.u.uInner,0.70);
+      gl.uniform1f(pSurf.u.uGlow, 0.22);
+      gl.uniform1f(pSurf.u.uOpacity, flowAnim*0.24);
+      gl.disable(gl.CULL_FACE);
+      gl.depthMask(false);
+      /* like the particles, the envelope sits inside the opaque ventricle wall —
+         without this it is depth-rejected and never seen */
+      gl.disable(gl.DEPTH_TEST);
+      drawIndexed(hIdx.length);
+      gl.enable(gl.DEPTH_TEST);
+      gl.depthMask(true);
+
+      buildFlow(p, time, phase);
+      upload(B.pPos, pPos); upload(B.pAtt, pAtt);
+      gl.useProgram(pPt.p);
+      gl.uniformMatrix4fv(pPt.u.uProj, false, proj);
+      gl.uniformMatrix4fv(pPt.u.uView, false, view);
+      gl.uniform1f(pPt.u.uDpr, dpr);
+      gl.uniform1f(pPt.u.uAmt, flowAnim*0.85);
+      gl.uniform3f(pPt.u.uC, 0.45, 0.92, 0.96);
+      bindAttr(pPt,'aPos',B.pPos,3); bindAttr(pPt,'aAtt',B.pAtt,2);
+      /* the ring lives inside the opaque ventricle wall — additive glow, no depth
+         test, so it reads as interior flow instead of being hidden by the muscle */
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      gl.depthMask(false);
+      gl.disable(gl.DEPTH_TEST);
+      gl.drawArrays(gl.POINTS, 0, NP);
+      gl.enable(gl.DEPTH_TEST);
+      gl.depthMask(true);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    }
+
+    layoutLabels(mvp, p, phase, heartAmt);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ─────────────────────── boot (must be last) ─────────────────────── */
+if(!gl){
+  document.getElementById('fail').style.display = 'grid';
+  document.getElementById('transport').style.display = 'none';
+} else {
+  main();
+}
+</script>
+</body>
+</html>

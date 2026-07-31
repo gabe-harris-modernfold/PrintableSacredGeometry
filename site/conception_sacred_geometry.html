@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="The point of conception in seven movements — a Hermetic and sacred-geometry study, with the observed biology, the ideal geometry, and the Hermetic reading kept in three separate registers.">
+<title>The Vesica at Conception — seven movements</title>
+<style>
+:root{
+  --bg0:#06060B; --ink:#EDE9F2; --ink2:#A39CB4; --ink3:#6B6480;
+  --line:rgba(180,165,215,.16); --hair:rgba(180,165,215,.09);
+  --panel:rgba(12,10,20,.76);
+  --obs:#54D6C4; --ideal:#E8B75A; --herm:#B892E8; --spark:#8FD8FF; --rose:#FF7A93;
+  --serif:Charter,'Sitka Text',Cambria,Georgia,serif;
+  --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code',Consolas,'SF Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg0);color:var(--ink);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#leaders{position:absolute;inset:0;pointer-events:none}
+#labels{position:absolute;inset:0;pointer-events:none}
+
+.lab{position:absolute;transform:translate(-50%,-50%);font-size:11.5px;line-height:1.32;
+  padding:5px 9px;border-radius:5px;white-space:nowrap;background:rgba(8,7,14,.82);
+  border:1px solid var(--line);backdrop-filter:blur(4px)}
+.lab b{display:block;font-weight:600}
+.lab i{display:block;font-style:normal;font-size:10px;color:var(--ink2);margin-top:1px}
+.lab.obs{border-color:rgba(84,214,196,.42)}   .lab.obs b{color:var(--obs)}
+.lab.ideal{border-color:rgba(232,183,90,.42)} .lab.ideal b{color:var(--ideal)}
+.lab.herm{border-color:rgba(184,146,232,.42)} .lab.herm b{color:var(--herm)}
+
+#title{position:absolute;top:24px;left:28px;max-width:min(400px,40vw);pointer-events:none}
+#title h1{font-family:var(--serif);font-weight:500;font-size:25px;line-height:1.15;margin:0 0 6px;letter-spacing:-.01em}
+#title h1 em{font-style:italic;color:var(--ideal)}
+#title p{margin:0;font-size:12px;line-height:1.55;color:var(--ink2)}
+#title .keys{margin-top:9px;display:flex;gap:11px;font-family:var(--mono);font-size:9px;letter-spacing:.06em}
+#title .keys span{display:flex;align-items:center;gap:4px;color:var(--ink3)}
+#title .keys i{width:7px;height:7px;border-radius:50%;display:inline-block}
+
+#panel{position:absolute;top:24px;right:24px;width:352px;background:var(--panel);
+  border:1px solid var(--line);border-radius:9px;backdrop-filter:blur(12px);overflow:hidden}
+#pHead{padding:13px 16px 11px;border-bottom:1px solid var(--hair);display:flex;gap:11px;align-items:baseline}
+#pRom{font-family:var(--serif);font-size:22px;color:var(--ideal);line-height:1;min-width:28px}
+#pName{font-family:var(--serif);font-size:18px;line-height:1.2;margin:0}
+#pSub{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-top:3px;letter-spacing:.02em}
+.reg{padding:11px 16px 12px;border-bottom:1px solid var(--hair)}
+.reg:last-child{border-bottom:0}
+.reg h4{margin:0 0 5px;font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-weight:400;display:flex;align-items:center;gap:6px}
+.reg h4 i{width:6px;height:6px;border-radius:50%;display:inline-block}
+.reg p{margin:0;font-size:12px;line-height:1.6;color:#C9C4D6}
+.reg cite{display:block;margin-top:5px;font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--ink3);letter-spacing:.02em}
+.reg.o h4{color:var(--obs)}   .reg.o h4 i{background:var(--obs)}
+.reg.i h4{color:var(--ideal)} .reg.i h4 i{background:var(--ideal)}
+.reg.h h4{color:var(--herm)}  .reg.h h4 i{background:var(--herm)}
+.reg.h p{font-family:var(--serif);font-size:13px;line-height:1.62}
+#pProg{height:2px;background:rgba(180,165,215,.12)}
+#pFill{height:100%;width:0;background:linear-gradient(90deg,var(--obs),var(--ideal),var(--herm))}
+
+#axiom{position:absolute;left:50%;top:15%;transform:translate(-50%,-50%);text-align:center;
+  pointer-events:none;opacity:0;transition:opacity .5s ease;max-width:min(620px,80vw)}
+#axiom.on{opacity:1}
+/* the axioms float over whatever the scene is doing, including a bright sphere —
+   a dark halo keeps them readable without boxing them in */
+#axiom q{display:block;font-family:var(--serif);font-style:italic;font-size:20px;line-height:1.45;
+  color:#F7EEDC;quotes:none;
+  text-shadow:0 1px 3px rgba(3,2,7,.98), 0 2px 16px rgba(3,2,7,.92), 0 0 38px rgba(3,2,7,.85)}
+#axiom small{display:block;margin-top:8px;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:#CFC8DC;
+  text-shadow:0 1px 3px rgba(3,2,7,1), 0 1px 10px rgba(3,2,7,.98), 0 0 22px rgba(3,2,7,.9)}
+
+#transport{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);
+  width:min(880px,calc(100vw - 56px));background:var(--panel);border:1px solid var(--line);
+  border-radius:9px;backdrop-filter:blur(12px);padding:10px 16px 9px}
+#ticks{position:relative;height:32px;margin:0 6px 2px}
+.tick{position:absolute;transform:translateX(-50%);bottom:0;text-align:center;background:none;border:0;
+  padding:0 3px;cursor:pointer;color:var(--ink3);font-family:var(--serif);font-size:13px;line-height:1.1}
+.tick b{display:block;font-family:var(--mono);font-size:8px;font-weight:400;letter-spacing:.04em;margin-top:2px;white-space:nowrap}
+.tick s{display:block;text-decoration:none;width:1px;height:8px;margin:3px auto 0;background:currentColor;opacity:.5}
+.tick:hover{color:var(--ink2)}
+.tick.act{color:var(--ideal)} .tick.act s{opacity:1;height:11px}
+#scrubRow{display:flex;align-items:center;gap:11px}
+#scrub{-webkit-appearance:none;appearance:none;flex:1;height:16px;background:none;cursor:pointer;margin:0}
+#scrub::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:rgba(180,165,215,.20)}
+#scrub::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;margin-top:-5px;border-radius:50%;
+  background:var(--ideal);border:2px solid #13111C;box-shadow:0 0 0 1px rgba(232,183,90,.5)}
+#scrub::-moz-range-track{height:3px;border-radius:2px;background:rgba(180,165,215,.20)}
+#scrub::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--ideal);border:2px solid #13111C}
+.btn{background:rgba(180,165,215,.09);border:1px solid var(--line);color:var(--ink);border-radius:5px;
+  cursor:pointer;font-family:var(--sans);font-size:11px;padding:5px 10px}
+.btn:hover{background:rgba(180,165,215,.17)}
+.btn.icon{width:29px;padding:5px 0;text-align:center;font-size:12px}
+#play{width:34px;color:var(--ideal)}
+#toggles{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--hair)}
+.tg{background:none;border:1px solid var(--line);color:var(--ink3);border-radius:20px;cursor:pointer;
+  font-size:10.5px;padding:4px 11px;letter-spacing:.03em;font-family:var(--sans)}
+.tg:hover{color:var(--ink2)}
+.tg.on{color:#0B0913;background:var(--ideal);border-color:var(--ideal);font-weight:600}
+#scaleNote{margin-left:auto;align-self:center;font-family:var(--mono);font-size:9.5px;color:var(--ink3);letter-spacing:.04em}
+
+#notesBtn{position:absolute;left:28px;bottom:22px;background:var(--panel);border:1px solid var(--line);
+  color:var(--ink2);border-radius:6px;cursor:pointer;font-size:11px;padding:7px 12px;backdrop-filter:blur(10px);font-family:var(--sans)}
+#notesBtn:hover{color:var(--ink)}
+#notes{position:absolute;left:28px;bottom:22px;width:min(560px,calc(100vw - 56px));
+  max-height:min(70vh,620px);overflow:auto;background:rgba(10,9,17,.95);border:1px solid var(--line);
+  border-radius:9px;backdrop-filter:blur(14px);padding:18px 20px 20px;display:none}
+#notes.on{display:block}
+#notes h2{font-family:var(--serif);font-size:16px;font-weight:500;margin:0 0 4px}
+#notes h3{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;margin:15px 0 6px;font-weight:400}
+#notes h3.o{color:var(--obs)} #notes h3.i{color:var(--ideal)} #notes h3.h{color:var(--herm)}
+#notes p{font-size:12px;line-height:1.66;color:#C4BED2;margin:0 0 8px}
+#notes ul{margin:0;padding-left:16px} #notes li{font-size:12px;line-height:1.62;color:#C4BED2;margin-bottom:6px}
+#notes b{color:var(--ink)}
+#notes a{color:var(--obs)}
+#nClose{position:absolute;top:11px;right:13px;background:none;border:0;color:var(--ink3);font-size:17px;cursor:pointer;padding:2px 5px}
+#nClose:hover{color:var(--ink)}
+#hint{position:absolute;right:24px;bottom:22px;font-size:10px;color:var(--ink3);font-family:var(--mono);
+  letter-spacing:.04em;text-align:right;line-height:1.7;pointer-events:none}
+#fail{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:40px;font-size:14px;color:var(--ink2)}
+@media (max-width:1100px){
+  #panel{width:310px;top:auto;bottom:142px;right:16px}
+  #title{max-width:min(330px,50vw);left:18px;top:16px} #title h1{font-size:20px}
+  #hint{display:none} #notesBtn,#notes{left:18px;bottom:16px}
+}
+@media (max-width:780px){
+  #panel{position:absolute;left:12px;right:12px;width:auto;bottom:auto;top:126px}
+  .reg p{font-size:11.5px} #title{right:12px;left:12px;max-width:none}
+  #transport{width:calc(100vw - 22px);bottom:10px;padding:8px 10px}
+  .tick b{display:none} #notesBtn{bottom:auto;top:12px;right:12px;left:auto}
+  #notes{left:10px;right:10px;width:auto;top:56px;bottom:auto}
+  #axiom q{font-size:15px}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <svg id="leaders"></svg>
+  <div id="labels"></div>
+
+  <div id="title">
+    <h1>The Vesica at Conception<br><em>— seven movements</em></h1>
+    <p>A metaphysical study. Every movement is stated three times over: what is
+       observed, what the ideal geometry would be, and what the Hermetic tradition
+       made of it. The three are never merged.</p>
+    <div class="keys">
+      <span><i style="background:var(--obs)"></i>observed</span>
+      <span><i style="background:var(--ideal)"></i>ideal</span>
+      <span><i style="background:var(--herm)"></i>hermetic</span>
+    </div>
+  </div>
+
+  <div id="axiom"><q id="axQ"></q><small id="axS"></small></div>
+
+  <div id="panel">
+    <div id="pHead">
+      <div id="pRom">I</div>
+      <div><h2 id="pName">The Monad</h2><div id="pSub"></div></div>
+    </div>
+    <div class="reg o"><h4><i></i>Observed</h4><p id="pObs"></p><cite id="pObsC"></cite></div>
+    <div class="reg i"><h4><i></i>Ideal form</h4><p id="pIdeal"></p></div>
+    <div class="reg h"><h4><i></i>Hermetic</h4><p id="pHerm"></p><cite id="pHermC"></cite></div>
+    <div id="pProg"><div id="pFill"></div></div>
+  </div>
+
+  <div id="transport">
+    <div id="ticks"></div>
+    <div id="scrubRow">
+      <button class="btn icon" id="prev" title="Previous (←)">‹</button>
+      <button class="btn" id="play" title="Play / pause (space)">▶</button>
+      <button class="btn icon" id="next" title="Next (→)">›</button>
+      <input id="scrub" type="range" min="0" max="6" step="0.0005" value="0">
+    </div>
+    <div id="toggles">
+      <button class="tg on" id="tGeom">Construction lines <b style="font-weight:400;opacity:.6">G</b></button>
+      <button class="tg on" id="tCells">Cell texture <b style="font-weight:400;opacity:.6">E</b></button>
+      <button class="tg on" id="tLab">Labels <b style="font-weight:400;opacity:.6">L</b></button>
+      <button class="tg on" id="tAx">Axioms <b style="font-weight:400;opacity:.6">A</b></button>
+      <button class="tg on" id="tSpin">Auto-orbit <b style="font-weight:400;opacity:.6">R</b></button>
+      <span id="scaleNote"></span>
+    </div>
+  </div>
+
+  <button id="notesBtn">Sources &amp; what is being claimed</button>
+  <div id="notes">
+    <button id="nClose" title="Close">×</button>
+    <h2>Sources &amp; what is being claimed</h2>
+    <p>This page is a work of interpretation. It is built so that you can always tell which
+       register a statement belongs to, because the three make very different kinds of claim.</p>
+
+    <h3 class="o">Observed — established, and checkable</h3>
+    <ul>
+      <li>The human secondary oocyte is roughly <b>120&nbsp;µm</b> across — the largest cell in the
+          body — and sits arrested in metaphase&nbsp;II until fertilisation. The sperm head is about
+          <b>4–5&nbsp;µm</b>. The size ratio shown in movement&nbsp;II is real, not dramatised.</li>
+      <li><b>The calcium wave.</b> Sperm delivers phospholipase&nbsp;C&nbsp;zeta (PLCζ), which makes IP₃,
+          which opens IP₃ receptors — a Ca²⁺ wave beginning at the fusion site and crossing the egg,
+          followed by hours of oscillations.</li>
+      <li><b>The zinc spark</b> is real and published — Que et&nbsp;al., <i>Nature Chemistry</i> 2015 (mouse);
+          Duncan et&nbsp;al., <i>Scientific Reports</i> 2016 (human eggs). Two honest caveats: it is a
+          <b>fluorescent-probe signal, not emitted light</b> — the &ldquo;flash at conception&rdquo; headlines
+          were press invention — and the human work used chemically activated eggs.</li>
+      <li><b>The two pronuclei</b> are real and are the anatomical home of the vesica on this page.
+          After sperm entry the maternal and paternal pronuclei form as two separate, roughly equal
+          spheres, migrate together, and appose at the centre. IVF laboratories grade this
+          <b>2PN</b> stage daily.</li>
+      <li><b>Syngamy is not a fusion of two nuclei into one nucleus.</b> The pronuclear envelopes break
+          down and the two chromosome sets assemble on a single first mitotic spindle. There is no
+          moment where one round nucleus contains both — the merged sphere in movement&nbsp;V is the
+          ideal register, not the observed one.</li>
+      <li><b>Endogenous currents and fields are real.</b> Steady transcellular ionic currents were
+          measured in eggs and embryos decades ago by Jaffe and Nuccitelli with vibrating probes, and
+          electrotaxis is well established. Most recently Ferreira, Moreira, Zhao &amp; Barriga,
+          <i>Nature Materials</i> 2025, showed endogenous electric fields steering neural crest in
+          <i>Xenopus</i> via voltage-sensitive phosphatase&nbsp;1.</li>
+    </ul>
+
+    <h3 class="i">Ideal — true as geometry, idealised as biology</h3>
+    <ul>
+      <li>The <b>vesica piscis</b> construction is exact. Two circles of radius <i>R</i> whose centres
+          are <i>R</i> apart intersect in a lens of height <i>R</i>√3 and width <i>R</i> — a ratio of
+          <b>√3 : 1</b>. Its corners and centres give the equilateral triangle, and from that triangle
+          come the hexagon, the Seed of Life and the Flower of Life. That much is provable.</li>
+      <li>What is idealised is that <b>real pronuclei are not perfect equal spheres</b> and are not
+          reliably placed at exactly one radius apart. The √3 is put there by the construction, not
+          measured off an embryo.</li>
+      <li>The <b>Egg of Life</b> is drawn as eight equal spheres on the vertices of a cube — that is,
+          as two interpenetrating tetrahedra. Real 8-cell human embryos <b>compact</b>: cells flatten,
+          polarise and maximise contact, and human cleavage is famously irregular and asynchronous.
+          The regular solid is the ideal, never the observation.</li>
+      <li>A <b>closed, axially symmetric current circuit necessarily has toroidal topology</b> — in at
+          one pole, through the interior, out at the other, back around outside. That is honest
+          mathematics. What is <i>not</i> established is a stable toroidal bioelectric envelope around
+          the human zygote. Note also that the 2025 result above runs the other way round: there the
+          field is <b>generated by tissue mechanics</b>, downstream of stretch, not an organising field
+          the tissue obeys.</li>
+    </ul>
+
+    <h3 class="h">Hermetic — attributed carefully, because the dates matter</h3>
+    <ul>
+      <li><b>Emerald Tablet</b> (<i>Tabula Smaragdina</i>). Earliest known text is Arabic, c. 8th–9th
+          century, in the <i>Kitāb Sirr al-Khalīqa</i>; Latin translations from the 12th century.
+          Attributed to Hermes Trismegistus — <b>not</b> an ancient Egyptian document, despite the
+          legend.</li>
+      <li><b>Corpus Hermeticum</b>. Greek philosophical dialogues, 2nd–3rd century CE, Roman Egypt.
+          Renaissance readers believed them far older; Isaac Casaubon showed in 1614 that they are not.</li>
+      <li><b>Liber XXIV philosophorum</b>, 12th-century Latin, pseudo-Hermetic. Source of &ldquo;a sphere
+          whose centre is everywhere and circumference nowhere.&rdquo;</li>
+      <li><b>The Kybalion</b>, 1908, published as by &ldquo;Three Initiates&rdquo; and generally attributed to
+          William Walker Atkinson. This is the source of the familiar seven principles — Mentalism,
+          Correspondence, Vibration, Polarity, Rhythm, Cause and Effect, Gender — used as the spine of
+          these seven movements. It is <b>American New Thought from 1908</b>, not ancient Hermetica.
+          Naming it plainly costs nothing and keeps the rest of the page trustworthy.</li>
+      <li>The correspondences drawn here between these texts and embryology are <b>mine, offered as
+          interpretation</b>. No Hermetic author knew about pronuclei, calcium waves or zinc.</li>
+    </ul>
+
+    <h3 class="i">The claim, stated plainly</h3>
+    <p>Not that the ancients encoded embryology. Rather: the vesica piscis is what you get whenever
+       two equal spheres meet centre-to-centre, and at exactly one moment in human development two
+       roughly equal spheres do meet that way, carrying one genome each. The tradition put its
+       founding figure at the place where two become one. Conception puts a real instance of that
+       figure in the same place. Whether that is resonance or coincidence is not something geometry
+       can settle — but the figure is genuinely there, and it is worth looking at.</p>
+    <p style="margin-top:10px">The body's own turn at this form is the companion page:
+       <a href="embryonic_torus_heart.html">The Toroidal Embryo</a>.</p>
+  </div>
+
+  <div id="hint">drag&nbsp;·&nbsp;orbit &nbsp; scroll&nbsp;·&nbsp;zoom<br>space&nbsp;·&nbsp;play &nbsp; ←→&nbsp;·&nbsp;step</div>
+  <div id="fail">This page needs WebGL, which this browser or device has turned off.</div>
+</div>
+
+<script>
+"use strict";
+/* ══════════════════════════════════════════════════════════════════════════
+   THE VESICA AT CONCEPTION — seven movements
+   Self-contained WebGL. No external dependencies.
+
+   Everything is drawn from one static unit-sphere mesh (translated and scaled
+   per draw via uOff/uRad, optionally cut by a plane to make the vesica lens),
+   plus swept tubes for rings and a line program for construction geometry.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const TAU = Math.PI*2, SQRT3 = Math.sqrt(3);
+const clamp = (x,a,b) => x<a?a:(x>b?b:x);
+const lerp  = (a,b,t) => a + (b-a)*t;
+const smooth= t => t*t*(3-2*t);
+
+/* ─────────────────────────── mat4 ─────────────────────────── */
+function m4perspective(fovy, aspect, near, far){
+  const f = 1/Math.tan(fovy/2), nf = 1/(near-far);
+  return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]);
+}
+function m4lookAt(eye, ctr, up){
+  let zx=eye[0]-ctr[0], zy=eye[1]-ctr[1], zz=eye[2]-ctr[2];
+  let l=Math.hypot(zx,zy,zz)||1; zx/=l; zy/=l; zz/=l;
+  let xx=up[1]*zz-up[2]*zy, xy=up[2]*zx-up[0]*zz, xz=up[0]*zy-up[1]*zx;
+  l=Math.hypot(xx,xy,xz)||1; xx/=l; xy/=l; xz/=l;
+  const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
+  return new Float32Array([
+    xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0,
+    -(xx*eye[0]+xy*eye[1]+xz*eye[2]),
+    -(yx*eye[0]+yy*eye[1]+yz*eye[2]),
+    -(zx*eye[0]+zy*eye[1]+zz*eye[2]), 1]);
+}
+function m4mul(a,b){
+  const o=new Float32Array(16);
+  for(let i=0;i<4;i++) for(let j=0;j<4;j++){
+    let s=0; for(let k=0;k<4;k++) s+=a[k*4+j]*b[i*4+k];
+    o[i*4+j]=s;
+  }
+  return o;
+}
+function project(mvp, p, W, H){
+  const x=p[0],y=p[1],z=p[2];
+  const cw = mvp[3]*x + mvp[7]*y + mvp[11]*z + mvp[15];
+  if(cw <= 0.001) return null;
+  const cx = mvp[0]*x + mvp[4]*y + mvp[8]*z  + mvp[12];
+  const cy = mvp[1]*x + mvp[5]*y + mvp[9]*z  + mvp[13];
+  return [(cx/cw*0.5+0.5)*W, (1-(cy/cw*0.5+0.5))*H];
+}
+
+/* ─────────────────────── the seven movements ───────────────────────
+   Geometry constants, fixed so the vesica is exact:
+     oocyte radius            1.00      (1 unit ≈ 60 µm)
+     sperm head radius        0.038     (~1/25 of the oocyte diameter — true scale)
+     pronucleus radius  PNR = 0.34
+     vesica separation    d = PNR       → lens is √3 : 1, exactly
+   ------------------------------------------------------------------ */
+const PNR = 0.34, SPR = 0.038;
+
+/* the eight Egg-of-Life centres: the vertices of a cube, which are also the
+   vertices of two interpenetrating regular tetrahedra (the star tetrahedron) */
+const EGG=[], EGGA=[], EGGB=[];
+for(let i=0;i<8;i++){
+  const x=(i&1)?1:-1, y=(i&2)?1:-1, z=(i&4)?1:-1;
+  EGG.push([x,y,z]);
+  (x*y*z > 0 ? EGGA : EGGB).push([x,y,z]);
+}
+const EGGS = 0.34;      // half-edge of the cube
+const EGGR = 0.35;      // sphere radius — slightly interpenetrating, as compaction
+
+const M = [
+{ rom:'I', name:'The Monad', sub:'the oocyte, alone',
+  obs:'A single cell about 120 µm across — the largest in the human body — arrested in the second meiotic division and waiting. One boundary, one interior, nothing yet divided.',
+  obsC:'human secondary oocyte, metaphase II',
+  ideal:'The circle: one centre, one radius, no parts. Every construction in the tradition begins by drawing exactly this and nothing else.',
+  herm:'The All is Mind; the Universe is mental. Unity before number, containing what it has not yet expressed.',
+  hermC:'Kybalion 1908 · principle of Mentalism',
+  ax:['A sphere whose centre is everywhere and circumference nowhere.','Liber XXIV philosophorum · 12th c. Latin, pseudo-Hermetic'],
+  p:{ zyg:1, zygOp:0.44, cell:1, sperm:0, spermD:2.9, wave:0, spark:0,
+      pn:0, sep:0, lens:0, lnMono:1, lnVes:0, lnTri:0, lnField:0, lnEgg:0,
+      field:0, egg:0, dist:3.3 },
+  labs:[{a:'zyg', t:'Secondary oocyte', s:'≈120 µm — one cell', c:'obs'}] },
+
+{ rom:'II', name:'The Dyad', sub:'two, and their true proportion',
+  obs:'The sperm head is 4–5 µm against the oocyte’s 120 — about a twenty-fifth of the diameter, and some ten thousand times smaller by volume. This is drawn to scale. Its arrival marks an axis, though in humans that axis does not go on to set the body’s.',
+  obsC:'true relative scale · sperm head ≈ 4–5 µm',
+  ideal:'Two is the first relation. But two unequal circles make no vesica — the figure the tradition wants cannot live here. Hold that thought until movement IV.',
+  herm:'Gender is in everything. Everything has its masculine and feminine principles; generation appears on every plane.',
+  hermC:'Kybalion 1908 · principle of Gender',
+  ax:['Its father is the Sun, its mother the Moon.','Emerald Tablet · Arabic c. 8th–9th c., Latin from the 12th'],
+  p:{ zyg:1, zygOp:0.40, cell:1, sperm:1, spermD:1.04, wave:0, spark:0,
+      pn:0, sep:0, lens:0, lnMono:0.5, lnVes:0, lnTri:0, lnField:0, lnEgg:0,
+      field:0, egg:0, dist:3.1 },
+  labs:[{a:'sperm', t:'Sperm head', s:'≈1/25 the diameter — to scale', c:'obs'},
+        {a:'axis',  t:'The axis of entry', s:'marks where the wave begins', c:'ideal'}] },
+
+{ rom:'III', name:'The Spark', sub:'the wave and the zinc',
+  obs:'PLCζ from the sperm makes IP₃; IP₃ receptors open; a calcium wave crosses the egg from the fusion point, and zinc floods outward in a spark. Both are real and published — and both were imaged with fluorescent probes. No light is emitted.',
+  obsC:'Que et al. 2015 · Duncan et al. 2016',
+  ideal:'A disturbance leaving a point and propagating as a spherical front. The first event with a direction and a rate rather than only a shape.',
+  herm:'Nothing rests; everything moves; everything vibrates. Difference of manifestation is difference of vibration.',
+  hermC:'Kybalion 1908 · principle of Vibration',
+  ax:['','' ],
+  p:{ zyg:1, zygOp:0.50, cell:1, sperm:0.45, spermD:1.0, wave:1, spark:1,
+      pn:0, sep:0, lens:0, lnMono:0.3, lnVes:0, lnTri:0, lnField:0, lnEgg:0,
+      field:0, egg:0, dist:3.5 },
+  labs:[{a:'wave',  t:'Calcium wave', s:'from the fusion point', c:'obs'},
+        {a:'spark', t:'Zinc spark', s:'probe fluorescence, not light', c:'obs'}] },
+
+{ rom:'IV', name:'The Vesica Piscis', sub:'two pronuclei, centre to centre',
+  obs:'Two pronuclei form — one maternal, one paternal — as separate spheres of roughly equal size. They migrate together and appose at the centre of the zygote. Embryology calls this the 2PN stage and grades it every day in IVF laboratories.',
+  obsC:'pronuclear (2PN) stage · ~16–20 h after insemination',
+  ideal:'Two equal circles, each passing through the other’s centre. The lens between them stands √3 tall for every 1 across, and its construction hands you the equilateral triangle — and so the hexagon, the Seed of Life, the Flower. The tradition’s whole vocabulary starts in this one figure.',
+  herm:'Everything is dual; opposites are identical in nature and differ only in degree. The two lights are one work.',
+  hermC:'Kybalion 1908 · principle of Polarity',
+  ax:['That which is above is like that which is below.','Emerald Tablet · Tabula Smaragdina'],
+  p:{ zyg:1, zygOp:0.20, cell:0.5, sperm:0, spermD:1.0, wave:0, spark:0,
+      pn:1, sep:1, lens:1, lnMono:0.18, lnVes:1, lnTri:1, lnField:0, lnEgg:0,
+      field:0, egg:0, dist:2.9 },
+  /* lens listed first so it claims the clearest offset — it is the whole point */
+  labs:[{a:'lens', t:'The vesica', s:'height : width = √3 : 1', c:'ideal'},
+        {a:'pnA',  t:'Maternal pronucleus', s:'one genome', c:'obs'},
+        {a:'pnB',  t:'Paternal pronucleus', s:'one genome', c:'obs'}] },
+
+{ rom:'V', name:'Syngamy', sub:'the one thing',
+  obs:'The pronuclear envelopes break down and both chromosome sets assemble on a single first mitotic spindle. Strictly there is never one round nucleus holding both — the merged sphere here belongs to the ideal register, not the observed one.',
+  obsC:'syngamy · no single interphase nucleus forms',
+  ideal:'The two centres converge until they coincide. The lens swells to fill both circles and the figure closes: two becomes one, and the one is not either of them.',
+  herm:'And as all things came from One, by the meditation of One — so all things are born from this one thing, by adaptation.',
+  hermC:'Emerald Tablet · Arabic c. 8th–9th c.',
+  ax:['To accomplish the miracle of the one thing.','Emerald Tablet · Tabula Smaragdina'],
+  p:{ zyg:1, zygOp:0.26, cell:0.6, sperm:0, spermD:1.0, wave:0, spark:0,
+      pn:1, sep:0, lens:1, lnMono:0.3, lnVes:0.30, lnTri:0, lnField:0, lnEgg:0,
+      field:0, egg:0, dist:3.0 },
+  labs:[{a:'core', t:'One genome', s:'on a single spindle', c:'obs'}] },
+
+{ rom:'VI', name:'The Torus', sub:'the closed circuit',
+  obs:'Steady transcellular ionic currents in eggs and embryos are real and were measured with vibrating probes decades ago. A stable toroidal envelope around the human zygote is not established — and the best recent work has fields generated by tissue mechanics, downstream of stretch, rather than organising it.',
+  obsC:'Jaffe & Nuccitelli · cf. Ferreira et al., Nat Mater 2025',
+  ideal:'Here the geometry is simply true: a closed circuit with an axis of symmetry — in at one pole, through the interior, out at the other, back round outside — sweeps out nested tori. Toroidal topology is forced, not asserted.',
+  herm:'Everything flows out and in; all things rise and fall; the measure of the swing to the right is the measure of the swing to the left.',
+  hermC:'Kybalion 1908 · principle of Rhythm',
+  ax:['','' ],
+  p:{ zyg:1, zygOp:0.17, cell:0.4, sperm:0, spermD:1.0, wave:0, spark:0,
+      pn:0.42, sep:0, lens:0.35, lnMono:0.2, lnVes:0, lnTri:0, lnField:1, lnEgg:0,
+      field:1, egg:0, dist:4.0 },
+  labs:[{a:'pole', t:'Pole of entry', s:'circuit closes through the interior', c:'ideal'},
+        {a:'loop', t:'Nested tori', s:'forced by axial symmetry', c:'ideal'}] },
+
+{ rom:'VII', name:'The Egg of Life', sub:'eight, and what follows',
+  obs:'The 8-cell embryo, about day 3, inside the zona pellucida. Real ones compact — cells flatten, polarise and maximise contact — and human cleavage is irregular and asynchronous. The regular arrangement below is the ideal, never the observation.',
+  obsC:'8-cell stage · ~day 3 · compaction begins',
+  ideal:'Eight equal spheres on the vertices of a cube: two interpenetrating tetrahedra. From these eight the tradition builds the Flower of Life and Metatron’s Cube, and from that cube the five Platonic solids.',
+  herm:'As above, so below — the same pattern, taken up again at another scale, to accomplish the miracle of the one thing.',
+  hermC:'Kybalion 1908 · principle of Correspondence',
+  ax:['As above, so below.','Emerald Tablet · and Kybalion 1908, principle of Correspondence'],
+  p:{ zyg:1, zygOp:0.12, cell:1, sperm:0, spermD:1.0, wave:0, spark:0,
+      pn:0, sep:0, lens:0, lnMono:0.35, lnVes:0, lnTri:0, lnField:0.45, lnEgg:1,
+      field:0.5, egg:1, dist:4.5 },
+  labs:[{a:'egg',  t:'Eight cells', s:'ideal packing — real ones compact', c:'ideal'},
+        {a:'zona', t:'Zona pellucida', s:'the boundary holds', c:'obs'}] }
+];
+const NM = M.length;
+
+/* every key gets a default, so a movement lists only what it changes */
+const DEF = {zyg:1, zygOp:0.4, cell:1, sperm:0, spermD:2.9, wave:0, spark:0,
+             pn:0, sep:0, lens:0, lnMono:0, lnVes:0, lnTri:0, lnField:0, lnEgg:0,
+             field:0, egg:0, dist:3.3};
+const P = {};
+function evalParams(t){
+  const i = clamp(Math.floor(t), 0, NM-1), j = Math.min(i+1, NM-1);
+  const f = smooth(clamp(t-i, 0, 1));
+  const a = M[i].p, b = M[j].p;
+  for(const k in DEF){
+    const av = a[k] !== undefined ? a[k] : DEF[k];
+    const bv = b[k] !== undefined ? b[k] : DEF[k];
+    P[k] = lerp(av, bv, f);
+  }
+  return P;
+}
+/* pronucleus centres sit at ±sep·PNR/2 on the x axis: sep=1 is the exact vesica */
+const pnCx = p => p.sep*PNR/2;
+
+/* ─────────────────────── static unit sphere ─────────────────────── */
+const SU = 144, SV = 72, GU = SU+1, GV = SV+1;
+const sPos = new Float32Array(GU*GV*3), sUV = new Float32Array(GU*GV*2);
+const sIdx = new Uint16Array(SU*SV*6);
+{ for(let i=0;i<GU;i++){
+    const th = i/SU*TAU, ct=Math.cos(th), st=Math.sin(th);
+    for(let j=0;j<GV;j++){
+      const ph = j/SV*Math.PI, sp=Math.sin(ph), cp=Math.cos(ph);
+      const o=(i*GV+j)*3;
+      sPos[o]=sp*ct; sPos[o+1]=sp*st; sPos[o+2]=cp;
+      const u=(i*GV+j)*2; sUV[u]=i/SU; sUV[u+1]=j/SV;
+    }
+  }
+  let k=0;
+  for(let i=0;i<SU;i++) for(let j=0;j<SV;j++){
+    const a=i*GV+j, b=(i+1)*GV+j, c=(i+1)*GV+j+1, d=i*GV+j+1;
+    sIdx[k++]=a; sIdx[k++]=b; sIdx[k++]=c;
+    sIdx[k++]=a; sIdx[k++]=c; sIdx[k++]=d;
+  }
+}
+
+/* ─────────────────────── swept tube (rings) ─────────────────────── */
+const TS = 128, TA = 14, TVC = TS*(TA+1);
+const tPos = new Float32Array(TVC*3), tNor = new Float32Array(TVC*3), tUV = new Float32Array(TVC*2);
+const tIdx = new Uint16Array((TS-1)*TA*6);
+{ let k=0;
+  for(let i=0;i<TS-1;i++) for(let j=0;j<TA;j++){
+    const a=i*(TA+1)+j, b=(i+1)*(TA+1)+j, c=(i+1)*(TA+1)+j+1, d=i*(TA+1)+j+1;
+    tIdx[k++]=a; tIdx[k++]=b; tIdx[k++]=c;
+    tIdx[k++]=a; tIdx[k++]=c; tIdx[k++]=d;
+  }
+  for(let i=0;i<TS;i++) for(let j=0;j<=TA;j++){
+    const o=(i*(TA+1)+j)*2; tUV[o]=i/(TS-1)*6; tUV[o+1]=j/TA;
+  }
+}
+const _sp=[]; for(let i=0;i<TS;i++) _sp.push([0,0,0]);
+function sweepTube(spineFn, rad){
+  for(let i=0;i<TS;i++) spineFn(i/(TS-1), _sp[i]);
+  let nx=0, ny=0, nz=1;
+  for(let i=0;i<TS;i++){
+    const a=_sp[Math.max(i-1,0)], b=_sp[Math.min(i+1,TS-1)];
+    let tx=b[0]-a[0], ty=b[1]-a[1], tz=b[2]-a[2];
+    let L=Math.hypot(tx,ty,tz)||1; tx/=L; ty/=L; tz/=L;
+    const dt=nx*tx+ny*ty+nz*tz;
+    nx-=dt*tx; ny-=dt*ty; nz-=dt*tz;
+    L=Math.hypot(nx,ny,nz);
+    if(L<1e-6){ nx=-ty; ny=tx; nz=0; L=Math.hypot(nx,ny,nz)||1; }
+    nx/=L; ny/=L; nz/=L;
+    const bx=ty*nz-tz*ny, by=tz*nx-tx*nz, bz=tx*ny-ty*nx;
+    const c=_sp[i];
+    for(let j=0;j<=TA;j++){
+      const ang=j/TA*TAU, ca=Math.cos(ang), sa=Math.sin(ang);
+      const ex=nx*ca+bx*sa, ey=ny*ca+by*sa, ez=nz*ca+bz*sa;
+      const o=(i*(TA+1)+j)*3;
+      tPos[o]=c[0]+ex*rad; tPos[o+1]=c[1]+ey*rad; tPos[o+2]=c[2]+ez*rad;
+      tNor[o]=ex; tNor[o+1]=ey; tNor[o+2]=ez;
+    }
+  }
+}
+/* the vesica's intersection circle: radius R√3/2 at the midplane */
+function ringSpine(cx, cy, cz, r, ax, s, out){
+  const th=s*TAU, ct=Math.cos(th), st=Math.sin(th);
+  if(ax===0){ out[0]=cx; out[1]=cy+r*ct; out[2]=cz+r*st; }
+  else if(ax===1){ out[0]=cx+r*ct; out[1]=cy; out[2]=cz+r*st; }
+  else { out[0]=cx+r*ct; out[1]=cy+r*st; out[2]=cz; }
+}
+
+/* ─────────────────────── construction lines ─────────────────────── */
+const LMAX = 30000;
+const lPos = new Float32Array(LMAX*3), lAlpha = new Float32Array(LMAX);
+let lN = 0;
+function lReset(){ lN = 0; }
+function lSeg(ax,ay,az, bx,by,bz, a){
+  if(lN+2 > LMAX || a < 0.004) return;
+  let o=lN*3; lPos[o]=ax; lPos[o+1]=ay; lPos[o+2]=az; lAlpha[lN]=a; lN++;
+  o=lN*3; lPos[o]=bx; lPos[o+1]=by; lPos[o+2]=bz; lAlpha[lN]=a; lN++;
+}
+/* circle of radius r centred at c, in the plane spanned by e1,e2 */
+function lCircle(c, r, e1, e2, a, segs){
+  if(a < 0.004) return;
+  segs = segs || 96;
+  let px=c[0]+e1[0]*r, py=c[1]+e1[1]*r, pz=c[2]+e1[2]*r;
+  for(let i=1;i<=segs;i++){
+    const th=i/segs*TAU, ct=Math.cos(th), st=Math.sin(th);
+    const qx=c[0]+(e1[0]*ct+e2[0]*st)*r, qy=c[1]+(e1[1]*ct+e2[1]*st)*r, qz=c[2]+(e1[2]*ct+e2[2]*st)*r;
+    lSeg(px,py,pz, qx,qy,qz, a);
+    px=qx; py=qy; pz=qz;
+  }
+}
+const EX=[1,0,0], EY=[0,1,0], EZ=[0,0,1];
+
+/* ─────────────────────── particles ─────────────────────── */
+const NP = 2800, NHALF = NP>>1;          // first half: zinc spark · second: field flow
+const pSeed = new Float32Array(NP*4);
+for(let i=0;i<NP;i++){
+  const z = Math.random()*2-1, th = Math.random()*TAU, r = Math.sqrt(1-z*z);
+  pSeed[i*4]   = r*Math.cos(th);          // a direction on the unit sphere
+  pSeed[i*4+1] = r*Math.sin(th);
+  pSeed[i*4+2] = z;
+  pSeed[i*4+3] = Math.random();           // phase / shell jitter
+}
+const pPos = new Float32Array(NP*3), pAtt = new Float32Array(NP*2);
+
+/* a field loop: out from the north pole, round outside, in at the south pole,
+   then back up the axis through the interior — the circuit closes.            */
+function fieldPoint(tau, k, phi, out){
+  if(tau < 0.74){                                    // the outside arc
+    const th = tau/0.74*Math.PI;
+    const rho = Math.sin(th)*(0.55 + 1.55*k)*(1 + 0.30*Math.sin(th));
+    out[0] = rho*Math.cos(phi); out[1] = rho*Math.sin(phi);
+    out[2] = Math.cos(th)*(1.02 + 0.62*k);
+  } else {                                           // the return, on the axis
+    const q = (tau-0.74)/0.26;
+    out[0] = 0; out[1] = 0;
+    out[2] = lerp(-(1.02+0.62*k), (1.02+0.62*k), q);
+  }
+}
+function buildParticles(p, time){
+  const sparkPhase = time*0.62 - Math.floor(time*0.62);
+  for(let i=0;i<NHALF;i++){                          // zinc spark: outward shell
+    const o=i*3, s=i*4;
+    const prog = clamp(sparkPhase + (pSeed[s+3]-0.5)*0.13, 0, 1);
+    const r = 1.0 + prog*1.05;
+    pPos[o]=pSeed[s]*r; pPos[o+1]=pSeed[s+1]*r; pPos[o+2]=pSeed[s+2]*r;
+    pAtt[i*2]   = 1.5 + 1.7*(1-prog);
+    pAtt[i*2+1] = p.spark*(1-prog)*(1-prog)*1.5;
+  }
+  const fp=[0,0,0];
+  for(let i=NHALF;i<NP;i++){                         // field flow: round the loops
+    const o=i*3, s=i*4;
+    const k   = (i%3)/2;                             // three nested shells
+    const phi = pSeed[s+3]*TAU;
+    let tau = pSeed[s]*0.5+0.5 + time*0.085;
+    tau -= Math.floor(tau);
+    fieldPoint(tau, k, phi, fp);
+    pPos[o]=fp[0]; pPos[o+1]=fp[1]; pPos[o+2]=fp[2];
+    pAtt[i*2]   = tau < 0.74 ? 2.0 : 2.8;            // brighter on the axis return
+    pAtt[i*2+1] = p.field*(tau < 0.74 ? 0.75 : 1.0);
+  }
+}
+
+/* ─────────────────────── GL ─────────────────────── */
+const cv = document.getElementById('gl');
+const gl = cv.getContext('webgl2', {antialias:true, alpha:false})
+        || cv.getContext('webgl',  {antialias:true, alpha:false});
+
+function sh(type, src){
+  const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)+'\n'+src);
+  return s;
+}
+function prog(vs, fs){
+  const p=gl.createProgram();
+  gl.attachShader(p, sh(gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const o={p,u:{},a:{}};
+  const nu=gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for(let i=0;i<nu;i++){ const n=gl.getActiveUniform(p,i).name.replace(/\[0\]$/,''); o.u[n]=gl.getUniformLocation(p,n); }
+  const na=gl.getProgramParameter(p, gl.ACTIVE_ATTRIBUTES);
+  for(let i=0;i<na;i++){ const n=gl.getActiveAttrib(p,i).name; o.a[n]=gl.getAttribLocation(p,n); }
+  return o;
+}
+
+const V_SURF = `
+attribute vec3 aPos; attribute vec3 aNor; attribute vec2 aUV;
+uniform mat4 uProj, uView;
+uniform vec3 uOff; uniform float uRad, uWob, uTime, uUseNor;
+varying vec3 vP, vN, vL; varying vec2 vUV;
+void main(){
+  /* select before normalising: aNor is an unbound zero vector on sphere draws */
+  vec3 n = normalize(uUseNor > 0.5 ? aNor : aPos);
+  float w = uWob*(sin(aPos.x*5.0+uTime*0.9)*sin(aPos.y*4.3-uTime*0.7)*sin(aPos.z*4.7+uTime*0.5));
+  vec3 local = uUseNor > 0.5 ? aPos : aPos*(1.0+w);
+  vec3 p = local*uRad + uOff;
+  vP = p; vN = n; vL = normalize(local); vUV = aUV;
+  gl_Position = uProj*uView*vec4(p,1.0);
+}`;
+
+const F_SURF = `
+precision highp float;
+varying vec3 vP, vN, vL; varying vec2 vUV;
+uniform vec3  uCam, uColA, uColB, uEmisC, uClipN, uWaveDir;
+uniform vec2  uCell;
+uniform float uOpacity, uCellMix, uEmis, uRim, uSpec, uInner, uGlow;
+uniform float uClipOn, uClipD, uWaveAmt, uWaveT;
+
+vec2 hash2(vec2 p){
+  p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3)));
+  return fract(sin(p)*43758.5453123);
+}
+vec2 cellF(vec2 uv, vec2 sc){
+  vec2 p = uv*sc, i = floor(p), f = p - i;
+  float d1 = 8.0, d2 = 8.0;
+  for(int y=-1; y<=1; y++){
+    for(int x=-1; x<=1; x++){
+      vec2 g = vec2(float(x), float(y));
+      vec2 o = hash2(mod(i+g, sc));
+      float d = length(g + o - f);
+      if(d < d1){ d2 = d1; d1 = d; } else if(d < d2){ d2 = d; }
+    }
+  }
+  return vec2(d2 - d1, d1);
+}
+void main(){
+  if(uClipOn > 0.5 && dot(vP, uClipN) > uClipD) discard;
+  vec3 N = normalize(vN);
+  bool front = gl_FrontFacing;
+  if(!front) N = -N;
+  vec3 V  = normalize(uCam - vP);
+  vec3 L1 = normalize(vec3(-0.40, 0.62, 0.88));
+  vec3 L2 = normalize(vec3( 0.74,-0.32, 0.26));
+  float d1 = max(dot(N,L1), 0.0), d2 = max(dot(N,L2), 0.0);
+  float fres = pow(1.0 - max(dot(N,V), 0.0), 2.5);
+
+  vec3 base = mix(uColA, uColB, clamp(0.5 + 0.55*N.z, 0.0, 1.0));
+  if(uCellMix > 0.003){
+    vec2 c = cellF(vUV, uCell);
+    float wall = 1.0 - smoothstep(0.008, 0.070, c.x);
+    float nuc  = 1.0 - smoothstep(0.055, 0.150, c.y);
+    base = mix(base, base*0.34, wall*uCellMix);
+    base = mix(base, base*1.5 + vec3(0.05,0.04,0.08), nuc*uCellMix*0.42);
+  }
+  vec3 col = base*(0.26 + 0.90*d1 + 0.28*d2);
+  col += vec3(1.0,0.96,0.90)*pow(max(dot(reflect(-L1,N),V),0.0), 40.0)*uSpec;
+  col += mix(uColB, vec3(0.80,0.76,1.0), 0.45)*fres*uRim;
+  col += uEmisC*uEmis;
+
+  /* travelling calcium front, measured as an angle from the entry point */
+  float band = 0.0;
+  if(uWaveAmt > 0.003){
+    float ang = acos(clamp(dot(vL, uWaveDir), -1.0, 1.0));
+    band = exp(-pow((ang - uWaveT)/0.28, 2.0))*uWaveAmt;
+    col += vec3(0.52,0.84,1.0)*band*1.7;
+  }
+  if(!front) col *= uInner;
+
+  float a = clamp(uOpacity*(1.0 + fres*0.85) + uGlow*fres + band*0.5, 0.0, 1.0);
+  gl_FragColor = vec4(col, a);
+}`;
+
+const V_LINE = `
+attribute vec3 aP; attribute float aA;
+uniform mat4 uProj, uView;
+varying float vA;
+void main(){ vA = aA; gl_Position = uProj*uView*vec4(aP,1.0); }`;
+const F_LINE = `
+precision highp float; varying float vA; uniform vec3 uC; uniform float uAmt;
+void main(){ gl_FragColor = vec4(uC, vA*uAmt); }`;
+
+const V_BG = `attribute vec2 aP; varying vec2 vT;
+void main(){ vT = aP*0.5+0.5; gl_Position = vec4(aP,0.999,1.0); }`;
+const F_BG = `precision highp float; varying vec2 vT; uniform float uAsp, uWarm;
+void main(){
+  vec2 q = (vT - vec2(0.50,0.54)); q.x *= uAsp;
+  float d = length(q);
+  vec3 c = mix(vec3(0.062,0.056,0.098), vec3(0.020,0.018,0.038), smoothstep(0.05,0.92,d));
+  c += vec3(0.10,0.075,0.045)*uWarm*(1.0 - smoothstep(0.0,0.58,d));
+  c += vec3(0.030,0.026,0.052)*(1.0 - smoothstep(0.0,0.28,d));
+  gl_FragColor = vec4(c,1.0);
+}`;
+
+const V_PT = `attribute vec3 aPos; attribute vec2 aAtt;
+uniform mat4 uProj, uView; uniform float uDpr;
+varying float vB;
+void main(){
+  vec4 mv = uView*vec4(aPos,1.0);
+  gl_Position = uProj*mv;
+  gl_PointSize = aAtt.x*uDpr*7.0/max(-mv.z, 0.4);
+  vB = aAtt.y;
+}`;
+const F_PT = `precision highp float; varying float vB; uniform vec3 uC;
+void main(){
+  vec2 d = gl_PointCoord - 0.5;
+  float r = length(d);
+  if(r > 0.5) discard;
+  float a = pow(1.0 - r*2.0, 1.9)*vB;
+  gl_FragColor = vec4(uC*(0.6 + 0.8*min(vB,1.0)), a);
+}`;
+
+/* ─────────────────────── main ─────────────────────── */
+function main(){
+  const pSurf=prog(V_SURF,F_SURF), pLine=prog(V_LINE,F_LINE),
+        pBg=prog(V_BG,F_BG), pPt=prog(V_PT,F_PT);
+
+  function buf(data, usage){
+    const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b);
+    gl.bufferData(gl.ARRAY_BUFFER, data, usage||gl.DYNAMIC_DRAW); return b;
+  }
+  function ibuf(data){
+    const b=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,b);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, gl.STATIC_DRAW); return b;
+  }
+  const B = {
+    sPos:buf(sPos,gl.STATIC_DRAW), sUV:buf(sUV,gl.STATIC_DRAW), sIdx:ibuf(sIdx),
+    tPos:buf(tPos), tNor:buf(tNor), tUV:buf(tUV,gl.STATIC_DRAW), tIdx:ibuf(tIdx),
+    lPos:buf(lPos), lA:buf(lAlpha),
+    pPos:buf(pPos), pAtt:buf(pAtt),
+    quad:buf(new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW)
+  };
+  function bindAttr(pr,name,b,n){
+    const loc=pr.a[name]; if(loc===undefined||loc<0) return;
+    gl.bindBuffer(gl.ARRAY_BUFFER,b); gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc,n,gl.FLOAT,false,0,0);
+  }
+  function disableAttr(pr,name){
+    const loc=pr.a[name]; if(loc===undefined||loc<0) return;
+    gl.disableVertexAttribArray(loc);
+  }
+  function upload(b,data,count){
+    gl.bindBuffer(gl.ARRAY_BUFFER,b);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, count===undefined ? data : data.subarray(0,count));
+  }
+
+  const cam={az:-0.72, el:0.30, zoom:1};
+  let W=1,H=1,dpr=1;
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cv.clientWidth; H=cv.clientHeight;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    const svg=document.getElementById('leaders');
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    svg.setAttribute('width',W); svg.setAttribute('height',H);
+  }
+  window.addEventListener('resize',resize); resize();
+
+  let drag=null;
+  cv.addEventListener('pointerdown',e=>{
+    drag={x:e.clientX,y:e.clientY,az:cam.az,el:cam.el};
+    cv.setPointerCapture(e.pointerId); UI.spin=false; syncTg();
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(!drag) return;
+    cam.az=drag.az+(e.clientX-drag.x)*0.0068;
+    cam.el=clamp(drag.el+(e.clientY-drag.y)*0.0062,-1.45,1.45);
+  });
+  const endDrag=()=>{ drag=null; };
+  cv.addEventListener('pointerup',endDrag); cv.addEventListener('pointercancel',endDrag);
+  cv.addEventListener('wheel',e=>{
+    e.preventDefault(); cam.zoom=clamp(cam.zoom*Math.exp(e.deltaY*0.0011),0.40,3.0);
+  },{passive:false});
+
+  const UI={t:0, playing:false, dwell:0, geom:true, cells:true, labels:true, ax:true, spin:true};
+  const el=id=>document.getElementById(id);
+  const scrub=el('scrub'); scrub.max=NM-1;
+
+  {  /* deep-link: #m=4 (or t=4), &geom=0 &spin=0 &az=-1.1 */
+    const q=location.hash.slice(1)+'&'+location.search.slice(1);
+    const get=k=>{ const m=new RegExp('(?:^|&)'+k+'=(-?[\\d.]+)').exec(q); return m?+m[1]:null; };
+    const t=get('m')!==null?get('m'):get('t');
+    if(t!==null && isFinite(t)) UI.t=clamp(t,0,NM-1);
+    const g=get('geom'); if(g!==null) UI.geom=!!g;
+    const s=get('spin'); if(s!==null) UI.spin=!!s;
+    const l=get('lab');  if(l!==null) UI.labels=!!l;
+    const a=get('az');   if(a!==null) cam.az=a;
+    const e=get('el');   if(e!==null) cam.el=clamp(e,-1.45,1.45);
+    /* #m=3&az=-1.5708&el=0 looks straight down the vesica's own plane */
+  }
+
+  const ROMAN=['I','II','III','IV','V','VI','VII'];
+  const ticksBox=el('ticks');
+  M.forEach((m,i)=>{
+    const b=document.createElement('button');
+    b.className='tick'; b.style.left=(i/(NM-1)*100)+'%';
+    b.innerHTML=`${m.rom}<b>${m.name.replace(/^The /,'')}</b><s></s>`;
+    b.title=m.name; b.onclick=()=>goto(i);
+    ticksBox.appendChild(b);
+  });
+  const tickEls=[...ticksBox.children];
+
+  function goto(i){ UI.t=clamp(i,0,NM-1); UI.playing=false; UI.dwell=0; syncPlay(); refresh(); }
+  function syncPlay(){ el('play').textContent = UI.playing?'❚❚':'▶'; }
+  function syncTg(){
+    el('tGeom').classList.toggle('on',UI.geom);
+    el('tCells').classList.toggle('on',UI.cells);
+    el('tLab').classList.toggle('on',UI.labels);
+    el('tAx').classList.toggle('on',UI.ax);
+    el('tSpin').classList.toggle('on',UI.spin);
+  }
+  el('play').onclick=()=>{
+    if(!UI.playing && UI.t>=NM-1-1e-4) UI.t=0;
+    UI.playing=!UI.playing; UI.dwell=0; syncPlay();
+  };
+  el('prev').onclick=()=>goto(Math.ceil(UI.t-1.0001));
+  el('next').onclick=()=>goto(Math.floor(UI.t+1.0001));
+  scrub.oninput=()=>{ UI.t=+scrub.value; UI.playing=false; UI.dwell=0; syncPlay(); refresh(); };
+  el('tGeom').onclick =()=>{ UI.geom=!UI.geom; syncTg(); };
+  el('tCells').onclick=()=>{ UI.cells=!UI.cells; syncTg(); };
+  el('tLab').onclick  =()=>{ UI.labels=!UI.labels; syncTg(); refresh(); };
+  el('tAx').onclick   =()=>{ UI.ax=!UI.ax; syncTg(); };
+  el('tSpin').onclick =()=>{ UI.spin=!UI.spin; syncTg(); };
+  el('notesBtn').onclick=()=>{ el('notes').classList.add('on'); el('notesBtn').style.display='none'; };
+  el('nClose').onclick  =()=>{ el('notes').classList.remove('on'); el('notesBtn').style.display=''; };
+  window.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT' && e.key!=='Escape') return;
+    const k=e.key.toLowerCase();
+    if(e.code==='Space'){ e.preventDefault(); el('play').click(); }
+    else if(e.key==='ArrowRight'){ e.preventDefault(); el('next').click(); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); el('prev').click(); }
+    else if(k==='g') el('tGeom').click();
+    else if(k==='e') el('tCells').click();
+    else if(k==='l') el('tLab').click();
+    else if(k==='a') el('tAx').click();
+    else if(k==='r') el('tSpin').click();
+    else if(e.key==='Escape') el('nClose').click();
+  });
+
+  let shown=-1;
+  function refresh(){
+    const i=clamp(Math.round(UI.t-0.30),0,NM-1);
+    el('pFill').style.width=(UI.t/(NM-1)*100)+'%';
+    scrub.value=UI.t;
+    tickEls.forEach((t,k)=>t.classList.toggle('act',k===i));
+    if(i===shown) return;
+    shown=i;
+    const m=M[i];
+    el('pRom').textContent=m.rom;
+    el('pName').textContent=m.name;
+    el('pSub').textContent=m.sub;
+    el('pObs').textContent=m.obs;   el('pObsC').textContent=m.obsC;
+    el('pIdeal').textContent=m.ideal;
+    el('pHerm').textContent='“'+m.herm+'”'; el('pHermC').textContent=m.hermC;
+    buildLabels(m);
+    const hasAx = m.ax && m.ax[0];
+    el('axQ').textContent = hasAx ? '“'+m.ax[0]+'”' : '';
+    el('axS').textContent = hasAx ? m.ax[1] : '';
+  }
+
+  /* ── labels ── */
+  const labBox=el('labels'), svg=el('leaders');
+  let labs=[];
+  const OFFSETS=[[140,-74],[-150,70],[152,80],[-142,-82],[0,-120]];
+  function buildLabels(m){
+    labBox.innerHTML=''; svg.innerHTML=''; labs=[];
+    (m.labs||[]).forEach((L,k)=>{
+      const d=document.createElement('div');
+      d.className='lab '+(L.c||'');
+      d.innerHTML=`<b>${L.t}</b><i>${L.s}</i>`;
+      labBox.appendChild(d);
+      const ln=document.createElementNS('http://www.w3.org/2000/svg','path');
+      ln.setAttribute('fill','none'); ln.setAttribute('stroke-width','1');
+      const col = L.c==='obs' ? 'rgba(84,214,196,.52)'
+                : L.c==='ideal' ? 'rgba(232,183,90,.52)'
+                : L.c==='herm' ? 'rgba(184,146,232,.52)' : 'rgba(180,165,215,.40)';
+      ln.setAttribute('stroke',col); svg.appendChild(ln);
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('r','2.4'); dot.setAttribute('fill',col.replace(/[\d.]+\)$/,'.95)'));
+      svg.appendChild(dot);
+      labs.push({def:L, div:d, line:ln, dot, off:OFFSETS[k%OFFSETS.length]});
+    });
+  }
+  const _an=[0,0,0];
+  function anchorPoint(kind, p, out){
+    const cx=pnCx(p);
+    out[0]=out[1]=out[2]=0;
+    switch(kind){
+      case 'zyg':   out[0]=0.62; out[1]=0.0; out[2]=0.78; break;
+      case 'zona':  out[0]=-0.30; out[1]=0.30; out[2]=0.90; break;
+      case 'sperm': out[0]=p.spermD+SPR; break;
+      case 'axis':  out[0]=1.30; break;
+      case 'wave':  out[0]=0.55; out[1]=0.62; out[2]=0.55; break;
+      case 'spark': out[0]=1.45; out[1]=0.55; out[2]=0.55; break;
+      case 'pnA':   out[0]=-cx-PNR*0.72; out[2]=PNR*0.60; break;
+      case 'pnB':   out[0]= cx+PNR*0.72; out[2]=PNR*0.60; break;
+      case 'lens':  out[2]=PNR*SQRT3/2; break;
+      case 'core':  break;
+      case 'pole':  out[2]=1.05; break;
+      case 'loop':  out[0]=1.55; out[2]=0.55; break;
+      case 'egg':   out[0]=0.34; out[1]=0.34; out[2]=0.34; break;
+    }
+    return out;
+  }
+  function layoutLabels(mvp){
+    const avoid=[el('panel').getBoundingClientRect(), el('title').getBoundingClientRect()];
+    const placed=[];
+    const hits=(x,y)=>
+      avoid.some(r=>x>r.left-64&&x<r.right+64&&y>r.top-24&&y<r.bottom+24) ||
+      placed.some(q=>Math.abs(x-q.x)<154&&Math.abs(y-q.y)<34);
+    for(const L of labs){
+      if(!UI.labels){ L.div.style.display='none'; L.line.style.display='none'; L.dot.style.display='none'; continue; }
+      anchorPoint(L.def.a, P, _an);
+      const sp=project(mvp,_an,W,H);
+      if(!sp){ L.div.style.display='none'; L.line.style.display='none'; L.dot.style.display='none'; continue; }
+      const dx=L.off[0], dy=L.off[1];
+      const cand=[[dx,dy],[-dx,dy],[dx,-dy],[-dx,-dy],[dx*1.6,dy*1.5],[-dx*1.6,dy*1.5]];
+      let lx=sp[0]+dx, ly=sp[1]+dy;
+      for(const c of cand){
+        const x=sp[0]+c[0], y=sp[1]+c[1];
+        if(!hits(x,y)){ lx=x; ly=y; break; }
+      }
+      lx=clamp(lx,100,W-100); ly=clamp(ly,56,H-146);
+      placed.push({x:lx,y:ly});
+      L.div.style.display=''; L.line.style.display=''; L.dot.style.display='';
+      L.div.style.left=lx+'px'; L.div.style.top=ly+'px';
+      const mx=(sp[0]+lx)/2, my=(sp[1]+ly)/2, bend=16*(lx>sp[0]?1:-1);
+      L.line.setAttribute('d',`M${sp[0].toFixed(1)},${sp[1].toFixed(1)} Q${(mx+bend).toFixed(1)},${my.toFixed(1)} ${(lx-Math.sign(lx-sp[0])*8).toFixed(1)},${ly.toFixed(1)}`);
+      L.dot.setAttribute('cx',sp[0].toFixed(1)); L.dot.setAttribute('cy',sp[1].toFixed(1));
+    }
+  }
+
+  /* ── draw helpers ── */
+  function surfCommon(proj,view,eye,time){
+    gl.useProgram(pSurf.p);
+    gl.uniformMatrix4fv(pSurf.u.uProj,false,proj);
+    gl.uniformMatrix4fv(pSurf.u.uView,false,view);
+    gl.uniform3f(pSurf.u.uCam,eye[0],eye[1],eye[2]);
+    gl.uniform1f(pSurf.u.uTime,time);
+  }
+  function bindSphere(){
+    bindAttr(pSurf,'aPos',B.sPos,3); bindAttr(pSurf,'aUV',B.sUV,2);
+    disableAttr(pSurf,'aNor');
+    gl.uniform1f(pSurf.u.uUseNor,0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,B.sIdx);
+  }
+  function bindTube(){
+    bindAttr(pSurf,'aPos',B.tPos,3); bindAttr(pSurf,'aNor',B.tNor,3); bindAttr(pSurf,'aUV',B.tUV,2);
+    gl.uniform1f(pSurf.u.uUseNor,1);
+    gl.uniform3f(pSurf.u.uOff,0,0,0); gl.uniform1f(pSurf.u.uRad,1);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,B.tIdx);
+  }
+  function noClip(){ gl.uniform1f(pSurf.u.uClipOn,0); }
+  function clipTo(nx,ny,nz,d){
+    gl.uniform1f(pSurf.u.uClipOn,1);
+    gl.uniform3f(pSurf.u.uClipN,nx,ny,nz);
+    gl.uniform1f(pSurf.u.uClipD,d);
+  }
+  function noWave(){ gl.uniform1f(pSurf.u.uWaveAmt,0); }
+  /* one translucent sphere: far shell then near shell, depth-read only */
+  function glazeSphere(cx,cy,cz,r,op){
+    gl.uniform3f(pSurf.u.uOff,cx,cy,cz); gl.uniform1f(pSurf.u.uRad,r);
+    gl.uniform1f(pSurf.u.uOpacity,op);
+    gl.depthMask(false); gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.FRONT); gl.drawElements(gl.TRIANGLES,sIdx.length,gl.UNSIGNED_SHORT,0);
+    gl.cullFace(gl.BACK);  gl.drawElements(gl.TRIANGLES,sIdx.length,gl.UNSIGNED_SHORT,0);
+    gl.disable(gl.CULL_FACE); gl.depthMask(true);
+  }
+  function solidSphere(cx,cy,cz,r,op){
+    gl.uniform3f(pSurf.u.uOff,cx,cy,cz); gl.uniform1f(pSurf.u.uRad,r);
+    gl.uniform1f(pSurf.u.uOpacity,op);
+    gl.disable(gl.CULL_FACE); gl.depthMask(true);
+    gl.drawElements(gl.TRIANGLES,sIdx.length,gl.UNSIGNED_SHORT,0);
+  }
+
+  let t0=performance.now();
+  syncTg(); syncPlay(); refresh();
+
+  function frame(now){
+    const dt=Math.min((now-t0)/1000,0.05); t0=now;
+    const time=now/1000;
+    const edt=Math.max(dt,1/240);
+
+    if(UI.playing){
+      if(UI.dwell>0) UI.dwell-=dt;
+      else {
+        const prev=UI.t;
+        UI.t=Math.min(UI.t+dt*0.20,NM-1);
+        if(Math.floor(UI.t)!==Math.floor(prev) && UI.t<NM-1) UI.dwell=1.6;
+        if(UI.t>=NM-1){ UI.playing=false; syncPlay(); }
+      }
+      refresh();
+    }
+    if(UI.spin && !drag) cam.az += dt*0.075;
+
+    const p=evalParams(UI.t);
+    const cx=pnCx(p);
+    const geom = UI.geom ? 1 : 0;
+
+    el('axiom').classList.toggle('on', UI.ax && !!(M[shown] && M[shown].ax && M[shown].ax[0]));
+    el('scaleNote').textContent = p.sperm > 0.25
+      ? '1 unit ≈ 60 µm · sperm drawn to scale'
+      : (p.sep > 0.5 ? 'vesica · height : width = √3 : 1' : '1 unit ≈ 60 µm');
+
+    /* camera */
+    const dist=p.dist*cam.zoom;
+    const ce=Math.cos(cam.el), se=Math.sin(cam.el);
+    const eye=[dist*ce*Math.cos(cam.az), dist*ce*Math.sin(cam.az), dist*se];
+    const proj=m4perspective(0.80,Math.max(W/H,0.35),0.03,40);
+    const view=m4lookAt(eye,[0,0,0],[0,0,1]);
+    const mvp=m4mul(proj,view);
+
+    /* ── background ── */
+    gl.viewport(0,0,cv.width,cv.height);
+    gl.disable(gl.DEPTH_TEST); gl.disable(gl.BLEND);
+    gl.useProgram(pBg.p);
+    gl.uniform1f(pBg.u.uAsp,Math.max(W/H,0.35));
+    gl.uniform1f(pBg.u.uWarm,clamp(p.spark*0.8+p.lens*0.5,0,1));
+    bindAttr(pBg,'aP',B.quad,2);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+
+    gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    surfCommon(proj,view,eye,time);
+    bindSphere();
+    noClip(); noWave();
+    gl.uniform1f(pSurf.u.uWob,0.006);
+
+    /* ── the sperm head (opaque, drawn first) ── */
+    if(p.sperm > 0.01){
+      gl.uniform3f(pSurf.u.uColA,0.72,0.66,0.52);
+      gl.uniform3f(pSurf.u.uColB,1.00,0.96,0.84);
+      gl.uniform3f(pSurf.u.uEmisC,0.50,0.44,0.30);
+      gl.uniform1f(pSurf.u.uCellMix,0);
+      gl.uniform1f(pSurf.u.uSpec,0.7); gl.uniform1f(pSurf.u.uRim,0.5);
+      gl.uniform1f(pSurf.u.uEmis,0.30*p.sperm); gl.uniform1f(pSurf.u.uInner,0.5);
+      gl.uniform1f(pSurf.u.uGlow,0.2);
+      solidSphere(p.spermD,0,0,SPR*(0.4+0.6*p.sperm),p.sperm);
+    }
+
+    /* ── the two pronuclei, and the vesica lens between them ── */
+    if(p.pn > 0.01){
+      gl.uniform2f(pSurf.u.uCell,26,13);
+      gl.uniform1f(pSurf.u.uCellMix,0);
+      gl.uniform1f(pSurf.u.uSpec,0.45); gl.uniform1f(pSurf.u.uRim,0.75);
+      gl.uniform1f(pSurf.u.uInner,0.6); gl.uniform1f(pSurf.u.uGlow,0.18);
+      /* maternal — cooler */
+      gl.uniform3f(pSurf.u.uColA,0.26,0.44,0.72);
+      gl.uniform3f(pSurf.u.uColB,0.66,0.84,1.00);
+      gl.uniform3f(pSurf.u.uEmisC,0.18,0.34,0.62);
+      gl.uniform1f(pSurf.u.uEmis,0.14*p.pn);
+      glazeSphere(-cx,0,0,PNR*p.pn,0.34*p.pn);
+      /* paternal — warmer */
+      gl.uniform3f(pSurf.u.uColA,0.72,0.42,0.24);
+      gl.uniform3f(pSurf.u.uColB,1.00,0.84,0.62);
+      gl.uniform3f(pSurf.u.uEmisC,0.66,0.34,0.16);
+      gl.uniform1f(pSurf.u.uEmis,0.14*p.pn);
+      glazeSphere(cx,0,0,PNR*p.pn,0.34*p.pn);
+
+      /* the lens: each sphere clipped at the midplane, so only the overlap shows */
+      if(p.lens > 0.01){
+        gl.uniform3f(pSurf.u.uColA,0.92,0.76,0.40);
+        gl.uniform3f(pSurf.u.uColB,1.00,0.96,0.82);
+        gl.uniform3f(pSurf.u.uEmisC,0.95,0.74,0.34);
+        gl.uniform1f(pSurf.u.uEmis,0.46*p.lens);
+        gl.uniform1f(pSurf.u.uRim,0.95); gl.uniform1f(pSurf.u.uGlow,0.34);
+        clipTo(-1,0,0,0);                       // keep x ≥ 0 of the left sphere
+        glazeSphere(-cx,0,0,PNR*p.pn,0.42*p.lens);
+        clipTo(1,0,0,0);                        // keep x ≤ 0 of the right sphere
+        glazeSphere(cx,0,0,PNR*p.pn,0.42*p.lens);
+        noClip();
+      }
+    }
+
+    /* ── the eight cells ── */
+    if(p.egg > 0.01){
+      gl.uniform2f(pSurf.u.uCell,20,10);
+      gl.uniform1f(pSurf.u.uCellMix,UI.cells?0.75*p.cell:0);
+      gl.uniform1f(pSurf.u.uSpec,0.40); gl.uniform1f(pSurf.u.uRim,0.60);
+      gl.uniform1f(pSurf.u.uInner,0.55); gl.uniform1f(pSurf.u.uGlow,0.14);
+      for(let i=0;i<8;i++){
+        const c=EGG[i], warm=(c[0]*c[1]*c[2] > 0);
+        if(warm){ gl.uniform3f(pSurf.u.uColA,0.60,0.44,0.30);
+                  gl.uniform3f(pSurf.u.uColB,1.00,0.88,0.68);
+                  gl.uniform3f(pSurf.u.uEmisC,0.52,0.34,0.16); }
+        else    { gl.uniform3f(pSurf.u.uColA,0.30,0.42,0.66);
+                  gl.uniform3f(pSurf.u.uColB,0.74,0.86,1.00);
+                  gl.uniform3f(pSurf.u.uEmisC,0.20,0.32,0.58); }
+        gl.uniform1f(pSurf.u.uEmis,0.10*p.egg);
+        glazeSphere(c[0]*EGGS*p.egg, c[1]*EGGS*p.egg, c[2]*EGGS*p.egg,
+                    EGGR*p.egg, 0.42*p.egg);
+      }
+    }
+
+    /* ── the outer boundary: oocyte, then zona pellucida ── */
+    if(p.zyg > 0.01){
+      gl.uniform3f(pSurf.u.uColA,0.34,0.32,0.52);
+      gl.uniform3f(pSurf.u.uColB,0.80,0.78,0.96);
+      gl.uniform3f(pSurf.u.uEmisC,0.14,0.12,0.24);
+      const cs=Math.max(6,Math.round(28*p.cell+8));
+      gl.uniform2f(pSurf.u.uCell,cs*2,cs);
+      gl.uniform1f(pSurf.u.uCellMix,UI.cells?0.62*p.cell:0);
+      gl.uniform1f(pSurf.u.uSpec,0.28); gl.uniform1f(pSurf.u.uRim,0.62);
+      gl.uniform1f(pSurf.u.uEmis,0.05); gl.uniform1f(pSurf.u.uInner,0.55);
+      gl.uniform1f(pSurf.u.uGlow,0.12);
+      if(p.wave > 0.01){
+        gl.uniform1f(pSurf.u.uWaveAmt,p.wave);
+        gl.uniform1f(pSurf.u.uWaveT,(time*0.62-Math.floor(time*0.62))*Math.PI);
+        gl.uniform3f(pSurf.u.uWaveDir,1,0,0);
+      } else noWave();
+      glazeSphere(0,0,0,1.0,p.zygOp);
+      noWave();
+    }
+
+    /* ── the vesica's intersection circle, as a solid ring ── */
+    if(p.lens > 0.02 && p.sep > 0.05){
+      const ri=PNR*Math.sqrt(Math.max(0,1-(p.sep*0.5)*(p.sep*0.5)));
+      sweepTube((s,o)=>ringSpine(0,0,0,ri,0,s,o), 0.008+0.006*p.lens);
+      upload(B.tPos,tPos); upload(B.tNor,tNor);
+      bindTube();
+      gl.uniform3f(pSurf.u.uColA,1.00,0.86,0.46);
+      gl.uniform3f(pSurf.u.uColB,1.00,0.98,0.88);
+      gl.uniform3f(pSurf.u.uEmisC,1.00,0.82,0.40);
+      gl.uniform1f(pSurf.u.uCellMix,0);
+      gl.uniform1f(pSurf.u.uSpec,0.5); gl.uniform1f(pSurf.u.uRim,0.9);
+      gl.uniform1f(pSurf.u.uEmis,0.55*p.lens); gl.uniform1f(pSurf.u.uInner,0.8);
+      gl.uniform1f(pSurf.u.uGlow,0.25);
+      gl.uniform1f(pSurf.u.uOpacity,p.lens);
+      gl.disable(gl.CULL_FACE); gl.depthMask(false);
+      gl.disable(gl.DEPTH_TEST);
+      gl.drawElements(gl.TRIANGLES,tIdx.length,gl.UNSIGNED_SHORT,0);
+      gl.enable(gl.DEPTH_TEST); gl.depthMask(true);
+    }
+
+    /* ── construction lines ── */
+    lReset();
+    if(geom){
+      const A=[-cx,0,0], Bc=[cx,0,0], O=[0,0,0];
+      if(p.lnMono>0.004) lCircle(O,1.0,EX,EY,p.lnMono*0.5,128), lCircle(O,1.0,EX,EZ,p.lnMono*0.34,128);
+      if(p.lnVes>0.004){
+        const a=p.lnVes;
+        lCircle(A,PNR,EX,EZ,a*0.85,110); lCircle(Bc,PNR,EX,EZ,a*0.85,110);
+        lCircle(A,PNR,EX,EY,a*0.30,110); lCircle(Bc,PNR,EX,EY,a*0.30,110);
+        const ri=PNR*Math.sqrt(Math.max(0,1-(p.sep*0.5)*(p.sep*0.5)));
+        lCircle(O,ri,EY,EZ,a*0.9,110);
+        /* the √3 : 1 measure — lens height (2·ri) against lens width (d) */
+        lSeg(0,0,-ri, 0,0,ri, a*0.85);
+        lSeg(-cx,0,0, cx,0,0, a*0.55);
+      }
+      if(p.lnTri>0.004){                     /* the equilateral triangle the vesica gives */
+        const a=p.lnTri, h=PNR*SQRT3/2;
+        lSeg(-cx,0,0,  cx,0,0,  a*0.9);
+        lSeg(-cx,0,0,  0,0,h,   a*0.9);
+        lSeg( cx,0,0,  0,0,h,   a*0.9);
+        lSeg(-cx,0,0,  0,0,-h,  a*0.5);
+        lSeg( cx,0,0,  0,0,-h,  a*0.5);
+      }
+      if(p.lnField>0.004){                   /* nested toroidal loops + the axis return */
+        const a=p.lnField, NPHI=10, prev=[0,0,0], cur=[0,0,0];
+        for(let s=0;s<3;s++){
+          const k=s/2;
+          for(let q=0;q<NPHI;q++){
+            const phi=q/NPHI*TAU;
+            fieldPoint(0,k,phi,prev);
+            for(let i=1;i<=40;i++){
+              fieldPoint(i/40*0.74,k,phi,cur);
+              lSeg(prev[0],prev[1],prev[2], cur[0],cur[1],cur[2], a*(0.30-0.06*s));
+              prev[0]=cur[0]; prev[1]=cur[1]; prev[2]=cur[2];
+            }
+          }
+        }
+        /* the interior return path — only while the circuit is the subject */
+        if(a > 0.55) lSeg(0,0,-1.68, 0,0,1.68, a*0.75);
+      }
+      if(p.lnEgg>0.004){                     /* the two inscribed tetrahedra */
+        const a=p.lnEgg, S=EGGS*p.egg;
+        const edges=(T,al)=>{ for(let i=0;i<4;i++) for(let j=i+1;j<4;j++)
+          lSeg(T[i][0]*S,T[i][1]*S,T[i][2]*S, T[j][0]*S,T[j][1]*S,T[j][2]*S, al); };
+        edges(EGGA,a*0.75); edges(EGGB,a*0.55);
+      }
+    }
+    if(lN>1){
+      gl.useProgram(pLine.p);
+      gl.uniformMatrix4fv(pLine.u.uProj,false,proj);
+      gl.uniformMatrix4fv(pLine.u.uView,false,view);
+      gl.uniform3f(pLine.u.uC,1.00,0.88,0.58);
+      gl.uniform1f(pLine.u.uAmt,0.95);
+      upload(B.lPos,lPos,lN*3); upload(B.lA,lAlpha,lN);
+      bindAttr(pLine,'aP',B.lPos,3); bindAttr(pLine,'aA',B.lA,1);
+      gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
+      gl.depthMask(false); gl.disable(gl.DEPTH_TEST);
+      gl.drawArrays(gl.LINES,0,lN);
+      gl.enable(gl.DEPTH_TEST); gl.depthMask(true);
+      gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    }
+
+    /* ── particles: zinc spark and field circulation ── */
+    if(p.spark > 0.01 || p.field > 0.01){
+      buildParticles(p,time);
+      upload(B.pPos,pPos); upload(B.pAtt,pAtt);
+      gl.useProgram(pPt.p);
+      gl.uniformMatrix4fv(pPt.u.uProj,false,proj);
+      gl.uniformMatrix4fv(pPt.u.uView,false,view);
+      gl.uniform1f(pPt.u.uDpr,dpr);
+      bindAttr(pPt,'aPos',B.pPos,3); bindAttr(pPt,'aAtt',B.pAtt,2);
+      gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
+      gl.depthMask(false); gl.disable(gl.DEPTH_TEST);
+      if(p.spark>0.01){
+        gl.uniform3f(pPt.u.uC,0.60,0.86,1.00);       // zinc — cool white-blue
+        gl.drawArrays(gl.POINTS,0,NHALF);
+      }
+      if(p.field>0.01){
+        gl.uniform3f(pPt.u.uC,0.72,0.60,1.00);       // field — violet
+        gl.drawArrays(gl.POINTS,NHALF,NP-NHALF);
+      }
+      gl.enable(gl.DEPTH_TEST); gl.depthMask(true);
+      gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    }
+
+    layoutLabels(mvp);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ─────────────────────── boot (must be last) ─────────────────────── */
+if(!gl){
+  document.getElementById('fail').style.display='grid';
+  document.getElementById('transport').style.display='none';
+} else {
+  main();
+}
+</script>
+</body>
+</html>
