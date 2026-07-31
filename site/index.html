@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Promethean Theoria — Interactive Studies in Sacred Geometry &amp; Computed Physics</title>
-<meta name="description" content="Six self-contained interactive studies at the seam between measured physics and the Hermetic tradition. Physics computed live; interpretation clearly labeled.">
+<title>Promethean Theoria — let all who enter bring an empty cup</title>
+<meta name="description" content="Let all who enter bring an empty cup — six luminous studies at the seam of measured physics and the Hermetic tradition; the numbers computed, the cup yours to fill.">
 <meta property="og:title" content="Promethean Theoria">
-<meta property="og:description" content="Interactive studies in sacred geometry &amp; computed physics — the physics is computed live, the interpretation is labeled.">
-<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/conception_sacred_geometry.webp">
+<meta property="og:description" content="Let all who enter bring an empty cup — six luminous studies at the seam of measured physics and the Hermetic tradition; the numbers computed, the cup yours to fill.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/assets/site-logo.jpg">
 <meta property="og:url" content="https://promethean-theoria.netlify.app/">
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <style>
   :root {
     --bg: #0b0e14;
@@ -28,9 +29,32 @@
     min-height: 100vh;
     padding: 3.5rem 1.25rem 5rem;
   }
-  main { max-width: 1080px; margin: 0 auto; }
+  main { max-width: 1080px; margin: 0 auto; position: relative; z-index: 1; }
+
+  /* Burning Heart Mind — fixed backdrop, feathered into the dark ground */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("assets/bg-heart.webp") no-repeat center 30% / min(820px, 94vw) auto;
+    opacity: 0.13;
+    filter: saturate(0.85) brightness(0.72);
+    -webkit-mask-image: radial-gradient(ellipse 58% 52% at 50% 42%, #000 30%, transparent 76%);
+    mask-image: radial-gradient(ellipse 58% 52% at 50% 42%, #000 30%, transparent 76%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
   header { text-align: center; margin-bottom: 1.6rem; }
+  .emblem {
+    display: block;
+    width: min(290px, 68vw);
+    height: auto;
+    margin: 0 auto 1.4rem;
+    -webkit-mask-image: radial-gradient(ellipse 52% 52% at 50% 50%, #000 58%, transparent 97%);
+    mask-image: radial-gradient(ellipse 52% 52% at 50% 50%, #000 58%, transparent 97%);
+    filter: drop-shadow(0 0 34px rgba(96, 148, 255, 0.14));
+  }
   h1 {
     font-size: 2.3rem;
     font-weight: normal;
@@ -129,8 +153,10 @@
 <body>
 <main>
   <header>
+    <img class="emblem" src="assets/logo-emblem.webp" width="720" height="912"
+         alt="Promethean Theoria emblem — a meditating figure inside a golden mandorla, toroidal field lines around a flame at the heart, the Earth below">
     <h1>Promethean Theoria</h1>
-    <div class="tagline">interactive studies in sacred geometry &amp; computed physics</div>
+    <div class="tagline">let all who enter bring an empty cup</div>
     <div class="divider"></div>
   </header>
 
