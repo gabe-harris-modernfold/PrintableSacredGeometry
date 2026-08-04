@@ -131,17 +131,44 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
   letter-spacing:.04em;text-align:right;line-height:1.7;pointer-events:none}
 #fail{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:40px;font-size:14px;color:var(--ink2)}
 @media (max-width:1100px){
-  #panel{width:310px;top:auto;bottom:142px;right:16px}
+  /* bottom:142 sat inside the transport bar's own ~190px footprint — panel and
+     transport structurally overlapped here regardless of content length */
+  #panel{width:310px;top:auto;bottom:210px;right:16px;
+    max-height:max(140px, calc(100vh - 275px));overflow-y:auto;-webkit-overflow-scrolling:touch}
   #title{max-width:min(330px,50vw);left:18px;top:16px} #title h1{font-size:20px}
-  #hint{display:none} #notesBtn,#notes{left:18px;bottom:16px}
+  #hint{display:none}
+  /* left:18/bottom:16 sat inside the transport bar once it widens to near full-viewport
+     here — the notesBtn trigger needs a corner transport never reaches, and panel's
+     max-height above reserves the same corner so a tall panel can't rise into it */
+  #notesBtn{top:16px;right:16px;left:auto;bottom:auto}
+  #notes{left:18px;bottom:16px}
 }
 @media (max-width:780px){
-  #panel{position:absolute;left:12px;right:12px;width:auto;bottom:auto;top:126px}
+  /* panel is bounded + internally scrollable so long movement text can never be
+     clipped behind the transport bar with no way to reach it (the reported bug) */
+  #panel{position:absolute;left:12px;right:12px;width:auto;bottom:auto;top:168px;
+    max-height:max(180px, calc(100vh - 358px));overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* the 3D scene renders full-bleed underneath this overlay, so on phones the panel
+     collapses to a short header by default — three always-open registers would
+     otherwise sit right over the model. Tap the header for the full readings. */
+  #pHead{cursor:pointer;position:relative}
+  #pHead::after{
+    content:'tap for readings  ▾';position:absolute;right:16px;bottom:11px;
+    font-family:var(--sans);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);
+  }
+  #panel.expanded #pHead::after{content:'tap to collapse  ▴'}
+  .reg,#pProg{display:none}
+  #panel.expanded .reg,#panel.expanded #pProg{display:block}
   .reg p{font-size:11.5px} #title{right:12px;left:12px;max-width:none}
-  #transport{width:calc(100vw - 22px);bottom:10px;padding:8px 10px}
-  .tick b{display:none} #notesBtn{bottom:auto;top:12px;right:12px;left:auto}
+  #transport{width:calc(100vw - 22px);bottom:10px;padding:8px 10px;
+    padding-bottom:max(9px, env(safe-area-inset-bottom))}
+  .tick b{display:none} #notesBtn{bottom:auto;top:12px;right:12px;left:auto;padding:10px 14px}
   #notes{left:10px;right:10px;width:auto;top:56px;bottom:auto}
   #axiom q{font-size:15px}
+  /* touch targets: desktop-density icon buttons and pills are too small to tap reliably */
+  .btn.icon{width:42px;padding:11px 0}
+  #play{width:48px;padding:11px 0}
+  .tg{padding:7px 13px}
 }
 </style>
 </head>
@@ -793,6 +820,39 @@ function main(){
   }
   window.addEventListener('resize',resize); resize();
 
+  /* #axiom floats at a fixed top:15% and #panel at a fixed top:168px, both meant
+     for the wide-desktop layout where the title column is short. On narrower
+     widths the title wraps onto many lines and grows tall enough to collide —
+     stack title → axiom → panel using real measured heights instead of guessing
+     at static offsets, and shrink panel's own budget to match so it still never
+     reaches the transport bar. */
+  function layoutOverlays(){
+    const axiom=el('axiom'), title=el('title'), panel=el('panel');
+    if(!axiom || !title) return;
+    const w=window.innerWidth;
+    if(w>1100){ axiom.style.top=''; if(panel){ panel.style.top=''; panel.style.maxHeight=''; } return; }
+    const gap=18;
+    const titleBottom=title.getBoundingClientRect().bottom;
+    const axiomH=axiom.getBoundingClientRect().height;
+    /* top:X% sets axiom's CENTER (it's translate(-50%,-50%)) — clearing title's
+       bottom edge means pushing that center down by axiom's own half-height too,
+       not just past title, or the top half of the quote still reaches back up */
+    const pct=Math.max(15, (titleBottom+gap+axiomH/2)/window.innerHeight*100);
+    axiom.style.top=pct+'%';
+    if(panel && w<=780){
+      const axiomBottom=titleBottom+gap+axiomH;
+      const newTop=Math.max(168, axiomBottom+gap);
+      const transportReserve=190; // matches this breakpoint's own bottom bar + gap
+      panel.style.top=newTop+'px';
+      panel.style.maxHeight='max(140px, calc(100vh - '+(newTop+transportReserve)+'px))';
+    } else if(panel){
+      panel.style.top=''; panel.style.maxHeight=''; // tablet range: CSS bottom-anchor stands
+    }
+  }
+  window.addEventListener('resize',layoutOverlays);
+  window.addEventListener('load',layoutOverlays);
+  requestAnimationFrame(()=>requestAnimationFrame(layoutOverlays));
+
   let drag=null;
   cv.addEventListener('pointerdown',e=>{
     drag={x:e.clientX,y:e.clientY,az:cam.az,el:cam.el};
@@ -859,6 +919,7 @@ function main(){
   el('tAx').onclick   =()=>{ UI.ax=!UI.ax; syncTg(); };
   el('tSpin').onclick =()=>{ UI.spin=!UI.spin; syncTg(); };
   el('notesBtn').onclick=()=>{ el('notes').classList.add('on'); el('notesBtn').style.display='none'; };
+  el('pHead').onclick=()=>{ el('panel').classList.toggle('expanded'); };
   el('nClose').onclick  =()=>{ el('notes').classList.remove('on'); el('notesBtn').style.display=''; };
   window.addEventListener('keydown',e=>{
     if(e.target.tagName==='INPUT' && e.key!=='Escape') return;
@@ -893,6 +954,7 @@ function main(){
     const hasAx = m.ax && m.ax[0];
     el('axQ').textContent = hasAx ? '“'+m.ax[0]+'”' : '';
     el('axS').textContent = hasAx ? m.ax[1] : '';
+    layoutOverlays(); // each movement's quote is a different length/height
   }
 
   /* ── labels ── */
@@ -940,7 +1002,11 @@ function main(){
     return out;
   }
   function layoutLabels(mvp){
-    const avoid=[el('panel').getBoundingClientRect(), el('title').getBoundingClientRect()];
+    /* axiom and notesBtn matter here too — at tablet widths title is a narrow
+       left column (not full-width), so a purely vertical floor below title
+       would miss the cluster of UI that piles up on the right side instead */
+    const avoid=[el('panel'), el('title'), el('axiom'), el('notesBtn')]
+      .map(e=>e.getBoundingClientRect());
     const placed=[];
     const hits=(x,y)=>
       avoid.some(r=>x>r.left-64&&x<r.right+64&&y>r.top-24&&y<r.bottom+24) ||
@@ -957,7 +1023,15 @@ function main(){
         const x=sp[0]+c[0], y=sp[1]+c[1];
         if(!hits(x,y)){ lx=x; ly=y; break; }
       }
-      lx=clamp(lx,100,W-100); ly=clamp(ly,56,H-146);
+      lx=clamp(lx,100,W-100);
+      /* title (and axiom, stacked directly below it) span the full width on
+         mobile, so if none of the 6 candidates escaped them, a hard floor below
+         whichever reaches lower guarantees no overlap — the padded hit-test
+         above is a preference, this is the backstop */
+      const titleR=avoid[1], axiomR=avoid[2];
+      const clearBelow=Math.max(titleR.bottom, axiomR.bottom);
+      const minLy=(W<=780 && titleR) ? Math.max(56,clearBelow+16) : 56;
+      ly=clamp(ly,minLy,H-146);
       placed.push({x:lx,y:ly});
       L.div.style.display=''; L.line.style.display=''; L.dot.style.display='';
       L.div.style.left=lx+'px'; L.div.style.top=ly+'px';

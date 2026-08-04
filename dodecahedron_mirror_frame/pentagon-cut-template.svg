@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="297.0mm" height="210.0mm"
+     viewBox="0 0 297.0 210.0">
+  <rect x="0" y="0" width="297.0" height="210.0" fill="#fff"/>
+  <polygon points="248.500,105.000 198.500,18.397 98.500,18.397 48.500,105.000 98.500,191.603 198.500,191.603" fill="none" stroke="#999"
+           stroke-width="0.4" stroke-dasharray="3,2"/>
+  <polygon points="233.565,105.000 174.787,24.098 79.681,55.000 79.681,155.000 174.787,185.902" fill="none" stroke="#000" stroke-width="0.6"/>
+  <circle cx="148.500" cy="105.000" r="1" fill="#000"/>
+  <g font-family="sans-serif" font-size="4.2" fill="#000">
+    <text x="8" y="14">PENTAGON CUT TEMPLATE - print at 100% / actual size, A4 or Letter LANDSCAPE</text>
+    <text x="8" y="21">Solid line = cut. Dashed = your 10 cm hexagon, for registration.</text>
+    <text x="8" y="28">Align one pentagon corner to one hexagon corner, as drawn. Cut all 5 lines.</text>
+    <text x="8" y="193.0">Pentagon side 100.0 mm  |  hexagon side 100.0 mm  |  12 needed</text>
+  </g>
+  <g stroke="#000" stroke-width="0.4" font-family="sans-serif" font-size="4.2">
+    <line x1="8" y1="202.0" x2="108" y2="202.0"/>
+    <line x1="8" y1="199.0" x2="8" y2="205.0"/>
+    <line x1="108" y1="199.0" x2="108" y2="205.0"/>
+    <text x="112" y="203.5" stroke="none">100 mm - check with a ruler before cutting glass</text>
+  </g>
+</svg>

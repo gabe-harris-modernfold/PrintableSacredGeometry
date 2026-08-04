@@ -196,21 +196,47 @@ canvas{position:absolute; inset:0; width:100%; height:100%; display:block; touch
   font-size:14px; color:var(--ink2); line-height:1.7;
 }
 @media (max-width:1080px){
-  #panel{width:290px; top:auto; bottom:150px; right:18px}
+  /* bottom:150 sat inside the transport bar's own ~190px footprint — panel and
+     transport structurally overlapped here regardless of content length */
+  #panel{width:290px; top:auto; bottom:214px; right:18px;
+    max-height:max(140px, calc(100vh - 279px));overflow-y:auto;-webkit-overflow-scrolling:touch}
   #title{max-width:min(340px,52vw); left:20px; top:18px}
   #title h1{font-size:21px}
   #hint{display:none}
-  #notesBtn,#notes{left:20px; bottom:18px}
+  /* left:20/bottom:18 sat inside the transport bar once it widens to near full-viewport
+     here — the notesBtn trigger needs a corner transport never reaches, and panel's
+     max-height above reserves the same corner so a tall panel can't rise into it */
+  #notesBtn{top:18px; right:20px; left:auto; bottom:auto}
+  #notes{left:20px; bottom:18px}
 }
 @media (max-width:760px){
-  #panel{position:absolute; left:14px; right:14px; width:auto; bottom:auto; top:120px}
-  #pBody{font-size:12px; padding:11px 14px 13px}
+  /* panel is bounded + internally scrollable so a long stage description can never be
+     clipped behind the transport bar with no way to reach it (the reported bug) */
+  #panel{position:absolute; left:14px; right:14px; width:auto; bottom:auto; top:176px;
+    max-height:max(180px, calc(100vh - 366px));overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* the 3D scene renders full-bleed underneath this overlay, so on phones the panel
+     collapses to a short header by default — enough detail sits over the model to
+     obscure it. Tap the header for the full description. */
+  #pHead{cursor:pointer; position:relative}
+  #pHead::after{
+    content:'tap for detail  ▾'; position:absolute; right:16px; bottom:12px;
+    font-family:var(--mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink3);
+  }
+  #panel.expanded #pHead::after{content:'tap to collapse  ▴'}
+  #pBody{display:none}
+  #panel.expanded #pBody{display:block; font-size:12px; padding:11px 14px 13px}
   #title{max-width:none; right:14px; left:14px; top:14px}
-  #transport{width:calc(100vw - 24px); bottom:12px; padding:9px 11px 8px}
+  #transport{width:calc(100vw - 24px); bottom:12px; padding:9px 11px 8px;
+    padding-bottom:max(9px, env(safe-area-inset-bottom))}
   #ticks{height:30px}
   .tick b{display:none}
-  #notesBtn{bottom:auto; top:14px; right:14px; left:auto}
+  #notesBtn{bottom:auto; top:14px; right:14px; left:auto; padding:10px 14px}
   #notes{left:12px; right:12px; width:auto; bottom:auto; top:60px}
+  /* touch targets: desktop-density icon buttons and pills are too small to tap reliably */
+  .btn.icon{width:42px;padding:11px 0}
+  #play{width:48px;padding:11px 0}
+  .tg{padding:7px 13px}
 }
 </style>
 </head>
@@ -930,6 +956,22 @@ function main(){
     svg.setAttribute('width', W); svg.setAttribute('height', H);
   }
   window.addEventListener('resize', resize);
+
+  /* #genus floats at a fixed top:22% meant for the wide-desktop layout, where the
+     title column is short. On narrower widths the title wraps onto many lines and
+     grows tall enough to collide with it — measure the real title height instead
+     of guessing at a percentage. */
+  function layoutOverlays(){
+    const genus=el('genus'), title=el('title');
+    if(!genus || !title) return;
+    if(window.innerWidth>1080){ genus.style.top=''; return; }
+    const clearBelow=title.getBoundingClientRect().bottom + 22;
+    const pct=Math.max(22, clearBelow/window.innerHeight*100);
+    genus.style.top=pct+'%';
+  }
+  window.addEventListener('resize', layoutOverlays);
+  window.addEventListener('load', layoutOverlays);
+  requestAnimationFrame(()=>requestAnimationFrame(layoutOverlays));
   resize();
 
   /* drag / wheel / touch */
@@ -1003,6 +1045,7 @@ function main(){
   el('tSpin').onclick  = () => { UI.spin  = !UI.spin;  syncTg(); };
   el('notesBtn').onclick = () => { el('notes').classList.add('on'); el('notesBtn').style.display='none'; };
   el('nClose').onclick   = () => { el('notes').classList.remove('on'); el('notesBtn').style.display=''; };
+  el('pHead').onclick = () => { el('panel').classList.toggle('expanded'); };
   window.addEventListener('keydown', e => {
     if(e.target.tagName === 'INPUT' && e.key !== 'Escape') return;
     const k = e.key.toLowerCase();
@@ -1086,8 +1129,10 @@ function main(){
   }
   function layoutLabels(mvp, p, phase, heartAmt){
     const show = UI.labels;
-    /* keep cards off the two text panels, whatever the breakpoint put them at */
-    const avoid = [el('panel').getBoundingClientRect(), el('title').getBoundingClientRect()];
+    /* keep cards off the text panels and notesBtn, whatever the breakpoint put them at —
+       at tablet widths title is a narrow left column, so the UI cluster to avoid isn't
+       purely a "below title" question */
+    const avoid = [el('panel'), el('title'), el('notesBtn')].map(e => e.getBoundingClientRect());
     const placed = [];                       // cards already positioned this frame
     const hits = (x,y) =>
       avoid.some(r => x > r.left-64 && x < r.right+64 && y > r.top-24 && y < r.bottom+24) ||
@@ -1109,7 +1154,12 @@ function main(){
         if(!hits(x, y)){ lx = x; ly = y; break; }
       }
       lx = clamp(lx, 100, W-100);
-      ly = clamp(ly, 56, H-150);
+      /* title spans the full width on mobile, so if none of the 8 candidates
+         escaped it, a hard floor below title's bottom guarantees no overlap —
+         the padded hit-test above is a preference, this is the backstop */
+      const titleR = avoid[1];
+      const minLy = (W<=760 && titleR) ? Math.max(56, titleR.bottom+16) : 56;
+      ly = clamp(ly, minLy, H-150);
       placed.push({x:lx, y:ly});
       L.div.style.display=''; L.line.style.display=''; L.dot.style.display='';
       L.div.style.left = lx+'px'; L.div.style.top = ly+'px';

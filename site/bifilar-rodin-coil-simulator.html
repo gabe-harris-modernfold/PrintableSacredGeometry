@@ -32,7 +32,13 @@
   .full{grid-column:1/-1}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;grid-column:1/-1}
   @media(max-width:1180px){.grid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}}
-  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  @media(max-width:760px){
+    .grid{grid-template-columns:1fr}
+    /* desktop-density controls are too small to tap reliably on a touchscreen */
+    .btnrow button{padding:10px 4px}
+    input[type=range]{height:30px}
+    select{padding:10px 6px}
+  }
 
   /* controls */
   .ctl{margin-bottom:13px}
@@ -713,7 +719,9 @@ function updateReadouts(){
 /* ================= canvas helpers ================= */
 function setupCanvas(id){
   const c=$(id), dpr=window.devicePixelRatio||1;
-  const w=c.clientWidth, h=parseInt(c.getAttribute('height'));
+  const w=c.clientWidth, hAttr=parseInt(c.getAttribute('height'));
+  /* below 520px wide, scale height with width so plots keep their designed aspect */
+  const h=Math.min(hAttr, Math.max(90, Math.round(hAttr*w/520)));
   c.width=w*dpr; c.height=h*dpr; c.style.height=h+'px';
   const ctx=c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   return {c,ctx,w,h};

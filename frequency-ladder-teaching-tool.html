@@ -39,7 +39,12 @@
   .row2{display:grid;grid-template-columns:1fr 1.2fr;gap:12px;grid-column:1/-1}
   .row2in{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
   @media(max-width:1180px){.grid,.ggrid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}}
-  @media(max-width:760px){.grid,.ggrid{grid-template-columns:1fr}}
+  @media(max-width:760px){
+    .grid,.ggrid{grid-template-columns:1fr}
+    /* desktop-density controls are too small to tap reliably on a touchscreen */
+    .tabs button{padding:10px 16px}
+    input[type=range]{height:30px}
+  }
 
   /* controls */
   .ctl{margin-bottom:13px}
@@ -319,7 +324,9 @@ function eng(v,u,d=3){
 }
 function setupCanvas(id){
   const c=$(id), dpr=Math.min(2,window.devicePixelRatio||1);
-  const w=c.clientWidth, h=parseInt(c.getAttribute('height'));
+  const w=c.clientWidth, hAttr=parseInt(c.getAttribute('height'));
+  /* below 520px wide, scale height with width so plots keep their designed aspect */
+  const h=Math.min(hAttr, Math.max(90, Math.round(hAttr*w/520)));
   c.width=w*dpr; c.height=h*dpr; c.style.height=h+'px';
   const ctx=c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   return {c,ctx,w,h};
