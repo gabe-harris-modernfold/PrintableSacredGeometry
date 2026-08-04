@@ -1,0 +1,1639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Cut and the Critical Angle — build plan</title>
+</head>
+<body>
+<style>
+:root{
+  /* dark-field lapidary: the palette of a stone under a dark-field loupe,
+     where the ground is extinction and only the returned light is bright.
+     Ray hues inherited from photon_quartz_simulation.html's own tokens. */
+  --ground:   #10131A;   /* extinction dark, biased violet — never neutral black */
+  --panel:    #171B25;
+  --panel-2:  #1D2230;
+  --rule:     #2A3040;
+  --rule-soft:#1F2431;
+  --ink:      #E9E6DD;   /* warm off-white of exposed film */
+  --ink-2:    #B0AFA8;
+  --muted:    #868DA0;
+  --faint:    #5C6377;
+
+  --tir:      #E8B54A;   /* returned ray — the one bold spend */
+  --tir-soft: rgba(232,181,74,.13);
+  --leak:     #5D93C9;   /* transmission / leakage */
+  --leak-soft:rgba(93,147,201,.13);
+  --edge:     #C4553D;   /* first-order red — critical boundary, risk */
+  --edge-soft:rgba(196,85,61,.13);
+  --ok:       #4FA872;
+
+  --serif: Charter,'Sitka Text',Cambria,Georgia,serif;
+  --sans:  'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:  'Cascadia Code',Consolas,'SF Mono','Roboto Mono',monospace;
+
+  --measure: 66ch;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --ground:   #F6F5F1;   /* drafting linen, cool-neutral — not cream */
+    --panel:    #EFEEE8;
+    --panel-2:  #E7E6DE;
+    --rule:     #D3D2C9;
+    --rule-soft:#E2E1D9;
+    --ink:      #1C2028;
+    --ink-2:    #454B57;
+    --muted:    #656B79;
+    --faint:    #8B909C;
+    --tir:      #A97400;
+    --tir-soft: rgba(169,116,0,.10);
+    --leak:     #2C6494;
+    --leak-soft:rgba(44,100,148,.10);
+    --edge:     #A33C26;
+    --edge-soft:rgba(163,60,38,.10);
+    --ok:       #2C7A4E;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#10131A; --panel:#171B25; --panel-2:#1D2230; --rule:#2A3040; --rule-soft:#1F2431;
+  --ink:#E9E6DD; --ink-2:#B0AFA8; --muted:#868DA0; --faint:#5C6377;
+  --tir:#E8B54A; --tir-soft:rgba(232,181,74,.13);
+  --leak:#5D93C9; --leak-soft:rgba(93,147,201,.13);
+  --edge:#C4553D; --edge-soft:rgba(196,85,61,.13); --ok:#4FA872;
+}
+:root[data-theme="light"]{
+  --ground:#F6F5F1; --panel:#EFEEE8; --panel-2:#E7E6DE; --rule:#D3D2C9; --rule-soft:#E2E1D9;
+  --ink:#1C2028; --ink-2:#454B57; --muted:#656B79; --faint:#8B909C;
+  --tir:#A97400; --tir-soft:rgba(169,116,0,.10);
+  --leak:#2C6494; --leak-soft:rgba(44,100,148,.10);
+  --edge:#A33C26; --edge-soft:rgba(163,60,38,.10); --ok:#2C7A4E;
+}
+
+html{background:var(--ground)}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--serif); font-size:16.5px; line-height:1.62;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:1080px; margin:0 auto; padding:3.4rem 1.5rem 6rem;
+      display:flex; flex-direction:column; gap:2.9rem;}
+
+/* ── masthead ─────────────────────────────────────────────── */
+header{display:flex; flex-direction:column; gap:.85rem;
+       border-bottom:1px solid var(--rule); padding-bottom:1.7rem;}
+.eyebrow{font-family:var(--sans); font-size:.7rem; letter-spacing:.16em;
+         text-transform:uppercase; color:var(--tir);}
+h1{margin:0; font-size:clamp(1.85rem,4.2vw,2.65rem); font-weight:normal;
+   line-height:1.16; text-wrap:balance; letter-spacing:.005em;}
+h1 em{color:var(--muted); font-size:.62em; font-style:italic; display:block;
+      margin-top:.4rem; letter-spacing:.02em;}
+.thesis{max-width:var(--measure); color:var(--ink-2); font-size:1.02rem;}
+.slug{font-family:var(--mono); font-size:.78rem; color:var(--faint);
+      display:flex; flex-wrap:wrap; gap:.4rem 1.4rem;}
+.slug b{color:var(--ink-2); font-weight:normal;}
+
+/* ── sections ─────────────────────────────────────────────── */
+section{display:flex; flex-direction:column; gap:1.1rem;}
+h2{margin:0; font-size:1.32rem; font-weight:normal; line-height:1.3;
+   text-wrap:balance; padding-bottom:.5rem; border-bottom:1px solid var(--rule);
+   display:flex; align-items:baseline; gap:.7rem;}
+h2 .n{font-family:var(--mono); font-size:.76rem; color:var(--tir);
+      letter-spacing:.06em; flex:none;}
+h3{margin:1rem 0 0; font-size:1rem; font-weight:normal; color:var(--tir);
+   font-family:var(--sans); letter-spacing:.05em; text-transform:uppercase;
+   font-size:.76rem;}
+p{margin:0; max-width:var(--measure);}
+p+p{margin-top:.75rem}
+ul,ol{margin:0; padding-left:1.35rem; max-width:var(--measure);
+      display:flex; flex-direction:column; gap:.42rem;}
+li::marker{color:var(--faint)}
+code{font-family:var(--mono); font-size:.87em; background:var(--panel-2);
+     padding:.08em .34em; border-radius:2px; color:var(--ink);}
+strong{font-weight:normal; color:var(--tir);}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:.93em;}
+
+/* ── invariant panel ──────────────────────────────────────── */
+.invariants{background:var(--panel); border:1px solid var(--rule);
+            border-left:2px solid var(--tir); padding:1.25rem 1.5rem;
+            display:flex; flex-direction:column; gap:.7rem;}
+.invariants h3{margin:0}
+.invariants ol{max-width:none; gap:.55rem}
+
+/* ── tables ───────────────────────────────────────────────── */
+.scroll{overflow-x:auto; border:1px solid var(--rule); background:var(--panel);}
+table{border-collapse:collapse; width:100%; font-size:.86rem;
+      font-variant-numeric:tabular-nums;}
+caption{caption-side:bottom; text-align:left; padding:.7rem .9rem;
+        color:var(--muted); font-size:.8rem; line-height:1.5;
+        border-top:1px solid var(--rule-soft);}
+th,td{padding:.42rem .8rem; text-align:left; border-bottom:1px solid var(--rule-soft);
+      white-space:nowrap;}
+thead th{font-family:var(--sans); font-size:.68rem; letter-spacing:.1em;
+         text-transform:uppercase; color:var(--muted); font-weight:normal;
+         background:var(--panel-2); border-bottom:1px solid var(--rule);}
+tbody tr:last-child td{border-bottom:none}
+td.r,th.r{text-align:right}
+td.m{font-family:var(--mono); font-size:.83rem}
+tbody tr:hover{background:var(--panel-2)}
+
+.pill{font-family:var(--sans); font-size:.66rem; letter-spacing:.07em;
+      text-transform:uppercase; padding:.14em .5em; border-radius:2px;
+      border:1px solid currentColor;}
+.pill.tir{color:var(--tir);  background:var(--tir-soft)}
+.pill.leak{color:var(--edge); background:var(--edge-soft)}
+.pill.have{color:var(--ok)}
+.pill.src{color:var(--leak); background:var(--leak-soft)}
+
+/* ── figure ───────────────────────────────────────────────── */
+figure{margin:0; border:1px solid var(--rule); background:var(--panel);}
+figure .plate{padding:1.2rem .8rem .4rem; overflow-x:auto}
+/* Scoped to .plate deliberately. The 36 cut cards are figure+svg too, and an
+   unscoped rule here forces each card's svg to the 440px floor inside a ~190px
+   grid cell -- which is exactly the bug this replaced. */
+figure .plate svg{display:block; width:100%; min-width:440px; height:auto}
+figcaption{padding:.75rem 1.1rem 1rem; color:var(--muted); font-size:.82rem;
+           line-height:1.55; border-top:1px solid var(--rule-soft);}
+.key{display:flex; flex-wrap:wrap; gap:.35rem 1.3rem; padding:.5rem 1.1rem;
+     font-family:var(--sans); font-size:.72rem; letter-spacing:.04em;
+     color:var(--muted); border-top:1px solid var(--rule-soft);}
+.key i{display:inline-block; width:1.6rem; height:0; vertical-align:.22em;
+       border-top-width:2px; border-top-style:solid; margin-right:.45rem;}
+
+/* ── phase list ───────────────────────────────────────────── */
+.phases{display:flex; flex-direction:column; gap:0;
+        border:1px solid var(--rule); background:var(--panel);}
+.phase{display:grid; grid-template-columns:3.4rem 1fr; gap:0 1rem;
+       padding:.95rem 1.2rem; border-bottom:1px solid var(--rule-soft);}
+.phase:last-child{border-bottom:none}
+.phase .id{font-family:var(--mono); font-size:.8rem; color:var(--tir);
+           padding-top:.15rem;}
+.phase .t{font-size:1rem; margin-bottom:.25rem}
+.phase .d{color:var(--ink-2); font-size:.9rem; max-width:62ch}
+.phase .gate{font-family:var(--sans); font-size:.7rem; letter-spacing:.05em;
+             color:var(--muted); margin-top:.4rem; display:block;}
+.phase .gate b{color:var(--leak); font-weight:normal; text-transform:uppercase;
+               letter-spacing:.09em; font-size:.92em;}
+
+/* ── risk ─────────────────────────────────────────────────── */
+.risk{border:1px solid var(--rule); border-left:2px solid var(--edge);
+      background:var(--panel); padding:1rem 1.3rem;}
+.risk h3{color:var(--edge); margin:0 0 .5rem}
+
+/* ── cut cards ────────────────────────────────────────────── */
+.famhead{display:flex; justify-content:space-between; align-items:baseline;
+         font-family:var(--sans); font-size:.7rem; letter-spacing:.12em;
+         text-transform:uppercase; color:var(--tir); margin:1.5rem 0 .1rem;
+         padding-bottom:.4rem; border-bottom:1px solid var(--rule);}
+.famhead .fcount{color:var(--faint); letter-spacing:.04em}
+.cutgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(172px,1fr));
+         gap:.7rem;}
+.cutgrid .cut{margin:0; background:var(--panel); border:1px solid var(--rule);
+              padding:.5rem;}
+.cutgrid .cutsvg{display:block; width:100%; height:auto}
+.cutgrid .sh{fill:var(--leak-soft); stroke:var(--ink-2); stroke-width:1;
+             stroke-linejoin:round}
+.cutgrid .dt{fill:none; stroke:var(--muted); stroke-width:.45; stroke-linejoin:round}
+.cutgrid .cl{fill:var(--faint); font-family:var(--mono); font-size:4.4px;
+             text-anchor:middle}
+.cutgrid figcaption{display:flex; flex-direction:column; gap:.1rem;
+                    padding:.35rem 0 0; border-top:none; margin:0;
+                    font-size:inherit; line-height:1.4;}
+.cutgrid figcaption b{font-weight:normal; color:var(--ink); font-size:.85rem}
+.cutgrid .cmeta{font-family:var(--sans); font-size:.63rem; color:var(--muted);
+                letter-spacing:.02em}
+.cutgrid .ex{color:var(--faint)}
+.cutgrid .pill{font-size:.57rem}
+
+/* ── wireframe ────────────────────────────────────────────── */
+pre.wire{margin:0; overflow-x:auto; background:var(--panel); border:1px solid var(--rule);
+         padding:1.1rem 1.2rem; font-family:var(--mono); font-size:.76rem; line-height:1.5;
+         color:var(--ink-2); white-space:pre;}
+pre.wire b{color:var(--tir); font-weight:normal}
+pre.wire i{color:var(--leak); font-style:normal}
+
+footer{border-top:1px solid var(--rule); padding-top:1.4rem; color:var(--faint);
+       font-size:.82rem; font-style:italic; max-width:var(--measure);}
+
+a{color:var(--leak); text-decoration:none; border-bottom:1px solid transparent}
+a:hover{border-bottom-color:currentColor}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:620px){
+  .phase{grid-template-columns:1fr; gap:.3rem}
+  body{font-size:16px}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Promethean Theoria · build plan · seventh study</div>
+  <h1>The Cut and the Critical Angle
+    <em>light paths through every standard gem cut, from a burning glass</em></h1>
+  <p class="thesis">A single self-contained page. The reader picks a cut and a material,
+  aims a magnifying glass at it, and watches the ray tree bounce through the interior —
+  where each ray totally internally reflects, where it leaks, and which facet it finally
+  leaves by. Every angle on screen is computed from the declared geometry; the talismanic
+  register is labelled and never feeds a number.</p>
+  <div class="slug">
+    <span><b>Deliverable</b> gem-cut-light-paths.html</span>
+    <span><b>Root + </b>site/, via deploy.ps1</span>
+    <span><b>Dependencies</b> none</span>
+    <span><b>Est.</b> 3600–4400 lines</span>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§0</span> Invariants</h2>
+  <p>These are the constraints that make the page auditable. If a later decision
+  breaks one of them, the decision is wrong, not the invariant.</p>
+
+  <div class="invariants">
+    <h3>Must hold on every frame</h3>
+    <ol>
+      <li><strong>Energy closes.</strong> Σ&nbsp;exited + Σ&nbsp;absorbed + Σ&nbsp;truncated
+      = 1.000 ± 1e-9 for every launched ray. Displayed live, not just asserted.</li>
+      <li><strong>No acceleration structure.</strong> Geometry stays convex (or a small
+      union of convex parts), so a ray inside hits exactly one facet and the tracer stays
+      readable by eye. If a cut needs a BVH, the cut is out of scope.</li>
+      <li><strong>Angles are computed, never authored.</strong> Every θᵢ, θ_c and Fresnel
+      coefficient on screen comes from the facet table and Sellmeier data at render time.
+      No hardcoded "about 41 degrees" anywhere in the drawing code.</li>
+      <li><strong>The talismanic layer is inert.</strong> Vogel, Merkaba, Platonic and
+      pyramid geometries are traced by exactly the same tracer as a princess cut. Attributed
+      properties — prana, amplification, structuring — are text and cosmetic canvas only,
+      and cannot feed a value back into the physics. Byte-identical isolation check, as in
+      <code>photon_quartz_simulation.html</code>.</li>
+      <li><strong>Zero dependencies.</strong> Hand-written WebGL for the solid, 2D canvas
+      overlay for annotation — the pattern already established by
+      <code>embryonic_torus_heart.html</code>. No external <code>&lt;script src&gt;</code>
+      anywhere in the repo, and that stays true.</li>
+      <li><strong>Two implementations, one truth.</strong> The 2D section tracer and the 3D
+      kernel are separate code, and for any ray in a symmetry plane — where facet normals have
+      no out-of-plane component and a 2D trace is exact, not approximate — they must agree to
+      1e-9 in positions, AOI sequence and intensities. The section view is citable because it
+      is continuously proven against the solid, not because it is a tidy drawing.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§1</span> The result the page exists to show</h2>
+
+  <p>This figure is the whole thesis, and it is already computed. Section through an
+  opposed pair of pavilion mains of a round brilliant at GIA-Excellent proportions —
+  table 56%, crown 34.5°, pavilion 40.75°, girdle diameter normalised to 100. A vertical
+  ray enters the table near the axis. The only thing that differs between the two traces
+  is the refractive index of the stone.</p>
+
+  <figure>
+    <div class="plate">
+      <svg viewBox="-62 -4 124 104" role="img"
+           aria-label="Section of a round brilliant. In diamond a vertical ray totally internally reflects off both pavilion mains and exits the table at 17 degrees. In glass the same ray fails at the first pavilion facet and escapes downward at grazing incidence.">
+        <!-- girdle plane -->
+        <line x1="-56" y1="40" x2="56" y2="40" stroke="currentColor"
+              stroke-width=".35" stroke-dasharray="2 2.4" opacity=".3"/>
+        <text x="-58" y="39.2" fill="currentColor" opacity=".45"
+              font-family="Consolas,monospace" font-size="3.1" text-anchor="end">girdle</text>
+        <!-- optic axis -->
+        <line x1="0" y1="18" x2="0" y2="88" stroke="currentColor"
+              stroke-width=".3" stroke-dasharray="1.4 2.6" opacity=".28"/>
+
+        <!-- stone outline: table, crown mains, pavilion mains -->
+        <polygon points="-28,24.88 28,24.88 50,40 0,83.08 -50,40"
+                 fill="var(--leak-soft)" stroke="var(--ink-2)"
+                 stroke-width=".55" stroke-linejoin="round"/>
+
+        <!-- facet name labels -->
+        <text x="0" y="22.2" fill="currentColor" opacity=".6"
+              font-family="Consolas,monospace" font-size="3.1" text-anchor="middle">table 56%</text>
+        <text x="42.5" y="30.4" fill="currentColor" opacity=".55"
+              font-family="Consolas,monospace" font-size="2.9">crown 34.5°</text>
+        <text x="-30" y="66" fill="currentColor" opacity=".55"
+              font-family="Consolas,monospace" font-size="2.9" text-anchor="end">pavilion 40.75°</text>
+
+        <!-- ── diamond path: amber ── -->
+        <!-- incoming -->
+        <line x1="-5" y1="4" x2="-5" y2="24.88" stroke="var(--tir)" stroke-width=".85"/>
+        <polygon points="-5,24.88 -6.5,20.4 -3.5,20.4" fill="var(--tir)"/>
+        <!-- interior: entry -> pav-x -> pav+x -> table -->
+        <polyline points="-5,24.88 -5,78.77 7.10,76.97 23.02,24.88"
+                  fill="none" stroke="var(--tir)" stroke-width=".85"
+                  stroke-linejoin="round"/>
+        <!-- exit at 44.98 deg -->
+        <line x1="23.02" y1="24.88" x2="38.57" y2="9.32"
+              stroke="var(--tir)" stroke-width=".85"/>
+        <polygon points="38.57,9.32 35.0,10.6 37.3,12.9" fill="var(--tir)"/>
+        <!-- hit dots -->
+        <circle cx="-5"    cy="78.77" r=".95" fill="var(--tir)"/>
+        <circle cx="7.10"  cy="76.97" r=".95" fill="var(--tir)"/>
+        <circle cx="23.02" cy="24.88" r=".95" fill="var(--tir)"/>
+        <!-- AOI labels -->
+        <text x="-7.5" y="82.6" fill="var(--tir)"
+              font-family="Consolas,monospace" font-size="3.1" text-anchor="end">40.75° TIR</text>
+        <text x="10.5" y="81.4" fill="var(--tir)"
+              font-family="Consolas,monospace" font-size="3.1">57.75° TIR</text>
+        <text x="25.5" y="20.6" fill="var(--tir)"
+              font-family="Consolas,monospace" font-size="3.1">17.00° → exits 44.98°</text>
+
+        <!-- ── glass path: red, diverges at hit 1 ── -->
+        <line x1="-5" y1="78.77" x2="8.41" y2="93.61"
+              stroke="var(--edge)" stroke-width=".85" stroke-dasharray="3 1.8"/>
+        <polygon points="8.41,93.61 4.9,92.2 6.3,89.6" fill="var(--edge)"/>
+        <text x="10.5" y="93.2" fill="var(--edge)"
+              font-family="Consolas,monospace" font-size="3.1">leaks 82.84°</text>
+      </svg>
+    </div>
+    <div class="key">
+      <span><i style="border-color:var(--tir)"></i>diamond n 2.4175 · θ_c 24.43°</span>
+      <span><i style="border-color:var(--edge);border-top-style:dashed"></i>glass n 1.5200 · θ_c 41.14°</span>
+    </div>
+    <figcaption>Both rays are identical until the first pavilion facet, where the angle of
+    incidence is <span class="num">40.75°</span> for either stone. Diamond has
+    <span class="num">16.32°</span> of margin above critical and reflects losslessly. Glass is
+    <span class="num">0.39°</span> short — but Fresnel near the critical angle is a
+    square-root edge, not a step, so the first hit leaks <span class="num">49.7%</span> of the
+    ray, and the reflected half carries on to a legitimate TIR at 57.75° and out through the
+    table. The leaked light leaves at <span class="num">82.84°</span> from the facet normal —
+    skimming just 7.2° off the pavilion surface — which is why windowing reads as deadness
+    from above rather than as a bright spill below. Quartz clears the same hit by
+    <span class="num">+0.39°</span> — the same cut, on the knife edge. All of this is
+    collimated-beam physics; §4 quantifies how the burning glass's cone smears the edge.
+    Coordinates and angles here are output from the section tracer, not drawn by
+    hand.</figcaption>
+  </figure>
+
+  <p>That razor edge is the page's best teaching moment, and it generalises: the brilliant
+  cut is not a universally good cut, it is a cut tuned to a high index. The reader should
+  be able to discover that by sweeping the material selector and watching the pavilion
+  verdict flip. Fluorite supplies the other bookend — at n 1.4338 it sits
+  <span class="num">3.47°</span> below critical and dumps <span class="num">85%</span> of the
+  ray on the same first hit. The further below the edge, the harder the transmit: the same
+  square-root law that makes glass a coin flip makes fluorite a drain.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§2</span> Materials</h2>
+  <p>n at the sodium D line. Dispersion is the <em>gemological</em> interval
+  n(430.8&nbsp;nm) − n(686.7&nbsp;nm) — the Fraunhofer B–G span, which is what every gem
+  reference quotes — not the optician's n_F − n_C, which is roughly half the size
+  (diamond: 0.044 B–G but 0.026 F–C; conflating the two conventions is a silent factor-of-two
+  error in every fire figure downstream). R at 0° is the toll at the door: diamond turns away
+  <span class="num">17.2%</span> of normally-incident light before the cut can do anything —
+  the ledger's first entry, and the price of the index that buys the TIR margin. The last
+  column is the verdict for a vertical ray on a 40.75° pavilion main — the single most
+  consequential number in the whole build — and, where the verdict is leak, how much of the
+  ray actually leaves, because near critical the transmission is a square-root edge, not a
+  switch.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr>
+        <th>Material</th><th class="r">n (589 nm)</th><th class="r">n_e</th><th class="r">disp. B–G</th>
+        <th class="r">θ_c</th><th class="r">R at 0°</th><th class="r">ρ g/cm³</th>
+        <th class="r">table exit</th><th>pavilion 40.75°</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Moissanite (6H SiC, o)</td><td class="r m">2.6480</td><td class="r m">2.691</td><td class="r m">0.104</td>
+            <td class="r m">22.19°</td><td class="r m">20.41%</td><td class="r m">3.21</td><td class="r m">50.73°</td>
+            <td><span class="pill tir">TIR +18.56°</span></td></tr>
+        <tr><td>Diamond</td><td class="r m">2.4175</td><td class="r m">—</td><td class="r m">0.044</td>
+            <td class="r m">24.43°</td><td class="r m">17.20%</td><td class="r m">3.52</td><td class="r m">44.98°</td>
+            <td><span class="pill tir">TIR +16.32°</span></td></tr>
+        <tr><td>Cubic zirconia</td><td class="r m">2.1600</td><td class="r m">—</td><td class="r m">0.060</td>
+            <td class="r m">27.58°</td><td class="r m">13.48%</td><td class="r m">5.68</td><td class="r m">39.16°</td>
+            <td><span class="pill tir">TIR +13.17°</span></td></tr>
+        <tr><td>Sapphire / ruby (o)</td><td class="r m">1.7680</td><td class="r m">1.760</td><td class="r m">0.018</td>
+            <td class="r m">34.44°</td><td class="r m">7.70%</td><td class="r m">3.98</td><td class="r m">31.13°</td>
+            <td><span class="pill tir">TIR +6.31°</span></td></tr>
+        <tr><td>Spinel</td><td class="r m">1.7180</td><td class="r m">—</td><td class="r m">0.020</td>
+            <td class="r m">35.60°</td><td class="r m">6.98%</td><td class="r m">3.60</td><td class="r m">30.15°</td>
+            <td><span class="pill tir">TIR +5.15°</span></td></tr>
+        <tr><td>Beryl / emerald (o)</td><td class="r m">1.5770</td><td class="r m">1.571</td><td class="r m">0.014</td>
+            <td class="r m">39.35°</td><td class="r m">5.01%</td><td class="r m">2.72</td><td class="r m">27.46°</td>
+            <td><span class="pill tir">TIR +1.40°</span></td></tr>
+        <tr><td>Quartz (o)</td><td class="r m">1.5443</td><td class="r m">1.5534</td><td class="r m">0.013</td>
+            <td class="r m">40.36°</td><td class="r m">4.58%</td><td class="r m">2.65</td><td class="r m">26.84°</td>
+            <td><span class="pill tir">TIR +0.39°</span></td></tr>
+        <tr><td>Glass, soda-lime</td><td class="r m">1.5200</td><td class="r m">—</td><td class="r m">0.009</td>
+            <td class="r m">41.14°</td><td class="r m">4.26%</td><td class="r m">2.52</td><td class="r m">26.39°</td>
+            <td><span class="pill leak">leaks −0.39° · T 49.7%</span></td></tr>
+        <tr><td>Fluorite</td><td class="r m">1.4338</td><td class="r m">—</td><td class="r m">0.007</td>
+            <td class="r m">44.22°</td><td class="r m">3.18%</td><td class="r m">3.18</td><td class="r m">24.78°</td>
+            <td><span class="pill leak">leaks −3.47° · T 85.0%</span></td></tr>
+      </tbody>
+      <caption>“table exit” is the external angle from vertical for the 17.00° internal ray of
+      §1 — the spread that reads as brilliance (for the two leakers it applies to the residual
+      reflected branch, which still makes the trip). These are <em>chief-ray</em> verdicts;
+      §4 gives the focused-cone versions. Density feeds the §7 equal-carat normalisation.
+      The earlier draft carried three errors this table corrects: glass at 0.031 was a flint
+      (“paste”) dispersion pasted onto a crown index — a real n 1.52 soda-lime disperses ≈0.009,
+      and historical lead paste is a different material (n ≈ 1.6+, disp up to ≈0.03) worth a
+      note, not a conflation; the sapphire row mixed n_e 1.762 with o-ray-derived angles — it
+      now quotes the o-ray 1.768 consistently, matching the “(o) is what we trace” convention;
+      and “the e-ray has θ_c 40.08°” oversimplified — an extraordinary wave sees a
+      direction-dependent index between n_o and n_e, so its TIR threshold runs 40.08–40.36°
+      with the single value realised only for propagation ⊥ c-axis. Uniaxial materials are
+      traced on the o-ray with the e-extreme quoted as a bracket until P6b; moissanite's
+      Δn 0.043 is large enough that its facet-doubling is a visible fact worth a card note.
+      All values re-derived 2026-08-03 in the plan-audit script; recreated in-repo as
+      <code>gem_trace_reference.py</code> at P1.</caption>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§2b</span> The corridor — the brilliant path in closed form</h2>
+
+  <p>For a vertical ray and an opposed pair of pavilion mains at angle <em>p</em>, the whole
+  canonical path is three lines of arithmetic, and the tracer must reproduce them exactly —
+  they are the cheapest strong asserts in the build:</p>
+  <ul>
+    <li>first pavilion hit: <strong>AOI₁ = p</strong></li>
+    <li>second pavilion hit: <strong>AOI₂ = 180° − 3p</strong> — two reflections off planes
+    meeting at the culet compose to a rotation by 360° − 4p, which is where the next line
+    comes from</li>
+    <li>back at the table: <strong>AOI₃ = |4p − 180°|</strong> — and at p = 45° exactly, the
+    pavilion pair is a retroreflector and the ray leaves straight back up</li>
+  </ul>
+  <p>Demanding TIR at both pavilion hits and an exit at the table pins p into a corridor,
+  and the corridor is a property of the material alone:</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Material</th><th class="r">TIR₁: p ≥ θ_c</th>
+        <th class="r">TIR₂: p ≤ (180−θ_c)/3</th><th class="r">table exit: |4p−180| &lt; θ_c</th>
+        <th class="r">corridor</th><th class="r">40.75° sits</th></tr></thead>
+      <tbody>
+        <tr><td>Moissanite</td><td class="r m">22.19°</td><td class="r m">52.60°</td>
+            <td class="r m">39.45 – 50.55°</td><td class="r m">[39.45, 50.55]</td><td class="r m">+1.30° in</td></tr>
+        <tr><td>Diamond</td><td class="r m">24.43°</td><td class="r m">51.86°</td>
+            <td class="r m">38.89 – 51.11°</td><td class="r m">[38.89, 51.11]</td><td class="r m">+1.86° in</td></tr>
+        <tr><td>Cubic zirconia</td><td class="r m">27.58°</td><td class="r m">50.81°</td>
+            <td class="r m">38.11 – 51.89°</td><td class="r m">[38.11, 50.81]</td><td class="r m">+2.64° in</td></tr>
+        <tr><td>Sapphire</td><td class="r m">34.44°</td><td class="r m">48.52°</td>
+            <td class="r m">36.39 – 53.61°</td><td class="r m">[36.39, 48.52]</td><td class="r m">+4.36° in</td></tr>
+        <tr><td>Spinel</td><td class="r m">35.60°</td><td class="r m">48.13°</td>
+            <td class="r m">36.10 – 53.90°</td><td class="r m">[36.10, 48.13]</td><td class="r m">+4.65° in</td></tr>
+        <tr><td>Beryl</td><td class="r m">39.35°</td><td class="r m">46.88°</td>
+            <td class="r m">35.16 – 54.84°</td><td class="r m">[39.35, 46.88]</td><td class="r m">+1.40° in</td></tr>
+        <tr><td>Quartz</td><td class="r m">40.36°</td><td class="r m">46.55°</td>
+            <td class="r m">34.91 – 55.09°</td><td class="r m">[40.36, 46.55]</td><td class="r m">+0.39° in</td></tr>
+        <tr><td>Glass</td><td class="r m">41.14°</td><td class="r m">46.29°</td>
+            <td class="r m">34.72 – 55.28°</td><td class="r m">[41.14, 46.29]</td><td class="r m">0.39° out</td></tr>
+        <tr><td>Fluorite</td><td class="r m">44.22°</td><td class="r m">45.26°</td>
+            <td class="r m">33.94 – 56.06°</td><td class="r m">[44.22, 45.26]</td><td class="r m">3.47° out</td></tr>
+      </tbody>
+      <caption>“40.75° sits” is the distance from the standard pavilion angle to the nearest
+      corridor wall — the same margins as §2, now read as geometry. The corridor bound that
+      bites is TIR₁ for low index and the table-exit window for high; below the table-exit
+      floor the ray TIRs at the table instead of leaving, which is not failure but the start
+      of the longer paths the antique cuts actually use.</caption>
+    </table>
+  </div>
+
+  <p>Two things fall out of the algebra. First, the two-TIR window [θ_c, (180−θ_c)/3] is
+  non-empty only while θ_c ≤ 45°, i.e. <strong>n ≥ √2 ≈ 1.4142</strong> — below that index no
+  pavilion angle can hold a vertical ray for two bounces, so “brilliant-cuttable” is a sharp
+  material property, not a matter of degree. Fluorite (n 1.4338) squeaks in with a corridor
+  barely a degree wide, which is why faceted fluorite is a collector's curiosity rather than a
+  jewel. Second, Tolkowsky's 40.75° is an <em>interior</em> point of diamond's corridor with
+  almost two degrees of slack, and a <em>boundary</em> point of quartz's — the §1 knife edge
+  said in one sentence. The P8 crown-return scan must find its ridge inside these corridors —
+  a computed check that the tracer and the algebra agree about where the good cuts live.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§3</span> Geometry engine — three primitives</h2>
+
+  <p>Every entry in the roster reduces to one of three forms, which is what keeps the
+  tracer small enough to audit.</p>
+
+  <h3>1 · Half-space set → convex polyhedron</h3>
+  <p>A cut is a table of facets, each <code>{tilt from girdle plane, azimuth, offset}</code>,
+  and the solid is the intersection of those half-spaces. This covers every faceted cut in
+  the roster. Because it is convex, a ray inside hits <em>exactly one</em> facet — the
+  nearest positive-<code>t</code> plane — so there is no self-intersection class of bug and
+  no traversal structure. Facets carry names (“pavilion main”, “upper girdle”, “star”) so
+  the hit log reads like a gemologist's notes.</p>
+
+  <h3>2 · Quadric → sphere, ellipsoid</h3>
+  <p>Closed-form intersection. Covers cabochon, bead, egg and lens. The surface normal is
+  analytic, so curved-surface hits carry the same Fresnel treatment as flat ones with no
+  tessellation error.</p>
+
+  <h3>3 · Small union of 1 and 2</h3>
+  <p>Intersect the ray with each part, keep the nearest hit, and reject hits that fall
+  inside another part. Only two roster entries need this — heart (the cleft) and merkaba
+  (two interpenetrating tetrahedra) — so the part count stays at two or three and the fast
+  path survives.</p>
+
+  <p>Consequence worth stating: because cuts are <em>parameter sets</em> rather than
+  meshes, crown and pavilion angle become live sliders. The reader can walk a round
+  brilliant off Tolkowsky's proportions and watch light return collapse, which no static
+  diagram can teach.</p>
+
+  <h3>From facet table to solid — the pipeline is part of the spec</h3>
+  <p>A cut is declared as half-spaces {n̂ᵢ, dᵢ} generated from one symmetry wedge plus its
+  point group. The pipeline: enumerate vertices as triple-plane intersections that satisfy
+  every other half-space within ε; give each plane the vertices that lie on it, sorted
+  angularly about the face centroid, as its polygon; then verify before anything is traced —
+  <strong>V − E + F = 2</strong>, every edge shared by exactly two faces, every normal
+  outward (n̂·(v − solid centroid) &gt; 0), signed volume positive by the divergence theorem.
+  Face areas and volume come free from the same pass, and volume × the §2 density is the
+  carat readout. Symmetry is itself an assert twice over: the generated plane set must be
+  invariant under its declared group to 1e-12 (catches azimuth typos at load), and the traced
+  metrics at identity must inherit it — a round brilliant's crown return may not change under
+  a 45° turn.</p>
+  <p>The girdle is an n-gon prism band (16 sides default) with a real thickness parameter;
+  the scalloped girdle of a bruted stone is out of scope, and the notes say so. Every cut also
+  declares its <strong>c-axis</strong> in gem frame — ∥ shaft for the wands and natural forms,
+  table-normal by convention for faceted gems — because §4b's angle-to-c readout and the P6b
+  quartz split are meaningless without it.</p>
+
+  <h3>Fancy outlines — chord planes, not tilt tables</h3>
+  <p>Ovals, pears, marquises and hearts have designed girdle outlines, so their facets cannot
+  come from a tilt/azimuth table over a circle. The recipe that stays inside the half-space
+  primitive: build the outline from circular arcs (an oval is the classic four-arc drafting
+  construction; a marquise is two arcs meeting at points; a pear is three), sample it at the
+  cut's azimuth boundaries, then define each pavilion main as the plane through its two girdle
+  samples and the culet point — or the <em>keel segment</em> for elongated stones, where the
+  culet stretches into a line and the two end planes close over it. Crown facets run the same
+  chord construction to the table rim, and the table polygon is then <em>derived</em> by
+  intersecting the crown planes with the table plane: if it fails to close, the proportions
+  are wrong and the P1 gate catches it, not the reader. Step cuts are the identical recipe on
+  concentric rectangles. This turns §10's “fancy girdles” risk from a modelling unknown into
+  a data problem — which arcs, which radii — that P1 can source per cut.</p>
+
+  <h3>Union semantics — one rule, stated once</h3>
+  <p>For heart and merkaba the solid is a union of convex parts and the boundary test changes:
+  take the nearest hit among parts, discard it if the point lies strictly inside any
+  <em>other</em> part — an internal seam, same medium, <strong>no optical event</strong> — and
+  re-march from t + ε. Membership in the union, not the part, decides whether an interface is
+  real; a seam that refracts is the bug class this paragraph exists to kill. A bounce cap plus
+  a strict progress check (every step advances t by more than ε) rules out the infinite-loop
+  class. Edge and vertex grazes — two candidate planes within ε of the same t — resolve
+  deterministically to the lower facet index and increment a degenerate-hit counter that must
+  read zero across every §8 vector, because the pinned rays are chosen to be generic.</p>
+
+  <h3>Depth budget — do not skip the girdle</h3>
+  <p>Table 56% / crown 34.5° / pavilion 40.75° gives a total depth of
+  <span class="num">58.20%</span> with a zero-thickness girdle, which sits
+  <em>below</em> the GIA Excellent band of 59.0–62.3%. Real stones carry a girdle of
+  roughly 2.5–4.5%, which lands them inside it. The girdle band must therefore be a modelled
+  facet ring with its own thickness parameter, not an infinitely thin edge — otherwise every
+  depth percentage the page reports will be wrong by about two points.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§3b</span> The optics, written down — five equations and a ledger</h2>
+
+  <p>Everything the tracer does at an interface is five lines. Writing them into the plan is
+  what makes “angles are computed, never authored” a checkable claim instead of a slogan.</p>
+  <ol>
+    <li><strong>Snell, vector form.</strong> With μ = n₁/n₂ and
+    cos θₜ = √(1 − μ²(1 − cos²θᵢ)): <span class="num">t̂ = μ d̂ + (μ cos θᵢ − cos θₜ) n̂</span>.
+    Dots and square roots only — no trigonometry in the hot path, and every θ on screen is
+    recovered from the same dot products the tracer used.</li>
+    <li><strong>TIR test.</strong> μ²(1 − cos²θᵢ) &gt; 1. The reflection is
+    d̂ − 2(d̂·n̂)n̂ either way.</li>
+    <li><strong>Fresnel amplitudes.</strong>
+    r_s = (n₁cosθᵢ − n₂cosθₜ)/(n₁cosθᵢ + n₂cosθₜ),
+    r_p = (n₂cosθᵢ − n₁cosθₜ)/(n₂cosθᵢ + n₁cosθₜ), and their t partners.</li>
+    <li><strong>Power, with the factor everyone forgets.</strong> R = |r|² but
+    <strong>T = |t|² · (n₂cosθₜ)/(n₁cosθᵢ)</strong>. Omit the projected-flux factor and energy
+    quietly fails to close by exactly the amount that looks like a rendering bug. R + T = 1
+    is asserted per event, per polarization — this is the single most common Fresnel
+    implementation error and the reason invariant №1 exists.</li>
+    <li><strong>TIR phase.</strong> tan(δ_s/2) = √(sin²θᵢ − n²ᵣₑₗ)/cosθᵢ and
+    tan(δ_p/2) = the same root ÷ (n²ᵣₑₗ cosθᵢ). Lossless in power, but it converts linear
+    polarization to elliptical — the §1 path's own second bounce in quartz (57.75°) applies
+    Δ = <span class="num">44.2°</span>, within a degree of a Fresnel rhomb's 45°. The
+    reference script pins the rhomb itself (n 1.51 at 54.62° → Δ = 45.00°) as the acceptance
+    test for the formula.</li>
+  </ol>
+
+  <h3>The polarization ledger — Stokes vectors, Mueller events</h3>
+  <p>Sunlight arrives unpolarized and incoherent, and after one oblique event it is neither
+  fully polarized nor unpolarized. The only honest bookkeeping is a <strong>Stokes vector per
+  ray segment</strong> with a Mueller matrix per event: a rotation into the event's s/p basis
+  (the basis is event-local, and skipping the rotation between events is the classic
+  wrong-numbers-that-look-right bug), a diattenuator built from R_s, R_p or T_s, T_p, and the
+  TIR retarder from equation 5. Intensity is the ledger's first component, so invariant №1 is
+  untouched; what the ledger buys is honesty — R_s ≠ R_p at every oblique bounce, and the mix
+  entering bounce k depends on history — plus one genuinely new readout: the <strong>degree of
+  polarization of the exit light</strong>. A stone under a burning glass is a weak polarizer,
+  and this page can be the first place a reader sees that stated with numbers. Free asserts:
+  an interior ray reflected at the internal Brewster angle (22.47° diamond, 32.92° quartz —
+  both safely below θ_c, so the geometry actually occurs) comes off fully s-polarized,
+  DOP = 1; every Mueller event conserves energy; and switching the ledger off must reproduce
+  the unpolarized average (R_s + R_p)/2 exactly.</p>
+
+  <h3>Beyond the interface</h3>
+  <p><strong>Absorption</strong> is Beer–Lambert per segment, I·e^(−α(λ)·ℓ) — effectively zero
+  for the colourless defaults, and the hook by which ruby vs sapphire becomes a teaching pair:
+  same index, same geometry, different α(λ), so colour changes not one angle on screen, only
+  the spectrum. <strong>Dispersion</strong> is n(λ) per material: published Sellmeier
+  coefficients where they exist (diamond, quartz o/e, sapphire o/e, fluorite), and for the
+  rest a two-term Cauchy fit constructed to reproduce the pinned n_d and B–G dispersion
+  exactly — stated per material in the data block, because presenting a fit as a measurement
+  would be the one dishonest number on the page. <strong>Group vs phase:</strong> the §7b
+  marker runs at c/n by design and says so; a physical pulse rides c/n_g with
+  n_g = n − λ·dn/dλ ≈ <span class="num">2.494</span> for diamond — 3.2% slower, one labelled
+  line under the readout, and an assert that n_g &gt; n across the visible for every material
+  (normal dispersion throughout).</p>
+  <p>Deliberately out, and said once in the notes rather than hidden: diffraction (facets are
+  10³–10⁴ wavelengths across — geometric optics is the correct theory, not a shortcut),
+  interference between branches (millimetre path differences against micron coherence;
+  <code>photon_quartz_simulation.html</code> already computes that washout and is linked, not
+  re-derived), and frustrated TIR (nothing sits within a wavelength of a facet).</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§4</span> The source — a real burning glass</h2>
+
+  <p>The instrument is pinned: <strong>f = 100 mm, Ø 75 mm</strong> — f/1.33, a real hand
+  burning glass. The sun subtends <span class="num">9.30 mrad</span>, so the smallest spot
+  this lens can make is f·θ☉ = <span class="num">0.930 mm</span> — a floor set by the angular
+  size of the sun, not a number the reader can dial past. (A 1.000 mm solar image would need
+  f = 107.5 mm; that is trivia, the floor is physics.) The 10 → 1 mm spec is a
+  <em>standoff</em> slider: with the gem s from the lens,
+  <span class="num">spot(s) = 75·|1 − s/f| + s·θ☉</span>, running from s ≈ 87.8 mm (10 mm
+  blur) to s = 100 mm (the 0.930 mm solar image).</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>standoff s</th><th class="r">spot</th><th class="r">concentration</th>
+        <th class="r">per-point angular spread</th><th>regime</th></tr></thead>
+      <tbody>
+        <tr><td class="m">87.8 mm</td><td class="r m">10.0 mm</td><td class="r m">56×</td>
+            <td class="r m">±2.2°</td><td>quasi-collimated pencils</td></tr>
+        <tr><td class="m">100.0 mm — focus</td><td class="r m">0.930 mm</td><td class="r m">6,500×</td>
+            <td class="r m">±20.56°</td><td>full cone, ≈5.4 MW/m²</td></tr>
+      </tbody>
+      <caption>The subtle column is the third. Away from focus the aperture→spot map is
+      one-to-one, so each surface point receives only a narrow pencil,
+      ±θ☉·f/2(f−s) ≈ ±2.2° at the 10 mm end; at focus the map degenerates and every point of
+      the spot receives the whole ±20.56° cone. The standoff slider is therefore also the
+      <em>angular-diversity</em> control, connecting the quasi-collimated regime to the
+      full-cone regime continuously. Peak irradiance at focus (900 W/m² direct sun, τ_lens
+      0.92) is ≈540 W/cm² — instantly pyrogenic, and the page carries the same hazard note as
+      <code>photon_quartz_simulation.html</code>. Lens Fresnel and absorption losses are
+      ignored and stated.</caption>
+    </table>
+  </div>
+
+  <p>The cone is the reason the simulation is interesting — and refraction compresses it
+  before any interior facet sees it: ±20.56° in air becomes ±asin(sin 20.56°/n) inside,
+  <span class="num">±8.4°</span> in diamond, <span class="num">±13.1°</span> in quartz. So a
+  focused spot presents the <em>entry</em> facet with a 41° range of incidence, but the
+  pavilion with a compressed band — and whether that band straddles θ_c is a per-material
+  question. The §1 and §2 verdicts are chief-ray statements; under the full cone at focus,
+  the first pavilion hit keeps:</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Material</th><th class="r">interior cone</th>
+        <th class="r">first-pavilion AOI band</th><th class="r">fan surviving TIR</th></tr></thead>
+      <tbody>
+        <tr><td>Moissanite</td><td class="r m">±7.62°</td><td class="r m">33.13 – 48.37°</td><td class="r m">100%</td></tr>
+        <tr><td>Diamond</td><td class="r m">±8.36°</td><td class="r m">32.39 – 49.11°</td><td class="r m">100%</td></tr>
+        <tr><td>Cubic zirconia</td><td class="r m">±9.36°</td><td class="r m">31.39 – 50.11°</td><td class="r m">100%</td></tr>
+        <tr><td>Sapphire</td><td class="r m">±11.46°</td><td class="r m">29.29 – 52.21°</td><td class="r m">76.4%</td></tr>
+        <tr><td>Spinel</td><td class="r m">±11.80°</td><td class="r m">28.95 – 52.55°</td><td class="r m">70.8%</td></tr>
+        <tr><td>Beryl</td><td class="r m">±12.87°</td><td class="r m">27.88 – 53.62°</td><td class="r m">55.1%</td></tr>
+        <tr><td>Quartz</td><td class="r m">±13.14°</td><td class="r m">27.61 – 53.89°</td><td class="r m">51.4%</td></tr>
+        <tr><td>Glass</td><td class="r m">±13.36°</td><td class="r m">27.39 – 54.11°</td><td class="r m">48.6%</td></tr>
+        <tr><td>Fluorite</td><td class="r m">±14.18°</td><td class="r m">26.57 – 54.93°</td><td class="r m">38.4%</td></tr>
+      </tbody>
+      <caption>2D section fractions, aperture-uniform weighting, gem at focus, spot on the
+      table centre — pinned in <code>gem_trace_reference.py</code> and reproduced in 3D as a
+      P5 gate. Under the focused cone the §1 knife edge between quartz and glass blurs to
+      three percentage points (51.4 vs 48.6): the razor is real for collimated light and for
+      the chief ray, and every readout must say which regime it is quoting. What survives in
+      any regime is the ladder itself — and the real reason diamond reads as diamond under any
+      light is that its 16.32° margin swallows the entire cone, with 8° to spare.</caption>
+    </table>
+  </div>
+
+  <p>This is why the simulation produces TIR and leakage <em>simultaneously</em>, which is
+  what real stones do — and why collimated illumination is an explicit comparison mode, never
+  the default: even the defocused ±2.2° pencil exceeds quartz's 0.39° margin, so the clean
+  §1 knife edge exists <em>only</em> in collimated mode. One more consequence of the
+  square-root edge: T rises from 11% to 50% across the last 0.4° below critical, so the cone
+  integrator needs its sampling refined near θ_c or the survival fractions above go noisy —
+  that risk is logged in §10.</p>
+
+  <p>Spectral sampling: trace 7 Fraunhofer wavelengths — h 404.7, G 430.8, F 486.1, e 546.1,
+  d 587.6, C 656.3, B 686.7 nm — with n(λ) from the §3b dispersion policy, weighted by the
+  solar spectrum rather than equal-energy, because the source is the sun and fire tallied
+  under a flat spectrum is quietly wrong. Dispersion then falls out as fire without
+  special-casing, and the B–G endpoints make the §2 dispersion column an assert rather than a
+  label: at the §1 table exit, diamond's B–G fan is <span class="num">1.06°</span> and
+  moissanite's <span class="num">2.80°</span> — a 2.65× ratio, the 2.36× dispersion ratio
+  amplified by the steeper exit (dθ/dn carries a 1/cos θ_out factor). Both fans are pinned
+  acceptance values. True wave interference is deliberately <em>not</em> modelled: path
+  differences inside a gem are millimetres, thousands of wavelengths, and sunlight is
+  incoherent, so fringes wash out. <code>photon_quartz_simulation.html</code> already computes
+  that washout and this page links to it rather than re-deriving it.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§4b</span> Frames — the stone turns, the light does not</h2>
+
+  <p>The burning glass is fixed in world space. The reader rotates <em>the gem</em>, and the
+  interior paths and exit rays move as a consequence. This is how a stone is actually
+  examined — tilted under a fixed light — and it makes orientation the primary independent
+  variable of the whole page, not a view setting.</p>
+
+  <h3>Trace in gem space, pull the source through M⁻¹</h3>
+  <p>Two frames, never conflated: the <em>gem frame</em>, where the facet table lives, and the
+  <em>world frame</em>, where the lens, spot and viewer live. The rotation <code>M</code>
+  maps one to the other. The tracer runs entirely in gem space, and the only per-frame
+  transform is pulling the fixed source rays through <code>M⁻¹</code>. Three reasons this
+  direction and not the other:</p>
+  <ul>
+    <li>The facet table is <strong>never mutated</strong>, so repeated rotation accumulates no
+    floating-point drift into the geometry.</li>
+    <li>The §8 acceptance vectors are defined in gem space, so they stay directly comparable
+    at <em>any</em> orientation instead of only at identity.</li>
+    <li>Interior paths come out in gem space, which is exactly the frame the WebGL model
+    matrix already draws in — so the 3D view needs no extra transform at all.</li>
+  </ul>
+  <p>Accumulate orientation as a <strong>quaternion</strong>, renormalised each frame — Euler
+  angles will gimbal-lock on a stone the reader is free to tumble. Provide an exact
+  <em>reset to identity</em>, because the load-time asserts run at identity and must be
+  reachable without drift.</p>
+
+  <h3>Camera and gem are different controls</h3>
+  <p>Rotating the gem changes the physics. Orbiting the camera changes nothing but the view.
+  Conflating them would make the page unreadable, so: drag rotates the stone, modifier-drag
+  orbits the camera, and the two readouts are visually distinct. This gives a clean
+  invariant to assert — <strong>orbiting the camera must leave every computed readout
+  byte-identical</strong>, the same isolation discipline as the talismanic layer.</p>
+
+  <h3>The entry facet changes, and sooner than you would guess</h3>
+  <p>Because the spot is fixed, rotation slides it across the surface and hands it from facet
+  to facet. Where the beam sits on the table decides how fast that happens.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th class="r">beam position on table</th><th class="r">as fraction of table radius</th>
+        <th class="r">tilt at handoff</th><th>then enters via</th></tr></thead>
+      <tbody>
+        <tr><td class="r m">0.0</td><td class="r m">0.000</td><td class="r m">61.63°</td><td>crown main</td></tr>
+        <tr><td class="r m">10.0</td><td class="r m">0.357</td><td class="r m">43.32°</td><td>crown main</td></tr>
+        <tr><td class="r m">20.0</td><td class="r m">0.714</td><td class="r m">22.69°</td><td>crown main</td></tr>
+        <tr><td class="r m">25.0</td><td class="r m">0.893</td><td class="r m">9.85°</td><td>crown main</td></tr>
+        <tr><td class="r m">27.0</td><td class="r m">0.964</td><td class="r m">3.58°</td><td>crown main</td></tr>
+      </tbody>
+      <caption>Girdle Ø100, table radius 28, rotation about the girdle centre in the section
+      plane. A beam near the table edge changes entry facet within a few degrees of tilt, so
+      the illuminated facet must be named on screen at all times — the reader will otherwise
+      think the simulation glitched. At <span class="num">34.50°</span> of tilt the crown main
+      faces the beam squarely (AOI 0°), which is the orientation of minimum reflection loss
+      into the stone and worth surfacing as a found landmark.</caption>
+    </table>
+  </div>
+
+  <h3>Why a high index is forgiving — the interior cone is capped at θ_c</h3>
+  <p>Refraction compresses tilt. Entering the table of a diamond, a 40° external swing
+  becomes only <span class="num">15.42°</span> of interior swing. Push the external angle to
+  its limit and the identity is exact:</p>
+  <p style="padding-left:1.1rem;border-left:2px solid var(--tir)">
+  <em>sin ψ_max = sin 90° / n = 1/n</em>, so <strong>ψ_max = θ_c</strong>. The interior ray
+  can never sit further than the critical angle from the entry facet's normal, however the
+  stone is turned — 24.43° in diamond, 40.36° in quartz.</p>
+  <p>That is the real reason a brilliant-cut diamond returns light across a wide range of
+  orientations: the whole hemisphere of possible entry directions is folded into a 24.43°
+  interior cone, and the 40.75° pavilion is chosen to sit safely outside it. The arithmetic
+  also states the failure mode honestly — worst case, a grazing entry ray meets the pavilion
+  at 40.75° − 24.43° = <span class="num">16.32°</span>, which is
+  <span class="num">8.11°</span> <em>below</em> diamond's critical angle and therefore leaks.
+  Even diamond windows at extreme tilt. Note that 16.32° is the same number as diamond's
+  pavilion margin in §2; it is the same subtraction seen from the other end.</p>
+  <p>Collimated leak-onset, by contrast, <em>is</em> section arithmetic, closed-form and
+  pinned now: leak begins when the interior tilt ψ = asin(sin τ/n) eats the pavilion margin.
+  For quartz that is an external tilt of just <span class="num">0.61°</span> — the 0.39°
+  margin translated into hand terms: under collimated light, a quartz brilliant starts
+  windowing within the wobble of tweezers. Diamond holds to <span class="num">42.78°</span>
+  of tilt, and its second bounce can <em>never</em> fail from table entry, because
+  57.75° − θ_c = 33.3° exceeds the 24.43° interior cone cap — the §4b identity closing its
+  own loop. Quartz's second bounce fails beyond <span class="num">27.49°</span>. The tilt at
+  which the full f/1.33 <em>cone</em> begins to leak remains a genuine Phase 5 deliverable —
+  these collimated anchors are its acceptance brackets, not its answer.</p>
+
+  <h3>Orientation readouts</h3>
+  <ul>
+    <li>Currently illuminated facet, named, with its live AOI</li>
+    <li>Tilt and azimuth, plus <strong>angle to the c-axis</strong> — required for quartz
+    birefringence and for the Vogel cut, both of which are defined relative to it</li>
+    <li><strong>Light-return signature</strong> — crown return plotted against orientation,
+    traced out as the stone turns. This is what sparkle actually is, quantified: a stone's
+    signature over orientation rather than a single number at rest. Probably the most
+    original readout on the page.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§5</span> Cut roster — 37 geometries</h2>
+  <p>Scope is cuts a person could normally buy or commission. No fantasy cuts, no
+  concave faceting. <span class="pill have">have</span> means proportions are pinned
+  already; <span class="pill src">source</span> means published proportions must be
+  gathered in Phase 1, which is the single largest research cost in the build.</p>
+
+  <p>Every cut is drawn below — plan view with its facet pattern, and profile.
+  The drawings follow the same honesty rule as the rest of the plan: a girdle outline
+  is the defining shape of a cut and is known, so all 37 plan outlines are truthful,
+  while <b>●&nbsp;computed</b> marks a profile built from pinned angles and
+  <b>○&nbsp;schematic</b> marks one standing in until Phase&nbsp;1 sources the real
+  proportions. 14 are computed, 23 are schematic — which is the research cost of §10
+  made visible rather than described.</p>
+
+<h3 class="famhead">Modern brilliant<span class="fcount">11</span></h3>
+<div class="cutgrid">
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Round brilliant, plan view and profile with facet pattern"><polygon points="45.00,27.00 44.92,28.74 44.70,30.47 44.32,32.18 43.79,33.84 43.13,35.45 42.32,37.00 41.38,38.47 40.32,39.86 39.14,41.14 37.86,42.32 36.47,43.38 35.00,44.32 33.45,45.13 31.84,45.79 30.18,46.32 28.47,46.70 26.74,46.92 25.00,47.00 23.26,46.92 21.53,46.70 19.82,46.32 18.16,45.79 16.55,45.13 15.00,44.32 13.53,43.38 12.14,42.32 10.86,41.14 9.68,39.86 8.62,38.47 7.68,37.00 6.87,35.45 6.21,33.84 5.68,32.18 5.30,30.47 5.08,28.74 5.00,27.00 5.08,25.26 5.30,23.53 5.68,21.82 6.21,20.16 6.87,18.55 7.68,17.00 8.62,15.53 9.68,14.14 10.86,12.86 12.14,11.68 13.53,10.62 15.00,9.68 16.55,8.87 18.16,8.21 19.82,7.68 21.53,7.30 23.26,7.08 25.00,7.00 26.74,7.08 28.47,7.30 30.18,7.68 31.84,8.21 33.45,8.87 35.00,9.68 36.47,10.62 37.86,11.68 39.14,12.86 40.32,14.14 41.38,15.53 42.32,17.00 43.13,18.55 43.79,20.16 44.32,21.82 44.70,23.53 44.92,25.26" class="sh"/><polygon points="66.36,14.25 87.64,14.25 96.00,20.00 96.00,20.95 77.00,37.32 77.00,37.32 58.00,20.95 58.00,20.00" class="sh"/><polyline points="25.00,15.80 32.92,19.08 36.20,27.00 32.92,34.92 25.00,38.20 17.08,34.92 13.80,27.00 17.08,19.08 25.00,15.80" class="dt"/><polyline points="25.00,15.80 18.88,12.22" class="dt"/><polyline points="25.00,15.80 31.12,12.22" class="dt"/><polyline points="31.12,12.22 25.00,7.00" class="dt"/><polyline points="31.12,12.22 39.14,12.86" class="dt"/><polyline points="32.92,19.08 31.12,12.22" class="dt"/><polyline points="32.92,19.08 39.78,20.88" class="dt"/><polyline points="39.78,20.88 39.14,12.86" class="dt"/><polyline points="39.78,20.88 45.00,27.00" class="dt"/><polyline points="36.20,27.00 39.78,20.88" class="dt"/><polyline points="36.20,27.00 39.78,33.12" class="dt"/><polyline points="39.78,33.12 45.00,27.00" class="dt"/><polyline points="39.78,33.12 39.14,41.14" class="dt"/><polyline points="32.92,34.92 39.78,33.12" class="dt"/><polyline points="32.92,34.92 31.12,41.78" class="dt"/><polyline points="31.12,41.78 39.14,41.14" class="dt"/><polyline points="31.12,41.78 25.00,47.00" class="dt"/><polyline points="25.00,38.20 31.12,41.78" class="dt"/><polyline points="25.00,38.20 18.88,41.78" class="dt"/><polyline points="18.88,41.78 25.00,47.00" class="dt"/><polyline points="18.88,41.78 10.86,41.14" class="dt"/><polyline points="17.08,34.92 18.88,41.78" class="dt"/><polyline points="17.08,34.92 10.22,33.12" class="dt"/><polyline points="10.22,33.12 10.86,41.14" class="dt"/><polyline points="10.22,33.12 5.00,27.00" class="dt"/><polyline points="13.80,27.00 10.22,33.12" class="dt"/><polyline points="13.80,27.00 10.22,20.88" class="dt"/><polyline points="10.22,20.88 5.00,27.00" class="dt"/><polyline points="10.22,20.88 10.86,12.86" class="dt"/><polyline points="17.08,19.08 10.22,20.88" class="dt"/><polyline points="17.08,19.08 18.88,12.22" class="dt"/><polyline points="18.88,12.22 10.86,12.86" class="dt"/><polyline points="18.88,12.22 25.00,7.00" class="dt"/><polyline points="58.00,20.00 96.00,20.00" class="dt"/><polyline points="58.00,20.95 96.00,20.95" class="dt"/><polyline points="61.76,17.41 66.36,14.25" class="dt"/><polyline points="92.24,17.41 87.64,14.25" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Round brilliant</b><span class="cmeta">58 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Oval brilliant, plan view and profile with facet pattern"><polygon points="39.40,27.00 39.35,28.74 39.18,30.47 38.91,32.18 38.53,33.84 38.05,35.45 37.47,37.00 36.80,38.47 36.03,39.86 35.18,41.14 34.26,42.32 33.26,43.38 32.20,44.32 31.09,45.13 29.93,45.79 28.73,46.32 27.50,46.70 26.26,46.92 25.00,47.00 23.74,46.92 22.50,46.70 21.27,46.32 20.07,45.79 18.91,45.13 17.80,44.32 16.74,43.38 15.74,42.32 14.82,41.14 13.97,39.86 13.20,38.47 12.53,37.00 11.95,35.45 11.47,33.84 11.09,32.18 10.82,30.47 10.65,28.74 10.60,27.00 10.65,25.26 10.82,23.53 11.09,21.82 11.47,20.16 11.95,18.55 12.53,17.00 13.20,15.53 13.97,14.14 14.82,12.86 15.74,11.68 16.74,10.62 17.80,9.68 18.91,8.87 20.07,8.21 21.27,7.68 22.50,7.30 23.74,7.08 25.00,7.00 26.26,7.08 27.50,7.30 28.73,7.68 29.93,8.21 31.09,8.87 32.20,9.68 33.26,10.62 34.26,11.68 35.18,12.86 36.03,14.14 36.80,15.53 37.47,17.00 38.05,18.55 38.53,20.16 38.91,21.82 39.18,23.53 39.35,25.26" class="sh"/><polygon points="68.60,15.46 85.40,15.46 92.00,20.00 92.00,20.90 77.00,33.82 77.00,33.82 62.00,20.90 62.00,20.00" class="sh"/><polyline points="25.00,18.94 30.70,21.30 33.06,27.00 30.70,32.70 25.00,35.06 19.30,32.70 16.94,27.00 19.30,21.30 25.00,18.94" class="dt"/><polyline points="25.00,18.94 20.59,16.36" class="dt"/><polyline points="25.00,18.94 29.41,16.36" class="dt"/><polyline points="29.41,16.36 25.00,12.60" class="dt"/><polyline points="29.41,16.36 35.18,16.82" class="dt"/><polyline points="30.70,21.30 29.41,16.36" class="dt"/><polyline points="30.70,21.30 35.64,22.59" class="dt"/><polyline points="35.64,22.59 35.18,16.82" class="dt"/><polyline points="35.64,22.59 39.40,27.00" class="dt"/><polyline points="33.06,27.00 35.64,22.59" class="dt"/><polyline points="33.06,27.00 35.64,31.41" class="dt"/><polyline points="35.64,31.41 39.40,27.00" class="dt"/><polyline points="35.64,31.41 35.18,37.18" class="dt"/><polyline points="30.70,32.70 35.64,31.41" class="dt"/><polyline points="30.70,32.70 29.41,37.64" class="dt"/><polyline points="29.41,37.64 35.18,37.18" class="dt"/><polyline points="29.41,37.64 25.00,41.40" class="dt"/><polyline points="25.00,35.06 29.41,37.64" class="dt"/><polyline points="25.00,35.06 20.59,37.64" class="dt"/><polyline points="20.59,37.64 25.00,41.40" class="dt"/><polyline points="20.59,37.64 14.82,37.18" class="dt"/><polyline points="19.30,32.70 20.59,37.64" class="dt"/><polyline points="19.30,32.70 14.36,31.41" class="dt"/><polyline points="14.36,31.41 14.82,37.18" class="dt"/><polyline points="14.36,31.41 10.60,27.00" class="dt"/><polyline points="16.94,27.00 14.36,31.41" class="dt"/><polyline points="16.94,27.00 14.36,22.59" class="dt"/><polyline points="14.36,22.59 10.60,27.00" class="dt"/><polyline points="14.36,22.59 14.82,16.82" class="dt"/><polyline points="19.30,21.30 14.36,22.59" class="dt"/><polyline points="19.30,21.30 20.59,16.36" class="dt"/><polyline points="20.59,16.36 14.82,16.82" class="dt"/><polyline points="20.59,16.36 25.00,12.60" class="dt"/><polyline points="33.00,27.00 32.73,29.90 31.93,32.60 30.66,34.92 29.00,36.70 27.07,37.82 25.00,38.20 22.93,37.82 21.00,36.70 19.34,34.92 18.07,32.60 17.27,29.90 17.00,27.00 17.27,24.10 18.07,21.40 19.34,19.08 21.00,17.30 22.93,16.18 25.00,15.80 27.07,16.18 29.00,17.30 30.66,19.08 31.93,21.40 32.73,24.10" class="dt"/><polyline points="62.00,20.00 92.00,20.00" class="dt"/><polyline points="62.00,20.90 92.00,20.90" class="dt"/><polyline points="64.97,17.96 68.60,15.46" class="dt"/><polyline points="89.03,17.96 85.40,15.46" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Oval brilliant</b><span class="cmeta">56 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Pear, plan view and profile with facet pattern"><polygon points="25.00,4.30 25.88,4.34 26.75,4.47 27.62,4.68 28.48,4.98 29.33,5.36 30.15,5.82 30.96,6.37 31.74,6.98 32.50,7.68 33.23,8.44 33.92,9.28 34.58,10.18 35.21,11.15 35.79,12.17 36.33,13.25 36.82,14.37 37.27,15.55 37.67,16.76 38.02,18.01 38.31,19.29 38.56,20.60 38.75,21.93 38.89,23.28 38.97,24.64 39.00,26.00 38.89,27.75 38.56,29.48 38.02,31.15 37.27,32.74 36.33,34.23 35.21,35.58 33.92,36.79 32.50,37.82 30.96,38.67 29.33,39.31 27.62,39.75 25.88,39.97 24.12,39.97 22.38,39.75 20.67,39.31 19.04,38.67 17.50,37.82 16.08,36.79 14.79,35.58 13.67,34.23 12.73,32.74 11.98,31.15 11.44,29.48 11.11,27.75 11.00,26.00 11.03,24.64 11.11,23.28 11.25,21.93 11.44,20.60 11.69,19.29 11.98,18.01 12.33,16.76 12.73,15.55 13.18,14.37 13.67,13.25 14.21,12.17 14.79,11.15 15.42,10.18 16.08,9.28 16.77,8.44 17.50,7.68 18.26,6.98 19.04,6.37 19.85,5.82 20.67,5.36 21.52,4.98 22.38,4.68 23.25,4.47 24.12,4.34 25.00,4.30" class="sh"/><polygon points="68.04,15.16 85.96,15.16 93.00,20.00 93.00,20.90 77.00,34.69 77.00,34.69 61.00,20.90 61.00,20.00" class="sh"/><polyline points="25.00,20.00 25.00,12.80" class="dt"/><polyline points="29.24,21.76 34.33,16.67" class="dt"/><polyline points="31.00,26.00 38.20,26.00" class="dt"/><polyline points="29.24,30.24 34.33,35.33" class="dt"/><polyline points="25.00,32.00 25.00,39.20" class="dt"/><polyline points="20.76,30.24 15.67,35.33" class="dt"/><polyline points="19.00,26.00 11.80,26.00" class="dt"/><polyline points="20.76,21.76 15.67,16.67" class="dt"/><polyline points="61.00,20.00 93.00,20.00" class="dt"/><polyline points="61.00,20.90 93.00,20.90" class="dt"/><polyline points="64.17,17.82 68.04,15.16" class="dt"/><polyline points="89.83,17.82 85.96,15.16" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Pear</b><span class="cmeta">58 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Marquise, plan view and profile with facet pattern"><polygon points="25.00,7.00 28.20,8.21 29.61,9.42 30.66,10.64 31.51,11.85 32.21,13.06 32.82,14.27 33.33,15.48 33.78,16.70 34.16,17.91 34.48,19.12 34.75,20.33 34.97,21.55 35.14,22.76 35.27,23.97 35.35,25.18 35.39,26.39 35.39,27.61 35.35,28.82 35.27,30.03 35.14,31.24 34.97,32.45 34.75,33.67 34.48,34.88 34.16,36.09 33.78,37.30 33.33,38.52 32.82,39.73 32.21,40.94 31.51,42.15 30.66,43.36 29.61,44.58 28.20,45.79 25.00,47.00 25.00,47.00 21.80,45.79 20.39,44.58 19.34,43.36 18.49,42.15 17.79,40.94 17.18,39.73 16.67,38.52 16.22,37.30 15.84,36.09 15.52,34.88 15.25,33.67 15.03,32.45 14.86,31.24 14.73,30.03 14.65,28.82 14.61,27.61 14.61,26.39 14.65,25.18 14.73,23.97 14.86,22.76 15.03,21.55 15.25,20.33 15.52,19.12 15.84,17.91 16.22,16.70 16.67,15.48 17.18,14.27 17.79,13.06 18.49,11.85 19.34,10.64 20.39,9.42 21.80,8.21 25.00,7.00" class="sh"/><polygon points="69.72,16.07 84.28,16.07 90.00,20.00 90.00,20.90 77.00,32.10 77.00,32.10 64.00,20.90 64.00,20.00" class="sh"/><polyline points="25.00,23.00 25.00,17.80" class="dt"/><polyline points="27.83,24.17 31.51,20.49" class="dt"/><polyline points="29.00,27.00 34.20,27.00" class="dt"/><polyline points="27.83,29.83 31.51,33.51" class="dt"/><polyline points="25.00,31.00 25.00,36.20" class="dt"/><polyline points="22.17,29.83 18.49,33.51" class="dt"/><polyline points="21.00,27.00 15.80,27.00" class="dt"/><polyline points="22.17,24.17 18.49,20.49" class="dt"/><polyline points="64.00,20.00 90.00,20.00" class="dt"/><polyline points="64.00,20.90 90.00,20.90" class="dt"/><polyline points="66.57,18.23 69.72,16.07" class="dt"/><polyline points="87.43,18.23 84.28,16.07" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Marquise</b><span class="cmeta">58 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Heart, plan view and profile with facet pattern"><polygon points="25.00,47.80 25.01,47.73 25.04,47.51 25.15,47.14 25.35,46.65 25.66,46.02 26.12,45.27 26.72,44.41 27.49,43.44 28.41,42.39 29.48,41.25 30.67,40.03 31.98,38.74 33.37,37.39 34.81,35.98 36.26,34.51 37.68,32.99 39.03,31.42 40.28,29.82 41.38,28.18 42.31,26.52 43.03,24.86 43.52,23.21 43.77,21.59 43.77,20.03 43.52,18.54 43.03,17.17 42.31,15.93 41.38,14.85 40.28,13.96 39.03,13.27 37.68,12.81 36.26,12.57 34.81,12.56 33.37,12.77 31.98,13.19 30.67,13.80 29.48,14.57 28.41,15.46 27.49,16.42 26.72,17.42 26.12,18.41 25.66,19.34 25.35,20.17 25.15,20.86 25.04,21.37 25.01,21.69 25.00,21.80 24.99,21.69 24.96,21.37 24.85,20.86 24.65,20.17 24.34,19.34 23.88,18.41 23.28,17.42 22.51,16.42 21.59,15.46 20.52,14.57 19.33,13.80 18.02,13.19 16.63,12.77 15.19,12.56 13.74,12.57 12.32,12.81 10.97,13.27 9.72,13.96 8.62,14.85 7.69,15.93 6.97,17.17 6.48,18.54 6.23,20.03 6.23,21.59 6.48,23.21 6.97,24.86 7.69,26.52 8.62,28.18 9.72,29.82 10.97,31.42 12.32,32.99 13.74,34.51 15.19,35.98 16.63,37.39 18.02,38.74 19.33,40.03 20.52,41.25 21.59,42.39 22.51,43.44 23.28,44.41 23.88,45.27 24.34,46.02 24.65,46.65 24.85,47.14 24.96,47.51 24.99,47.73 25.00,47.80" class="sh"/><polygon points="68.04,15.16 85.96,15.16 93.00,20.00 93.00,20.90 77.00,34.69 77.00,34.69 61.00,20.90 61.00,20.00" class="sh"/><polyline points="25.00,21.80 25.00,15.40" class="dt"/><polyline points="28.68,23.32 33.20,18.80" class="dt"/><polyline points="30.20,27.00 36.60,27.00" class="dt"/><polyline points="28.68,30.68 33.20,35.20" class="dt"/><polyline points="25.00,32.20 25.00,38.60" class="dt"/><polyline points="21.32,30.68 16.80,35.20" class="dt"/><polyline points="19.80,27.00 13.40,27.00" class="dt"/><polyline points="21.32,23.32 16.80,18.80" class="dt"/><polyline points="61.00,20.00 93.00,20.00" class="dt"/><polyline points="61.00,20.90 93.00,20.90" class="dt"/><polyline points="64.17,17.82 68.04,15.16" class="dt"/><polyline points="89.83,17.82 85.96,15.16" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Heart</b><span class="cmeta">59 facets · union</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Princess, plan view and profile with facet pattern"><polygon points="43.40,27.00 43.39,37.04 43.36,38.70 43.32,39.80 43.26,40.63 43.18,41.30 43.08,41.86 42.96,42.35 42.82,42.77 42.66,43.15 42.48,43.48 42.27,43.77 42.04,44.04 41.77,44.27 41.48,44.48 41.15,44.66 40.77,44.82 40.35,44.96 39.86,45.08 39.30,45.18 38.63,45.26 37.80,45.32 36.70,45.36 35.04,45.39 25.00,45.40 14.96,45.39 13.30,45.36 12.20,45.32 11.37,45.26 10.70,45.18 10.14,45.08 9.65,44.96 9.23,44.82 8.85,44.66 8.52,44.48 8.23,44.27 7.96,44.04 7.73,43.77 7.52,43.48 7.34,43.15 7.18,42.77 7.04,42.35 6.92,41.86 6.82,41.30 6.74,40.63 6.68,39.80 6.64,38.70 6.61,37.04 6.60,27.01 6.61,16.96 6.64,15.30 6.68,14.20 6.74,13.37 6.82,12.70 6.92,12.14 7.04,11.65 7.18,11.23 7.34,10.85 7.52,10.52 7.73,10.23 7.96,9.96 8.23,9.73 8.52,9.52 8.85,9.34 9.23,9.18 9.65,9.04 10.14,8.92 10.70,8.82 11.37,8.74 12.20,8.68 13.30,8.64 14.96,8.61 24.99,8.60 35.04,8.61 36.70,8.64 37.80,8.68 38.63,8.74 39.30,8.82 39.86,8.92 40.35,9.04 40.77,9.18 41.15,9.34 41.48,9.52 41.77,9.73 42.04,9.96 42.27,10.23 42.48,10.52 42.66,10.85 42.82,11.23 42.96,11.65 43.08,12.14 43.18,12.70 43.26,13.37 43.32,14.20 43.36,15.30 43.39,16.96" class="sh"/><polygon points="66.36,14.25 87.64,14.25 96.00,20.00 96.00,20.95 77.00,42.05 77.00,42.05 58.00,20.95 58.00,20.00" class="sh"/><polyline points="12.40,14.40 37.60,14.40 37.60,39.60 12.40,39.60 12.40,14.40" class="dt"/><polyline points="17.44,19.44 32.56,19.44 32.56,34.56 17.44,34.56 17.44,19.44" class="dt"/><polyline points="7.00,9.00 43.00,45.00" class="dt"/><polyline points="43.00,9.00 7.00,45.00" class="dt"/><polyline points="58.00,20.00 96.00,20.00" class="dt"/><polyline points="58.00,20.95 96.00,20.95" class="dt"/><polyline points="61.76,17.41 66.36,14.25" class="dt"/><polyline points="92.24,17.41 87.64,14.25" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Princess</b><span class="cmeta">76 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Radiant, plan view and profile with facet pattern"><polygon points="14.40,7.80 35.60,7.80 40.60,12.80 40.60,41.20 35.60,46.20 14.40,46.20 9.40,41.20 9.40,12.80" class="sh"/><polygon points="68.04,15.16 85.96,15.16 93.00,20.00 93.00,20.90 77.00,36.90 77.00,36.90 61.00,20.90 61.00,20.00" class="sh"/><polyline points="18.00,14.33 32.00,14.33 35.30,17.63 35.30,36.37 32.00,39.67 18.00,39.67 14.70,36.37 14.70,17.63 18.00,14.33" class="dt"/><polyline points="25.00,21.00 25.00,14.60" class="dt"/><polyline points="29.24,22.76 33.77,18.23" class="dt"/><polyline points="31.00,27.00 37.40,27.00" class="dt"/><polyline points="29.24,31.24 33.77,35.77" class="dt"/><polyline points="25.00,33.00 25.00,39.40" class="dt"/><polyline points="20.76,31.24 16.23,35.77" class="dt"/><polyline points="19.00,27.00 12.60,27.00" class="dt"/><polyline points="20.76,22.76 16.23,18.23" class="dt"/><polyline points="61.00,20.00 93.00,20.00" class="dt"/><polyline points="61.00,20.90 93.00,20.90" class="dt"/><polyline points="64.17,17.82 68.04,15.16" class="dt"/><polyline points="89.83,17.82 85.96,15.16" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Radiant</b><span class="cmeta">70 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Cushion, plan view and profile with facet pattern"><polygon points="43.40,27.00 43.37,29.99 43.29,31.73 43.16,33.19 42.98,34.47 42.74,35.63 42.45,36.70 42.11,37.68 41.72,38.59 41.27,39.43 40.77,40.22 40.21,40.94 39.60,41.60 38.94,42.21 38.22,42.77 37.43,43.27 36.59,43.72 35.68,44.11 34.70,44.45 33.63,44.74 32.47,44.98 31.19,45.16 29.73,45.29 27.99,45.37 25.00,45.40 22.01,45.37 20.27,45.29 18.81,45.16 17.53,44.98 16.37,44.74 15.30,44.45 14.32,44.11 13.41,43.72 12.57,43.27 11.78,42.77 11.06,42.21 10.40,41.60 9.79,40.94 9.23,40.22 8.73,39.43 8.28,38.59 7.89,37.68 7.55,36.70 7.26,35.63 7.02,34.47 6.84,33.19 6.71,31.73 6.63,29.99 6.60,27.00 6.63,24.01 6.71,22.27 6.84,20.81 7.02,19.53 7.26,18.37 7.55,17.30 7.89,16.32 8.28,15.41 8.73,14.57 9.23,13.78 9.79,13.06 10.40,12.40 11.06,11.79 11.78,11.23 12.57,10.73 13.41,10.28 14.32,9.89 15.30,9.55 16.37,9.26 17.53,9.02 18.81,8.84 20.27,8.71 22.01,8.63 25.00,8.60 27.99,8.63 29.73,8.71 31.19,8.84 32.47,9.02 33.63,9.26 34.70,9.55 35.68,9.89 36.59,10.28 37.43,10.73 38.22,11.23 38.94,11.79 39.60,12.40 40.21,13.06 40.77,13.78 41.27,14.57 41.72,15.41 42.11,16.32 42.45,17.30 42.74,18.37 42.98,19.53 43.16,20.81 43.29,22.27 43.37,24.01" class="sh"/><polygon points="66.36,14.25 87.64,14.25 96.00,20.00 96.00,20.95 77.00,38.67 77.00,38.67 58.00,20.95 58.00,20.00" class="sh"/><polyline points="25.00,17.14 31.97,20.03 34.86,27.00 31.97,33.97 25.00,36.86 18.03,33.97 15.14,27.00 18.03,20.03 25.00,17.14" class="dt"/><polyline points="25.00,17.14 19.61,13.99" class="dt"/><polyline points="25.00,17.14 30.39,13.99" class="dt"/><polyline points="30.39,13.99 25.00,9.40" class="dt"/><polyline points="30.39,13.99 37.45,14.55" class="dt"/><polyline points="31.97,20.03 30.39,13.99" class="dt"/><polyline points="31.97,20.03 38.01,21.61" class="dt"/><polyline points="38.01,21.61 37.45,14.55" class="dt"/><polyline points="38.01,21.61 42.60,27.00" class="dt"/><polyline points="34.86,27.00 38.01,21.61" class="dt"/><polyline points="34.86,27.00 38.01,32.39" class="dt"/><polyline points="38.01,32.39 42.60,27.00" class="dt"/><polyline points="38.01,32.39 37.45,39.45" class="dt"/><polyline points="31.97,33.97 38.01,32.39" class="dt"/><polyline points="31.97,33.97 30.39,40.01" class="dt"/><polyline points="30.39,40.01 37.45,39.45" class="dt"/><polyline points="30.39,40.01 25.00,44.60" class="dt"/><polyline points="25.00,36.86 30.39,40.01" class="dt"/><polyline points="25.00,36.86 19.61,40.01" class="dt"/><polyline points="19.61,40.01 25.00,44.60" class="dt"/><polyline points="19.61,40.01 12.55,39.45" class="dt"/><polyline points="18.03,33.97 19.61,40.01" class="dt"/><polyline points="18.03,33.97 11.99,32.39" class="dt"/><polyline points="11.99,32.39 12.55,39.45" class="dt"/><polyline points="11.99,32.39 7.40,27.00" class="dt"/><polyline points="15.14,27.00 11.99,32.39" class="dt"/><polyline points="15.14,27.00 11.99,21.61" class="dt"/><polyline points="11.99,21.61 7.40,27.00" class="dt"/><polyline points="11.99,21.61 12.55,14.55" class="dt"/><polyline points="18.03,20.03 11.99,21.61" class="dt"/><polyline points="18.03,20.03 19.61,13.99" class="dt"/><polyline points="19.61,13.99 12.55,14.55" class="dt"/><polyline points="19.61,13.99 25.00,9.40" class="dt"/><polyline points="58.00,20.00 96.00,20.00" class="dt"/><polyline points="58.00,20.95 96.00,20.95" class="dt"/><polyline points="61.76,17.41 66.36,14.25" class="dt"/><polyline points="92.24,17.41 87.64,14.25" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Cushion</b><span class="cmeta">64 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Trilliant, plan view and profile with facet pattern"><polygon points="25.00,7.40 26.12,8.20 27.37,9.25 28.71,10.56 30.14,12.15 31.63,13.99 33.13,16.05 34.61,18.28 36.03,20.63 37.36,23.04 38.55,25.44 39.58,27.77 40.43,29.97 41.09,32.00 41.56,33.83 41.84,35.43 41.97,36.80 40.72,37.37 39.19,37.93 37.38,38.43 35.29,38.88 32.95,39.24 30.42,39.52 27.75,39.68 25.00,39.74 22.25,39.68 19.58,39.52 17.05,39.24 14.71,38.88 12.62,38.43 10.81,37.93 9.28,37.37 8.03,36.80 8.16,35.43 8.44,33.83 8.91,32.00 9.57,29.97 10.42,27.77 11.45,25.44 12.64,23.04 13.97,20.63 15.39,18.28 16.87,16.05 18.37,13.99 19.86,12.15 21.29,10.56 22.63,9.25 23.88,8.20" class="sh"/><polygon points="67.48,14.86 86.52,14.86 94.00,20.00 94.00,20.90 77.00,36.75 77.00,36.75 60.00,20.90 60.00,20.00" class="sh"/><polyline points="25.00,21.80 25.00,14.60" class="dt"/><polyline points="29.50,24.40 35.74,20.80" class="dt"/><polyline points="29.50,29.60 35.74,33.20" class="dt"/><polyline points="25.00,32.20 25.00,39.40" class="dt"/><polyline points="20.50,29.60 14.26,33.20" class="dt"/><polyline points="20.50,24.40 14.26,20.80" class="dt"/><polyline points="60.00,20.00 94.00,20.00" class="dt"/><polyline points="60.00,20.90 94.00,20.90" class="dt"/><polyline points="63.37,17.69 67.48,14.86" class="dt"/><polyline points="90.63,17.69 86.52,14.86" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Trilliant</b><span class="cmeta">50 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Half-moon, plan view and profile with facet pattern"><polygon points="44.00,36.50 43.91,34.60 43.66,32.72 43.23,30.88 42.64,29.09 41.89,27.36 40.98,25.71 39.94,24.17 38.75,22.73 37.44,21.42 36.02,20.25 34.50,19.22 32.89,18.35 31.21,17.65 29.48,17.11 27.70,16.75 25.90,16.57 24.10,16.57 22.30,16.75 20.52,17.11 18.79,17.65 17.11,18.35 15.50,19.22 13.98,20.25 12.56,21.42 11.25,22.73 10.06,24.17 9.02,25.71 8.11,27.36 7.36,29.09 6.77,30.88 6.34,32.72 6.09,34.60 6.00,36.50" class="sh"/><polygon points="68.04,15.16 85.96,15.16 93.00,20.00 93.00,20.90 77.00,34.69 77.00,34.69 61.00,20.90 61.00,20.00" class="sh"/><polyline points="25.00,37.00 11.14,28.20" class="dt"/><polyline points="25.00,37.00 17.00,21.76" class="dt"/><polyline points="25.00,37.00 25.00,19.40" class="dt"/><polyline points="25.00,37.00 33.00,21.76" class="dt"/><polyline points="25.00,37.00 38.86,28.20" class="dt"/><polyline points="61.00,20.00 93.00,20.00" class="dt"/><polyline points="61.00,20.90 93.00,20.90" class="dt"/><polyline points="64.17,17.82 68.04,15.16" class="dt"/><polyline points="89.83,17.82 85.96,15.16" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Half-moon</b><span class="cmeta">— facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Shield / kite, plan view and profile with facet pattern"><polygon points="25.00,7.00 40.20,25.00 25.00,47.00 9.80,25.00" class="sh"/><polygon points="68.60,15.46 85.40,15.46 92.00,20.00 92.00,20.90 77.00,33.82 77.00,33.82 62.00,20.90 62.00,20.00" class="sh"/><polyline points="25.00,16.00 33.36,25.90 25.00,38.00 16.64,25.90 25.00,16.00" class="dt"/><polyline points="62.00,20.00 92.00,20.00" class="dt"/><polyline points="62.00,20.90 92.00,20.90" class="dt"/><polyline points="64.97,17.96 68.60,15.46" class="dt"/><polyline points="89.03,17.96 85.40,15.46" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Shield / kite</b><span class="cmeta">— facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+</div>
+<h3 class="famhead">Step cut<span class="fcount">6</span></h3>
+<div class="cutgrid">
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Emerald cut, plan view and profile with facet pattern"><polygon points="15.60,7.80 34.40,7.80 39.40,12.80 39.40,41.20 34.40,46.20 15.60,46.20 10.60,41.20 10.60,12.80" class="sh"/><polygon points="67.70,18.70 86.30,18.70 92.00,21.00 92.00,21.90 78.80,34.21 75.20,34.21 62.00,21.90 62.00,21.00" class="sh"/><polyline points="18.04,12.79 31.96,12.79 35.66,16.49 35.66,37.51 31.96,41.21 18.04,41.21 14.34,37.51 14.34,16.49 18.04,12.79" class="dt"/><polyline points="20.30,17.40 29.70,17.40 32.20,19.90 32.20,34.10 29.70,36.60 20.30,36.60 17.80,34.10 17.80,19.90 20.30,17.40" class="dt"/><polyline points="22.37,21.62 27.63,21.62 29.03,23.02 29.03,30.98 27.63,32.38 22.37,32.38 20.97,30.98 20.97,23.02 22.37,21.62" class="dt"/><polyline points="62.00,21.00 92.00,21.00" class="dt"/><polyline points="62.00,21.90 92.00,21.90" class="dt"/><polyline points="65.80,19.46 88.20,19.46" class="dt"/><polyline points="63.90,20.23 90.10,20.23" class="dt"/><polyline points="66.40,26.00 87.60,26.00" class="dt"/><polyline points="70.80,30.11 83.20,30.11" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Emerald cut</b><span class="cmeta">50 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Asscher, plan view and profile with facet pattern"><polygon points="13.50,9.00 36.50,9.00 43.00,15.50 43.00,38.50 36.50,45.00 13.50,45.00 7.00,38.50 7.00,15.50" class="sh"/><polygon points="65.84,17.05 88.16,17.05 95.00,21.00 95.00,21.90 79.16,36.67 74.84,36.67 59.00,21.90 59.00,21.00" class="sh"/><polyline points="16.26,13.32 33.74,13.32 38.68,18.26 38.68,35.74 33.74,40.68 16.26,40.68 11.32,35.74 11.32,18.26 16.26,13.32" class="dt"/><polyline points="18.79,17.28 31.21,17.28 34.72,20.79 34.72,33.21 31.21,36.72 18.79,36.72 15.28,33.21 15.28,20.79 18.79,17.28" class="dt"/><polyline points="21.32,21.24 28.68,21.24 30.76,23.32 30.76,30.68 28.68,32.76 21.32,32.76 19.24,30.68 19.24,23.32 21.32,21.24" class="dt"/><polyline points="59.00,21.00 95.00,21.00" class="dt"/><polyline points="59.00,21.90 95.00,21.90" class="dt"/><polyline points="64.13,18.04 89.87,18.04" class="dt"/><polyline points="62.42,19.03 91.58,19.03" class="dt"/><polyline points="60.71,20.01 93.29,20.01" class="dt"/><polyline points="62.96,25.59 91.04,25.59" class="dt"/><polyline points="66.92,29.29 87.08,29.29" class="dt"/><polyline points="70.88,32.98 83.12,32.98" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Asscher</b><span class="cmeta">58 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Baguette, plan view and profile with facet pattern"><polygon points="15.80,7.00 34.20,7.00 34.20,47.00 15.80,47.00" class="sh"/><polygon points="70.80,19.77 83.20,19.77 87.00,21.00 87.00,21.90 78.20,29.82 75.80,29.82 67.00,21.90 67.00,21.00" class="sh"/><polyline points="18.56,13.00 31.44,13.00 31.44,41.00 18.56,41.00 18.56,13.00" class="dt"/><polyline points="21.14,18.60 28.86,18.60 28.86,35.40 21.14,35.40 21.14,18.60" class="dt"/><polyline points="67.00,21.00 87.00,21.00" class="dt"/><polyline points="67.00,21.90 87.00,21.90" class="dt"/><polyline points="68.90,20.38 85.10,20.38" class="dt"/><polyline points="71.40,25.86 82.60,25.86" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Baguette</b><span class="cmeta">24 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Tapered baguette, plan view and profile with facet pattern"><polygon points="19.00,7.00 31.00,7.00 35.40,47.00 14.60,47.00" class="sh"/><polygon points="70.80,19.77 83.20,19.77 87.00,21.00 87.00,21.90 78.20,29.82 75.80,29.82 67.00,21.90 67.00,21.00" class="sh"/><polyline points="20.80,13.00 29.20,13.00 32.28,41.00 17.72,41.00 20.80,13.00" class="dt"/><polyline points="22.48,18.60 27.52,18.60 29.37,35.40 20.63,35.40 22.48,18.60" class="dt"/><polyline points="67.00,21.00 87.00,21.00" class="dt"/><polyline points="67.00,21.90 87.00,21.90" class="dt"/><polyline points="68.90,20.38 85.10,20.38" class="dt"/><polyline points="71.40,25.86 82.60,25.86" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Tapered baguette</b><span class="cmeta">24 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Carré, plan view and profile with facet pattern"><polygon points="7.00,9.00 43.00,9.00 43.00,45.00 7.00,45.00" class="sh"/><polygon points="65.84,18.24 88.16,18.24 95.00,21.00 95.00,21.90 79.16,36.67 74.84,36.67 59.00,21.90 59.00,21.00" class="sh"/><polyline points="12.04,14.04 37.96,14.04 37.96,39.96 12.04,39.96 12.04,14.04" class="dt"/><polyline points="16.72,18.72 33.28,18.72 33.28,35.28 16.72,35.28 16.72,18.72" class="dt"/><polyline points="20.68,22.68 29.32,22.68 29.32,31.32 20.68,31.32 20.68,22.68" class="dt"/><polyline points="59.00,21.00 95.00,21.00" class="dt"/><polyline points="59.00,21.90 95.00,21.90" class="dt"/><polyline points="63.56,19.16 90.44,19.16" class="dt"/><polyline points="61.28,20.08 92.72,20.08" class="dt"/><polyline points="64.28,26.82 89.72,26.82" class="dt"/><polyline points="69.56,31.75 84.44,31.75" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Carré</b><span class="cmeta">— facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Table cut, plan view and profile with facet pattern"><polygon points="7.00,9.00 43.00,9.00 43.00,45.00 7.00,45.00" class="sh"/><polygon points="68.00,14.00 86.00,14.00 95.00,24.00 77.00,43.00 59.00,24.00" class="sh"/><polyline points="15.64,17.64 34.36,17.64 34.36,36.36 15.64,36.36 15.64,17.64" class="dt"/><polyline points="59.00,24.00 95.00,24.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Table cut</b><span class="cmeta">9 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+</div>
+<h3 class="famhead">Antique<span class="fcount">8</span></h3>
+<div class="cutgrid">
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Point cut, plan view and profile with facet pattern"><polygon points="25.00,7.00 45.00,27.00 25.00,47.00 5.00,27.00" class="sh"/><polygon points="77.00,8.00 94.00,27.00 77.00,46.00 60.00,27.00" class="sh"/><polyline points="5.00,27.00 45.00,27.00" class="dt"/><polyline points="25.00,7.00 25.00,47.00" class="dt"/><polyline points="60.00,27.00 94.00,27.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Point cut</b><span class="cmeta">8 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Rose cut, plan view and profile with facet pattern"><polygon points="45.00,27.00 44.92,28.74 44.70,30.47 44.32,32.18 43.79,33.84 43.13,35.45 42.32,37.00 41.38,38.47 40.32,39.86 39.14,41.14 37.86,42.32 36.47,43.38 35.00,44.32 33.45,45.13 31.84,45.79 30.18,46.32 28.47,46.70 26.74,46.92 25.00,47.00 23.26,46.92 21.53,46.70 19.82,46.32 18.16,45.79 16.55,45.13 15.00,44.32 13.53,43.38 12.14,42.32 10.86,41.14 9.68,39.86 8.62,38.47 7.68,37.00 6.87,35.45 6.21,33.84 5.68,32.18 5.30,30.47 5.08,28.74 5.00,27.00 5.08,25.26 5.30,23.53 5.68,21.82 6.21,20.16 6.87,18.55 7.68,17.00 8.62,15.53 9.68,14.14 10.86,12.86 12.14,11.68 13.53,10.62 15.00,9.68 16.55,8.87 18.16,8.21 19.82,7.68 21.53,7.30 23.26,7.08 25.00,7.00 26.74,7.08 28.47,7.30 30.18,7.68 31.84,8.21 33.45,8.87 35.00,9.68 36.47,10.62 37.86,11.68 39.14,12.86 40.32,14.14 41.38,15.53 42.32,17.00 43.13,18.55 43.79,20.16 44.32,21.82 44.70,23.53 44.92,25.26" class="sh"/><polygon points="59.00,36.00 59.00,36.00 59.11,34.54 59.45,33.11 60.01,31.71 60.78,30.36 61.76,29.08 62.93,27.89 64.27,26.81 65.78,25.84 67.42,24.99 69.19,24.29 71.05,23.73 72.99,23.33 74.98,23.08 77.00,23.00 79.02,23.08 81.01,23.33 82.95,23.73 84.81,24.29 86.58,24.99 88.22,25.84 89.73,26.81 91.07,27.89 92.24,29.08 93.22,30.36 93.99,31.71 94.55,33.11 94.89,34.54 95.00,36.00" class="sh"/><polyline points="25.00,27.00 25.00,7.00" class="dt"/><polyline points="25.00,27.00 35.00,9.68" class="dt"/><polyline points="25.00,27.00 42.32,17.00" class="dt"/><polyline points="25.00,27.00 45.00,27.00" class="dt"/><polyline points="25.00,27.00 42.32,37.00" class="dt"/><polyline points="25.00,27.00 35.00,44.32" class="dt"/><polyline points="25.00,27.00 25.00,47.00" class="dt"/><polyline points="25.00,27.00 15.00,44.32" class="dt"/><polyline points="25.00,27.00 7.68,37.00" class="dt"/><polyline points="25.00,27.00 5.00,27.00" class="dt"/><polyline points="25.00,27.00 7.68,17.00" class="dt"/><polyline points="25.00,27.00 15.00,9.68" class="dt"/><polyline points="25.00,17.00 33.66,22.00 33.66,32.00 25.00,37.00 16.34,32.00 16.34,22.00 25.00,17.00" class="dt"/><polyline points="59.00,36.00 95.00,36.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Rose cut</b><span class="cmeta">24 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Mazarin, plan view and profile with facet pattern"><polygon points="43.40,27.00 43.37,29.99 43.29,31.73 43.16,33.19 42.98,34.47 42.74,35.63 42.45,36.70 42.11,37.68 41.72,38.59 41.27,39.43 40.77,40.22 40.21,40.94 39.60,41.60 38.94,42.21 38.22,42.77 37.43,43.27 36.59,43.72 35.68,44.11 34.70,44.45 33.63,44.74 32.47,44.98 31.19,45.16 29.73,45.29 27.99,45.37 25.00,45.40 22.01,45.37 20.27,45.29 18.81,45.16 17.53,44.98 16.37,44.74 15.30,44.45 14.32,44.11 13.41,43.72 12.57,43.27 11.78,42.77 11.06,42.21 10.40,41.60 9.79,40.94 9.23,40.22 8.73,39.43 8.28,38.59 7.89,37.68 7.55,36.70 7.26,35.63 7.02,34.47 6.84,33.19 6.71,31.73 6.63,29.99 6.60,27.00 6.63,24.01 6.71,22.27 6.84,20.81 7.02,19.53 7.26,18.37 7.55,17.30 7.89,16.32 8.28,15.41 8.73,14.57 9.23,13.78 9.79,13.06 10.40,12.40 11.06,11.79 11.78,11.23 12.57,10.73 13.41,10.28 14.32,9.89 15.30,9.55 16.37,9.26 17.53,9.02 18.81,8.84 20.27,8.71 22.01,8.63 25.00,8.60 27.99,8.63 29.73,8.71 31.19,8.84 32.47,9.02 33.63,9.26 34.70,9.55 35.68,9.89 36.59,10.28 37.43,10.73 38.22,11.23 38.94,11.79 39.60,12.40 40.21,13.06 40.77,13.78 41.27,14.57 41.72,15.41 42.11,16.32 42.45,17.30 42.74,18.37 42.98,19.53 43.16,20.81 43.29,22.27 43.37,24.01" class="sh"/><polygon points="69.40,9.74 84.60,9.74 96.00,20.00 96.00,20.95 80.04,35.32 73.96,35.32 58.00,20.95 58.00,20.00" class="sh"/><polyline points="25.00,19.96 29.98,22.02 32.04,27.00 29.98,31.98 25.00,34.04 20.02,31.98 17.96,27.00 20.02,22.02 25.00,19.96" class="dt"/><polyline points="25.00,19.96 19.61,13.99" class="dt"/><polyline points="25.00,19.96 30.39,13.99" class="dt"/><polyline points="30.39,13.99 25.00,9.40" class="dt"/><polyline points="30.39,13.99 37.45,14.55" class="dt"/><polyline points="29.98,22.02 30.39,13.99" class="dt"/><polyline points="29.98,22.02 38.01,21.61" class="dt"/><polyline points="38.01,21.61 37.45,14.55" class="dt"/><polyline points="38.01,21.61 42.60,27.00" class="dt"/><polyline points="32.04,27.00 38.01,21.61" class="dt"/><polyline points="32.04,27.00 38.01,32.39" class="dt"/><polyline points="38.01,32.39 42.60,27.00" class="dt"/><polyline points="38.01,32.39 37.45,39.45" class="dt"/><polyline points="29.98,31.98 38.01,32.39" class="dt"/><polyline points="29.98,31.98 30.39,40.01" class="dt"/><polyline points="30.39,40.01 37.45,39.45" class="dt"/><polyline points="30.39,40.01 25.00,44.60" class="dt"/><polyline points="25.00,34.04 30.39,40.01" class="dt"/><polyline points="25.00,34.04 19.61,40.01" class="dt"/><polyline points="19.61,40.01 25.00,44.60" class="dt"/><polyline points="19.61,40.01 12.55,39.45" class="dt"/><polyline points="20.02,31.98 19.61,40.01" class="dt"/><polyline points="20.02,31.98 11.99,32.39" class="dt"/><polyline points="11.99,32.39 12.55,39.45" class="dt"/><polyline points="11.99,32.39 7.40,27.00" class="dt"/><polyline points="17.96,27.00 11.99,32.39" class="dt"/><polyline points="17.96,27.00 11.99,21.61" class="dt"/><polyline points="11.99,21.61 7.40,27.00" class="dt"/><polyline points="11.99,21.61 12.55,14.55" class="dt"/><polyline points="20.02,22.02 11.99,21.61" class="dt"/><polyline points="20.02,22.02 19.61,13.99" class="dt"/><polyline points="19.61,13.99 12.55,14.55" class="dt"/><polyline points="19.61,13.99 25.00,9.40" class="dt"/><polyline points="58.00,20.00 96.00,20.00" class="dt"/><polyline points="58.00,20.95 96.00,20.95" class="dt"/><polyline points="63.13,15.38 69.40,9.74" class="dt"/><polyline points="90.87,15.38 84.60,9.74" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Mazarin</b><span class="cmeta">34 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Peruzzi, plan view and profile with facet pattern"><polygon points="43.40,27.00 43.37,29.99 43.29,31.73 43.16,33.19 42.98,34.47 42.74,35.63 42.45,36.70 42.11,37.68 41.72,38.59 41.27,39.43 40.77,40.22 40.21,40.94 39.60,41.60 38.94,42.21 38.22,42.77 37.43,43.27 36.59,43.72 35.68,44.11 34.70,44.45 33.63,44.74 32.47,44.98 31.19,45.16 29.73,45.29 27.99,45.37 25.00,45.40 22.01,45.37 20.27,45.29 18.81,45.16 17.53,44.98 16.37,44.74 15.30,44.45 14.32,44.11 13.41,43.72 12.57,43.27 11.78,42.77 11.06,42.21 10.40,41.60 9.79,40.94 9.23,40.22 8.73,39.43 8.28,38.59 7.89,37.68 7.55,36.70 7.26,35.63 7.02,34.47 6.84,33.19 6.71,31.73 6.63,29.99 6.60,27.00 6.63,24.01 6.71,22.27 6.84,20.81 7.02,19.53 7.26,18.37 7.55,17.30 7.89,16.32 8.28,15.41 8.73,14.57 9.23,13.78 9.79,13.06 10.40,12.40 11.06,11.79 11.78,11.23 12.57,10.73 13.41,10.28 14.32,9.89 15.30,9.55 16.37,9.26 17.53,9.02 18.81,8.84 20.27,8.71 22.01,8.63 25.00,8.60 27.99,8.63 29.73,8.71 31.19,8.84 32.47,9.02 33.63,9.26 34.70,9.55 35.68,9.89 36.59,10.28 37.43,10.73 38.22,11.23 38.94,11.79 39.60,12.40 40.21,13.06 40.77,13.78 41.27,14.57 41.72,15.41 42.11,16.32 42.45,17.30 42.74,18.37 42.98,19.53 43.16,20.81 43.29,22.27 43.37,24.01" class="sh"/><polygon points="69.78,8.22 84.22,8.22 96.00,20.00 96.00,20.95 79.66,35.66 74.34,35.66 58.00,20.95 58.00,20.00" class="sh"/><polyline points="25.00,20.31 29.73,22.27 31.69,27.00 29.73,31.73 25.00,33.69 20.27,31.73 18.31,27.00 20.27,22.27 25.00,20.31" class="dt"/><polyline points="25.00,20.31 19.61,13.99" class="dt"/><polyline points="25.00,20.31 30.39,13.99" class="dt"/><polyline points="30.39,13.99 25.00,9.40" class="dt"/><polyline points="30.39,13.99 37.45,14.55" class="dt"/><polyline points="29.73,22.27 30.39,13.99" class="dt"/><polyline points="29.73,22.27 38.01,21.61" class="dt"/><polyline points="38.01,21.61 37.45,14.55" class="dt"/><polyline points="38.01,21.61 42.60,27.00" class="dt"/><polyline points="31.69,27.00 38.01,21.61" class="dt"/><polyline points="31.69,27.00 38.01,32.39" class="dt"/><polyline points="38.01,32.39 42.60,27.00" class="dt"/><polyline points="38.01,32.39 37.45,39.45" class="dt"/><polyline points="29.73,31.73 38.01,32.39" class="dt"/><polyline points="29.73,31.73 30.39,40.01" class="dt"/><polyline points="30.39,40.01 37.45,39.45" class="dt"/><polyline points="30.39,40.01 25.00,44.60" class="dt"/><polyline points="25.00,33.69 30.39,40.01" class="dt"/><polyline points="25.00,33.69 19.61,40.01" class="dt"/><polyline points="19.61,40.01 25.00,44.60" class="dt"/><polyline points="19.61,40.01 12.55,39.45" class="dt"/><polyline points="20.27,31.73 19.61,40.01" class="dt"/><polyline points="20.27,31.73 11.99,32.39" class="dt"/><polyline points="11.99,32.39 12.55,39.45" class="dt"/><polyline points="11.99,32.39 7.40,27.00" class="dt"/><polyline points="18.31,27.00 11.99,32.39" class="dt"/><polyline points="18.31,27.00 11.99,21.61" class="dt"/><polyline points="11.99,21.61 7.40,27.00" class="dt"/><polyline points="11.99,21.61 12.55,14.55" class="dt"/><polyline points="20.27,22.27 11.99,21.61" class="dt"/><polyline points="20.27,22.27 19.61,13.99" class="dt"/><polyline points="19.61,13.99 12.55,14.55" class="dt"/><polyline points="19.61,13.99 25.00,9.40" class="dt"/><polyline points="58.00,20.00 96.00,20.00" class="dt"/><polyline points="58.00,20.95 96.00,20.95" class="dt"/><polyline points="63.30,14.70 69.78,8.22" class="dt"/><polyline points="90.70,14.70 84.22,8.22" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Peruzzi</b><span class="cmeta">58 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Old mine, plan view and profile with facet pattern"><polygon points="43.40,27.00 43.37,29.08 43.27,30.61 43.12,31.98 42.90,33.24 42.61,34.42 42.27,35.53 41.87,36.58 41.40,37.57 40.87,38.50 40.29,39.37 39.65,40.19 38.94,40.94 38.19,41.65 37.37,42.29 36.50,42.87 35.57,43.40 34.58,43.87 33.53,44.27 32.42,44.61 31.24,44.90 29.98,45.12 28.61,45.27 27.08,45.37 25.00,45.40 22.92,45.37 21.39,45.27 20.02,45.12 18.76,44.90 17.58,44.61 16.47,44.27 15.42,43.87 14.43,43.40 13.50,42.87 12.63,42.29 11.81,41.65 11.06,40.94 10.35,40.19 9.71,39.37 9.13,38.50 8.60,37.57 8.13,36.58 7.73,35.53 7.39,34.42 7.10,33.24 6.88,31.98 6.73,30.61 6.63,29.08 6.60,27.00 6.63,24.92 6.73,23.39 6.88,22.02 7.10,20.76 7.39,19.58 7.73,18.47 8.13,17.42 8.60,16.43 9.13,15.50 9.71,14.63 10.35,13.81 11.06,13.06 11.81,12.35 12.63,11.71 13.50,11.13 14.43,10.60 15.42,10.13 16.47,9.73 17.58,9.39 18.76,9.10 20.02,8.88 21.39,8.73 22.92,8.63 25.00,8.60 27.08,8.63 28.61,8.73 29.98,8.88 31.24,9.10 32.42,9.39 33.53,9.73 34.58,10.13 35.57,10.60 36.50,11.13 37.37,11.71 38.19,12.35 38.94,13.06 39.65,13.81 40.29,14.63 40.87,15.50 41.40,16.43 41.87,17.42 42.27,18.47 42.61,19.58 42.90,20.76 43.12,22.02 43.27,23.39 43.37,24.92" class="sh"/><polygon points="69.40,9.37 84.60,9.37 96.00,20.00 96.00,20.95 80.04,35.32 73.96,35.32 58.00,20.95 58.00,20.00" class="sh"/><polyline points="25.00,20.12 29.86,22.14 31.88,27.00 29.86,31.86 25.00,33.88 20.14,31.86 18.12,27.00 20.14,22.14 25.00,20.12" class="dt"/><polyline points="25.00,20.12 19.73,14.29" class="dt"/><polyline points="25.00,20.12 30.27,14.29" class="dt"/><polyline points="30.27,14.29 25.00,9.80" class="dt"/><polyline points="30.27,14.29 37.16,14.84" class="dt"/><polyline points="29.86,22.14 30.27,14.29" class="dt"/><polyline points="29.86,22.14 37.71,21.73" class="dt"/><polyline points="37.71,21.73 37.16,14.84" class="dt"/><polyline points="37.71,21.73 42.20,27.00" class="dt"/><polyline points="31.88,27.00 37.71,21.73" class="dt"/><polyline points="31.88,27.00 37.71,32.27" class="dt"/><polyline points="37.71,32.27 42.20,27.00" class="dt"/><polyline points="37.71,32.27 37.16,39.16" class="dt"/><polyline points="29.86,31.86 37.71,32.27" class="dt"/><polyline points="29.86,31.86 30.27,39.71" class="dt"/><polyline points="30.27,39.71 37.16,39.16" class="dt"/><polyline points="30.27,39.71 25.00,44.20" class="dt"/><polyline points="25.00,33.88 30.27,39.71" class="dt"/><polyline points="25.00,33.88 19.73,39.71" class="dt"/><polyline points="19.73,39.71 25.00,44.20" class="dt"/><polyline points="19.73,39.71 12.84,39.16" class="dt"/><polyline points="20.14,31.86 19.73,39.71" class="dt"/><polyline points="20.14,31.86 12.29,32.27" class="dt"/><polyline points="12.29,32.27 12.84,39.16" class="dt"/><polyline points="12.29,32.27 7.80,27.00" class="dt"/><polyline points="18.12,27.00 12.29,32.27" class="dt"/><polyline points="18.12,27.00 12.29,21.73" class="dt"/><polyline points="12.29,21.73 7.80,27.00" class="dt"/><polyline points="12.29,21.73 12.84,14.84" class="dt"/><polyline points="20.14,22.14 12.29,21.73" class="dt"/><polyline points="20.14,22.14 19.73,14.29" class="dt"/><polyline points="19.73,14.29 12.84,14.84" class="dt"/><polyline points="19.73,14.29 25.00,9.80" class="dt"/><polyline points="58.00,20.00 96.00,20.00" class="dt"/><polyline points="58.00,20.95 96.00,20.95" class="dt"/><polyline points="63.13,15.22 69.40,9.37" class="dt"/><polyline points="90.87,15.22 84.60,9.37" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Old mine</b><span class="cmeta">58 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Old European, plan view and profile with facet pattern"><polygon points="45.00,27.00 44.92,28.74 44.70,30.47 44.32,32.18 43.79,33.84 43.13,35.45 42.32,37.00 41.38,38.47 40.32,39.86 39.14,41.14 37.86,42.32 36.47,43.38 35.00,44.32 33.45,45.13 31.84,45.79 30.18,46.32 28.47,46.70 26.74,46.92 25.00,47.00 23.26,46.92 21.53,46.70 19.82,46.32 18.16,45.79 16.55,45.13 15.00,44.32 13.53,43.38 12.14,42.32 10.86,41.14 9.68,39.86 8.62,38.47 7.68,37.00 6.87,35.45 6.21,33.84 5.68,32.18 5.30,30.47 5.08,28.74 5.00,27.00 5.08,25.26 5.30,23.53 5.68,21.82 6.21,20.16 6.87,18.55 7.68,17.00 8.62,15.53 9.68,14.14 10.86,12.86 12.14,11.68 13.53,10.62 15.00,9.68 16.55,8.87 18.16,8.21 19.82,7.68 21.53,7.30 23.26,7.08 25.00,7.00 26.74,7.08 28.47,7.30 30.18,7.68 31.84,8.21 33.45,8.87 35.00,9.68 36.47,10.62 37.86,11.68 39.14,12.86 40.32,14.14 41.38,15.53 42.32,17.00 43.13,18.55 43.79,20.16 44.32,21.82 44.70,23.53 44.92,25.26" class="sh"/><polygon points="69.02,10.75 84.98,10.75 96.00,20.00 96.00,20.95 79.47,35.57 74.53,35.57 58.00,20.95 58.00,20.00" class="sh"/><polyline points="25.00,18.60 30.94,21.06 33.40,27.00 30.94,32.94 25.00,35.40 19.06,32.94 16.60,27.00 19.06,21.06 25.00,18.60" class="dt"/><polyline points="25.00,18.60 18.88,12.22" class="dt"/><polyline points="25.00,18.60 31.12,12.22" class="dt"/><polyline points="31.12,12.22 25.00,7.00" class="dt"/><polyline points="31.12,12.22 39.14,12.86" class="dt"/><polyline points="30.94,21.06 31.12,12.22" class="dt"/><polyline points="30.94,21.06 39.78,20.88" class="dt"/><polyline points="39.78,20.88 39.14,12.86" class="dt"/><polyline points="39.78,20.88 45.00,27.00" class="dt"/><polyline points="33.40,27.00 39.78,20.88" class="dt"/><polyline points="33.40,27.00 39.78,33.12" class="dt"/><polyline points="39.78,33.12 45.00,27.00" class="dt"/><polyline points="39.78,33.12 39.14,41.14" class="dt"/><polyline points="30.94,32.94 39.78,33.12" class="dt"/><polyline points="30.94,32.94 31.12,41.78" class="dt"/><polyline points="31.12,41.78 39.14,41.14" class="dt"/><polyline points="31.12,41.78 25.00,47.00" class="dt"/><polyline points="25.00,35.40 31.12,41.78" class="dt"/><polyline points="25.00,35.40 18.88,41.78" class="dt"/><polyline points="18.88,41.78 25.00,47.00" class="dt"/><polyline points="18.88,41.78 10.86,41.14" class="dt"/><polyline points="19.06,32.94 18.88,41.78" class="dt"/><polyline points="19.06,32.94 10.22,33.12" class="dt"/><polyline points="10.22,33.12 10.86,41.14" class="dt"/><polyline points="10.22,33.12 5.00,27.00" class="dt"/><polyline points="16.60,27.00 10.22,33.12" class="dt"/><polyline points="16.60,27.00 10.22,20.88" class="dt"/><polyline points="10.22,20.88 5.00,27.00" class="dt"/><polyline points="10.22,20.88 10.86,12.86" class="dt"/><polyline points="19.06,21.06 10.22,20.88" class="dt"/><polyline points="19.06,21.06 18.88,12.22" class="dt"/><polyline points="18.88,12.22 10.86,12.86" class="dt"/><polyline points="18.88,12.22 25.00,7.00" class="dt"/><polyline points="58.00,20.00 96.00,20.00" class="dt"/><polyline points="58.00,20.95 96.00,20.95" class="dt"/><polyline points="62.96,15.84 69.02,10.75" class="dt"/><polyline points="91.04,15.84 84.98,10.75" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Old European</b><span class="cmeta">58 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Briolette, plan view and profile with facet pattern"><polygon points="45.00,27.00 44.92,28.74 44.70,30.47 44.32,32.18 43.79,33.84 43.13,35.45 42.32,37.00 41.38,38.47 40.32,39.86 39.14,41.14 37.86,42.32 36.47,43.38 35.00,44.32 33.45,45.13 31.84,45.79 30.18,46.32 28.47,46.70 26.74,46.92 25.00,47.00 23.26,46.92 21.53,46.70 19.82,46.32 18.16,45.79 16.55,45.13 15.00,44.32 13.53,43.38 12.14,42.32 10.86,41.14 9.68,39.86 8.62,38.47 7.68,37.00 6.87,35.45 6.21,33.84 5.68,32.18 5.30,30.47 5.08,28.74 5.00,27.00 5.08,25.26 5.30,23.53 5.68,21.82 6.21,20.16 6.87,18.55 7.68,17.00 8.62,15.53 9.68,14.14 10.86,12.86 12.14,11.68 13.53,10.62 15.00,9.68 16.55,8.87 18.16,8.21 19.82,7.68 21.53,7.30 23.26,7.08 25.00,7.00 26.74,7.08 28.47,7.30 30.18,7.68 31.84,8.21 33.45,8.87 35.00,9.68 36.47,10.62 37.86,11.68 39.14,12.86 40.32,14.14 41.38,15.53 42.32,17.00 43.13,18.55 43.79,20.16 44.32,21.82 44.70,23.53 44.92,25.26" class="sh"/><polygon points="77.00,7.00 81.68,9.86 84.37,12.71 86.43,15.57 88.00,18.43 89.11,21.29 89.78,24.14 90.00,27.00 89.78,29.86 89.11,32.71 88.00,35.57 86.43,38.43 84.37,41.29 81.68,44.14 77.00,47.00 72.32,44.14 69.63,41.29 67.57,38.43 66.00,35.57 64.89,32.71 64.22,29.86 64.00,27.00 64.22,24.14 64.89,21.29 66.00,18.43 67.57,15.57 69.63,12.71 72.32,9.86 77.00,7.00" class="sh"/><polyline points="25.00,27.00 25.00,7.00" class="dt"/><polyline points="25.00,27.00 39.14,12.86" class="dt"/><polyline points="25.00,27.00 45.00,27.00" class="dt"/><polyline points="25.00,27.00 39.14,41.14" class="dt"/><polyline points="25.00,27.00 25.00,47.00" class="dt"/><polyline points="25.00,27.00 10.86,41.14" class="dt"/><polyline points="25.00,27.00 5.00,27.00" class="dt"/><polyline points="25.00,27.00 10.86,12.86" class="dt"/><polyline points="36.00,27.00 35.63,29.85 34.53,32.50 32.78,34.78 30.50,36.53 27.85,37.63 25.00,38.00 22.15,37.63 19.50,36.53 17.22,34.78 15.47,32.50 14.37,29.85 14.00,27.00 14.37,24.15 15.47,21.50 17.22,19.22 19.50,17.47 22.15,16.37 25.00,16.00 27.85,16.37 30.50,17.47 32.78,19.22 34.53,21.50 35.63,24.15" class="dt"/><polyline points="64.00,27.00 90.00,27.00" class="dt"/><polyline points="77.00,7.00 77.00,47.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Briolette</b><span class="cmeta">— facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Single / eight cut, plan view and profile with facet pattern"><polygon points="45.00,27.00 44.92,28.74 44.70,30.47 44.32,32.18 43.79,33.84 43.13,35.45 42.32,37.00 41.38,38.47 40.32,39.86 39.14,41.14 37.86,42.32 36.47,43.38 35.00,44.32 33.45,45.13 31.84,45.79 30.18,46.32 28.47,46.70 26.74,46.92 25.00,47.00 23.26,46.92 21.53,46.70 19.82,46.32 18.16,45.79 16.55,45.13 15.00,44.32 13.53,43.38 12.14,42.32 10.86,41.14 9.68,39.86 8.62,38.47 7.68,37.00 6.87,35.45 6.21,33.84 5.68,32.18 5.30,30.47 5.08,28.74 5.00,27.00 5.08,25.26 5.30,23.53 5.68,21.82 6.21,20.16 6.87,18.55 7.68,17.00 8.62,15.53 9.68,14.14 10.86,12.86 12.14,11.68 13.53,10.62 15.00,9.68 16.55,8.87 18.16,8.21 19.82,7.68 21.53,7.30 23.26,7.08 25.00,7.00 26.74,7.08 28.47,7.30 30.18,7.68 31.84,8.21 33.45,8.87 35.00,9.68 36.47,10.62 37.86,11.68 39.14,12.86 40.32,14.14 41.38,15.53 42.32,17.00 43.13,18.55 43.79,20.16 44.32,21.82 44.70,23.53 44.92,25.26" class="sh"/><polygon points="66.55,14.01 87.45,14.01 96.00,20.00 96.00,20.95 77.00,38.67 77.00,38.67 58.00,20.95 58.00,20.00" class="sh"/><polyline points="25.00,16.00 32.78,19.22 36.00,27.00 32.78,34.78 25.00,38.00 17.22,34.78 14.00,27.00 17.22,19.22 25.00,16.00" class="dt"/><polyline points="25.00,16.00 25.00,7.00" class="dt"/><polyline points="32.78,19.22 39.14,12.86" class="dt"/><polyline points="36.00,27.00 45.00,27.00" class="dt"/><polyline points="32.78,34.78 39.14,41.14" class="dt"/><polyline points="25.00,38.00 25.00,47.00" class="dt"/><polyline points="17.22,34.78 10.86,41.14" class="dt"/><polyline points="14.00,27.00 5.00,27.00" class="dt"/><polyline points="17.22,19.22 10.86,12.86" class="dt"/><polyline points="58.00,20.00 96.00,20.00" class="dt"/><polyline points="58.00,20.95 96.00,20.95" class="dt"/><polyline points="61.85,17.31 66.55,14.01" class="dt"/><polyline points="92.15,17.31 87.45,14.01" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Single / eight cut</b><span class="cmeta">17 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+</div>
+<h3 class="famhead">Convex smooth<span class="fcount">4</span></h3>
+<div class="cutgrid">
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Cabochon, plan view and profile with facet pattern"><polygon points="45.00,27.00 44.92,28.74 44.70,30.47 44.32,32.18 43.79,33.84 43.13,35.45 42.32,37.00 41.38,38.47 40.32,39.86 39.14,41.14 37.86,42.32 36.47,43.38 35.00,44.32 33.45,45.13 31.84,45.79 30.18,46.32 28.47,46.70 26.74,46.92 25.00,47.00 23.26,46.92 21.53,46.70 19.82,46.32 18.16,45.79 16.55,45.13 15.00,44.32 13.53,43.38 12.14,42.32 10.86,41.14 9.68,39.86 8.62,38.47 7.68,37.00 6.87,35.45 6.21,33.84 5.68,32.18 5.30,30.47 5.08,28.74 5.00,27.00 5.08,25.26 5.30,23.53 5.68,21.82 6.21,20.16 6.87,18.55 7.68,17.00 8.62,15.53 9.68,14.14 10.86,12.86 12.14,11.68 13.53,10.62 15.00,9.68 16.55,8.87 18.16,8.21 19.82,7.68 21.53,7.30 23.26,7.08 25.00,7.00 26.74,7.08 28.47,7.30 30.18,7.68 31.84,8.21 33.45,8.87 35.00,9.68 36.47,10.62 37.86,11.68 39.14,12.86 40.32,14.14 41.38,15.53 42.32,17.00 43.13,18.55 43.79,20.16 44.32,21.82 44.70,23.53 44.92,25.26" class="sh"/><polygon points="58.00,37.00 58.00,37.00 58.12,35.32 58.48,33.66 59.07,32.05 59.88,30.49 60.91,29.02 62.15,27.65 63.56,26.39 65.15,25.27 66.89,24.30 68.76,23.49 70.72,22.84 72.77,22.38 74.87,22.09 77.00,22.00 79.13,22.09 81.23,22.38 83.28,22.84 85.24,23.49 87.11,24.30 88.85,25.27 90.44,26.39 91.85,27.65 93.09,29.02 94.12,30.49 94.93,32.05 95.52,33.66 95.88,35.32 96.00,37.00" class="sh"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Cabochon</b><span class="cmeta">0 facets · quadric</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Sphere / bead, plan view and profile with facet pattern"><polygon points="45.00,27.00 44.92,28.74 44.70,30.47 44.32,32.18 43.79,33.84 43.13,35.45 42.32,37.00 41.38,38.47 40.32,39.86 39.14,41.14 37.86,42.32 36.47,43.38 35.00,44.32 33.45,45.13 31.84,45.79 30.18,46.32 28.47,46.70 26.74,46.92 25.00,47.00 23.26,46.92 21.53,46.70 19.82,46.32 18.16,45.79 16.55,45.13 15.00,44.32 13.53,43.38 12.14,42.32 10.86,41.14 9.68,39.86 8.62,38.47 7.68,37.00 6.87,35.45 6.21,33.84 5.68,32.18 5.30,30.47 5.08,28.74 5.00,27.00 5.08,25.26 5.30,23.53 5.68,21.82 6.21,20.16 6.87,18.55 7.68,17.00 8.62,15.53 9.68,14.14 10.86,12.86 12.14,11.68 13.53,10.62 15.00,9.68 16.55,8.87 18.16,8.21 19.82,7.68 21.53,7.30 23.26,7.08 25.00,7.00 26.74,7.08 28.47,7.30 30.18,7.68 31.84,8.21 33.45,8.87 35.00,9.68 36.47,10.62 37.86,11.68 39.14,12.86 40.32,14.14 41.38,15.53 42.32,17.00 43.13,18.55 43.79,20.16 44.32,21.82 44.70,23.53 44.92,25.26" class="sh"/><polygon points="95.00,27.00 94.93,28.57 94.73,30.13 94.39,31.66 93.91,33.16 93.31,34.61 92.59,36.00 91.74,37.32 90.79,38.57 89.73,39.73 88.57,40.79 87.32,41.74 86.00,42.59 84.61,43.31 83.16,43.91 81.66,44.39 80.13,44.73 78.57,44.93 77.00,45.00 75.43,44.93 73.87,44.73 72.34,44.39 70.84,43.91 69.39,43.31 68.00,42.59 66.68,41.74 65.43,40.79 64.27,39.73 63.21,38.57 62.26,37.32 61.41,36.00 60.69,34.61 60.09,33.16 59.61,31.66 59.27,30.13 59.07,28.57 59.00,27.00 59.07,25.43 59.27,23.87 59.61,22.34 60.09,20.84 60.69,19.39 61.41,18.00 62.26,16.68 63.21,15.43 64.27,14.27 65.43,13.21 66.68,12.26 68.00,11.41 69.39,10.69 70.84,10.09 72.34,9.61 73.87,9.27 75.43,9.07 77.00,9.00 78.57,9.07 80.13,9.27 81.66,9.61 83.16,10.09 84.61,10.69 86.00,11.41 87.32,12.26 88.57,13.21 89.73,14.27 90.79,15.43 91.74,16.68 92.59,18.00 93.31,19.39 93.91,20.84 94.39,22.34 94.73,23.87 94.93,25.43" class="sh"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Sphere / bead</b><span class="cmeta">0 facets · quadric</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Egg, plan view and profile with facet pattern"><polygon points="40.20,27.00 40.14,28.32 39.97,29.64 39.68,30.93 39.28,32.20 38.78,33.42 38.16,34.60 37.45,35.72 36.64,36.77 35.75,37.75 34.77,38.64 33.72,39.45 32.60,40.16 31.42,40.78 30.20,41.28 28.93,41.68 27.64,41.97 26.32,42.14 25.00,42.20 23.68,42.14 22.36,41.97 21.07,41.68 19.80,41.28 18.58,40.78 17.40,40.16 16.28,39.45 15.23,38.64 14.25,37.75 13.36,36.77 12.55,35.72 11.84,34.60 11.22,33.42 10.72,32.20 10.32,30.93 10.03,29.64 9.86,28.32 9.80,27.00 9.86,25.68 10.03,24.36 10.32,23.07 10.72,21.80 11.22,20.58 11.84,19.40 12.55,18.28 13.36,17.23 14.25,16.25 15.23,15.36 16.28,14.55 17.40,13.84 18.58,13.22 19.80,12.72 21.07,12.32 22.36,12.03 23.68,11.86 25.00,11.80 26.32,11.86 27.64,12.03 28.93,12.32 30.20,12.72 31.42,13.22 32.60,13.84 33.72,14.55 34.77,15.36 35.75,16.25 36.64,17.23 37.45,18.28 38.16,19.40 38.78,20.58 39.28,21.80 39.68,23.07 39.97,24.36 40.14,25.68" class="sh"/><polygon points="77.00,8.00 77.82,8.07 78.63,8.29 79.45,8.65 80.26,9.15 81.06,9.78 81.86,10.55 82.64,11.44 83.41,12.45 84.17,13.56 84.89,14.79 85.59,16.10 86.25,17.50 86.86,18.97 87.43,20.50 87.93,22.08 88.37,23.70 88.73,25.34 89.00,27.00 89.18,28.66 89.27,30.30 89.25,31.92 89.12,33.50 88.89,35.03 88.54,36.50 88.07,37.90 87.49,39.21 86.81,40.44 86.01,41.55 85.12,42.56 84.14,43.45 83.08,44.22 81.95,44.85 80.77,45.35 79.54,45.71 78.28,45.93 77.00,46.00 75.72,45.93 74.46,45.71 73.23,45.35 72.05,44.85 70.92,44.22 69.86,43.45 68.88,42.56 67.99,41.55 67.19,40.44 66.51,39.21 65.93,37.90 65.46,36.50 65.11,35.03 64.88,33.50 64.75,31.92 64.73,30.30 64.82,28.66 65.00,27.00 65.27,25.34 65.63,23.70 66.07,22.08 66.57,20.50 67.14,18.97 67.75,17.50 68.41,16.10 69.11,14.79 69.83,13.56 70.59,12.45 71.36,11.44 72.14,10.55 72.94,9.78 73.74,9.15 74.55,8.65 75.37,8.29 76.18,8.07" class="sh"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Egg</b><span class="cmeta">0 facets · quadric</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Lens / disc, plan view and profile with facet pattern"><polygon points="45.00,27.00 44.92,28.74 44.70,30.47 44.32,32.18 43.79,33.84 43.13,35.45 42.32,37.00 41.38,38.47 40.32,39.86 39.14,41.14 37.86,42.32 36.47,43.38 35.00,44.32 33.45,45.13 31.84,45.79 30.18,46.32 28.47,46.70 26.74,46.92 25.00,47.00 23.26,46.92 21.53,46.70 19.82,46.32 18.16,45.79 16.55,45.13 15.00,44.32 13.53,43.38 12.14,42.32 10.86,41.14 9.68,39.86 8.62,38.47 7.68,37.00 6.87,35.45 6.21,33.84 5.68,32.18 5.30,30.47 5.08,28.74 5.00,27.00 5.08,25.26 5.30,23.53 5.68,21.82 6.21,20.16 6.87,18.55 7.68,17.00 8.62,15.53 9.68,14.14 10.86,12.86 12.14,11.68 13.53,10.62 15.00,9.68 16.55,8.87 18.16,8.21 19.82,7.68 21.53,7.30 23.26,7.08 25.00,7.00 26.74,7.08 28.47,7.30 30.18,7.68 31.84,8.21 33.45,8.87 35.00,9.68 36.47,10.62 37.86,11.68 39.14,12.86 40.32,14.14 41.38,15.53 42.32,17.00 43.13,18.55 43.79,20.16 44.32,21.82 44.70,23.53 44.92,25.26" class="sh"/><polygon points="96.00,27.00 95.93,27.70 95.71,28.39 95.35,29.07 94.85,29.74 94.22,30.38 93.45,31.00 92.56,31.59 91.55,32.14 90.44,32.66 89.21,33.13 87.90,33.55 86.50,33.93 85.03,34.25 83.50,34.52 81.92,34.73 80.30,34.88 78.66,34.97 77.00,35.00 75.34,34.97 73.70,34.88 72.08,34.73 70.50,34.52 68.97,34.25 67.50,33.93 66.10,33.55 64.79,33.13 63.56,32.66 62.45,32.14 61.44,31.59 60.55,31.00 59.78,30.38 59.15,29.74 58.65,29.07 58.29,28.39 58.07,27.70 58.00,27.00 58.07,26.30 58.29,25.61 58.65,24.93 59.15,24.26 59.78,23.62 60.55,23.00 61.44,22.41 62.45,21.86 63.56,21.34 64.79,20.87 66.10,20.45 67.50,20.07 68.97,19.75 70.50,19.48 72.08,19.27 73.70,19.12 75.34,19.03 77.00,19.00 78.66,19.03 80.30,19.12 81.92,19.27 83.50,19.48 85.03,19.75 86.50,20.07 87.90,20.45 89.21,20.87 90.44,21.34 91.55,21.86 92.56,22.41 93.45,23.00 94.22,23.62 94.85,24.26 95.35,24.93 95.71,25.61 95.93,26.30" class="sh"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Lens / disc</b><span class="cmeta">0 facets · quadric</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+</div>
+<h3 class="famhead">Talismanic<span class="fcount">8</span></h3>
+<div class="cutgrid">
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Vogel cut, plan view and profile with facet pattern"><polygon points="25.00,7.00 42.32,17.00 42.32,37.00 25.00,47.00 7.68,37.00 7.68,17.00" class="sh"/><polygon points="77.00,3.60 84.00,18.00 84.00,30.00 77.00,49.23 70.00,30.00 70.00,18.00" class="sh"/><polyline points="25.00,27.00 25.00,7.00" class="dt"/><polyline points="25.00,27.00 42.32,17.00" class="dt"/><polyline points="25.00,27.00 42.32,37.00" class="dt"/><polyline points="25.00,27.00 25.00,47.00" class="dt"/><polyline points="25.00,27.00 7.68,37.00" class="dt"/><polyline points="25.00,27.00 7.68,17.00" class="dt"/><polyline points="25.00,17.00 33.66,22.00 33.66,32.00 25.00,37.00 16.34,32.00 16.34,22.00 25.00,17.00" class="dt"/><polyline points="70.00,18.00 84.00,18.00" class="dt"/><polyline points="77.00,3.60 77.00,18.00" class="dt"/><polyline points="70.00,30.00 84.00,30.00" class="dt"/><polyline points="77.00,30.00 77.00,49.23" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Vogel cut</b><span class="cmeta">6–144 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Vogel Star of David pendant: hexagram plan view from two rotated triangular faces, slab profile"><polygon points="25.00,7.00 42.32,17.00 42.32,37.00 25.00,47.00 7.68,37.00 7.68,17.00" class="sh"/><polyline points="25.00,7.00 42.32,37.00 7.68,37.00 25.00,7.00" class="dt"/><polyline points="25.00,47.00 7.68,17.00 42.32,17.00 25.00,47.00" class="dt"/><polygon points="62.00,23.00 92.00,20.50 92.00,33.50 62.00,31.00" class="sh"/><polyline points="66.20,23.00 66.20,30.90" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Vogel Star of David</b><span class="cmeta">8 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Generator point, plan view and profile with facet pattern"><polygon points="25.00,7.00 42.32,17.00 42.32,37.00 25.00,47.00 7.68,37.00 7.68,17.00" class="sh"/><polygon points="77.00,6.00 90.00,20.00 90.00,42.00 64.00,42.00 64.00,20.00" class="sh"/><polyline points="25.00,27.00 25.00,7.00" class="dt"/><polyline points="25.00,27.00 42.32,17.00" class="dt"/><polyline points="25.00,27.00 42.32,37.00" class="dt"/><polyline points="25.00,27.00 25.00,47.00" class="dt"/><polyline points="25.00,27.00 7.68,37.00" class="dt"/><polyline points="25.00,27.00 7.68,17.00" class="dt"/><polyline points="64.00,20.00 90.00,20.00" class="dt"/><polyline points="77.00,6.00 77.00,20.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Generator point</b><span class="cmeta">6 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Obelisk / tower, plan view and profile with facet pattern"><polygon points="9.40,11.40 40.60,11.40 40.60,42.60 9.40,42.60" class="sh"/><polygon points="77.00,6.00 87.00,17.00 87.00,43.00 67.00,43.00 67.00,17.00" class="sh"/><polyline points="25.00,27.00 36.03,15.97" class="dt"/><polyline points="25.00,27.00 36.03,38.03" class="dt"/><polyline points="25.00,27.00 13.97,38.03" class="dt"/><polyline points="25.00,27.00 13.97,15.97" class="dt"/><polyline points="67.00,17.00 87.00,17.00" class="dt"/><polyline points="77.00,6.00 77.00,17.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Obelisk / tower</b><span class="cmeta">4 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Double-terminated, plan view and profile with facet pattern"><polygon points="25.00,7.00 42.32,17.00 42.32,37.00 25.00,47.00 7.68,37.00 7.68,17.00" class="sh"/><polygon points="77.00,8.00 88.00,20.00 88.00,34.00 77.00,46.00 66.00,34.00 66.00,20.00" class="sh"/><polyline points="25.00,27.00 25.00,7.00" class="dt"/><polyline points="25.00,27.00 42.32,17.00" class="dt"/><polyline points="25.00,27.00 42.32,37.00" class="dt"/><polyline points="25.00,27.00 25.00,47.00" class="dt"/><polyline points="25.00,27.00 7.68,37.00" class="dt"/><polyline points="25.00,27.00 7.68,17.00" class="dt"/><polyline points="66.00,20.00 88.00,20.00" class="dt"/><polyline points="77.00,8.00 77.00,20.00" class="dt"/><polyline points="66.00,34.00 88.00,34.00" class="dt"/><polyline points="77.00,34.00 77.00,46.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Double-terminated</b><span class="cmeta">6 facets · half-space</span><span class="cmeta"><span class="pill src">source</span> <span class="ex">○ schematic</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Great Pyramid 51°51′, plan view and profile with facet pattern"><polygon points="7.40,9.40 42.60,9.40 42.60,44.60 7.40,44.60" class="sh"/><polygon points="59.00,38.00 95.00,38.00 77.00,15.08" class="sh"/><polyline points="25.00,27.00 37.45,14.55" class="dt"/><polyline points="25.00,27.00 37.45,39.45" class="dt"/><polyline points="25.00,27.00 12.55,39.45" class="dt"/><polyline points="25.00,27.00 12.55,14.55" class="dt"/><polyline points="77.00,38.00 77.00,15.08" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Great Pyramid 51°51′</b><span class="cmeta">4 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Merkaba, plan view and profile with facet pattern"><polygon points="25.00,7.00 30.77,17.00 42.32,17.00 36.55,27.00 42.32,37.00 30.77,37.00 25.00,47.00 19.23,37.00 7.68,37.00 13.45,27.00 7.68,17.00 19.23,17.00" class="sh"/><polygon points="77.00,9.00 82.20,18.00 92.59,18.00 87.39,27.00 92.59,36.00 82.20,36.00 77.00,45.00 71.80,36.00 61.41,36.00 66.61,27.00 61.41,18.00 71.80,18.00" class="sh"/><polyline points="25.00,7.00 42.32,37.00 7.68,37.00 25.00,7.00" class="dt"/><polyline points="25.00,47.00 7.68,17.00 42.32,17.00 25.00,47.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Merkaba</b><span class="cmeta">8 facets · union</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+<figure class="cut"><svg viewBox="0 0 102 56" class="cutsvg" role="img" aria-label="Platonic set, plan view and profile with facet pattern"><polygon points="25.00,7.00 36.76,10.82 44.02,20.82 44.02,33.18 36.76,43.18 25.00,47.00 13.24,43.18 5.98,33.18 5.98,20.82 13.24,10.82" class="sh"/><polygon points="77.00,9.00 92.59,18.00 92.59,36.00 77.00,45.00 61.41,36.00 61.41,18.00" class="sh"/><polyline points="25.00,36.60 15.87,29.97 19.36,19.23 30.64,19.23 34.13,29.97 25.00,36.60" class="dt"/><polyline points="25.00,36.60 36.76,10.82" class="dt"/><polyline points="15.87,29.97 44.02,33.18" class="dt"/><polyline points="19.36,19.23 25.00,47.00" class="dt"/><polyline points="30.64,19.23 5.98,33.18" class="dt"/><polyline points="34.13,29.97 13.24,10.82" class="dt"/><polyline points="77.00,27.00 92.59,36.00" class="dt"/><polyline points="77.00,27.00 61.41,36.00" class="dt"/><polyline points="77.00,27.00 77.00,9.00" class="dt"/><text x="25" y="53.5" class="cl">plan</text><text x="77" y="53.5" class="cl">profile</text></svg><figcaption><b>Platonic set</b><span class="cmeta">4–20 facets · half-space</span><span class="cmeta"><span class="pill have">have</span> <span class="ex">● computed</span></span></figcaption></figure>
+</div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Family</th><th>Cut</th><th>Primitive</th><th>Notes</th><th>Data</th></tr></thead>
+      <tbody>
+        <tr><td>Modern brilliant</td><td>Round brilliant</td><td class="m">half-space</td>
+            <td>58 facets, GIA Excellent / Tolkowsky 1919</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Oval brilliant</td><td class="m">half-space</td><td>elliptical girdle, 8 pavilion mains</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Pear / pendeloque</td><td class="m">half-space</td><td>asymmetric — bow-tie leakage expected</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Marquise / navette</td><td class="m">half-space</td><td>two points, strongest bow-tie of the family</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Heart</td><td class="m">union</td><td><em>non-convex</em> — cleft, 2-part decomposition</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Princess</td><td class="m">half-space</td><td>square modified brilliant, chevron facets</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Radiant</td><td class="m">half-space</td><td>cut-corner rectangular modified brilliant</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Cushion brilliant</td><td class="m">half-space</td><td>rounded-square girdle</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Trilliant</td><td class="m">half-space</td><td>3-fold — good asymmetry test for the tracer</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Half-moon</td><td class="m">half-space</td><td>accent stone</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Shield / kite</td><td class="m">half-space</td><td>accent stone</td><td><span class="pill src">source</span></td></tr>
+
+        <tr><td>Step cut</td><td>Emerald cut</td><td class="m">half-space</td>
+            <td>cut corners, 3 crown + 3 pavilion steps — the “hall of mirrors”</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Asscher</td><td class="m">half-space</td><td>square emerald, high crown</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Baguette</td><td class="m">half-space</td><td>minimal facet count, mostly windowed</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Tapered baguette</td><td class="m">half-space</td><td>non-parallel long edges</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Carré</td><td class="m">half-space</td><td>square step, sharp corners</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Table cut</td><td class="m">half-space</td><td>Islamic, ~12th c. — the ancestor of the family</td><td><span class="pill src">source</span></td></tr>
+
+        <tr><td>Antique</td><td>Point cut</td><td class="m">half-space</td>
+            <td>polished natural octahedron, ~1300s — the zero point</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Rose cut</td><td class="m">half-space</td><td>flat back, domed faceted crown, 12/24 facets</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Mazarin</td><td class="m">half-space</td><td>17 crown facets, mid-1600s, cushion</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Peruzzi</td><td class="m">half-space</td><td>58 facets — introduced star and break facets</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Old mine</td><td class="m">half-space</td><td>high crown, small table, large culet</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Old European</td><td class="m">half-space</td><td>round girdle, small table, open culet</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Briolette</td><td class="m">half-space</td><td>faceted drop, no table — convex</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Single / eight cut</td><td class="m">half-space</td><td>8+8+table — simplest real cut, good first target</td><td><span class="pill have">have</span></td></tr>
+
+        <tr><td>Convex smooth</td><td>Cabochon</td><td class="m">quadric</td><td>dome + flat back</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Sphere / scrying bead</td><td class="m">quadric</td><td>ties to <code>scrying_pool.py</code></td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Egg</td><td class="m">quadric</td><td>prolate ellipsoid</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Lens / disc</td><td class="m">quadric</td><td>two spherical caps</td><td><span class="pill have">have</span></td></tr>
+
+        <tr><td>Talismanic</td><td>Vogel cut</td><td class="m">half-space</td>
+            <td>c-axis aligned; receptive apex 51°51′51″ under both §6 readings, transmitting
+            apex more acute; 4/6/8/12/13/16/24 facets selectable — the tradition describes
+            wands up to 88; facet count changes the bounce pattern, never the Σ</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Vogel Star of David</td><td class="m">half-space</td>
+            <td>two equilateral faces on parallel planes, rotated 60° — the hull is a triangular
+            antiprism (the regular octahedron at equilateral proportion); the “internal hexagram”
+            is the antipodal-face overlap in projection, §6</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Generator point</td><td class="m">half-space</td><td>6 equal faces to one apex</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Obelisk / tower</td><td class="m">half-space</td><td>prism + pyramidal termination</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Double-terminated point</td><td class="m">half-space</td><td>r-face at 51.78° to base — computed from cell parameters, §6; prism proportions still to source</td><td><span class="pill src">source</span></td></tr>
+        <tr><td></td><td>Great Pyramid</td><td class="m">half-space</td><td>51°51′ slope — sits beside the Vogel apex for comparison</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Merkaba</td><td class="m">union</td><td><em>non-convex</em> — two interpenetrating tetrahedra</td><td><span class="pill have">have</span></td></tr>
+        <tr><td></td><td>Platonic set</td><td class="m">half-space</td>
+            <td>all five — ties to <code>mineral-lattices-platonic-solids.html</code> and
+            <code>dodecahedron_mirror_frame/</code></td><td><span class="pill have">have</span></td></tr>
+      </tbody>
+      <caption>Vogel facet-count variants and the five Platonic solids expand this to roughly
+      46 selectable geometries. Proportions must come from published lapidary references and
+      be recorded with their source in the facet table itself, so the page can cite them.</caption>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§6</span> The Vogel result</h2>
+
+  <p>The Vogel cut earns its place because it makes a geometric claim a ray tracer can test —
+  but the spec itself is ambiguous, and the honest move is to model both readings rather than
+  choose one silently. The tradition ties the receptive tip to the Great Pyramid's
+  <strong>51°51′51″</strong>. Read as the <em>included apex angle</em> (a slender needle),
+  each facet lies 25.93° off the c-axis and its normal 64.07° off — which is the AOI for a
+  ray travelling straight down the axis. Read with the pyramid's own semantics — the facet
+  rising 51°51′51″ <em>from the base plane</em>, exactly as the pyramid face rises from the
+  ground — the tip is blunter and the axial AOI is 51.86°. Reading B has three things going
+  for it: it is what the pyramid comparison literally says; it matches the convention that
+  the receptive end is blunter than the transmitting end; and it lands
+  <span class="num">4.8 arcminutes</span> from the r-face of a natural quartz termination —
+  <span class="num">51.78°</span> from the basal plane, computed from the cell parameters
+  a 4.9137 Å, c 5.4047 Å — so a reading-B Vogel is a <em>regularised natural point</em>, which
+  is very likely what Vogel was looking at. Default to B, offer A as a toggle, print which is
+  active on every readout.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Quantity</th><th class="r">A — included apex 51.864°</th>
+        <th class="r">B — pyramid slope 51.864°</th></tr></thead>
+      <tbody>
+        <tr><td>Facet plane off c-axis</td><td class="r m">25.93°</td><td class="r m">38.14°</td></tr>
+        <tr><td>Axial-ray AOI at the tip facet</td><td class="r m">64.07°</td><td class="r m">51.86°</td></tr>
+        <tr><td>Margin over quartz θ_c 40.36°</td><td class="r m">+23.71° <span class="pill tir">TIR</span></td>
+            <td class="r m">+11.51° <span class="pill tir">TIR</span></td></tr>
+        <tr><td>Interior AOI span, f/1.33 cone</td><td class="r m">50.93 – 77.21°</td><td class="r m">38.72 – 65.01°</td></tr>
+        <tr><td>Under the focused cone</td><td class="r m">entirely TIR</td><td class="r m">6.8% of the 2D fan transmits</td></tr>
+        <tr><td>vs natural r-face 51.78°</td><td class="r m">—</td><td class="r m">Δ 4.8′</td></tr>
+      </tbody>
+      <caption>The earlier draft quoted the cone span as 43.51 – 84.62°, forgetting that
+      refraction compresses the cone at entry — ±20.56° in air is ±13.14° inside quartz, so
+      the correct reading-A span is 50.93 – 77.21°. The conclusion survives the correction;
+      the number did not, which is what the audit scripts are for. Either way, sharpening the
+      transmitting end — which the spec requires — only raises the axial AOI further above
+      critical; the bluntness threshold to transmit axially is an included apex of
+      99.29° (= 2·(90° − θ_c)), and no wand tip is within 20° of it.</caption>
+    </table>
+  </div>
+
+  <p>Under both readings the headline stands, and it is not the one the tradition states:
+  <strong>a sharp quartz termination traps axial light rather than projecting it.</strong>
+  The natural-termination row upgrades the claim from a fact about Vogel wands to a fact about
+  every quartz point ever grown: the crystal's own r-face angle of 51.78° already exceeds
+  θ_c by 11.4°, which is why a quartz point glows along its length instead of beaming from
+  the tip. The one honest leak in the story is the focused cone against a reading-B tip —
+  6.8% of the fan arrives under critical and transmits — and the page should show that too,
+  because it is the difference between a trapped ray and a trapped beam. The tradition's
+  “amplified every time it hits a facet” maps onto “totally internally reflected at every
+  facet, losslessly” — the redirection is real and the page should show it beautifully; the
+  amplification is not, and the Σ&nbsp;=&nbsp;1.000 readout will say so on every frame. That
+  is the house rule working exactly as intended: the physics computed live, the
+  interpretation labelled, neither pretending to be the other.</p>
+
+  <h3>The Star of David pendant — the same test, flat</h3>
+  <p>The Vogel Star of David is the wand's flat sibling and a cleaner geometry than its lore
+  suggests: a “male” equilateral triangular face in front, a “female” face behind it rotated
+  60°, and the solid between them is their convex hull — a <strong>triangular antiprism</strong>,
+  eight facets, squarely inside the half-space primitive. One exact fact worth putting on the
+  card: at the proportion where the six lateral facets become equilateral, that hull <em>is</em>
+  the regular octahedron, and the hexagram the wearer sees is precisely the overlap of two
+  antipodal faces viewed down a 3-fold axis. The “internal Star of David” is a projection
+  theorem, not a mystery — the tracer draws it from the facet table rather than asserting it.
+  Thickness, face offset and any back bevel are P1 parameters (real pendants vary), so the
+  card ships schematic until sourced.</p>
+  <p>The pendant also sharpens the register boundary, in both directions. The tradition's own
+  wording for the receptive angle — an “internal angle of 51°51′51″” that “mirrors the angle
+  of the sides of the Great Pyramid” — uses reading A's noun and reading B's comparison in a
+  single sentence, which is exactly the ambiguity the toggle above models; the page can quote
+  the sentence and show both. C-axis alignment is declared per cut and feeds the §4b
+  angle-to-c readout and the P6b split; piezoelectricity is a true property of quartz — but it
+  couples charge to <em>strain</em>, not to the light paths traced here, so it lives in the
+  labelled register as a true-and-orthogonal fact. “Energy spirals against the internal
+  facets” maps onto something the tracer genuinely shows: skew rays in a hexagonal
+  cross-section TIR around the axis in helical paths, and the 3D view will draw those spirals
+  live. The spiral is real; the “amplifying with each bounce” is not, and
+  Σ&nbsp;=&nbsp;1.000 says so on every frame. As for the “concentrated, laser-like beam” from
+  the male tip — the tables above are the tracer's answer: a tip sharper than 99.29° included
+  cannot transmit axial light at all, and the honest observable is the 6.8% cone leak under
+  reading B. Geometric optics also has no mechanism for coherence; “beam coherence” across
+  facet counts is not a quantity this page can measure, and the notes say so rather than
+  gesture at it.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§7</span> Interface — exploration and reference</h2>
+
+  <p>The page has two jobs and they pull in different directions. Exploration wants freedom;
+  reference wants comparison, reproducibility and citability. The resolution: <strong>open on
+  a single stone, but make comparison a peer mode rather than a buried feature</strong>, and
+  make every state addressable so a finding can be linked rather than described.</p>
+
+  <h3>Landing layout</h3>
+  <pre class="wire">┌─ THE CUT AND THE CRITICAL ANGLE ──────────────────────────────────┐
+│ <b>◈ round brilliant · 58 facets</b>            <i>⇄ compare</i>    <i>▦ all 37</i>    │
+│ <b>⟨ moissanite  diamond  CZ  sapphire  beryl  quartz  glass ⟩</b>       │
+│         <b>▲ n 2.4175 · θc 24.43°</b>                                    │
+│ ┌───────────────────────────────┐   crown return            <b>61.4%</b> │
+│ │                               │   pavilion leak            2.1% │
+│ │        <b>section + rays</b>         │   mean TIR                  2.8 │
+│ │        (primary view)         │   Σ energy             1.000000 │
+│ │                               │   ── vs diamond best-in-class   │
+│ └───────────────────────────────┘        63.2% ──                 │
+│                                                                   │
+│ tilt <b>0.00°</b>   spot <b>0.93 mm</b>   ▸ illuminated: <b>table</b>  AOI <b>0.00°</b>       │
+│ ⌖ snap: table-up · crown-normal 34.50° · girdle-on · c-axis       │
+│                                                                   │
+│ [<b>section</b>] [3D] [heat] [exit] [signature]     <i>⧉ link  ↓ export</i>     │
+└───────────────────────────────────────────────────────────────────┘</pre>
+
+  <h3>Changing the stone</h3>
+  <p>A stone is a <em>cut</em> and a <em>material</em>, and the two axes are independent — any
+  of the 37 in any of the 9. They get different controls because 37 and 9 are different
+  problems.</p>
+
+  <p><strong>Cut — a tray of generated silhouettes.</strong> Opens over the view, grouped by
+  the five families, closed by <kbd>esc</kbd>. The silhouettes are <em>drawn from the facet
+  tables themselves</em>, not hand-authored art, so adding a cut to the roster adds it to the
+  picker automatically and the picker can never disagree with the geometry. Each tile carries
+  the crown-return figure for the current material, which makes the picker a coarse reference
+  in its own right.</p>
+
+  <pre class="wire">┌─ CHANGE CUT ──────────────────────── type to filter ───── esc ────┐
+│ <i>MODERN BRILLIANT</i>                                                  │
+│  <b>◇ round</b>      ◇ oval      ◇ pear      ◇ marquise  ◇ heart         │
+│   <b>61.4%</b>        59.8%       57.1%       54.3%       52.9%          │
+│  ◇ princess   ◇ radiant   ◇ cushion   ◇ trilliant ◇ half-moon     │
+│ <i>STEP CUT</i>                                                          │
+│  ▭ emerald    ▭ asscher   ▭ baguette  ▭ carré     ▭ table cut     │
+│   44.6%        48.1%       39.2%       41.7%       31.0%          │
+│ <i>ANTIQUE  ·  CONVEX SMOOTH  ·  TALISMANIC</i>                    ⌄     │
+└───────────────────────────────────────────────────────────────────┘</pre>
+
+  <p>That per-tile number is the same computation as the all-37 table, at lower density —
+  <strong>one cache serves both surfaces</strong>, keyed on material and orientation. Worth
+  knowing at build time so it is not implemented twice.</p>
+
+  <p><strong>Material — nine chips, ordered by n descending.</strong> Only nine, so no tray:
+  a single row, always visible, with n and θ_c for the selection. Ordering them moissanite →
+  fluorite makes the control itself a scale — moving right is monotonically less refractive
+  and monotonically closer to leaking, ending past the §2b √2 line where the brilliant cut
+  stops being possible at all. Arrow keys walk it, which turns the §1 knife edge into a
+  two-keystroke discovery.</p>
+
+  <h3>What survives a change — the rule that makes comparison work</h3>
+  <p>Changing the cut keeps material, orientation, spot, view and comparator. Changing the
+  material keeps all of that plus the cut. <strong>Nothing resets anything else, ever.</strong>
+  Every comparison on the page depends on holding all other variables fixed, so a control that
+  quietly restores a default destroys the page's core workflow. This deserves an assert, not
+  just care.</p>
+
+  <p>Two consequences that are easy to miss:</p>
+  <ul>
+    <li><strong>Snap orientations must be generated per cut, not hardcoded.</strong>
+    “crown-normal 34.50°” is a fact about a round brilliant; a step cut's crown angle differs,
+    and a briolette, rose cut or sphere has no table to be “table-up” about. The snap list is
+    derived from the current facet table and renamed on every cut change.</li>
+    <li><strong>The rotation pivot is a stated parameter.</strong> Where the stone turns about
+    decides where the fixed spot lands as it rotates. The §4b handoff figures assume the girdle
+    centre; the centroid is arguably more natural for a stone held in tweezers. Pick one,
+    write it down, and keep the handoff table consistent with it.</li>
+  </ul>
+
+  <h3>Size: the one place scale actually matters</h3>
+  <p>Cuts differ in proportion, so swapping one raises a question the plan had not asked — does
+  the stone keep the same girdle diameter, or the same weight? Snell, Fresnel and TIR depend only
+  on directions and indices, so <em>crown return is scale-invariant</em> for a transparent stone.
+  Two things are not:</p>
+  <ul>
+    <li><strong>Absorption</strong> is exponential in path length, so a coloured stone's numbers
+    move with size.</li>
+    <li><strong>Spot-to-stone ratio.</strong> A 0.93 mm spot is a large fraction of a 3 mm stone
+    and a small one on a 10 mm stone, which changes how many facets are lit and how much of the
+    f/1.33 cone enters at all.</li>
+  </ul>
+  <p>So offer both normalisations and label which is active: <em>equal carat weight</em> —
+  equal <strong>mass</strong>, not equal volume; volume follows from the §2 density column,
+  which is why a one-carat CZ at ρ 5.68 is a visibly smaller stone than a one-carat diamond
+  at 3.52, and why the trade sells CZ by size instead — or <em>equal girdle diameter</em>,
+  which keeps the section figures visually comparable. Default to equal weight, because that
+  is the comparison a reader means when they ask which cut performs better; the earlier draft
+  glossed carat as “equal volume”, which is only true within a single material.</p>
+
+  <h3>Section is the primary view, not 3D</h3>
+  <p>A deliberate reversal of what the phase order implied. The section is the figure
+  gemological literature actually uses: unambiguous, citable, and the only view where θᵢ
+  against θ_c is legible per bounce. 3D is more impressive and harder to read precisely, so it
+  is a peer view the reader switches to — never the thing they must fight through first.</p>
+
+  <h3>Five views, one tracer</h3>
+  <p>The tracer runs once per frame; every view is a projection of the same ray tree, so they
+  cannot disagree.</p>
+  <ul>
+    <li><strong>Section</strong> — the plane of §1, live and labelled. Default.</li>
+    <li><strong>3D orbit</strong> — translucent solid in hand-written WebGL, ray tree as line
+    segments with opacity tracking intensity, facet under the cursor named.</li>
+    <li><strong>Facet heat map</strong> — energy incident on and leaked through each named
+    facet, unrolled flat. Where a marquise bow-tie becomes a visible pattern rather than an
+    anecdote.</li>
+    <li><strong>Exit map</strong> — hemispherical plot of where light leaves, binned to table,
+    crown, girdle, pavilion, with an optional ASET-style colouring by exit elevation for
+    readers arriving from gemology (labelled as an homage, not a calibrated ASET).</li>
+    <li><strong>Signature</strong> — crown return against orientation, per §4b. The only view
+    that needs the stone in motion to mean anything.</li>
+  </ul>
+
+  <h3>Every number carries a comparator</h3>
+  <p>“61.4% crown return” alone is unreadable — the reader has no scale. Each metric therefore
+  ships with a reference value: the same cut in the best-performing material, or the
+  best-in-class cut in the current material, selectable. This single decision is most of what
+  separates a reference from a demo.</p>
+  <ul>
+    <li>% returned through the crown — brilliance</li>
+    <li>% leaked through the pavilion — windowing / fish-eye</li>
+    <li>mean TIR count before exit, plus the distribution</li>
+    <li>angular spread of exit rays, and dispersion spread across the 7 wavelengths — fire</li>
+    <li>degree of polarization of the exit light — the §3b Stokes ledger's readout, off by
+    default, and the page's one measurement a reader has likely never seen quoted for a gem</li>
+    <li>Σ exited + Σ absorbed + Σ truncated, displayed to prove closure</li>
+  </ul>
+
+  <h3>Reference surfaces</h3>
+  <ul>
+    <li><strong>Compare (A/B).</strong> Two cuts side by side, or one cut in two materials, at
+    <em>identical</em> orientation and spot. The shared state is the point — a comparison where
+    the two panes drift apart is worthless.</li>
+    <li><strong>All 37.</strong> Sortable table of the whole roster with computed return, leak
+    and mean TIR for the current material, filterable by family. Click a row to open that stone
+    live. This is the surface that answers “which cut does what” without 36 visits.</li>
+    <li><strong>Silhouette picker</strong> — specified above. It shares the all-37 cache, so
+    build the cache first and both surfaces fall out of it.</li>
+    <li><strong>Hit log.</strong> One row per bounce of the selected ray: facet name, θᵢ, θ_c,
+    R_s/R_p, T, TIR phase where it applies, cumulative intensity, verdict. Copyable as text.
+    This is the readout that answers the original question directly — where the light is
+    quartered, halved, dimmed, and where it finally leaves. It has real stories to tell even
+    for the ideal stone: the §8 diamond ledger's fourth bounce meets the pavilion at 23.75°,
+    a mere 0.68° under critical, and sheds 64% of the remainder through a 76.8° grazing
+    window — perfection lasting exactly three bounces.</li>
+  </ul>
+
+  <h3>Entry points</h3>
+  <p>37 cuts, 9 materials and five sliders with nothing to do first is paralysis. Presets that
+  pose a question and land on the state that answers it — <em>“why does glass leak where quartz
+  holds?”</em>, <em>“the quartz knife edge”</em>, <em>“what a step cut does instead”</em>,
+  <em>“does a Vogel point transmit?”</em>. This follows the house pattern rather than inventing
+  one: <code>frequency-ladder-teaching-tool.html</code> pairs a guided ladder with Free Play,
+  and <code>mineral-lattices-platonic-solids.html</code> runs nine plates. Presets are
+  <em>shortcuts into the live tool</em>, not a separate guided mode — the reader keeps every
+  control the moment they land.</p>
+
+  <h3>Citability is a feature, not a shipping chore</h3>
+  <ul>
+    <li><strong>Deep links.</strong> Full state in the URL hash — cut, material, orientation,
+    spot, view, comparator. The quartz knife edge should <em>be</em> a URL. Built early, in P4,
+    because the presets are just deep links and testing needs them.</li>
+    <li><strong>Named snap orientations.</strong> Free tumble is right for exploring and wrong
+    for citing, because an arbitrary quaternion is not reproducible by hand. Snaps — table-up,
+    crown-normal 34.50°, girdle-on, c-axis aligned — plus numeric tilt/azimuth entry.</li>
+    <li><strong>Export.</strong> Hit log and metrics as copyable text, section figure as SVG.
+    Without this the page is a dead end for anyone doing real work with it.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§7b</span> Animation</h2>
+
+  <p>The subject is light <em>travelling</em>, so the illustrations animate — but only where
+  motion carries information a static frame cannot. Four animations earn their place; nothing
+  else should move.</p>
+
+  <h3>1 · Wavefront marker at c/n</h3>
+  <p>A phase marker running the ray path at <em>c</em> in air and <em>c/n</em> inside the
+  stone. This is the one animation that shows something genuinely invisible otherwise: the
+  marker <strong>decelerates by exactly n</strong> as it crosses the table — 2.4175× for
+  diamond — and the whole transit takes measurably longer in a high-index stone even though
+  the geometric path is identical.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Material</th><th class="r">n</th><th class="r">v inside</th>
+        <th class="r">transit, 7.838 mm path</th><th class="r">slowdown at 4 s screen time</th></tr></thead>
+      <tbody>
+        <tr><td>Moissanite</td><td class="r m">2.6480</td><td class="r m">113,215 km/s</td><td class="r m">69.24 ps</td><td class="r m">5.78×10¹⁰</td></tr>
+        <tr><td>Diamond</td><td class="r m">2.4175</td><td class="r m">124,009 km/s</td><td class="r m">63.21 ps</td><td class="r m">6.33×10¹⁰</td></tr>
+        <tr><td>Cubic zirconia</td><td class="r m">2.1600</td><td class="r m">138,793 km/s</td><td class="r m">56.48 ps</td><td class="r m">7.08×10¹⁰</td></tr>
+        <tr><td>Sapphire</td><td class="r m">1.7620</td><td class="r m">170,143 km/s</td><td class="r m">46.07 ps</td><td class="r m">8.68×10¹⁰</td></tr>
+        <tr><td>Quartz</td><td class="r m">1.5443</td><td class="r m">194,128 km/s</td><td class="r m">40.38 ps</td><td class="r m">9.91×10¹⁰</td></tr>
+        <tr><td>Glass</td><td class="r m">1.5200</td><td class="r m">197,232 km/s</td><td class="r m">39.74 ps</td><td class="r m">1.01×10¹¹</td></tr>
+      </tbody>
+      <caption>Path is the pinned §8 vector — 120.59 units, scaled to a 6.5 mm girdle (about
+      one carat). Moissanite carries light 1.742× slower than glass, so switching material
+      visibly changes the pace as well as the path. The slowdown factor must be
+      <em>on screen</em>, as <code>photon_quartz_simulation.html</code> already does for its
+      own animated layer — an unlabelled 10¹¹× slowdown is a lie of omission.</caption>
+    </table>
+  </div>
+
+  <p>One honesty line, cheap to add: the marker runs at the <em>phase</em> velocity c/n by
+  design and its label says so; a physical pulse rides the group velocity c/n_g, with
+  n_g = n − λ·dn/dλ = <span class="num">2.494</span> for diamond at 587.6 nm — so the group
+  transit over the same path is <span class="num">65.22 ps</span> against the marker's
+  63.21 ps, a 3.2% difference the readout states in one line rather than hides. Assert:
+  n_g &gt; n for every material across the visible.</p>
+
+  <h3>2 · Progressive bounce reveal</h3>
+  <p>The ray tree draws bounce by bounce rather than appearing whole, with the corresponding
+  hit-log row highlighting as the marker arrives. This is what makes the hit log readable —
+  otherwise it is a wall of numbers with no cue as to which row you are looking at.</p>
+
+  <h3>3 · Scintillation sweep</h3>
+  <p>The lens stays put and <strong>the stone turns</strong> — per §4b — with facets flashing
+  as they swing into and out of the return cone, and the entry facet handing off as the fixed
+  spot slides across the surface. This is the one thing a static diagram fundamentally cannot
+  show, because <em>sparkle is a time-domain phenomenon</em>: it is not a property of the stone
+  at rest, it is a property of the stone in motion under a fixed light. Worth building well —
+  it is probably the most persuasive moment on the page, and it is the animation that traces
+  out the light-return signature.</p>
+  <p>Auto-rotation needs a selectable axis and rate, plus free-tumble drag. Rotating about the
+  c-axis versus across it are physically different experiments in quartz, and the control
+  should make that easy to try rather than incidental.</p>
+
+  <h3>4 · Angle sweep</h3>
+  <p>Animate pavilion angle across its band and watch crown return collapse continuously.
+  For quartz, with only <span class="num">0.39°</span> of margin, the return should visibly
+  die inside a fraction of a degree — the knife edge of §1 turned into a motion the reader
+  feels rather than reads.</p>
+
+  <h3>Rules</h3>
+  <ul>
+    <li><strong>Determinism.</strong> Tracer output must not depend on animation time. The
+    ray tree is computed from geometry and source state alone; animation only controls what is
+    <em>drawn</em>. Otherwise the load-time asserts become frame-dependent and worthless.</li>
+    <li><strong>The marker is not a photon.</strong> It is a phase marker on a ray path, and
+    the label must say so — carrying forward the markers-are-not-photons invariant from
+    <code>photon_quartz_simulation.html</code>.</li>
+    <li><strong>Never the only channel.</strong> Every value an animation conveys is also
+    available as a static number. Motion is emphasis, never the sole carrier.</li>
+    <li><strong>Honour <code>prefers-reduced-motion</code>.</strong> All four stop; the page
+    falls back to the fully drawn ray tree with the hit log intact, losing nothing but the
+    pacing.</li>
+    <li><strong>Pause and scrub.</strong> The wavefront marker needs a scrub control, because
+    the interesting frames are the bounces and they pass quickly at any watchable speed.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§8</span> Validation</h2>
+
+  <p>Python is the auditor, not the runtime — the same division of labour as
+  <code>dodeca_frame.py</code> and the photon sim's 66 load-time asserts. A companion
+  <code>gem_trace_reference.py</code> — <strong>pure numpy, no trimesh</strong>, because the
+  auditor must be an independent implementation of the same three primitives rather than a
+  different library's opinion — traces a fixed set of rays, dumps expected hit points,
+  intensities and Stokes states to JSON, and the page asserts against them on load. Three
+  rungs of tolerance, stated once: closed-form identities hold to 1e-12 inside Python; traced
+  vectors reproduce to 1e-9; and the JS-vs-Python cross-language comparison passes at 1e-6,
+  because two libms are two libms. The pre-build numbers in this plan were re-derived
+  2026-08-03 by the plan-audit script, successor to <code>anchor_check.py</code> /
+  <code>section_trace.py</code>, which lived in a session scratchpad and did not survive it —
+  the in-repo reference script at P1 is where they become permanent.</p>
+
+  <h3>Pinned acceptance vectors</h3>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Case</th><th>Path</th><th class="r">AOI sequence</th><th>Expected</th></tr></thead>
+      <tbody>
+        <tr><td class="m">RB · diamond · x −5</td>
+            <td>pav −x → pav +x → table</td>
+            <td class="r m">40.75 / 57.75 / 17.00</td>
+            <td>TIR, TIR, exits table at 44.98°</td></tr>
+        <tr><td class="m">RB · diamond · x −5 · ledger</td>
+            <td>full Fresnel accounting</td>
+            <td class="r m">—</td>
+            <td>17.20% door + 67.80% table + 9.58% grazing window (23.75°, 76.82°) + 5.42% residual = 100.000%</td></tr>
+        <tr><td class="m">RB · quartz · x −5</td>
+            <td>pav −x → pav +x → table</td>
+            <td class="r m">40.75 / 57.75 / 17.00</td>
+            <td>TIR, TIR, exits table at 26.84°; 90.96% of launch out the table</td></tr>
+        <tr><td class="m">RB · glass · x −5</td>
+            <td>pav −x (splits) → pav +x → table</td>
+            <td class="r m">40.75 / 57.75 / 17.00</td>
+            <td>first hit leaks 49.7% at 82.84°; residual TIRs then exits table — ledger 4.26 + 47.53 + 46.11 + 2.00 + 0.10 = 100.00%</td></tr>
+        <tr><td class="m">RB · diamond · x −14</td>
+            <td>pav −x → pav +x → crown +x</td>
+            <td class="r m">40.75 / 57.75 / 17.50</td>
+            <td>TIR, TIR, exits crown main at 46.63°</td></tr>
+        <tr><td class="m">Vogel A · quartz · interior axial</td>
+            <td>apex facet</td>
+            <td class="r m">64.07</td>
+            <td>TIR, +23.71° above critical</td></tr>
+        <tr><td class="m">Vogel B · quartz · interior axial</td>
+            <td>apex facet</td>
+            <td class="r m">51.86</td>
+            <td>TIR, +11.51°; under the f/1.33 cone 6.8% of the 2D fan transmits</td></tr>
+        <tr><td class="m">cone survival · quartz vs glass</td>
+            <td>first pavilion, focus, f/1.33</td>
+            <td class="r m">40.75 ± 13.1</td>
+            <td>51.4% vs 48.6% of the fan TIRs (§4 table, all nine materials)</td></tr>
+        <tr><td class="m">fire fan · §1 exit</td>
+            <td>table exit, 7 wavelengths</td>
+            <td class="r m">17.00 interior</td>
+            <td>B–G fan 1.06° diamond, 2.80° moissanite</td></tr>
+        <tr><td class="m">TIR phase</td>
+            <td>equation 5 of §3b</td>
+            <td class="r m">54.62 / 57.75</td>
+            <td>Fresnel rhomb n 1.51 → Δ 45.00°; quartz second bounce → Δ 44.18°</td></tr>
+        <tr><td class="m">handoff tilts</td>
+            <td>§4b, five beam positions</td>
+            <td class="r m">—</td>
+            <td>61.63 / 43.32 / 22.69 / 9.85 / 3.58°</td></tr>
+      </tbody>
+      <caption>Exact interior coordinates, girdle diameter 100: x −5 runs
+      (−5.00, 15.12) → (−5.00, −38.77) → (7.10, −36.97) → (23.02, 15.12); x −14 runs
+      (−14.00, 15.12) → (−14.00, −31.02) → (19.88, −25.96) → (31.66, 12.60), the last point
+      landing on the crown-main <em>segment</em> — the case that catches any tracer testing
+      planes instead of facets. The −5 / −14 pair matters: a vertical ray makes 40.75° then
+      57.75° regardless of where it enters, but the entry offset decides <em>which window</em>
+      it leaves by; any tracer reporting the same exit facet for both is wrong. The Vogel
+      vectors are interior launches — the ray starts inside the crystal travelling up the
+      axis — so they pin the tip verdict independently of how light got in.</caption>
+    </table>
+  </div>
+
+  <h3>Invariants to assert on load</h3>
+  <ul>
+    <li>Energy closure per ray, to 1e-9 — with the §3b projected-flux factor, per polarization</li>
+    <li>Reversibility — reversing an exit ray retraces the entry path</li>
+    <li><strong>Rotation invariance.</strong> For a random orientation <code>M</code>, tracing
+    with the source pulled through <code>M⁻¹</code> must produce the same interior AOI
+    sequence as tracing at identity with the source rotated by <code>M⁻¹</code> directly. This
+    is the test that catches transform-plumbing errors, which are otherwise invisible — the
+    picture looks plausible at every orientation while the numbers are quietly wrong.</li>
+    <li><strong>2D/3D agreement.</strong> Symmetry-plane rays traced by the 3D kernel match the
+    section tracer to 1e-9 — invariant №6 of §0, exercised on every load</li>
+    <li>Interior cone cap — for entry at grazing incidence, the refracted angle equals θ_c,
+    for every material. Cheap, and it pins the §4b identity.</li>
+    <li>Corridor identities — at three pavilion angles the traced AOI sequence reproduces
+    AOI₂ = 180° − 3p and AOI₃ = |4p − 180°| exactly, and the two-TIR window empties at
+    n = √2 (§2b)</li>
+    <li>Camera isolation — orbiting the camera changes no computed readout</li>
+    <li>Every roster geometry is closed — V − E + F = 2, two faces per edge, outward normals,
+    positive volume — and its declared symmetry group maps its plane set to itself (1e-12)</li>
+    <li>Platonic dihedrals from the generated solids match closed form (70.5288°, 90°,
+    109.4712°, 116.5651°, 138.1897°) to 1e-9 — the geometry kernel audited against textbook
+    values it never contains</li>
+    <li>θ_c recomputed from n matches the material table for all 9 materials, and each
+    material's n(λ) reproduces its pinned n_d to 1e-4 and B–G dispersion to 5e-4</li>
+    <li>Fresnel R → 1 continuously as θᵢ → θ_c from below (no discontinuity at the boundary),
+    and R_p vanishes at Brewster — a reflected interior ray at 22.47° (diamond) reads DOP = 1
+    off the Stokes ledger</li>
+    <li>Mueller events conserve energy; ledger off reproduces (R_s + R_p)/2 exactly;
+    n_g &gt; n across the visible for every material</li>
+    <li>Degenerate-hit counter reads zero across all pinned vectors</li>
+    <li>Carat readout for the round brilliant agrees with the trade estimate
+    d² · depth · 0.0061 within 5% — a sanity bracket, not a law</li>
+    <li>Talismanic layer isolation: toggling it leaves every computed readout byte-identical</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§9</span> Build order</h2>
+  <p>Sequential — each phase depends on the one above it, and each has a gate that must
+  pass before the next begins.</p>
+
+  <div class="phases">
+    <div class="phase"><div class="id">P1</div><div>
+      <div class="t">Facet data</div>
+      <div class="d">Source and pin proportions for all 37 geometries from published lapidary
+      references, recording the citation alongside each facet table. Largest research cost in
+      the build; everything downstream is blocked on it.</div>
+      <span class="gate"><b>gate</b> every cut yields a closed solid of positive volume with outward normals,
+      and its declared symmetry group maps its plane set to itself</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P2</div><div>
+      <div class="t">Geometry kernel</div>
+      <div class="d">Half-space intersection, quadric, and small-union primitives. Facet
+      naming. Girdle band as a real thickness parameter.</div>
+      <span class="gate"><b>gate</b> depth percentages reproduce the GIA Excellent band for the round brilliant</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P3</div><div>
+      <div class="t">Tracer core</div>
+      <div class="d">The §3b five equations: vector Snell, Fresnel s/p with the projected-flux
+      factor, TIR test and phase, the Stokes/Mueller polarization ledger, Beer–Lambert
+      absorption, branching ray tree with intensity weights and a bounce cap. Single
+      wavelength first.</div>
+      <span class="gate"><b>gate</b> every §8 traced vector and both energy ledgers pass; energy closes to
+      1e-9; the Fresnel-rhomb phase and Brewster-DOP asserts pass</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P4</div><div>
+      <div class="t">Section view + wavefront marker + URL state</div>
+      <div class="d">2D canvas, the §1 figure made live and labelled — and per §7 this is the
+      <em>primary</em> view, not a stepping stone to WebGL. Carries animations 1 and 2 from §7b,
+      the c/n marker and progressive bounce reveal, with scrub. Full state serialised to the URL
+      hash here rather than at ship, because presets are just deep links and everything
+      downstream needs them to be testable.</div>
+      <span class="gate"><b>gate</b> drawn path pixel-consistent with <code>gem_trace_reference.py</code>; marker
+      decelerates by exactly n at the table; asserts pass identically with animation stopped;
+      round-tripping any state through the URL is lossless</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P5</div><div>
+      <div class="t">Burning glass + rotation</div>
+      <div class="d">Lens fixed in world space, focus/standoff slider, cone sampling across the
+      aperture, spot-size and concentration readouts. Collimated comparison mode. Quaternion
+      orientation with free tumble and selectable-axis auto-rotation, the §4b frame split, and
+      the entry-facet handoff readout. Deliverables: the tilt at which the f/1.33 cone begins
+      to leak through the pavilion, per material — bracketed by the §4b collimated anchors
+      (quartz 0.61°, diamond 42.78°) — and the §4 cone-survival fractions reproduced by the
+      full 3D fan.</div>
+      <span class="gate"><b>gate</b> spot size tracks <em>f</em>·θ☉ and cannot be driven below 0.93 mm;
+      rotation-invariance and camera-isolation asserts pass; handoff tilts and cone-survival
+      fractions reproduce <code>gem_trace_reference.py</code></span>
+    </div></div>
+
+    <div class="phase"><div class="id">P6</div><div>
+      <div class="t">Spectral pass</div>
+      <div class="d">The 7 Fraunhofer wavelengths (h through B), n(λ) per the §3b policy —
+      Sellmeier where published, exact-matching Cauchy elsewhere, stated per material —
+      solar-spectrum weighting, dispersion fan.</div>
+      <span class="gate"><b>gate</b> the §1 exit fans reproduce 1.06° (diamond) and 2.80° (moissanite) B–G;
+      every material's n(λ) reproduces its pinned n_d and dispersion</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P6b</div><div>
+      <div class="t">Uniaxial quartz — the o/e split done properly</div>
+      <div class="d">For the repo's flagship material only: entry splits into an o-wave
+      (ordinary Snell at n_o, polarization ⊥ the plane of c-axis and wave normal) and an
+      e-wave (wave-normal Snell at the direction-dependent index
+      1/n²(θ) = cos²θ/n_o² + sin²θ/n_e², with the ray walking off the wave normal by up to
+      0.34°), energy split by projecting the incoming Stokes state onto the eigenpolarizations,
+      TIR tested per wave against its own effective index. Other uniaxials — sapphire, beryl,
+      and moissanite, whose Δn 0.043 makes facet-doubling a visible fact — ship as documented
+      o-ray traces with the e-extreme quoted as a bracket, which is honest and bounded.</div>
+      <span class="gate"><b>gate</b> forcing Δn → 0 reproduces the isotropic trace to 1e-9; propagation ∥ c
+      is degenerate (o ≡ e); energy closes with both populations counted</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P7</div><div>
+      <div class="t">3D view + scintillation sweep</div>
+      <div class="d">Hand-written WebGL solid with the 2D annotation overlay, following the
+      <code>embryonic_torus_heart.html</code> pattern. Orbit, facet pick, ray tree in depth.
+      Carries animation 3 from §7b — the sweep that turns sparkle into something visible.</div>
+      <span class="gate"><b>gate</b> 60 fps at the default ray count on integrated graphics, sweep running</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P8</div><div>
+      <div class="t">Heat map, exit map, metrics, hit log</div>
+      <div class="d">The analytic views. All projections of the tracer output, no independent
+      computation. Carries animation 4 from §7b — the pavilion-angle sweep.</div>
+      <span class="gate"><b>gate</b> the (crown, pavilion) scan's ridge falls inside the §2b corridor for
+      every material — return is ridge-shaped, not monotonic, and the earlier monotonicity
+      gate was wrong physics — and the sweep reproduces the quartz collapse inside 0.39°</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P8b</div><div>
+      <div class="t">Reference surfaces</div>
+      <div class="d">The half of the page that makes it a reference rather than a demo: the
+      shared metric cache, silhouette tray and material chip row on top of it, A/B compare on
+      shared orientation, the sortable all-37 table, per-metric comparators, per-cut generated
+      snap orientations with numeric entry, size normalisation, the question-posing presets, and
+      export of hit log, metrics and section SVG.</div>
+      <span class="gate"><b>gate</b> changing cut or material alters <em>nothing</em> else in state — asserted,
+      not merely tested by hand; A/B panes provably share orientation and spot; the all-37 table
+      and the picker tiles agree with opening each cut individually; every preset is a working
+      deep link</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P9</div><div>
+      <div class="t">Talismanic register</div>
+      <div class="d">Vogel, Merkaba, Platonic, pyramid geometries with their attributed
+      properties as labelled text and cosmetic canvas only.</div>
+      <span class="gate"><b>gate</b> isolation check — toggling the layer changes no computed readout</span>
+    </div></div>
+
+    <div class="phase"><div class="id">P10</div><div>
+      <div class="t">Ship</div>
+      <div class="d"><code>__selfTest()</code> and <code>window.__derived</code> hooks, SEO head
+      block matching the house pattern, preview capture, index card, copy into
+      <code>site/</code> and deploy. URL state already landed in P4.</div>
+      <span class="gate"><b>gate</b> load-time asserts all pass with the console clean</span>
+    </div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="n">§10</span> Known risks</h2>
+
+  <div class="risk">
+    <h3>Facet data is the schedule</h3>
+    <p>Nine of the ten phases are tractable engineering. Phase 1 is not — published
+    proportions for oval, pear, marquise, princess, radiant, cushion, trilliant and the
+    antique cuts are scattered across lapidary references of uneven reliability, and several
+    are trade conventions rather than standards. Expect to cite ranges instead of single
+    values, and expect the fancy shapes to need a hand-built girdle outline that a single
+    tilt/azimuth table cannot express. If a cut cannot be sourced credibly it should ship
+    marked as approximate rather than quietly guessed.</p>
+  </div>
+
+  <ul>
+    <li><strong>Ray count against frame rate.</strong> A branching tree with spectral
+    sampling multiplies fast: 7 wavelengths × aperture samples × 2 branches per hit. Needs
+    an intensity floor and a bounce cap chosen by measurement, and a “render once at high
+    quality” path for stills.</li>
+    <li><strong>Birefringence is now a phase, not a hope.</strong> Quartz's o/e split is
+    exactly what puts it on the 0.39° knife edge, so it is promoted to P6b with a stated
+    model and gates. The photon sim models the split for a flat block and is the reference;
+    the faceted extension is real work, which is why P6b carries a kill-switch — ship the
+    o-ray trace with the e-extreme quoted as a bracket — rather than an assumption that it
+    lands.</li>
+    <li><strong>The critical angle is a square-root edge.</strong> T ∝ √(θ_c − θ) near the
+    boundary — T climbs from 11% to 50% across the last 0.4° in glass — so uniform angular
+    sampling puts its largest error exactly where the page's story lives. The cone integrator
+    needs adaptive refinement (or an analytic sub-integral) in a ~1° band around θ_c per
+    material, and the §4 survival fractions are the regression test that says whether it
+    worked.</li>
+    <li><strong>Fancy-shape girdles.</strong> The chord-plane recipe of §3 settles the
+    <em>method</em>; the remaining risk is data — which arcs, which radii, which azimuth
+    boundaries per cut. Source the outline constructions in Phase 1 alongside the angles, and
+    ship any cut whose outline cannot be sourced credibly as marked-approximate rather than
+    quietly guessed.</li>
+    <li><strong>The all-37 table costs 37 traces.</strong> Populating it means tracing every
+    cut in the roster at the current material and orientation, which cannot run at interactive
+    ray counts. It needs a reduced-quality pass with the reduction <em>stated on the table</em>,
+    and a cache keyed on material and orientation. A silently down-sampled reference table that
+    reads as authoritative is worse than no table.</li>
+    <li><strong>Numbers in this plan are pre-tracer.</strong> Everything quoted here is
+    closed-form 2D arithmetic, re-derived 2026-08-03 by the plan-audit script that succeeded
+    <code>anchor_check.py</code> / <code>section_trace.py</code> (which lived in a session
+    scratchpad and are gone — the P1 <code>gem_trace_reference.py</code> makes them
+    permanent). These checks keep paying rent: the first round caught a direction-only
+    derivation comparing a ray against the crown facet on the wrong side; this round caught a
+    mislabelled dispersion convention with a flint value on a crown glass, a sapphire row
+    mixing o- and e-indices, a Vogel cone span that skipped refraction compression at entry,
+    an equal-carat note that conflated mass with volume, and a monotonicity gate that was
+    wrong physics. They are still not a substitute for the 3D tracer agreeing with them.</li>
+  </ul>
+</section>
+
+<footer>
+  The physics is computed live and the interpretation is labelled — the rule this page
+  inherits, and the only reason the talismanic cuts can share a tracer with a princess cut
+  without either register contaminating the other.
+</footer>
+
+</div>
+
+
+</body>
+</html>
