@@ -846,6 +846,76 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
 
 <!-- ══════════════════════════════════════════════════════════ -->
 <section>
+  <h2><span class="n">§4c</span> Convergence, in and out</h2>
+
+  <p>Everything so far stays inside the girdle. Two things worth showing sit outside it: where
+  the burning glass itself converges the light <em>before</em> the table, and where the exit
+  fan's rays converge — or fail to — <em>after</em> it. Both are free reads of numbers already
+  on the page, pulled forward as a static preview rather than held back for Phase 5's full
+  interactive treatment.</p>
+
+  <h3>The lens, at focus — a static preview of §4</h3>
+  <p>§4 already pins the instrument: f = 100&nbsp;mm, Ø 75&nbsp;mm, focus at standoff s = f,
+  giving the marginal-ray half-angle <strong>ψ = atan((D/2)/f) = 20.56°</strong> and the
+  0.930&nbsp;mm sun-disk spot — the same ±20.56° that reappears in §4's own cone table. Drawing
+  the lens and its converging marginal rays at this one fixed standoff costs nothing new: no
+  aperture sampling, no standoff slider, no rotation — those stay Phase 5. What it buys now is
+  the picture the reader is missing without it: the stone sits at the tip of a cone closing
+  from a 75&nbsp;mm circle down to under a millimetre, and that cone, not the stone, is what
+  decides how much light arrives and at what angular spread.</p>
+  <p>Scale is the honest complication. A girdle normalised to 100 units reads as 6.5&nbsp;mm
+  (§7b's "about one carat"), so 1&nbsp;unit = 0.065&nbsp;mm and the lens sits
+  <span class="num">f / 0.065 ≈ 1539</span> girdle-units above the table — thirty-odd stone
+  diameters away. Drawn at the same scale as the section figure the lens would be off the page;
+  drawn at the lens's own scale the stone is a speck. Both facts are real, so the view is a
+  <strong>zoom preset</strong>, not a slider: <em>gem</em> (§1's tight crop, unchanged),
+  <em>exit zone</em> (below), and <em>full bench</em>, which shows the true 1539-unit
+  separation and lets the stone read as small as it actually is next to a 75&nbsp;mm lens.
+  Nothing here is schematised to make the picture prettier.</p>
+
+  <h3>The exit fan — mostly parallel, not a focus</h3>
+  <p>The tempting picture is a lens-like focal point on the far side of the stone. The
+  corridor algebra of §2b says otherwise, and it is worth stating plainly because it is
+  surprising: AOI₃ = |4p − 180°| depends only on the pavilion angle <em>p</em>, not on where
+  the ray entered, and the terminal facet's normal is fixed — so <strong>every ray in the fan
+  that exits through the same facet leaves exactly parallel to every other</strong>, merely
+  translated sideways by its own entry offset. Parallel rays never converge, at any distance.
+  A round brilliant, illuminated by a collimated beam, is not a lens.</p>
+  <p>The central pair is a false lead worth naming, because it is the intuitive guess and it
+  is wrong: a ray entering just left of the axis and its mirror just right of it have already
+  swapped sides <em>inside</em> the stone — pav-main → pav-main → table sends the left entrant
+  out the right-hand side of the table, and vice versa — so by the time both are back in air
+  they are opening away from each other, not closing. Their forward paths never meet; the
+  computation must say so plainly rather than assume a crossing that isn't there. The real
+  crossings sit where the terminal hit's <em>facet</em> changes — table to crown main, per the
+  §4b handoff table — because that is where the exit direction actually jumps, and only there.
+  A second, purely geometric fact falls out for free: the two pavilion-main bounces are plain
+  reflection, angle-in equals angle-out, with no index in the formula — so <em>where</em>
+  (which entry offset) that facet handoff happens is identical for every material. Only the
+  crossing <em>distance</em>, set by the final Snell exit at that hit, depends on n. The right
+  computation is therefore not "find the focus" but <strong>find where adjacent rays in the
+  fan actually intersect</strong>: extend each exit ray as a line, solve each adjacent pair for
+  its crossing parameter, and keep only the crossings that fall in front of both rays
+  (t &gt; 0 for each). What survives is a short, mirrored list of real crossing points — a
+  caustic in the literal sense, not a focus — reported as a distance from the girdle in
+  millimetres (same 0.065&nbsp;mm/unit convention as above), with every other adjacent pair
+  stated as "parallel, no finite crossing" rather than silently omitted.
+  <code>gem_trace_reference.py</code> carries the exact figures once computed, per the usual
+  convention of this plan: numbers appear here only after the audit script has produced
+  them.</p>
+
+  <p>Constraints this addition must hold: the lens preview draws from §4's already-pinned f,
+  D and spot with no new inputs invented for the picture; the caustic search is
+  <strong>exhaustive over adjacent fan pairs, not sampled</strong>, so it cannot miss a
+  crossing between two rays that are actually in the fan; a parallel run (no finite crossing)
+  and a real crossing must both be represented on screen, never merged into one silent
+  "no data" state; and zoom is a small enum — <em>gem</em> / <em>exit zone</em> /
+  <em>full bench</em> — with each preset's framing computed from the same geometry rather than
+  three hand-tuned viewports.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<section>
   <h2><span class="n">§5</span> Cut roster — 37 geometries</h2>
   <p>Scope is cuts a person could normally buy or commission. No fantasy cuts, no
   concave faceting. <span class="pill have">have</span> means proportions are pinned
@@ -1479,12 +1549,23 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
       <div class="t">Section view + wavefront marker + URL state</div>
       <div class="d">2D canvas, the §1 figure made live and labelled — and per §7 this is the
       <em>primary</em> view, not a stepping stone to WebGL. Carries animations 1 and 2 from §7b,
-      the c/n marker and progressive bounce reveal, with scrub. Full state serialised to the URL
-      hash here rather than at ship, because presets are just deep links and everything
-      downstream needs them to be testable.</div>
+      the c/n marker and progressive bounce reveal, with scrub. Alongside the single scrubbed ray,
+      trace a static <strong>fan</strong> — one parallel ray per sampled entry offset across the
+      full table width, same free computation as the scrubbed ray, just more of it — and draw
+      each one at its own opacity, set by that ray's dominant-exit intensity: a ray that survives
+      to exit mostly intact reads bright, one that has already spent most of its energy at an
+      earlier leak reads dim, fading toward the ground colour rather than disappearing outright
+      (a hard cutoff would misreport a weak-but-real return as none at all). The map from
+      intensity to opacity only needs to be monotonic — this is a legibility aid, not a metric
+      surface — but monotonic is a real, checkable constraint, and it turns the fan into a free
+      preview of the crown-return pattern that P8's heat map later computes properly, at no
+      extra tracing cost. Full state serialised to the URL hash here rather than at ship, because
+      presets are just deep links and everything downstream needs them to be testable.</div>
       <span class="gate"><b>gate</b> drawn path pixel-consistent with <code>gem_trace_reference.py</code>; marker
       decelerates by exactly n at the table; asserts pass identically with animation stopped;
-      round-tripping any state through the URL is lossless</span>
+      round-tripping any state through the URL is lossless; the fan's opacity ordering is
+      strictly monotonic in each ray's own dominant-exit intensity, asserted across the sampled
+      offsets for every material, not just eyeballed</span>
     </div></div>
 
     <div class="phase"><div class="id">P5</div><div>
