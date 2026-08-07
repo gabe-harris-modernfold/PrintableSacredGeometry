@@ -501,29 +501,50 @@ def radiant_planes(crown_deg=35.0, table_frac=0.645, pav_depth_pct=51.0, chamfer
                                      [0.35, 0.65], [0.55, 0.0], girdle_t_pct, major_diam, 'radiant')
 
 
-def vogel_wand_planes(n_sides=6, radius=25.0, blunt_deg=51.86, sharp_deg=64.07):
-    """Vogel cut, reading B default (plan §6 defaults to B, offers A as a
-    toggle). AOI for an axial ray equals the facet's tilt-from-horizontal
-    DIRECTLY -- the same identity round_brilliant_planes' own pavilion
-    mains rely on (§2b: "first pavilion hit: AOI1 = p") -- so blunt_deg/
-    sharp_deg are each reading's AXIAL-AOI value (51.86/64.07), not its
-    "facet plane off c-axis" value (38.14/25.93, = 90-AOI): plugging in the
-    off-axis figure directly was a real bug caught only by checking against
-    the plan's own pinned vectors, not by energy closure alone (a wrong-
-    but-still-closed solid closes energy just fine). Larger tilt = taller,
-    SHARPER tip (hp=radius*tan(tilt) grows without bound as tilt->90),
-    matching reading A's "slender needle" language; smaller tilt = a
-    shorter, blunter tip, matching reading B."""
+def vogel_wand_planes(n_sides=6, radius=25.0, blunt_deg=51.86, sharp_deg=64.07,
+                       shaft_len=150.0, sharp_shoulder_frac=0.75):
+    """Vogel cut: a faceted prismatic SHAFT between two asymmetric
+    terminations on one axis -- broad/receptive ("female") end +y off the
+    wand's full shoulder, acute/transmitting ("male") end -y off a
+    NARROWER shoulder (sharp_shoulder_frac; tradition holds the female
+    termination is "physically larger", so the shaft faces taper ~2.4
+    deg off-axis and index 1:1 into both terminations' facets). AOI for
+    an axial ray equals the facet's tilt-from-horizontal DIRECTLY -- the
+    same identity round_brilliant_planes' own pavilion mains rely on
+    (§2b: "first pavilion hit: AOI1 = p") -- so blunt_deg/sharp_deg are
+    AXIAL-AOI values (51.86/64.07), not "facet plane off c-axis" values
+    (38.14/25.93, = 90-AOI): plugging in the off-axis figure directly was
+    a real bug caught only by checking against the plan's own pinned
+    vectors, not by energy closure alone (a wrong-but-still-closed solid
+    closes energy just fine). The one solid realizes both §6 readings of
+    the tradition's 51°51'51", one per end: the receptive tip RISES
+    blunt_deg from the base plane (reading B, 4.8 arcmin from a natural
+    r-face), the transmitting tip's INCLUDED APEX is 2*(90-sharp_deg) =
+    51.86° (reading A) -- more acute, per the spec. An earlier build
+    omitted the shoulder offsets entirely, pinching both shoulder rings
+    to y=0: a hexagonal bipyramid, no shaft at all -- it passed every
+    angle gate (tip AOI is offset-independent), which is why form needs
+    its own eyes. shaft_len and the 0.75 fraction are approximate trade
+    proportions (plan §10 policy: shipped approximate where no lapidary
+    spec exists); the two tip angles are the pinned quantities.
+    n_sides is the roster row's selectable facet count (4/6/8/12/13/16/24
+    shipped; the tradition describes wands up to 88): both tip angles are
+    count-independent, so the pinned acceptance vectors hold at every
+    count, and form scales as V/E/F = 2+2n/5n/3n."""
     planes = []
     br, sr = math.radians(blunt_deg), math.radians(sharp_deg)
+    r_b, r_a, h = radius, radius * sharp_shoulder_frac, shaft_len / 2.0
+    hyp = math.hypot(shaft_len, r_b - r_a)
+    ax, tp = shaft_len / hyp, (r_b - r_a) / hyp
+    d_prism = shaft_len * (r_b + r_a) / 2.0 / hyp
     for k in range(n_sides):
         phi = 2 * math.pi * k / n_sides
         c, s = math.cos(phi), math.sin(phi)
-        planes.append(dict(n=np.array([c, 0., s]), d=radius, name=f'prism_{k}'))
+        planes.append(dict(n=np.array([ax * c, -tp, ax * s]), d=d_prism, name=f'prism_{k}'))
         planes.append(dict(n=np.array([math.sin(br) * c, math.cos(br), math.sin(br) * s]),
-                            d=radius * math.sin(br), name=f'blunt_{k}'))
+                            d=r_b * math.sin(br) + h * math.cos(br), name=f'blunt_{k}'))
         planes.append(dict(n=np.array([math.sin(sr) * c, -math.cos(sr), math.sin(sr) * s]),
-                            d=radius * math.sin(sr), name=f'sharp_{k}'))
+                            d=r_a * math.sin(sr) + h * math.cos(sr), name=f'sharp_{k}'))
     return planes
 
 
@@ -543,8 +564,15 @@ def generator_point_planes(n_sides=6, radius=25.0, tip_deg=51.86, base_y=-40.0):
     return planes
 
 
-def obelisk_planes(half_w=20.0, tip_deg=60.0, base_y=-60.0):
-    """Obelisk/tower: square prism + square pyramidal cap, flat base."""
+def obelisk_planes(half_w=20.0, tip_deg=60.0, base_y=60.0):
+    """Obelisk/tower: square prism + square pyramidal termination.
+    Flipped 2026-08-07 (user request), presented gem-fashion: the flat
+    base is the TOP face (base_y, +y, toward the page's fixed overhead
+    source) and the pyramidion points DOWN as the pavilion, so an axial
+    ray enters through the base, not the point -- the same table-up
+    convention every faceted cut in the roster uses. Same solid as the
+    original build, mirrored in y; the tracer is orientation-agnostic
+    (§5), so this changes presentation, not physics."""
     planes = []
     tr = math.radians(tip_deg)
     for k in range(4):
@@ -552,9 +580,9 @@ def obelisk_planes(half_w=20.0, tip_deg=60.0, base_y=-60.0):
         c, s = math.cos(phi), math.sin(phi)
         r_apothem = half_w
         planes.append(dict(n=np.array([c, 0., s]), d=r_apothem, name=f'prism_{k}'))
-        planes.append(dict(n=np.array([math.sin(tr) * c, math.cos(tr), math.sin(tr) * s]),
+        planes.append(dict(n=np.array([math.sin(tr) * c, -math.cos(tr), math.sin(tr) * s]),
                             d=r_apothem * math.sin(tr), name=f'tip_{k}'))
-    planes.append(dict(n=np.array([0., -1., 0.]), d=-base_y, name='base'))
+    planes.append(dict(n=np.array([0., 1., 0.]), d=base_y, name='base'))
     return planes
 
 
@@ -619,34 +647,53 @@ def lens_disc_planes(cap_radius=90.0, girdle_diam=100.0):
         dict(center=np.array([0., -sep / 2, 0.]), radii=np.array([cap_radius] * 3), name='lens_bot')])
 
 
-def star_of_david_planes(edge=40.0, height_ratio=0.375):
-    """Vogel Star of David: triangular antiprism, "male" equilateral face
-    on top, "female" face on the bottom rotated 60 deg, 6 lateral facets.
-    Source: P1 research inferred height:edge ~0.375 (3:8) from two
-    independent retailers' bounding-box dimensions landing on the exact
-    same value -- moderate confidence, no lapidary spec exists, shipped
-    approximate per plan §10's own policy. At height_ratio=sqrt(2/3)=
-    0.8165 this hull IS the regular octahedron (plan §6); 0.375 is far
-    flatter, matching what real pendants measure as."""
-    h = edge * height_ratio
-    r_circ = edge / math.sqrt(3)
-    top = [(r_circ * math.cos(math.radians(90 + 120 * k)), h / 2, r_circ * math.sin(math.radians(90 + 120 * k)))
-           for k in range(3)]
-    bot = [(r_circ * math.cos(math.radians(90 + 60 + 120 * k)), -h / 2, r_circ * math.sin(math.radians(90 + 60 + 120 * k)))
-           for k in range(3)]
-    planes = [dict(n=np.array([0., 1., 0.]), d=h / 2, name='top'),
-              dict(n=np.array([0., -1., 0.]), d=h / 2, name='bot')]
-    interior = np.array([0., 0., 0.])
-    for i in range(3):
-        for a, b, c, label in ((top[i], top[(i + 1) % 3], bot[i], f'lat_{i}a'),
-                                (top[(i + 1) % 3], bot[(i + 1) % 3], bot[i], f'lat_{i}b')):
-            pa, pb, pc = np.array(a), np.array(b), np.array(c)
-            nrm = np.cross(pb - pa, pc - pa)
-            nrm = nrm / np.linalg.norm(nrm)
-            d = np.dot(nrm, pa)
-            if np.dot(nrm, interior) > d - 1e-9:
-                nrm, d = -nrm, -d
-            planes.append(dict(n=nrm, d=d, name=label))
+def star_of_david_planes(girdle_apothem=25.0, tri_frac=0.45, front_bevel_deg=14.0,
+                          back_bevel_deg=32.0, rim_half=1.5):
+    """Vogel Star of David pendant -- corrected 2026-08-07. NOT a
+    six-pointed silhouette, and NOT the triangular antiprism an earlier
+    build shipped: product-level sources (satyacenter.com's Star of David
+    pendant description; luminarystudios.com, a cutter who worked with
+    Vogel, cautions that much of what is marketed as "Vogel" does not
+    follow the original standards) describe a compact, generally
+    hexagonal quartz slab whose TWO BROAD FACES carry opposed triangular
+    reliefs: the front an upright flat triangular table ringed by three
+    shallow bevels ("male/transmitting", worn outward, comparatively
+    flat), the back the same construction rotated 60 deg and cut ~2x
+    deeper ("female/receptive", worn toward the body -- the sources'
+    "fatter" reverse). The hexagram is NO single facet: it is the
+    through-thickness overlap of the two triangle boundaries in
+    projection along the viewing axis -- an optical composite, which is
+    also why refraction makes the rear triangle appear to shift as the
+    viewing angle changes. The earlier antiprism read got the
+    two-opposed-triangles projection right but made them the stone's
+    ONLY faces: front-back symmetric, no pendant body, no male/female
+    asymmetry -- wrong FORM passing every generic gate, the same lesson
+    as the Vogel wand's bipyramid regression (bug class #4). Pinned
+    facts, gated below: equilateral tables 60 deg apart, back cut deeper
+    than front, hexagonal rim (its six flats are the union of both
+    triangles' edge-normal azimuths), V/E/F = 24/36/14, and the
+    projected hexagram (six table vertices on one circle at 60 deg
+    spacing, alternating front/back). Bevel tilts are approximate trade
+    proportions (plan §10 policy: no lapidary spec exists); the defaults
+    keep P1's one measured ratio -- total thickness ~0.375x triangle
+    edge, from two independent retailers' bounding boxes -- at 0.385
+    here, with the back relief ~2x the front's."""
+    t = girdle_apothem * tri_frac
+    a_f, a_b = math.radians(front_bevel_deg), math.radians(back_bevel_deg)
+    h_f = rim_half + (girdle_apothem - t) * math.tan(a_f)
+    h_b = rim_half + (girdle_apothem - t) * math.tan(a_b)
+    planes = [dict(n=np.array([0., 1., 0.]), d=h_f, name='front_table'),
+              dict(n=np.array([0., -1., 0.]), d=h_b, name='back_table')]
+    for k in range(3):
+        phi_f = math.radians(30 + 120 * k)  # front edge normals: upright triangle, vertices at 90/210/330
+        planes.append(dict(n=np.array([math.sin(a_f) * math.cos(phi_f), math.cos(a_f), math.sin(a_f) * math.sin(phi_f)]),
+                            d=t * math.sin(a_f) + h_f * math.cos(a_f), name=f'front_bevel_{k}'))
+        phi_b = math.radians(90 + 120 * k)  # rotated 60 deg: inverted triangle, vertices at 30/150/270
+        planes.append(dict(n=np.array([math.sin(a_b) * math.cos(phi_b), -math.cos(a_b), math.sin(a_b) * math.sin(phi_b)]),
+                            d=t * math.sin(a_b) + h_b * math.cos(a_b), name=f'back_bevel_{k}'))
+    for j in range(6):
+        g = math.radians(30 + 60 * j)  # hexagonal rim: the union of both triangles' edge-normal azimuths
+        planes.append(dict(n=np.array([math.cos(g), 0., math.sin(g)]), d=girdle_apothem, name=f'girdle_{j}'))
     return planes
 
 
@@ -2525,22 +2572,46 @@ def run_checks():
             led = trace_tree(np.array([-5.0, 1000.0, 0.0]), np.array([0., -1., 0.]), planes_c, MATERIALS[mat]['n'])
             ok(close(led['total'], 1.0, 1e-6), f'{cutname} {mat}: energy closure {led["total"]} != 1')
 
-    # ---- P2 gate: Vogel wand reproduces plan §8's pinned acceptance vectors ----
-    vogel_planes = vogel_wand_planes()
-    spec = dict(planes=vogel_planes, quadrics=[])
+    # ---- P2 gate: Vogel wand reproduces plan §8's pinned acceptance vectors,
+    # at EVERY selectable facet count (§5 roster row: 4/6/8/12/13/16/24 --
+    # the tradition describes wands up to 88), since both tip angles are
+    # count-independent (planar facets at a fixed tilt): the pinned vectors
+    # are a property of the CUT, not of one hexagonal build.
+    # form gate: tip AOI is also shoulder-offset-independent, so the angle
+    # checks passed even when an earlier build was a shaft-less hexagonal
+    # bipyramid (V/E/F 8/18/12). A real wand has a prism section -- V/E/F =
+    # 2+2n/5n/3n, the classic 6's 14/30/18 -- and a receptive shoulder
+    # physically larger than the transmitting one, at every count.
     n_q, thetac_q = MATERIALS['quartz']['n'], MATERIALS['quartz']['thetac']
-    _, _, n_out_b = trace_solid(np.array([0.001, 0., 0.]), np.array([0., 1., 0.]), spec)
-    aoi_b = math.degrees(math.acos(abs(np.dot([0, 1, 0], n_out_b))))
-    ok(close(aoi_b, 51.86, 0.01), f'Vogel B axial AOI {aoi_b} != 51.86')
-    ok(close(aoi_b - thetac_q, 11.51, 0.02), f'Vogel B margin {aoi_b-thetac_q} != +11.51')
-    _, _, n_out_a = trace_solid(np.array([0.001, 0., 0.]), np.array([0., -1., 0.]), spec)
-    aoi_a = math.degrees(math.acos(abs(np.dot([0, -1, 0], n_out_a))))
-    ok(close(aoi_a, 64.07, 0.01), f'Vogel A axial AOI {aoi_a} != 64.07')
-    ok(close(aoi_a - thetac_q, 23.71, 0.02), f'Vogel A margin {aoi_a-thetac_q} != +23.71')
+    for n_v in (4, 6, 8, 12, 13, 16, 24):
+        vogel_planes = vogel_wand_planes(n_v)
+        spec = dict(planes=vogel_planes, quadrics=[])
+        _, _, n_out_b = trace_solid(np.array([0.001, 0., 0.]), np.array([0., 1., 0.]), spec)
+        aoi_b = math.degrees(math.acos(abs(np.dot([0, 1, 0], n_out_b))))
+        ok(close(aoi_b, 51.86, 0.01), f'Vogel({n_v}) B axial AOI {aoi_b} != 51.86')
+        ok(close(aoi_b - thetac_q, 11.51, 0.02), f'Vogel({n_v}) B margin {aoi_b-thetac_q} != +11.51')
+        _, _, n_out_a = trace_solid(np.array([0.001, 0., 0.]), np.array([0., -1., 0.]), spec)
+        aoi_a = math.degrees(math.acos(abs(np.dot([0, -1, 0], n_out_a))))
+        ok(close(aoi_a, 64.07, 0.01), f'Vogel({n_v}) A axial AOI {aoi_a} != 64.07')
+        ok(close(aoi_a - thetac_q, 23.71, 0.02), f'Vogel({n_v}) A margin {aoi_a-thetac_q} != +23.71')
+        sc_v = solid_check(vogel_planes)
+        ok(sc_v['V'] == 2 + 2 * n_v and sc_v['E'] == 5 * n_v and sc_v['F'] == 3 * n_v,
+           f'Vogel({n_v}) V,E,F = {sc_v["V"]},{sc_v["E"]},{sc_v["F"]} != {2+2*n_v},{5*n_v},{3*n_v} (prism section missing?)')
+        r_fem = max(math.hypot(p[0], p[2]) for p in sc_v['pts'] if p[1] > 0)
+        r_mal = max(math.hypot(p[0], p[2]) for p in sc_v['pts'] if p[1] < 0)
+        ok(r_fem > r_mal + 1.0, f'Vogel({n_v}) female shoulder r {r_fem} not larger than male r {r_mal}')
 
     # ---- P2 gate: remaining talismanic "have" + convex-smooth, closure + energy ----
     ray_o1, ray_d1 = np.array([1.0, 1000.0, 0.3]), np.array([0., -1., 0.])
-    for cutname, fn in (('vogel', vogel_wand_planes), ('genpoint', generator_point_planes),
+    for cutname, fn in (('vogel', vogel_wand_planes),
+                        # non-6 Vogel facet counts: the smallest, the one odd
+                        # count, and the largest (24 = 72 planes, the roster's
+                        # biggest enumerate_vertices load) -- mirrors the JS
+                        # halfspaceCuts rows exactly
+                        ('vogel4', lambda: vogel_wand_planes(4)),
+                        ('vogel13', lambda: vogel_wand_planes(13)),
+                        ('vogel24', lambda: vogel_wand_planes(24)),
+                        ('genpoint', generator_point_planes),
                         ('obelisk', obelisk_planes), ('greatpyramid', great_pyramid_planes)):
         planes_c = fn()
         sc = solid_check(planes_c)
@@ -2549,6 +2620,19 @@ def run_checks():
         ok(sc['vol'] > 0, f'{cutname}: solid volume not positive')
         led = trace_tree(ray_o1, ray_d1, planes_c, n_q)
         ok(close(led['total'], 1.0, 1e-6), f'{cutname}: energy closure {led["total"]} != 1')
+
+    # obelisk presentation gate (2026-08-07): flipped base-up on request --
+    # the flat base faces the light and is the entry face; the pyramidion
+    # points down as the pavilion. Pin the orientation (4 coplanar top
+    # vertices = the base, single lowest vertex = the apex) and the entry
+    # facet itself, so the flip cannot silently revert.
+    ob_sc = solid_check(obelisk_planes())
+    ob_top = max(p[1] for p in ob_sc['pts'])
+    ob_bot = min(p[1] for p in ob_sc['pts'])
+    ok(sum(1 for p in ob_sc['pts'] if abs(p[1] - ob_top) < 1e-6) == 4, 'obelisk: top face is not the 4-vertex base')
+    ok(sum(1 for p in ob_sc['pts'] if abs(p[1] - ob_bot) < 1e-6) == 1, 'obelisk: lowest vertex is not the single apex')
+    led = trace_tree(ray_o1, ray_d1, obelisk_planes(), n_q)
+    ok(led['dominant_log'][0]['plane'] == 'base', f"obelisk: entry facet {led['dominant_log'][0]['plane']} != base")
     for cutname, fn in (('sphere', sphere_planes), ('egg', egg_planes),
                         ('cabochon', cabochon_planes), ('lensdisc', lens_disc_planes)):
         spec_c = fn()
@@ -2556,11 +2640,33 @@ def run_checks():
         ok(close(led['total'], 1.0, 1e-6), f'{cutname}: energy closure {led["total"]} != 1')
 
     # ---- P2 gate: last 2 talismanic cuts (P1-sourced) ----
+    # star-of-david: corrected 2026-08-07 from a triangular antiprism (a
+    # misreading -- front-back symmetric, no pendant body) to the sourced
+    # pendant form (see star_of_david_planes' docstring). Form gate V/E/F
+    # 24/36/14 (2 tables + 6 bevels + 6 rim flats); the "female" back must
+    # be cut deeper than the "male" front; and the hexagram is a projection
+    # THEOREM the solid itself must realize: the two triangular tables' 6
+    # vertices project onto one circle at 60-degree spacing, alternating
+    # front/back.
     sod_planes = star_of_david_planes()
     sc = solid_check(sod_planes)
     ok(sc['euler'] == 2, f'star-of-david: V-E+F = {sc["euler"]} != 2')
-    ok(sc['V'] == 6 and sc['E'] == 12 and sc['F'] == 8, f'star-of-david: V,E,F = {sc["V"]},{sc["E"]},{sc["F"]} != 6,12,8 (antiprism)')
+    ok(sc['V'] == 24 and sc['E'] == 36 and sc['F'] == 14, f'star-of-david: V,E,F = {sc["V"]},{sc["E"]},{sc["F"]} != 24,36,14')
     ok(len(sc['bad_edges']) == 0, f'star-of-david: {len(sc["bad_edges"])} edges not shared by exactly 2 faces')
+    sod_top = max(p[1] for p in sc['pts'])
+    sod_bot = min(p[1] for p in sc['pts'])
+    ok(-sod_bot > sod_top + 1.0, f'star-of-david: back relief {-sod_bot} not deeper than front {sod_top}')
+    tri_f = [p for p in sc['pts'] if abs(p[1] - sod_top) < 1e-4]
+    tri_b = [p for p in sc['pts'] if abs(p[1] - sod_bot) < 1e-4]
+    ok(len(tri_f) == 3 and len(tri_b) == 3, f'star-of-david: table faces are not triangles ({len(tri_f)}/{len(tri_b)} verts)')
+    sod_star = sorted([(math.atan2(p[2], p[0]), math.hypot(p[0], p[2]), 1) for p in tri_f] +
+                      [(math.atan2(p[2], p[0]), math.hypot(p[0], p[2]), 0) for p in tri_b])
+    ok(all(abs(r - sod_star[0][1]) < 1e-6 for _, r, _ in sod_star),
+       'star-of-david: projected star vertices not on one circle')
+    for i in range(6):
+        gap = math.degrees((sod_star[(i + 1) % 6][0] - sod_star[i][0]) % (2 * math.pi))
+        ok(close(gap, 60.0, 0.01), f'star-of-david: projected vertex gap {gap} != 60')
+        ok(sod_star[(i + 1) % 6][2] != sod_star[i][2], 'star-of-david: projected vertices do not alternate front/back')
     led = trace_tree(ray_o1, ray_d1, sod_planes, n_q)
     ok(close(led['total'], 1.0, 1e-6), f'star-of-david: energy closure {led["total"]} != 1')
 
