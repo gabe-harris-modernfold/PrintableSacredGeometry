@@ -49,6 +49,48 @@ COLLAR_GAP = 2.0        # axial gap. Counter-intuitively this must stay SMALL:
                         # rim worse (0.542 -> 0.312). Radial is the only lever.
 POST_R = 2.8
 NODE_OFF = 8.0          # RADIAL node offset; see build()
+
+# Glazing lips. Measured first: every facet is within 3.8 deg of vertical, so
+# n.zhat spans only +-0.066 and gravity pulls a mirror off its pads with at most
+# 6.6% of 4.2 g = 2.7 mN. The remaining 99.8% is in-plane shear, which silicone
+# carries at ~0.7 kPa against ~1-2 MPa capability. So these lips are NOT needed
+# for gravity -- they are insurance against a silicone-to-PETG bond releasing,
+# which is the genuinely weak link.
+#
+# A lip must sit in FRONT of the glass to retain it, so it necessarily enters the
+# bore. Corners are the only place with room: beam hits clear facet VERTICES by
+# 5.54 mm but clear facet EDGES by only 0.99 mm, so edge-mid lips would be struck.
+# Two lips per facet, not three -- three makes the mirror impossible to install,
+# since 1.5 mm glass cannot flex under them. Two lips plus an open third corner
+# lets the glass slide in.
+# FIRST ATTEMPT FAILED, and geometrically so: per-facet corner lips need a stem
+# reaching outboard, and with a gap-free tiling every route crosses either the
+# mirror being retained or its neighbour. Measured 1544 lip vertices buried in
+# neighbouring glass. The only gap-free route out of the bore is at the tube ends.
+#
+# So retain at the LATTICE VERTICES instead. Six mirror corners meet at each one;
+# clip VOID_R off every corner and a single peg passes through the resulting hole
+# and caps all six. 56 pegs instead of 184 lips, and clipped corners are wanted
+# anyway -- sharp corners on 1.5 mm glass chip and the chips scatter.
+#
+# Sizing is set by the beam: hits clear lattice VERTICES by 5.54 mm, so the head
+# radius plus the beam radius must stay inside that.
+VOID_R = 3.0            # corner clipped off each mirror, measured from the vertex
+PEG_R = 2.1             # stem stays inside the void: sqrt(1.5^2+2.1^2)=2.58 < 3.0
+HEAD_T = 1.2            # how far a tab protrudes into the bore
+TAB_R0 = 2.0            # tab runs from here to TAB_R1, measured from the vertex
+TAB_R1 = 5.0            # so it overlaps the clipped mirror corner by TAB_R1-VOID_R
+#
+# A single ROUND head per vertex does not work: it is aligned to the AVERAGED
+# vertex normal, so its rim dips into the more steeply tilted neighbours by
+# HEAD_R*sin(theta) -- measured 1.33 mm into 1.5 mm glass. Shrinking it enough to
+# clear leaves nothing to cap with. So each corner gets its OWN tab, lying on its
+# own facet's plane, branching laterally off the central stem in the void.
+#
+# Tabs go only on facets the beam never touches. Beam hits clear lattice vertices
+# by just 5.54 mm, and a tab reaching TAB_R1 + HEAD_T/2 = 5.6 mm would be struck.
+# Only 16 of 92 facets are ever lit, so skipping those costs almost no retention
+# and removes the optical risk entirely.
 NCOLLAR = 24            # polygon segments approximating the round collars
 
 
@@ -148,7 +190,40 @@ def build(sol):
         u /= np.linalg.norm(u)
         m.add_solid(*MK.tube(a, u * rmid + np.array([0, 0, zt + RIM_T + 0.01]),
                              POST_R, nseg=7), tag="post")
+    lit = lit_facets(sol)
+    for i in range(len(verts)):
+        m.add_solid(*MK.tube(nodes[i], verts[i], PEG_R, nseg=7), tag="peg")
+    for fi, (f, n) in enumerate(zip(faces, fn)):
+        if fi in lit:
+            continue
+        tri = verts[f]
+        for j in range(3):
+            a = tri[j]
+            e1 = tri[(j + 1) % 3] - a
+            e2 = tri[(j + 2) % 3] - a
+            b = e1 / np.linalg.norm(e1) + e2 / np.linalg.norm(e2)
+            b /= np.linalg.norm(b)
+            c = n * (HEAD_T / 2.0)          # sit on THIS facet's plane, not the mean
+            m.add_solid(*MK.tube(a + b * TAB_R0 + c, a + b * TAB_R1 + c,
+                                 HEAD_T / 2.0, nseg=8), tag="tab")
     return m, verts, faces, fn
+
+
+def lit_facets(sol):
+    """Facet indices the beam ever strikes, over ALL arms. Screw symmetry only, so
+    arm 0 is not representative."""
+    import equilateral_tube as ET
+    import ray_optics as RO
+    tris, nrm, _ = ET.build_helix(sol["R"], sol["alpha"], sol["beta"],
+                                 sol["p"], sol["r"], sol["K"])
+    out = set()
+    for k in range(6):
+        p0, d0 = RO.launch_from_focus(sol["theta"], az=360.0 * k / 6)
+        pts, log = RO.shoot(p0, d0, tris, nrm, 6, 90)
+        if len(log) < 3:
+            continue
+        out |= {e["facet"] for e in log}
+    return out
 
 
 def clearance(m, verts, faces, fn):
@@ -175,7 +250,7 @@ def clearance(m, verts, faces, fn):
     seg_l2 = [np.einsum("ij,ij->i", d, d) for d in seg_d]
 
     tagv = _vertex_tags(m, len(v))
-    per = {}
+    per, buried = {}, {}
     worst, bad = 1e9, 0
     for vi, pnt in enumerate(v):
         w = pnt - A
@@ -200,10 +275,22 @@ def clearance(m, verts, faces, fn):
         t = tagv[vi]
         if t not in per or c < per[t]:
             per[t] = c
+        # A vertex with clearance strictly inside (0, GLASS) is BURIED IN A MIRROR.
+        # Reporting only the per-tag minimum hides this for lips, whose hook is
+        # legitimately negative -- so count it separately. The lip stems sit just
+        # outside their own triangle, which is a neighbouring facet's territory.
+        if 1e-6 < c < GLASS - 1e-6:
+            # No glass exists within VOID_R of a lattice vertex -- that corner is
+            # clipped off, which is the whole point of the peg scheme. Without this
+            # exemption the check reports the stems as buried in mirrors that have
+            # been cut away.
+            if np.min(np.linalg.norm(verts - pnt, axis=1)) > VOID_R:
+                n_b, d_b = buried.get(t, (0, 0.0))
+                buried[t] = (n_b + 1, max(d_b, c))
         if c < worst:
             worst = c
         bad += int(c < -1e-6)
-    return worst, bad, len(v), per
+    return worst, bad, len(v), per, buried
 
 
 def _vertex_tags(m, nv):
@@ -218,6 +305,32 @@ def _vertex_tags(m, nv):
             if out[j] == "":
                 out[j] = tag[i]
     return out
+
+
+def beam_vs_pegs(m, sol):
+    """The lips are the only frame feature inside the bore, so they are the only
+    ones that can be hit. Check every arm, not just arm 0 -- this tube has screw
+    symmetry only, so the arms are not congruent and arm 0 is not the worst."""
+    import equilateral_tube as ET
+    import ray_optics as RO
+    tris, nrm, _ = ET.build_helix(sol["R"], sol["alpha"], sol["beta"],
+                                 sol["p"], sol["r"], sol["K"])
+    hits = []
+    for k in range(6):
+        p0, d0 = RO.launch_from_focus(sol["theta"], az=360.0 * k / 6)
+        pts, log = RO.shoot(p0, d0, tris, nrm, 6, 90)
+        if len(log) < 3:
+            continue
+        hits.extend(pts[1:len(log) + 1])
+    v, f = m.arrays()
+    tag = np.asarray(m.tag)
+    lipv = np.unique(f[np.isin(tag, ["peg", "tab"])])
+    if not len(lipv) or not hits:
+        return
+    d = np.linalg.norm(np.asarray(hits)[:, None, :] - v[lipv][None, :, :], axis=2)
+    print(f"    beam vs pegs: {len(hits)} hits, {len(lipv)} peg vertices, "
+          f"closest approach {d.min():.2f} mm "
+          f"({'CLEAR' if d.min() > 1.5 else 'BEAM STRIKES A PEG'})")
 
 
 def report(sol):
@@ -239,7 +352,7 @@ def report(sol):
           f"-> 1 shape, equilateral {sol['s']}")
     print("  triangles by feature:", "  ".join(
         f"{t}={int((tag == t).sum())}"
-        for t in ("strut", "node", "pad", "base", "rim", "post")))
+        for t in ("strut", "node", "pad", "base", "rim", "post", "peg", "tab")))
     print(f"  bbox x {lo[0]:7.1f}..{hi[0]:6.1f}  y {lo[1]:7.1f}..{hi[1]:6.1f}"
           f"  z {lo[2]:7.1f}..{hi[2]:6.1f}")
     print(f"  envelope {hi[0]-lo[0]:.1f} x {hi[1]-lo[1]:.1f} x {hi[2]-lo[2]:.1f} mm"
@@ -248,14 +361,24 @@ def report(sol):
     print(f"  volume {vol/1000:.1f} cm3 -> {vol*1.27/1000:.0f} g PETG solid")
     bad = m.validate()
     print(f"  manifold check: {'PASS' if not bad else f'FAIL {bad[:2]}'}")
-    worst, n_bad, n_tested, per = clearance(m, verts, faces, fn)
+    worst, n_bad, n_tested, per, buried = clearance(m, verts, faces, fn)
     print(f"  clearance to the mirror surface: {n_tested} frame vertices, "
           f"{n_bad} intruding; tightest {worst:+.4f} mm")
     print(f"    pads must read exactly {GLASS} (they carry the glass); everything"
           f" else must be >= {GLASS} or it fouls the mirror:")
     for t, c in sorted(per.items(), key=lambda kv: kv[1]):
-        flag = "OK" if (c >= GLASS - 1e-6) else "FOULS GLASS"
+        if t in ("peg", "tab"):
+            flag = "by design (tab caps a clipped mirror corner)"
+        else:
+            flag = "OK" if (c >= GLASS - 1e-6) else "FOULS GLASS"
         print(f"      {t:8s} {c:+8.3f} mm   {flag}")
+    if buried:
+        for t, (n_b, d_b) in sorted(buried.items()):
+            kind = "modelling overlap" if d_b < 0.05 else "REAL INTERFERENCE"
+            print(f"    buried in glass: {t} x{n_b}, deepest {d_b:.4f} mm  ({kind})")
+    else:
+        print(f"    no frame vertex is buried inside a mirror (0..{GLASS} band)")
+    beam_vs_pegs(m, sol)
     return m
 
 
