@@ -1,0 +1,53 @@
+# Analysis / CAD / simulation stack for this project.
+# Verified on CPython 3.13.14 (Windows). See docs/PYTHON_TOOLING.md for usage and gotchas.
+#   python -m pip install -r requirements-analysis.txt
+
+# --- core numeric ---
+numpy==2.4.6
+scipy==1.18.0
+matplotlib==3.11.1
+sympy==1.14.0
+pandas==3.0.5
+h5py==3.16.0
+
+# --- quantum / quantum optics ---
+qutip==5.3.1
+
+# --- mesoscopic quantum transport ---
+# kwant==1.5.0 is NOT pip-installable here: the sdist ships pre-NumPy-2 Cython C and fails to
+# compile (error C2039: 'subarray' is not a member of '_PyArray_Descr'). It is installed, built
+# from source. To rebuild, follow the recipe in docs/PYTHON_TOOLING.md -- the crux is deleting
+# kwant/_system.c + kwant/operator.c and building with `setup.py --cython`. Needs MSVC + cython>=3.
+# kwant==1.5.0
+tinyarray==1.2.5
+cython==3.2.9                # build-time requirement for kwant
+
+# --- parametric CAD -> STL/STEP ---
+build123d==0.11.1
+cadquery==2.8.0
+solidpython2==2.1.3          # import name is `solid2`; needs the openscad binary to render (not installed)
+
+# --- mesh I/O, repair, visualization, meshing ---
+trimesh==5.0.0
+numpy-stl==4.0.0             # import name is `stl`
+pyvista==0.48.4
+pymeshfix==0.18.1
+meshio==5.3.5
+gmsh==4.15.2
+ezdxf==1.4.4
+
+# --- vibration / modal / fatigue ---
+sdypy==0.5.1                 # brings sdypy.EMA, pyFRF, pyuff
+sdynpy==0.23.0
+FLife==2.2.2
+vibration_toolbox==0.6.10    # NEEDS PATCH after install: vibesystem.py 'seaborn-white' -> 'seaborn-v0_8-white'
+
+# --- FEM / PDE (stands in for FEniCSx, which has no Windows wheels) ---
+scikit-fem==12.0.2
+
+# --- multibody dynamics (stands in for PyChrono, which is conda-forge only) ---
+mujoco==3.11.0
+
+# DO NOT ADD:
+#   pychrono  -> PyPI package is a 10 kB stub, not Project Chrono
+#   PyOMA     -> PyPI package is an unrelated bioinformatics lib; downgrades numpy to 1.26 and breaks this env

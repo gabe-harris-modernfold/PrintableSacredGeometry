@@ -2639,6 +2639,39 @@ def run_checks():
         led = trace_tree(ray_o1, ray_d1, spec_c, n_q)
         ok(close(led['total'], 1.0, 1e-6), f'{cutname}: energy closure {led["total"]} != 1')
 
+    # ---- P2 gate: the sphere is a BALL LENS. Two closed forms it must
+    # reproduce, neither derived from this build's own machinery:
+    #  (1) a chord of a circle is isoceles, so the internal incidence angle
+    #      EQUALS the refraction angle. Since sin(internal) = sin(entry)/n
+    #      <= 1/n = sin(theta_c), a sphere physically CANNOT totally
+    #      internally reflect light that entered from outside -- at any
+    #      impact parameter, right up to grazing.
+    #  (2) paraxial rays cross the axis at f = nR/2(n-1) from the centre.
+    # Added 2026-08-07 after the section view's sphere was reported as
+    # drawing a wrong refraction pattern: the traced angles were already
+    # exact (this gate pins that permanently), the fault was that the view
+    # sampled a grazing aperture and cropped the focus off the frame.
+    r_ball = 50.0
+    sph_spec = sphere_planes()
+    f_closed = n_q * r_ball / (2.0 * (n_q - 1.0))
+    for b in (0.5, 5.0, 20.0, 40.0, 49.0):
+        led = trace_tree(np.array([b, 1000.0, 0.0]), np.array([0., -1., 0.]), sph_spec, n_q)
+        i_th = math.degrees(math.asin(b / r_ball))
+        r_th = math.degrees(math.asin(math.sin(math.asin(b / r_ball)) / n_q))
+        ok(close(led['dominant_log'][0]['aoi'], i_th, 1e-6),
+           f'sphere b={b}: entry AOI {led["dominant_log"][0]["aoi"]} != asin(b/R) {i_th}')
+        ok(close(led['dominant_log'][1]['aoi'], r_th, 1e-6),
+           f'sphere b={b}: internal AOI {led["dominant_log"][1]["aoi"]} != refraction angle {r_th} (isoceles chord)')
+        ok(led['dominant_log'][1]['aoi'] < thetac_q,
+           f'sphere b={b}: internal AOI {led["dominant_log"][1]["aoi"]} reached TIR -- impossible from outside a sphere')
+        ok(close(led['total'], 1.0, 1e-6), f'sphere b={b}: energy closure {led["total"]} != 1')
+    led = trace_tree(np.array([0.5, 1000.0, 0.0]), np.array([0., -1., 0.]), sph_spec, n_q)
+    down = [e for e in led['exited'] if e['dir'][1] < 0]
+    dom = max(down, key=lambda e: e['intensity'])
+    y_cross = dom['from_point'][1] - dom['from_point'][0] / dom['dir'][0] * dom['dir'][1]
+    ok(close(y_cross, -f_closed, 0.01),
+       f'sphere paraxial axis crossing {y_cross} != closed-form -nR/2(n-1) = {-f_closed}')
+
     # ---- P2 gate: last 2 talismanic cuts (P1-sourced) ----
     # star-of-david: corrected 2026-08-07 from a triangular antiprism (a
     # misreading -- front-back symmetric, no pendant body) to the sourced
