@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Hermetic Phenomenon Profile — a field instrument</title>
+<meta name="description" content="A field instrument for profiling any object, event, or living thing through the seven Kybalion principles — with six honesty labels that keep measurement and symbolism from ever blending, and a hover glossary in plain words.">
+<link rel="canonical" href="https://promethean-theoria.netlify.app/hermetic-phenomenon-profile.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="The Hermetic Phenomenon Profile — a field instrument">
+<meta property="og:description" content="Profile anything through seven Hermetic lenses. Six honesty labels keep measurement and symbolism apart; a hover glossary explains every technical term in plain words.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/hermetic-phenomenon-profile.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/hermetic-phenomenon-profile.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — the assay office. Dark-first, in the Theoria family.
+   Seven lens hues, learned once and used everywhere.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --ground:   #0B0D12;
+  --ground-2: #11141B;
+  --ground-3: #181C26;
+  --rule:     #262C3A;
+  --rule-soft:#1C212E;
+
+  --ink:   #E8E4D8;
+  --ink-2: #B6B3A8;
+  --muted: #8B92A4;
+  --faint: #5C6376;
+
+  /* the seven — one hue per lens, permanent */
+  --vib: #6FC7DC;   /* I   Vibration      · azure        */
+  --pol: #E0596B;   /* II  Polarity       · carmine      */
+  --cor: #D4B87F;   /* III Correspondence · gold         */
+  --rhy: #6FBF9A;   /* IV  Rhythm         · sea green    */
+  --cau: #E39A4C;   /* V   Cause & Effect · amber        */
+  --gen: #B287DE;   /* VI  Gender         · violet       */
+  --men: #9FB4D8;   /* VII Mentalism      · moon silver  */
+
+  /* evidence — certainty carried by colour AND form */
+  --lab-mc: #6FBF9A;   /* M measured / C calculated  */
+  --lab-ir: #D9A65A;   /* I inferred / R reported    */
+  --lab-a:  #D4B87F;   /* A analogical               */
+  --lab-u:  #97A0B5;   /* U unknown                  */
+
+  --good: #6FBF9A;
+  --bad:  #D8434F;
+
+  --serif: "Palatino Linotype", Palatino, "Iowan Old Style", "Book Antiqua",
+           "URW Palladio L", "Hoefler Text", Georgia, serif;
+  --label: "Bahnschrift SemiCondensed", "Bahnschrift", "DIN Alternate",
+           "Franklin Gothic Medium", "Avenir Next Condensed",
+           "Roboto Condensed", Corbel, "Segoe UI", sans-serif;
+  --mono:  Consolas, "Cascadia Mono", "SF Mono", Menlo, "DejaVu Sans Mono", monospace;
+
+  --measure: 36rem;
+  --wide: 62rem;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#E9E8E2; --ground-2:#F1F0EB; --ground-3:#F8F7F3;
+    --rule:#C4C6BD; --rule-soft:#D8D9D1;
+    --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+    --vib:#1F7A93; --pol:#B03145; --cor:#8A6E1E; --rhy:#2C7A56;
+    --cau:#A66312; --gen:#6E4B9E; --men:#4A6285;
+    --lab-mc:#2C7A56; --lab-ir:#96690F; --lab-a:#8A6E1E; --lab-u:#5E6572;
+    --good:#2C7A56; --bad:#A81F2B;
+  }
+}
+:root[data-theme="light"]{
+  --ground:#E9E8E2; --ground-2:#F1F0EB; --ground-3:#F8F7F3;
+  --rule:#C4C6BD; --rule-soft:#D8D9D1;
+  --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+  --vib:#1F7A93; --pol:#B03145; --cor:#8A6E1E; --rhy:#2C7A56;
+  --cau:#A66312; --gen:#6E4B9E; --men:#4A6285;
+  --lab-mc:#2C7A56; --lab-ir:#96690F; --lab-a:#8A6E1E; --lab-u:#5E6572;
+  --good:#2C7A56; --bad:#A81F2B;
+}
+:root[data-theme="dark"]{
+  --ground:#0B0D12; --ground-2:#11141B; --ground-3:#181C26;
+  --rule:#262C3A; --rule-soft:#1C212E;
+  --ink:#E8E4D8; --ink-2:#B6B3A8; --muted:#8B92A4; --faint:#5C6376;
+  --vib:#6FC7DC; --pol:#E0596B; --cor:#D4B87F; --rhy:#6FBF9A;
+  --cau:#E39A4C; --gen:#B287DE; --men:#9FB4D8;
+  --lab-mc:#6FBF9A; --lab-ir:#D9A65A; --lab-a:#D4B87F; --lab-u:#97A0B5;
+  --good:#6FBF9A; --bad:#D8434F;
+}
+
+/* ═════════════════════════ BASE ═════════════════════════ */
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *, *::before, *::after{ transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
+}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.7;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+::selection{ background:var(--cor); color:var(--ground); }
+p{ text-wrap:pretty; }
+h1,h2,h3,h4{ font-weight:400; text-wrap:balance; }
+a{ color:var(--vib); text-decoration-color:color-mix(in srgb, var(--vib) 45%, transparent); text-underline-offset:3px; }
+a:hover{ text-decoration-color:var(--vib); }
+:focus-visible{ outline:2px solid var(--cor); outline-offset:2px; }
+
+/* ═════════════════════════ RAIL ═════════════════════════ */
+.rail{
+  position:fixed; left:0; top:0; bottom:0; width:2.9rem; z-index:40;
+  border-right:1px solid var(--rule-soft);
+  background:linear-gradient(to bottom, var(--ground-2), var(--ground));
+  display:flex; flex-direction:column; align-items:stretch;
+  padding:0.8rem 0; gap:0.3rem;
+}
+.rail button{
+  flex:1; border:0; background:transparent; cursor:pointer;
+  position:relative; display:flex; align-items:center; justify-content:center;
+  padding:0; min-height:1.4rem;
+}
+.rail .rn{
+  font-family:var(--mono); font-size:0.56rem; letter-spacing:0.12em;
+  color:var(--faint); writing-mode:vertical-rl; transition:color .25s ease;
+}
+.rail button::after{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:transparent; transition:background .25s ease;
+}
+.rail button:hover .rn{ color:var(--ink-2); }
+.rail button.on .rn{ color:var(--ink); }
+.rail button.on::after{ background:var(--lens, var(--cor)); }
+@media (max-width:940px){ .rail{ display:none; } }
+.wrap{ padding-left:2.9rem; padding-bottom:5rem; }
+@media (max-width:940px){ .wrap{ padding-left:0; } }
+
+/* ═════════════════════════ TOP BAR ═════════════════════════ */
+.top{
+  display:flex; justify-content:space-between; align-items:center;
+  max-width:var(--wide); margin:0 auto; padding:1.1rem 1.35rem 0;
+  font-family:var(--label); font-size:0.72rem; letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+.top a{ color:var(--muted); text-decoration:none; }
+.top a:hover{ color:var(--ink); }
+.theme-btn{
+  border:1px solid var(--rule); background:var(--ground-2); color:var(--muted);
+  font-family:var(--label); font-size:0.66rem; letter-spacing:0.1em;
+  text-transform:uppercase; padding:0.3rem 0.7rem; border-radius:999px; cursor:pointer;
+}
+.theme-btn:hover{ color:var(--ink); border-color:var(--muted); }
+
+/* ═════════════════════════ LAYOUT ═════════════════════════ */
+.col{ max-width:var(--measure); margin:0 auto; padding:0 1.35rem; }
+.col-w{ max-width:var(--wide); margin:0 auto; padding:0 1.35rem; }
+.flow{ display:flex; flex-direction:column; gap:1.05rem; }
+section{ padding-top:4.2rem; }
+.eyebrow{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.22em;
+  font-size:0.66rem; color:var(--muted);
+}
+.lede{ font-size:1.14rem; line-height:1.62; color:var(--ink-2); }
+.gold{ color:var(--cor); }
+.mut{ color:var(--muted); }
+.mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:0.92em; }
+hr.sep{ border:0; height:1px; background:var(--rule); margin:3.2rem auto 0; max-width:var(--wide); }
+
+/* ═════════════════════════ HERO ═════════════════════════ */
+.hero{ text-align:center; padding-top:3.2rem; }
+.hero h1{
+  font-size:clamp(2rem, 5.4vw, 3.2rem); line-height:1.05; letter-spacing:-0.015em;
+  margin-top:0.7rem;
+}
+.hero .axline{
+  color:var(--cor); font-style:italic; margin-top:0.8rem; font-size:1.02rem;
+}
+.hero .lede{ max-width:38rem; margin:1.4rem auto 0; }
+.rule-line{
+  margin:1.6rem auto 0; max-width:34rem; padding:0.75rem 1.1rem;
+  border:1px solid var(--rule); border-radius:10px; background:var(--ground-2);
+  font-size:0.92rem; color:var(--ink-2);
+}
+.rule-line b{ color:var(--ink); font-weight:400; }
+
+/* wheel */
+.wheel-wrap{ margin:2.4rem auto 0; max-width:520px; padding:0 1rem; }
+.wheel-wrap svg{ width:100%; height:auto; display:block; }
+.wnode{ cursor:pointer; }
+.wnode circle.dot{
+  fill:var(--ground-2); stroke:var(--wc); stroke-width:1.5;
+  transition:fill .2s ease, r .2s ease;
+}
+.wnode text{ fill:var(--ink-2); font-family:var(--label); letter-spacing:0.06em; }
+.wnode .wnum{ fill:var(--wc); font-family:var(--mono); }
+.wnode:hover circle.dot, .wnode:focus-visible circle.dot{ fill:color-mix(in srgb, var(--wc) 22%, var(--ground-2)); }
+.wnode:hover text.wname, .wnode:focus-visible text.wname{ fill:var(--ink); }
+.wheel-cap{
+  margin-top:0.9rem; min-height:3.2em; text-align:center;
+  color:var(--muted); font-size:0.94rem; font-style:italic; line-height:1.5;
+}
+.wheel-cap b{ color:var(--ink); font-weight:400; font-style:normal; }
+
+/* ═════════════════════════ TIP TERMS ═════════════════════════ */
+.t{
+  cursor:help; border-bottom:1px dotted color-mix(in srgb, var(--vib) 70%, transparent);
+  text-decoration:none; color:inherit;
+}
+.t:hover{ border-bottom-color:var(--vib); background:color-mix(in srgb, var(--vib) 10%, transparent); }
+#tipbox{
+  position:absolute; z-index:90; max-width:310px;
+  background:var(--ground-3); border:1px solid var(--rule); border-radius:10px;
+  padding:0.7rem 0.85rem; font-size:0.85rem; line-height:1.55; color:var(--ink-2);
+  box-shadow:0 10px 30px rgba(0,0,0,0.45);
+  pointer-events:none; opacity:0; transition:opacity .12s ease;
+}
+#tipbox.show{ opacity:1; }
+#tipbox .tt{
+  display:block; font-family:var(--label); text-transform:uppercase;
+  letter-spacing:0.1em; font-size:0.62rem; color:var(--vib); margin-bottom:0.3rem;
+}
+.tipnote{
+  font-size:0.85rem; color:var(--muted); font-style:italic;
+}
+.tipnote .t{ font-style:normal; }
+
+/* ═════════════════════════ CHIPS ═════════════════════════ */
+.lab{
+  display:inline-block; font-family:var(--label); font-size:0.62rem;
+  letter-spacing:0.08em; line-height:1; padding:0.22em 0.5em 0.26em;
+  border-radius:4px; border:1px solid transparent; vertical-align:0.12em;
+  white-space:nowrap;
+}
+.lab-m{ background:var(--lab-mc); color:var(--ground); border-color:var(--lab-mc); }
+.lab-c{ color:var(--lab-mc); border-color:var(--lab-mc); }
+.lab-i{ background:var(--lab-ir); color:var(--ground); border-color:var(--lab-ir); }
+.lab-r{ color:var(--lab-ir); border-color:var(--lab-ir); }
+.lab-a{ color:var(--lab-a); border-color:var(--lab-a); font-style:italic; }
+.lab-u{ color:var(--lab-u); border-color:var(--lab-u); border-style:dashed; }
+.lab-slot{ color:var(--faint); border-color:var(--faint); border-style:dotted; min-width:2.1em; text-align:center; }
+
+/* label cards */
+.labgrid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+  gap:0.9rem; margin-top:1.6rem;
+}
+.labcard{
+  background:var(--ground-2); border:1px solid var(--rule); border-radius:12px;
+  padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.45rem;
+}
+.labcard .lc-head{ display:flex; align-items:center; gap:0.6rem; }
+.labcard .lc-name{ font-family:var(--label); text-transform:uppercase; letter-spacing:0.12em; font-size:0.72rem; color:var(--ink); }
+.labcard p{ font-size:0.88rem; color:var(--ink-2); line-height:1.55; }
+.labcard .lc-ex{ font-size:0.8rem; color:var(--muted); font-style:italic; }
+
+/* rules list */
+.rules{ margin-top:1.8rem; display:flex; flex-direction:column; gap:0.85rem; counter-reset:rl; }
+.rules li{
+  list-style:none; counter-increment:rl; position:relative; padding-left:2.4rem;
+  font-size:0.95rem; color:var(--ink-2); line-height:1.6;
+}
+.rules li::before{
+  content:counter(rl); position:absolute; left:0; top:0.1rem;
+  width:1.55rem; height:1.55rem; border-radius:50%;
+  border:1px solid var(--rule); background:var(--ground-2);
+  font-family:var(--mono); font-size:0.72rem; color:var(--cor);
+  display:flex; align-items:center; justify-content:center;
+}
+.rules b{ color:var(--ink); font-weight:400; }
+
+/* firewall figure */
+.fw{
+  margin-top:2rem; border:1px solid var(--rule); border-radius:12px;
+  background:var(--ground-2); padding:1.2rem; overflow-x:auto;
+}
+.fw svg{ display:block; margin:0 auto; max-width:560px; width:100%; height:auto; }
+.fw-cap{ text-align:center; font-size:0.82rem; color:var(--muted); font-style:italic; margin-top:0.6rem; }
+
+/* ═════════════════════════ EXPOSÉ ═════════════════════════ */
+.steps{ counter-reset:st; display:flex; flex-direction:column; gap:2rem; margin-top:2rem; }
+.step{ position:relative; padding-left:3.4rem; }
+.step::before{
+  counter-increment:st; content:counter(st);
+  position:absolute; left:0; top:0.05rem; width:2.3rem; height:2.3rem;
+  border-radius:50%; border:1px solid var(--cor);
+  color:var(--cor); font-family:var(--serif); font-size:1.15rem;
+  display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--cor) 8%, transparent);
+}
+.step h3{ font-size:1.22rem; margin-bottom:0.45rem; }
+.step p{ color:var(--ink-2); font-size:0.97rem; }
+.step .qz{
+  margin-top:0.65rem; padding:0.6rem 0.9rem; border-left:2px solid var(--rule);
+  font-size:0.88rem; color:var(--muted); font-style:italic;
+}
+.step .qz b{ color:var(--ink-2); font-weight:400; font-style:normal; }
+
+/* ═════════════════════════ SHEETS ═════════════════════════ */
+.sheet{
+  border-top:1px solid var(--rule);
+  background:linear-gradient(to bottom, color-mix(in srgb, var(--ground-2) 88%, var(--lens) 4%), var(--ground) 26rem);
+  margin-top:4.2rem; padding-top:0;
+}
+.sheet-head{ padding:2.6rem 0 0; }
+.sheet-head .sh-row{ display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap; }
+.sh-num{
+  font-family:var(--mono); font-size:0.8rem; letter-spacing:0.14em; color:var(--lens);
+}
+.sheet h2{ font-size:clamp(1.55rem, 3.4vw, 2.1rem); }
+.sh-ax{
+  margin-top:0.7rem; font-style:italic; color:var(--cor); font-size:0.98rem;
+}
+.sh-ax a{ font-style:normal; font-family:var(--label); font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-decoration:none; margin-left:0.6rem; }
+.sh-ax a:hover{ color:var(--ink); }
+.sh-q{
+  margin-top:1.3rem; padding:0.85rem 1.1rem; border-left:3px solid var(--lens);
+  background:color-mix(in srgb, var(--lens) 7%, transparent);
+  font-size:1.04rem; color:var(--ink); border-radius:0 8px 8px 0;
+}
+.sheet .body{ padding:1.8rem 0 2.6rem; }
+
+.fields{ list-style:none; display:flex; flex-direction:column; gap:0.6rem; margin-top:1.2rem; }
+.fields li{
+  font-size:0.93rem; color:var(--ink-2); line-height:1.65;
+  padding-left:1.1rem; position:relative;
+}
+.fields li::before{
+  content:""; position:absolute; left:0; top:0.72em; width:5px; height:5px;
+  border-radius:50%; background:var(--lens);
+}
+.bl{
+  display:inline-block; min-width:4.5ch;
+  border-bottom:1px dotted var(--faint);
+}
+.fields b, .subhead b{ color:var(--ink); font-weight:400; }
+
+.guard{
+  margin-top:1.8rem; border:1px solid color-mix(in srgb, var(--bad) 45%, var(--rule));
+  border-left:3px solid var(--bad);
+  background:color-mix(in srgb, var(--bad) 6%, var(--ground-2));
+  border-radius:0 10px 10px 0; padding:0.95rem 1.15rem;
+}
+.guard .g-eb{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.18em;
+  font-size:0.62rem; color:var(--bad); display:block; margin-bottom:0.4rem;
+}
+.guard p{ font-size:0.92rem; color:var(--ink-2); }
+.guard p + p{ margin-top:0.5rem; }
+
+.sw{ display:grid; grid-template-columns:1fr 1fr; gap:0.9rem; margin-top:1.4rem; }
+@media (max-width:700px){ .sw{ grid-template-columns:1fr; } }
+.sw > div{
+  border-radius:10px; padding:0.8rem 1rem; font-size:0.88rem; line-height:1.55;
+  border:1px solid var(--rule); background:var(--ground-2); color:var(--ink-2);
+}
+.sw .s-good{ border-color:color-mix(in srgb, var(--good) 50%, var(--rule)); }
+.sw .s-bad{ border-color:color-mix(in srgb, var(--bad) 45%, var(--rule)); }
+.sw .swt{
+  display:block; font-family:var(--label); text-transform:uppercase;
+  letter-spacing:0.14em; font-size:0.6rem; margin-bottom:0.35rem;
+}
+.sw .s-good .swt{ color:var(--good); }
+.sw .s-bad .swt{ color:var(--bad); }
+
+.subhead{
+  margin-top:1.9rem; font-family:var(--label); text-transform:uppercase;
+  letter-spacing:0.16em; font-size:0.7rem; color:var(--ink);
+}
+.note{
+  margin-top:1rem; font-size:0.88rem; color:var(--muted); font-style:italic; line-height:1.6;
+}
+.note b{ color:var(--ink-2); font-weight:400; font-style:normal; }
+
+/* tables */
+.tblwrap{ overflow-x:auto; margin-top:1.2rem; border:1px solid var(--rule); border-radius:10px; }
+table{ border-collapse:collapse; width:100%; min-width:680px; font-size:0.86rem; }
+th{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.1em;
+  font-size:0.62rem; color:var(--muted); text-align:left;
+  padding:0.6rem 0.8rem; border-bottom:1px solid var(--rule);
+  background:var(--ground-2);
+}
+td{
+  padding:0.55rem 0.8rem; border-bottom:1px solid var(--rule-soft);
+  color:var(--ink-2); vertical-align:top; line-height:1.5;
+}
+tr:last-child td{ border-bottom:0; }
+td.pole{ color:var(--ink); white-space:nowrap; }
+td.axn{ color:var(--pol); font-family:var(--label); text-transform:uppercase; letter-spacing:0.08em; font-size:0.68rem; white-space:nowrap; }
+
+/* correspondence ladder */
+.ladder{ list-style:none; margin-top:1.2rem; display:flex; flex-direction:column; }
+.ladder li{
+  display:flex; gap:0.9rem; align-items:baseline; padding:0.5rem 0.2rem;
+  border-bottom:1px solid var(--rule-soft); font-size:0.92rem; color:var(--ink-2);
+}
+.ladder li:last-child{ border-bottom:0; }
+.ladder .ln{
+  font-family:var(--mono); color:var(--cor); font-size:0.8rem; width:1.2rem; flex-shrink:0;
+}
+.ladder b{ color:var(--ink); font-weight:400; }
+.ladder .lgrade{ margin-left:auto; flex-shrink:0; }
+
+/* checklist */
+.check{ list-style:none; margin-top:1.6rem; display:flex; flex-direction:column; gap:0.55rem; }
+.check li{ display:flex; gap:0.7rem; align-items:baseline; }
+.check input[type="checkbox"]{
+  width:1rem; height:1rem; accent-color:var(--rhy); flex-shrink:0; transform:translateY(2px);
+  cursor:pointer;
+}
+.check label{ font-size:0.93rem; color:var(--ink-2); line-height:1.55; cursor:pointer; }
+.check label b{ color:var(--ink); font-weight:400; }
+
+/* synthesis + example quotes */
+.synth{
+  margin-top:1.6rem; border:1px solid var(--rule); border-radius:12px;
+  background:var(--ground-2); padding:1.4rem 1.5rem; font-size:0.97rem;
+  line-height:1.85; color:var(--ink-2);
+}
+.synth .slot{
+  color:var(--vib); background:color-mix(in srgb, var(--vib) 9%, transparent);
+  border-radius:4px; padding:0 0.25em; font-style:italic;
+}
+.exlens{ margin-top:1.5rem; }
+.exlens h3{
+  font-size:1rem; font-family:var(--label); text-transform:uppercase;
+  letter-spacing:0.14em; color:var(--lens); margin-bottom:0.4rem;
+}
+.exlens p{ font-size:0.94rem; color:var(--ink-2); line-height:1.7; }
+.census{
+  margin-top:2rem; border-left:3px solid var(--cor);
+  background:color-mix(in srgb, var(--cor) 6%, transparent);
+  border-radius:0 10px 10px 0; padding:0.9rem 1.15rem;
+  font-size:0.92rem; color:var(--ink-2);
+}
+
+footer{
+  margin-top:5rem; text-align:center; color:var(--muted);
+  font-size:0.85rem; font-style:italic; padding:0 1.35rem;
+}
+footer a{ color:var(--muted); }
+footer a:hover{ color:var(--ink); }
+</style>
+</head>
+<body>
+<nav class="rail" aria-label="Sections">
+  <button data-go="expose" style="--lens:var(--cor)"><span class="rn">HOW TO USE IT</span></button>
+  <button data-go="labels" style="--lens:var(--cor)"><span class="rn">SIX LETTERS</span></button>
+  <button data-go="sheet-1" style="--lens:var(--vib)"><span class="rn">I · VIBRATION</span></button>
+  <button data-go="sheet-2" style="--lens:var(--pol)"><span class="rn">II · POLARITY</span></button>
+  <button data-go="sheet-3" style="--lens:var(--cor)"><span class="rn">III · CORRESPONDENCE</span></button>
+  <button data-go="sheet-4" style="--lens:var(--rhy)"><span class="rn">IV · RHYTHM</span></button>
+  <button data-go="sheet-5" style="--lens:var(--cau)"><span class="rn">V · CAUSE</span></button>
+  <button data-go="sheet-6" style="--lens:var(--gen)"><span class="rn">VI · GENDER</span></button>
+  <button data-go="sheet-7" style="--lens:var(--men)"><span class="rn">VII · MENTALISM</span></button>
+  <button data-go="checklist" style="--lens:var(--rhy)"><span class="rn">CHECKLIST</span></button>
+  <button data-go="synthesis" style="--lens:var(--vib)"><span class="rn">SYNTHESIS</span></button>
+  <button data-go="example" style="--lens:var(--gen)"><span class="rn">QUARTZ</span></button>
+</nav>
+
+<div class="wrap">
+<div class="top">
+  <a href="index.html">&larr; Promethean Theoria</a>
+  <button class="theme-btn" id="themeBtn" aria-label="Toggle color theme">Theme</button>
+</div>
+
+<!-- ═════════════════════════ HERO ═════════════════════════ -->
+<header class="hero col-w">
+  <div class="eyebrow">A field instrument &middot; seven lenses &middot; six honesty labels</div>
+  <h1>The Hermetic Phenomenon Profile</h1>
+  <div class="axline">a structured way to look at anything — and stay honest about how you know what you know</div>
+  <p class="lede">
+    Pick a <a class="t" data-t="phenomenon">phenomenon</a> — a crystal, a candle flame, a garden,
+    a machine, a friendship. This instrument walks it through the seven principles of the
+    <a class="t" data-t="kybalion">Kybalion</a>, used here as
+    <a class="t" data-t="lens">lenses</a> rather than beliefs, and produces one integrated portrait:
+    its physics, its patterns, its cycles, its causes — and its symbolism, kept in a clearly
+    marked lane of its own.
+  </p>
+  <div class="rule-line">
+    The house rule, same as every study on this site: <b>what is measured is marked measured,
+    and what is symbolic is marked symbolic</b> — the two never blend.
+  </div>
+
+  <div class="wheel-wrap">
+    <svg viewBox="0 0 420 420" role="img" aria-label="The seven lenses arranged on a wheel around the phenomenon: Vibration, Polarity, Correspondence, Rhythm, Cause and Effect, Gender, Mentalism">
+      <circle cx="210" cy="210" r="150" fill="none" stroke="var(--rule)" stroke-width="1"/>
+      <path d="M210 60 L275.1 345.1 L92.7 116.5 L356.2 243.4 L63.8 243.4 L327.3 116.5 L144.9 345.1 Z"
+            fill="none" stroke="var(--rule)" stroke-width="0.8" opacity="0.55"/>
+      <circle cx="210" cy="210" r="52" fill="var(--ground-2)" stroke="var(--cor)" stroke-width="1"/>
+      <text x="210" y="205" text-anchor="middle" font-size="11" fill="var(--ink-2)" font-style="italic" font-family="Georgia, serif">the</text>
+      <text x="210" y="221" text-anchor="middle" font-size="11" fill="var(--ink-2)" font-style="italic" font-family="Georgia, serif">phenomenon</text>
+
+      <g class="wnode" style="--wc:var(--vib)" data-sheet="sheet-1" tabindex="0" role="link" aria-label="Sheet one, Vibration">
+        <circle class="dot" cx="210" cy="60" r="26"/>
+        <text class="wnum" x="210" y="57" text-anchor="middle" font-size="11">I</text>
+        <text class="wname" x="210" y="71" text-anchor="middle" font-size="8.5">VIBRATION</text>
+      </g>
+      <g class="wnode" style="--wc:var(--pol)" data-sheet="sheet-2" tabindex="0" role="link" aria-label="Sheet two, Polarity">
+        <circle class="dot" cx="327.3" cy="116.5" r="26"/>
+        <text class="wnum" x="327.3" y="113.5" text-anchor="middle" font-size="11">II</text>
+        <text class="wname" x="327.3" y="127.5" text-anchor="middle" font-size="8.5">POLARITY</text>
+      </g>
+      <g class="wnode" style="--wc:var(--cor)" data-sheet="sheet-3" tabindex="0" role="link" aria-label="Sheet three, Correspondence">
+        <circle class="dot" cx="356.2" cy="243.4" r="26"/>
+        <text class="wnum" x="356.2" y="240.4" text-anchor="middle" font-size="11">III</text>
+        <text class="wname" x="356.2" y="254.4" text-anchor="middle" font-size="7">CORRESPOND.</text>
+      </g>
+      <g class="wnode" style="--wc:var(--rhy)" data-sheet="sheet-4" tabindex="0" role="link" aria-label="Sheet four, Rhythm">
+        <circle class="dot" cx="275.1" cy="345.1" r="26"/>
+        <text class="wnum" x="275.1" y="342.1" text-anchor="middle" font-size="11">IV</text>
+        <text class="wname" x="275.1" y="356.1" text-anchor="middle" font-size="8.5">RHYTHM</text>
+      </g>
+      <g class="wnode" style="--wc:var(--cau)" data-sheet="sheet-5" tabindex="0" role="link" aria-label="Sheet five, Cause and Effect">
+        <circle class="dot" cx="144.9" cy="345.1" r="26"/>
+        <text class="wnum" x="144.9" y="342.1" text-anchor="middle" font-size="11">V</text>
+        <text class="wname" x="144.9" y="356.1" text-anchor="middle" font-size="8.5">CAUSE</text>
+      </g>
+      <g class="wnode" style="--wc:var(--gen)" data-sheet="sheet-6" tabindex="0" role="link" aria-label="Sheet six, Gender">
+        <circle class="dot" cx="63.8" cy="243.4" r="26"/>
+        <text class="wnum" x="63.8" y="240.4" text-anchor="middle" font-size="11">VI</text>
+        <text class="wname" x="63.8" y="254.4" text-anchor="middle" font-size="8.5">GENDER</text>
+      </g>
+      <g class="wnode" style="--wc:var(--men)" data-sheet="sheet-7" tabindex="0" role="link" aria-label="Sheet seven, Mentalism">
+        <circle class="dot" cx="92.7" cy="116.5" r="26"/>
+        <text class="wnum" x="92.7" y="113.5" text-anchor="middle" font-size="11">VII</text>
+        <text class="wname" x="92.7" y="127.5" text-anchor="middle" font-size="8.5">MENTALISM</text>
+      </g>
+    </svg>
+    <div class="wheel-cap" id="wheelCap">Hover a lens to see its question &middot; click to jump to its sheet.</div>
+  </div>
+
+  <p class="tipnote" style="margin-top:1.6rem;">
+    Dotted-underlined words like <a class="t" data-t="q-factor">Q factor</a> carry a plain-words
+    explanation — hover, tap, or focus them. No equations required.
+  </p>
+</header>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ EXPOSÉ ═════════════════════════ -->
+<section id="expose" class="col">
+  <div class="eyebrow">The exposé &middot; how to use it, in plain words</div>
+  <h2 style="font-size:clamp(1.7rem,3.8vw,2.3rem); margin-top:0.6rem;">How to read anything like a careful <a class="t" data-t="hermetic">Hermetic</a> scientist</h2>
+  <p class="lede" style="margin-top:1rem;">
+    The whole method fits in six moves. A quartz crystal rides along as the running example —
+    the full, rigorous version of every move is in the sheets below.
+  </p>
+
+  <div class="steps">
+    <div class="step">
+      <h3>Draw a line around your subject</h3>
+      <p>
+        Decide what is <em>the thing</em> and what is just <em>its surroundings</em>, and write that
+        down. This is the <a class="t" data-t="boundary">system boundary</a>, and it quietly controls
+        every later answer: what counts as a cause, what counts as an outside push.
+      </p>
+      <div class="qz"><b>Quartz:</b> the crystal is the thing; the shelf, the room, and the sunlight are surroundings.</div>
+    </div>
+    <div class="step">
+      <h3>Pick your window</h3>
+      <p>
+        Choose how long you will watch and how closely — the
+        <a class="t" data-t="observation-window">observation window</a>. Watching for one second and
+        watching for one year give different portraits, and both can be true. Say which one you made.
+      </p>
+      <div class="qz"><b>Quartz:</b> five days on a bench, at hand scale, with a thermometer logging the room.</div>
+    </div>
+    <div class="step">
+      <h3>Learn the six letters</h3>
+      <p>
+        Every single statement — every <a class="t" data-t="claim">claim</a> — gets one letter that says
+        <em>how you know it</em>: <span class="lab lab-m">M</span> you measured it,
+        <span class="lab lab-c">C</span> you computed it, <span class="lab lab-i">I</span> you deduced it
+        from clues, <span class="lab lab-r">R</span> someone else reported it,
+        <span class="lab lab-a">A</span> it is a symbol or comparison, <span class="lab lab-u">U</span> you
+        don't know yet. The letters are an honesty system, not a grading system — an
+        <span class="lab lab-a">A</span> is welcome, it just can't pretend to be an <span class="lab lab-m">M</span>.
+      </p>
+      <div class="qz"><b>Quartz:</b> "21.4&nbsp;°C on the thermometer" is <b>M</b>. "Feels calm and clear" is <b>A</b>. Both go in the profile — in different lanes.</div>
+    </div>
+    <div class="step">
+      <h3>Ask the seven questions</h3>
+      <p>
+        Walk the wheel. <b style="color:var(--vib)">Vibration:</b> what shakes, rings, or glows, and how fast?
+        <b style="color:var(--pol)">Polarity:</b> what slider between opposites is it sitting on?
+        <b style="color:var(--cor)">Correspondence:</b> what pattern repeats between its smallest parts and its whole shape?
+        <b style="color:var(--rhy)">Rhythm:</b> what cycles does it ride, and how far does it swing each way?
+        <b style="color:var(--cau)">Cause &amp; Effect:</b> what pushes it, through what mechanism, with what result?
+        <b style="color:var(--gen)">Gender:</b> what two different roles couple to make something neither makes alone?
+        <b style="color:var(--men)">Mentalism:</b> and how do you actually know all of the above — which instruments, which assumptions?
+      </p>
+      <div class="qz"><b>Quartz:</b> it rings at exact frequencies; squeezing it makes voltage; its inner atomic grid repeats as its outer faces; the room's day-night temperature rocks it; squeeze-in causes charge-out; stress + lattice together create a signal; and we know all this through three instruments we can name.</div>
+    </div>
+    <div class="step">
+      <h3>Count your letters</h3>
+      <p>
+        When the sheets are full, tally the letters. Mostly
+        <span class="lab lab-m">M</span>&thinsp;<span class="lab lab-c">C</span>? You have a physical
+        portrait. Mostly <span class="lab lab-a">A</span>? You have a symbolic portrait — also fine,
+        as long as the final write-up says so. Every <span class="lab lab-u">U</span> becomes a to-do:
+        what to measure next, and with what.
+      </p>
+    </div>
+    <div class="step">
+      <h3>Write the one-paragraph portrait</h3>
+      <p>
+        Fill the synthesis template at the bottom of the page. Every sentence keeps its letter,
+        the unknowns get named out loud, and the last line says — honestly — which register the
+        whole portrait speaks from.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ LABELS ═════════════════════════ -->
+<section id="labels" class="col">
+  <div class="eyebrow">The six letters &middot; one confidence vocabulary</div>
+  <h2 style="font-size:clamp(1.7rem,3.8vw,2.3rem); margin-top:0.6rem;">Claim-type labels</h2>
+  <p style="margin-top:1rem; color:var(--ink-2);">
+    Solid chips are first-hand, outlined chips are second-hand, the italic chip is symbolic,
+    the dashed chip is honest ignorance. Form and colour both carry the meaning.
+  </p>
+
+  <div class="labgrid">
+    <div class="labcard">
+      <div class="lc-head"><span class="lab lab-m">M</span><span class="lc-name">Measured</span></div>
+      <p>You, or your instrument, directly observed it. The strongest kind of claim.</p>
+      <div class="lc-ex">"Surface temperature 21.4&nbsp;°C (thermocouple)"</div>
+    </div>
+    <div class="labcard">
+      <div class="lc-head"><span class="lab lab-c">C</span><span class="lc-name">Calculated</span></div>
+      <p>Math done on measurements. As trustworthy as the numbers and the formula it came from — both of which it must cite.</p>
+      <div class="lc-ex">"Main flex tone &asymp; 3.2&nbsp;kHz, from the measured size and stiffness"</div>
+    </div>
+    <div class="labcard">
+      <div class="lc-head"><span class="lab lab-i">I</span><span class="lc-name">Inferred</span></div>
+      <p>A detective's conclusion from clues. Must name the clues and the reasoning that connects them.</p>
+      <div class="lc-ex">"The stain pattern implies past water exposure"</div>
+    </div>
+    <div class="labcard">
+      <div class="lc-head"><span class="lab lab-r">R</span><span class="lc-name">Reported</span></div>
+      <p>Someone else measured it — a book, a datasheet, a witness. Must name the source; becomes <span class="lab lab-m">M</span> only after you verify it yourself.</p>
+      <div class="lc-ex">"d&#8321;&#8321; &asymp; 2.3&nbsp;pC/N for quartz (resonator literature)"</div>
+    </div>
+    <div class="labcard">
+      <div class="lc-head"><span class="lab lab-a">A</span><span class="lc-name">Analogical</span></div>
+      <p>A symbol, comparison, or meaning-level reading. Welcome in the profile — and never evidence for a physical claim.</p>
+      <div class="lc-ex">"Reads as a still point in an agitated room"</div>
+    </div>
+    <div class="labcard">
+      <div class="lc-head"><span class="lab lab-u">U</span><span class="lc-name">Unknown</span></div>
+      <p>You don't know yet — and say so. Every U spawns a measurement-plan row: what to measure, with what, at what resolution.</p>
+      <div class="lc-ex">"Damping ratio: U &rarr; measurement plan"</div>
+    </div>
+  </div>
+
+  <div class="subhead">Label rules</div>
+  <ol class="rules">
+    <li><b>One label per field.</b> A statement that mixes registers gets split into two labeled statements.</li>
+    <li><b>The register firewall.</b> An <span class="lab lab-a">A</span> never serves as evidence or mechanism for an
+      <span class="lab lab-m">M</span>, <span class="lab lab-c">C</span>, <span class="lab lab-i">I</span>, or
+      <span class="lab lab-r">R</span> claim. What a symbol <em>may</em> do is inspire a hypothesis — which enters
+      the sheet as a <span class="lab lab-u">U</span> with a proposed measurement. No amount of symbolic resonance
+      ever adds up to a physical frequency.</li>
+    <li><b>Citation duties.</b> Every <span class="lab lab-c">C</span> cites its measurements and formula; every
+      <span class="lab lab-i">I</span> cites its clues and the model that licenses the leap; every
+      <span class="lab lab-r">R</span> names its source.</li>
+    <li><b>The <a class="t" data-t="weakest-link">weakest-link</a> rule.</b> A conclusion inherits the shakiest label
+      in its support chain: built on an <span class="lab lab-i">I</span>, it is at most an
+      <span class="lab lab-i">I</span>; resting on any <span class="lab lab-a">A</span>, it is an <span class="lab lab-a">A</span>.</li>
+    <li><b>U is an action, not a shrug.</b> A profile with unlisted unknowns is incomplete, not cautious.</li>
+    <li><b>Labels survive to the end.</b> A synthesis sentence without its letter is invalid.</li>
+  </ol>
+
+  <figure class="fw">
+    <svg viewBox="0 0 560 190" role="img" aria-label="Diagram of the register firewall: the symbolic side may send a hypothesis through a gate to become an unknown to measure, but the wall blocks symbols from ever counting as evidence for facts.">
+      <rect x="12" y="26" width="212" height="138" rx="10" fill="color-mix(in srgb, var(--lab-a) 7%, transparent)" stroke="var(--lab-a)" stroke-width="1"/>
+      <text x="118" y="52" text-anchor="middle" font-family="var(--label)" font-size="11" letter-spacing="2" fill="var(--lab-a)">SYMBOLIC REGISTER</text>
+      <text x="118" y="80" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-style="italic" font-family="Georgia, serif">meanings &middot; analogies</text>
+      <text x="118" y="99" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-style="italic" font-family="Georgia, serif">traditions &middot; readings</text>
+      <text x="118" y="140" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--lab-a)">[ A ]</text>
+
+      <rect x="336" y="26" width="212" height="138" rx="10" fill="color-mix(in srgb, var(--lab-mc) 7%, transparent)" stroke="var(--lab-mc)" stroke-width="1"/>
+      <text x="442" y="52" text-anchor="middle" font-family="var(--label)" font-size="11" letter-spacing="2" fill="var(--lab-mc)">PHYSICAL REGISTER</text>
+      <text x="442" y="80" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-style="italic" font-family="Georgia, serif">measurements &middot; math</text>
+      <text x="442" y="99" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-style="italic" font-family="Georgia, serif">clues &middot; sources</text>
+      <text x="442" y="140" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--lab-mc)">[ M C I R ]</text>
+
+      <line x1="280" y1="14" x2="280" y2="176" stroke="var(--bad)" stroke-width="3"/>
+      <text x="280" y="10" text-anchor="middle" font-family="var(--label)" font-size="9" letter-spacing="1.5" fill="var(--bad)">FIREWALL</text>
+
+      <path d="M232 70 h96" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arr)"/>
+      <text x="280" y="62" text-anchor="middle" font-family="var(--label)" font-size="8.5" letter-spacing="1" fill="var(--muted)">HYPOTHESIS &rarr; [ U ]</text>
+
+      <path d="M330 122 h-92" stroke="var(--bad)" stroke-width="1.2" marker-end="url(#arrbad)"/>
+      <line x1="272" y1="110" x2="290" y2="134" stroke="var(--bad)" stroke-width="2.4"/>
+      <line x1="290" y1="110" x2="272" y2="134" stroke="var(--bad)" stroke-width="2.4"/>
+      <text x="280" y="152" text-anchor="middle" font-family="var(--label)" font-size="8.5" letter-spacing="1" fill="var(--bad)">"EVIDENCE" — BLOCKED</text>
+
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0 0 L8 4 L0 8 Z" fill="var(--muted)"/>
+        </marker>
+        <marker id="arrbad" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0 0 L8 4 L0 8 Z" fill="var(--bad)"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption class="fw-cap">The one-way wall: a symbol may propose a measurement; it may never stand in as one.</figcaption>
+  </figure>
+
+  <p class="note">
+    <b>Default labels:</b> cross-domain analogies (Sheet III) and Gender's role-readings (Sheet VI) default to
+    <span class="lab lab-a">A</span> unless upgraded by a cited structural or mathematical basis. Mentalism's
+    instrument fields (Sheet VII) are <span class="lab lab-m">M</span>/<span class="lab lab-i">I</span> claims
+    <em>about the measuring chain</em>, not about the object.
+  </p>
+</section>
+
+<!-- ═════════════════════════ SHEET I — VIBRATION ═════════════════════════ -->
+<section class="sheet" id="sheet-1" style="--lens:var(--vib)">
+  <div class="col">
+    <div class="sheet-head">
+      <div class="sh-row"><span class="sh-num">SHEET I</span><h2>Vibration — the spectral identity</h2></div>
+      <div class="sh-ax">&ldquo;Nothing rests; everything moves; everything vibrates.&rdquo;<a href="https://sacred-texts.com/eso/kyb/kyb11.htm">Kybalion ch. IX</a></div>
+      <div class="sh-q">What periodic, spectral, oscillatory, or wave-like behavior characterizes it?</div>
+    </div>
+    <div class="body flow">
+      <p style="color:var(--ink-2);">
+        Record a whole <a class="t" data-t="spectral-identity">spectral identity</a>, not one
+        &ldquo;frequency.&rdquo; Mechanical <a class="t" data-t="resonance">resonance</a>, electrical
+        oscillation, light absorption, <a class="t" data-t="thermal-motion">thermal motion</a>, and visible
+        color are <b>separate phenomena</b> — tag each entry with its physical domain. Slow, state-level
+        cycles belong on Sheet IV; the boundary rule lives there.
+      </p>
+      <ul class="fields">
+        <li>Mechanical fundamental <a class="t" data-t="frequency">frequency</a>: <span class="bl"></span> <a class="t" data-t="hertz">Hz</a> <span class="lab lab-slot">&nbsp;</span></li>
+        <li><a class="t" data-t="harmonics">Harmonics</a> / dominant <a class="t" data-t="mode-shapes">mode shapes</a>: <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span></li>
+        <li>Acoustic emission or response: <span class="bl"></span> <a class="t" data-t="spl">dB SPL</a> at <span class="bl"></span> Hz <span class="lab lab-slot">&nbsp;</span></li>
+        <li><a class="t" data-t="em-spectrum">EM emission / absorption</a> features: <span class="bl"></span> Hz or <a class="t" data-t="wavelength">nm</a> <span class="lab lab-slot">&nbsp;</span></li>
+        <li>Perceived color: <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span> (observer report; <a class="t" data-t="illuminant">illuminant</a>: <span class="bl"></span>)</li>
+        <li>Spectral character: reflectance / transmittance / emission spectrum; <a class="t" data-t="dominant-wavelength">dominant wavelength</a> <span class="bl"></span> nm <em>where one exists</em> <span class="lab lab-slot">&nbsp;</span> — magenta and the other purples have none, white and gray leave it undefined; brown, by contrast, is low-brightness orange and <em>does</em> have one</li>
+        <li>Thermal state and variability: <span class="bl"></span> &deg;C or K &plusmn; <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span></li>
+        <li>Resonances: center frequency <span class="bl"></span>, <a class="t" data-t="bandwidth">bandwidth</a> <span class="bl"></span>, <a class="t" data-t="q-factor">Q</a> <span class="bl"></span>, <a class="t" data-t="damping">damping ratio</a> <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span></li>
+        <li>Character: &#9744; stable &nbsp;&#9744; broadband &nbsp;&#9744; periodic &nbsp;&#9744; pulsed &nbsp;&#9744; chaotic &nbsp;&#9744; damped &nbsp;&#9744; resonant <span class="lab lab-slot">&nbsp;</span></li>
+      </ul>
+      <p class="note">
+        <b>Consistency check:</b> the resonance numbers are linked — Q equals the center frequency divided
+        by the bandwidth, and for ringy resonators the damping ratio is roughly 1 divided by twice the Q.
+        Record whichever you actually measured <span class="lab lab-m">M</span>, derive the others
+        <span class="lab lab-c">C</span>, and make sure the filled-in values agree with each other.
+      </p>
+      <aside class="guard">
+        <span class="g-eb">Guardrail &middot; the category error of this lens</span>
+        <p>
+          Color is <em>not</em> &ldquo;the object's vibration frequency.&rdquo; Color is the mix of light
+          <em>reaching your eye</em> — bounced off, passed through, or glowing from the object — and it is a
+          different physical fact from the object's mechanical or electrical resonances. Never merge them
+          into one number.
+        </p>
+      </aside>
+      <div class="sw">
+        <div class="s-good"><span class="swt">Strong entry</span>&ldquo;Fundamental flexural mode 440&nbsp;Hz, Q&nbsp;&asymp;&nbsp;1&thinsp;200, laser vibrometry&rdquo; <span class="lab lab-m">M</span></div>
+        <div class="s-bad"><span class="swt">Weak entry</span>&ldquo;Vibrates at a high frequency&rdquo; — no domain, no number, no label.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ SHEET II — POLARITY ═════════════════════════ -->
+<section class="sheet" id="sheet-2" style="--lens:var(--pol)">
+  <div class="col">
+    <div class="sheet-head">
+      <div class="sh-row"><span class="sh-num">SHEET II</span><h2>Polarity — axes with poles</h2></div>
+      <div class="sh-ax">&ldquo;Everything is dual&hellip; opposites are identical in nature, but different in degree.&rdquo;<a href="https://sacred-texts.com/eso/kyb/kyb12.htm">Kybalion ch. X</a></div>
+      <div class="sh-q">What measurable or conceptual axis has opposed poles?</div>
+    </div>
+    <div class="body flow">
+      <p style="color:var(--ink-2);">
+        <b>Admission test.</b> An <a class="t" data-t="polarity-axis">axis</a> carrying
+        <span class="lab lab-m">M</span> or <span class="lab lab-c">C</span> claims names <b>one measurable
+        quantity</b>, signed or graded, whose values span both poles around an identifiable
+        <a class="t" data-t="zero-crossing">neutral point</a>. That is the axiom made operational.
+        The test gates which axes may carry <em>measured</em> claims — not which may appear: a conceptual
+        or relational axis with no measurable quantity (in a relationship, an organization, a ritual) may
+        still be recorded, labeled <span class="lab lab-a">A</span>, or <span class="lab lab-i">I</span> with
+        cited evidence.
+      </p>
+    </div>
+  </div>
+  <div class="col-w">
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Axis</th><th>Pole A</th><th>State / value — name the quantity and unit</th><th>Pole B</th><th>Evidence / source</th><th>Label</th></tr></thead>
+        <tbody>
+          <tr><td class="axn">Electric</td><td class="pole">negative</td><td>net <a class="t" data-t="charge">charge</a> Q (C); or <a class="t" data-t="charge-density">charge density</a>; or <a class="t" data-t="potential">potential</a> vs. a stated reference (V); or <a class="t" data-t="dipole-moment">dipole moment</a> (C&middot;m) — say which</td><td class="pole">positive</td><td><span class="bl"></span></td><td><span class="lab lab-slot">&nbsp;</span></td></tr>
+          <tr><td class="axn">Magnetic</td><td class="pole">S-pole toward reference</td><td>signed <a class="t" data-t="dipole-moment">dipole-moment</a> component along a stated axis (A&middot;m&sup2;), or <a class="t" data-t="magnetization">magnetization</a> (A/m); report any external field separately as <a class="t" data-t="flux-density">flux density</a> B (T) at a stated spot</td><td class="pole">N-pole toward reference</td><td><span class="bl"></span></td><td><span class="lab lab-slot">&nbsp;</span></td></tr>
+          <tr><td class="axn">Thermal</td><td class="pole">cold</td><td>temperature (&deg;C or K)</td><td class="pole">hot</td><td><span class="bl"></span></td><td><span class="lab lab-slot">&nbsp;</span></td></tr>
+          <tr><td class="axn">Chemical</td><td class="pole">reduced / electron-rich</td><td><a class="t" data-t="redox">electrode potential</a> (V) vs. a named reference, for a named redox pair, under stated conditions</td><td class="pole">oxidized / electron-poor</td><td><span class="bl"></span></td><td><span class="lab lab-slot">&nbsp;</span></td></tr>
+          <tr><td class="axn">Mechanical</td><td class="pole">compression</td><td>signed <a class="t" data-t="stress">stress</a> along a stated axis (Pa), stretching counted positive</td><td class="pole">tension</td><td><span class="bl"></span></td><td><span class="lab lab-slot">&nbsp;</span></td></tr>
+          <tr><td class="axn">Dynamical</td><td class="pole">stable</td><td>e.g. sign of the largest <a class="t" data-t="lyapunov">Lyapunov exponent</a>, the <a class="t" data-t="eigenvalue">dominant eigenvalue</a>, or a damping ratio</td><td class="pole">unstable</td><td><span class="bl"></span></td><td><span class="lab lab-slot">&nbsp;</span></td></tr>
+          <tr><td class="axn">Relational</td><td class="pole">attraction</td><td>sign and size of the interaction force (N) or energy (J) where measurable; otherwise mechanism / evidence, labeled <span class="lab lab-i">I</span> or <span class="lab lab-a">A</span></td><td class="pole">repulsion</td><td><span class="bl"></span></td><td><span class="lab lab-slot">&nbsp;</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col">
+    <div class="body flow" style="padding-top:1.4rem;">
+      <p class="note">
+        <b>Redox sign convention:</b> a more positive potential means the more oxidizing, electron-hungry pole;
+        more negative means more reducing. A redox potential belongs to a <b>pair-in-an-environment</b>, never
+        to an isolated object.
+      </p>
+      <ul class="fields">
+        <li><b>Primary axis:</b> which polarity most governs the phenomenon? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Neutral point:</b> where is the balance, zero crossing, equilibrium, or inversion? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Transformability:</b> what input moves the state along the axis? <span class="lab lab-slot">&nbsp;</span> — this field is the operational shadow of the <em>Kybalion</em>'s &ldquo;transmutation,&rdquo; movement along the axis of degree <span class="lab lab-a">A</span></li>
+        <li><b>Type of opposite:</b> a true physical counterpart, an absence, or a complementary process? (Negative charge is a counterpart-pole; cold is an absence-pole of heat.) <span class="lab lab-slot">&nbsp;</span></li>
+      </ul>
+      <aside class="guard">
+        <span class="g-eb">Guardrails &middot; the category errors of this lens</span>
+        <p><b>Categories are not poles.</b> &ldquo;Crystal vs. non-crystal&rdquo; is a classification, not a slider — unless recast as one (degree of crystallinity, 0–100%).</p>
+        <p><b>Sign is not goodness.</b> The plus or minus on a physical quantity carries no moral or wellness charge: negative charge is not &ldquo;negative energy.&rdquo; If such a reading is kept at all, it is an <span class="lab lab-a">A</span>.</p>
+      </aside>
+      <div class="sw">
+        <div class="s-good"><span class="swt">Strong entry</span>&ldquo;<a class="t" data-t="piezoelectric">Piezoelectric</a> charge separation &plusmn; under axial stress, zero at rest&rdquo; <span class="lab lab-m">M</span></div>
+        <div class="s-bad"><span class="swt">Weak entry</span>&ldquo;It has positive energy&rdquo; — no axis, no quantity, no counterpart pole.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ SHEET III — CORRESPONDENCE ═════════════════════════ -->
+<section class="sheet" id="sheet-3" style="--lens:var(--cor)">
+  <div class="col">
+    <div class="sheet-head">
+      <div class="sh-row"><span class="sh-num">SHEET III</span><h2>Correspondence — the pattern across scales</h2></div>
+      <div class="sh-ax">&ldquo;As above, so below; as below, so above.&rdquo;<a href="https://sacred-texts.com/eso/kyb/kyb10.htm">Kybalion ch. VIII</a></div>
+      <div class="sh-q">What patterns recur across scales or domains?</div>
+    </div>
+    <div class="body flow">
+      <ul class="fields">
+        <li><b>Micro:</b> what happens at molecular / cellular / grain / component scale? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Meso:</b> what geometry or organization shows at object scale? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Macro:</b> what larger system contains or shapes it? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Repeated relation:</b> does the <em>same relation</em> — not merely a similar look — recur across scales? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Geometric signature:</b> <a class="t" data-t="symmetry-group">symmetry group</a>, <a class="t" data-t="lattice">lattice</a>, branching, radiality, spiral, tessellation, <a class="t" data-t="fractal">fractal</a>&hellip; <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Cross-domain analogy:</b> where else does the analogous process appear? <span class="lab lab-slot">&nbsp;</span> (defaults to <span class="lab lab-a">A</span>)</li>
+        <li><b>Inferential use:</b> what prediction about <em>this</em> phenomenon does the correspondence license, and has it been checked? <span class="lab lab-slot">&nbsp;</span> — e.g. the <a class="t" data-t="isomorphism">mass-spring &harr; circuit isomorphism</a> predicts electrical ring-time from measured mechanical damping</li>
+      </ul>
+      <div class="subhead">Strength grades — strongest to weakest</div>
+      <ol class="ladder">
+        <li><span class="ln">1</span><span><b>Shared mechanism</b> — the same physical process operates at both scales</span><span class="lgrade"><span class="lab lab-m">M</span>&hairsp;<span class="lab lab-c">C</span>&hairsp;<span class="lab lab-i">I</span></span></li>
+        <li><span class="ln">2</span><span><b>Shared mathematics</b> — the same equation or <a class="t" data-t="scaling-law">scaling law</a> fits both; must be stated as an equation or ratio</span><span class="lgrade"><span class="lab lab-m">M</span>&hairsp;<span class="lab lab-c">C</span>&hairsp;<span class="lab lab-i">I</span></span></li>
+        <li><span class="ln">3</span><span><b>Shared structure</b> — the same geometry, demonstrably</span><span class="lgrade"><span class="lab lab-m">M</span>&hairsp;<span class="lab lab-c">C</span>&hairsp;<span class="lab lab-i">I</span></span></li>
+        <li><span class="ln">4</span><span><b>Shared function</b> — the same role, different substrate</span><span class="lgrade"><span class="lab lab-i">I</span></span></li>
+        <li><span class="ln">5</span><span><b>Aesthetic</b> — visual resemblance</span><span class="lgrade"><span class="lab lab-a">A</span></span></li>
+        <li><span class="ln">6</span><span><b>Symbolic</b> — meaning-level association</span><span class="lgrade"><span class="lab lab-a">A</span></span></li>
+      </ol>
+      <p class="note"><b>Label mapping:</b> grades 1–4 may carry M/C/I when the shared mechanism or equation is cited; grades 5–6 are always <span class="lab lab-a">A</span>.</p>
+      <aside class="guard">
+        <span class="g-eb">Guardrail &middot; the category error of this lens</span>
+        <p>
+          Shared form is not shared mechanism. A logarithmic spiral in a galaxy and in a nautilus shell
+          arises from <em>different processes</em>, and resemblance transfers no properties between them.
+          A correspondence claims exactly the relation it can state, at the grade it can defend.
+        </p>
+      </aside>
+      <div class="sw">
+        <div class="s-good"><span class="swt">Strong entry</span>&ldquo;The branching network minimizes transport cost at both leaf-vein and watershed scales — grade 2, shared optimization law&rdquo; <span class="lab lab-c">C</span></div>
+        <div class="s-bad"><span class="swt">Weak entry</span>&ldquo;It spirals like a galaxy&rdquo; — grade 5, labeled <span class="lab lab-a">A</span> or not kept.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ SHEET IV — RHYTHM ═════════════════════════ -->
+<section class="sheet" id="sheet-4" style="--lens:var(--rhy)">
+  <div class="col">
+    <div class="sheet-head">
+      <div class="sh-row"><span class="sh-num">SHEET IV</span><h2>Rhythm — cycles and the pendulum</h2></div>
+      <div class="sh-ax">&ldquo;Everything flows, out and in&hellip; the pendulum-swing manifests in everything.&rdquo;<a href="https://sacred-texts.com/eso/kyb/kyb13.htm">Kybalion ch. XI</a></div>
+      <div class="sh-q">What cycles, pulses, flows, or recurrences occur — and along which polarity axes?</div>
+    </div>
+    <div class="body flow">
+      <p style="color:var(--ink-2);">
+        <b>Boundary rule (Vibration vs. Rhythm).</b> Sheet I records the <em>frequency-domain identity</em> —
+        spectrum, modes, Q, the rates of motion. This sheet records the <em>time-domain trajectory of state</em> —
+        period, <a class="t" data-t="phase">phase</a>, envelope, swings between poles. A rhythm is a slow
+        vibration of state; placement is a bookkeeping choice, not a deep truth. Pick a sheet, state your
+        cutoff (e.g. &ldquo;period &ge; 1&nbsp;s &rarr; Rhythm&rdquo;), and cross-reference the other.
+        The <em>Kybalion</em>'s rhythm is the pendulum swing <b>between poles</b> — so this sheet consumes
+        the Polarity table.
+      </p>
+      <ul class="fields">
+        <li>Primary cycle / period: <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span></li>
+        <li>Secondary cycles / <a class="t" data-t="modulation">modulation</a>: <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span></li>
+        <li><a class="t" data-t="phase">Phase</a> relative to environment (light, season, load, <a class="t" data-t="duty-cycle">duty cycle</a>): <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span></li>
+        <li>Growth / decay rates: <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span></li>
+        <li>Pattern: &#9744; periodic &nbsp;&#9744; quasiperiodic &nbsp;&#9744; stochastic &nbsp;&#9744; event-driven <span class="lab lab-slot">&nbsp;</span></li>
+        <li><a class="t" data-t="feedback">Feedback</a>: &#9744; positive &nbsp;&#9744; negative &nbsp;&#9744; mixed <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Oscillating axes:</b> for each axis in the Polarity table — does the state cycle along it? Record period, amplitude toward each pole, <b>swing symmetry</b> (the <a class="t" data-t="compensation">compensation check</a>: are excursions toward Pole A and Pole B equal in size and duration?), and any drift of the neutral point. <span class="lab lab-slot">&nbsp;</span> (or mark the rhythm &ldquo;axis-free&rdquo;)</li>
+        <li>Temporal boundary conditions: which outside cycles drive it — light, temperature, power, human use? <span class="lab lab-slot">&nbsp;</span></li>
+      </ul>
+      <p class="note">
+        Negative feedback that damps the swing is the operational analog of the <em>Kybalion</em>'s
+        &ldquo;neutralization&rdquo; of rhythm <span class="lab lab-a">A</span>.
+      </p>
+      <aside class="guard">
+        <span class="g-eb">Guardrails &middot; the category errors of this lens</span>
+        <p><b>Your checking schedule is not the thing's rhythm.</b> Sample too slowly and you record fake cycles — <a class="t" data-t="aliasing">aliasing</a>, the wagon-wheel-spinning-backward effect. A single reading is a snapshot, not a rhythm.</p>
+        <p><b>Sample to the claim.</b> Watch at least five full periods of the slowest cycle you intend to claim (five days for a daily cycle). Check faster than twice the quickest rhythm you care about — the <a class="t" data-t="nyquist">Nyquist rule</a> — comfortably five to ten times per beat, and use triggered capture for one-off events.</p>
+      </aside>
+      <div class="sw">
+        <div class="s-good"><span class="swt">Strong entry</span>&ldquo;Day-night temperature swing &plusmn;1.5&nbsp;&deg;C along the thermal axis, symmetric, 5-day log&rdquo; <span class="lab lab-m">M</span></div>
+        <div class="s-bad"><span class="swt">Weak entry</span>&ldquo;It has a daily energy cycle&rdquo; — observed once, at one time of day.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ SHEET V — CAUSE & EFFECT ═════════════════════════ -->
+<section class="sheet" id="sheet-5" style="--lens:var(--cau)">
+  <div class="col">
+    <div class="sheet-head">
+      <div class="sh-row"><span class="sh-num">SHEET V</span><h2>Cause and Effect — the lawful chain</h2></div>
+      <div class="sh-ax">&ldquo;Every cause has its effect; every effect has its cause&hellip; chance is but a name for law not recognized.&rdquo;<a href="https://sacred-texts.com/eso/kyb/kyb14.htm">Kybalion ch. XII</a></div>
+      <div class="sh-q">What produces it, changes it, or results from it?</div>
+    </div>
+    <div class="body flow">
+      <p style="color:var(--ink-2);">Structure every causal claim as a chain, never a loose association:</p>
+      <p style="font-family:var(--label); font-size:0.82rem; letter-spacing:0.06em; color:var(--ink); text-transform:uppercase;">
+        Inputs / conditions <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span>
+        &rarr; Mechanism <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span>
+        &rarr; Observed state <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span>
+        &rarr; Effects <span class="bl"></span> <span class="lab lab-slot">&nbsp;</span>
+      </p>
+      <ul class="fields">
+        <li><b>Inputs:</b> energy, material, field, stimulus, environment, user action <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Mechanism:</b> a <em>named</em> physical, chemical, biological, or social process <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Outputs:</b> measurable responses and consequences <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b><a class="t" data-t="feedback">Feedback</a>:</b> how outputs alter later inputs <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b><a class="t" data-t="control-variable">Controls</a>:</b> which variables an experiment could vary <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b><a class="t" data-t="confounder">Confounders</a>:</b> alternative explanations still open <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Causal confidence:</b> established / likely / speculative / unknown — mapped onto the labels: established = mechanism backed by <span class="lab lab-m">M</span>/<span class="lab lab-c">C</span>; likely = <span class="lab lab-i">I</span> with cited evidence; speculative = <span class="lab lab-a">A</span>, or an <span class="lab lab-i">I</span> whose citation is still pending (cite or downgrade before marking the profile complete); unknown = <span class="lab lab-u">U</span></li>
+      </ul>
+      <aside class="guard">
+        <span class="g-eb">Guardrail &middot; the category error of this lens</span>
+        <p>
+          &ldquo;It happened after, so it was caused by&rdquo; — the <a class="t" data-t="post-hoc">post hoc trap</a> —
+          and its cousin &ldquo;they rise together, so one causes the other&rdquo; are not mechanisms. Two synchronized
+          cycles may share a hidden driver. Until a mechanism is named, the link stays an
+          <span class="lab lab-i">I</span> with its confounders listed.
+        </p>
+      </aside>
+      <div class="sw">
+        <div class="s-good"><span class="swt">Strong entry</span>&ldquo;Squeeze &rarr; charge, via shifting of charged atom sites in a <a class="t" data-t="non-centro">lopsided crystal grid</a>; established&rdquo; <span class="lab lab-m">M</span></div>
+        <div class="s-bad"><span class="swt">Weak entry</span>&ldquo;The readings changed after we moved it, so the new spot caused it&rdquo; — succession, no mechanism, no confounders.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ SHEET VI — GENDER ═════════════════════════ -->
+<section class="sheet" id="sheet-6" style="--lens:var(--gen)">
+  <div class="col">
+    <div class="sheet-head">
+      <div class="sh-row"><span class="sh-num">SHEET VI</span><h2>Gender — complementary generative functions</h2></div>
+      <div class="sh-ax">&ldquo;Gender is in everything; everything has its masculine and feminine principles.&rdquo;<a href="https://sacred-texts.com/eso/kyb/kyb15.htm">Kybalion ch. XIII</a></div>
+      <div class="sh-q">What complementary generative roles couple here, and what does the coupling produce?</div>
+    </div>
+    <div class="body flow">
+      <p style="color:var(--ink-2);">
+        <b>Admission test.</b> A valid Gender entry names two roles <b>different in kind</b> whose coupling
+        <b>produces something neither produces alone</b>. If the two terms are extremes of one measurable
+        quantity, it belongs on Sheet II; if the pairing is exhausted by input&nbsp;&rarr;&nbsp;output, it
+        belongs on Sheet V. This lens is a functional metaphor — never a biological or essentialist label.
+      </p>
+      <ul class="fields">
+        <li><b>Projective / emitting:</b> what initiates, radiates, drives, differentiates, or imposes structure? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Receptive / receiving:</b> what accepts, contains, responds, integrates, or transforms input? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Structure:</b> what constrains and organizes the process? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Flow:</b> what moves, adapts, propagates, or develops within that structure? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Product generated:</b> what does the coupling produce that neither role contains alone? <span class="lab lab-slot">&nbsp;</span></li>
+      </ul>
+      <p class="note">
+        <b>Worked micro-example.</b> <a class="t" data-t="piezoelectric">Piezoelectric</a> coupling runs both
+        ways: in the <em>direct effect</em>, applied squeeze is the initiating input and electrical
+        <a class="t" data-t="polarization-charge">polarization</a> the response; in the <em>converse effect</em>,
+        an applied voltage initiates and a flex responds. The projective/receptive roles belong to <em>which
+        port is being driven</em> — a property of the interaction, not of the material — which is precisely why
+        they suit a coupling-based lens. The conversion quality is scored by the
+        <a class="t" data-t="coupling-k">coupling coefficient k</a>. The role-reading is
+        <span class="lab lab-a">A</span>; the physics is recorded on Sheet V <span class="lab lab-m">M</span>.
+      </p>
+      <aside class="guard">
+        <span class="g-eb">Guardrails &middot; the category errors of this lens</span>
+        <p><b>Roles are not essences.</b> The same quartz receives stress and emits charge, depending on which port is driven. &ldquo;Quartz is a feminine stone&rdquo; is this lens's category error; if kept at all, it is an <span class="lab lab-a">A</span> that generates no physical claims.</p>
+        <p><b>Reduction test.</b> If an entry reduces without remainder to a Polarity axis or a Cause-and-Effect pair, record it there and drop it here.</p>
+      </aside>
+      <div class="sw">
+        <div class="s-good"><span class="swt">Strong entry</span>&ldquo;Driven electrical port + elastic lattice &rarr; a flex neither produces alone, coupling coefficient k cited&rdquo; <span class="lab lab-m">M</span>; role reading <span class="lab lab-a">A</span></div>
+        <div class="s-bad"><span class="swt">Weak entry</span>&ldquo;Quartz is a feminine stone&rdquo; — an essence, no coupling, no product.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ SHEET VII — MENTALISM ═════════════════════════ -->
+<section class="sheet" id="sheet-7" style="--lens:var(--men)">
+  <div class="col">
+    <div class="sheet-head">
+      <div class="sh-row"><span class="sh-num">SHEET VII</span><h2>Mentalism — how it is known</h2></div>
+      <div class="sh-ax">&ldquo;THE ALL is Mind; the Universe is Mental.&rdquo;<a href="https://sacred-texts.com/eso/kyb/kyb06.htm">Kybalion ch. IV–V</a></div>
+      <div class="sh-q">How is this phenomenon represented, perceived, modeled, or information-bearing?</div>
+    </div>
+    <div class="body flow">
+      <p style="color:var(--ink-2);">
+        Deliberately last: the claim labels used throughout this profile <b>are this principle in action</b> —
+        every entry above is a representation, and this sheet audits how those representations were made.
+      </p>
+      <ul class="fields">
+        <li><b>Channels:</b> which instruments make the phenomenon visible — camera, magnetometer, spectrometer, microphone, thermal sensor, chemical probe? What does each channel <em>not</em> see? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Representation:</b> what data model or category system stands between raw signal and profile entry? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Information:</b> what does the phenomenon encode, transmit, or constrain? Quantify as <a class="t" data-t="shannon-entropy">Shannon entropy</a> (bits) <span class="lab lab-slot">&nbsp;</span> and <a class="t" data-t="snr">signal-to-noise ratio</a> (dB), stating what counts as signal, what counts as noise, and the bandwidth <span class="lab lab-slot">&nbsp;</span>. (<a class="t" data-t="thermo-entropy">Thermodynamic entropy</a> is a different quantity — it belongs on Sheet II's order/disorder axis, not here.)</li>
+        <li><b>Direct vs. <a class="t" data-t="model-dependent">model-dependent</a>:</b> which entries above would change if the model changed? <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Measurement assumptions:</b> <a class="t" data-t="calibration">calibration</a>, bandwidth, resolution, sampling rate <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>Representation feedback:</b> does any model, expectation, setpoint, blueprint, or design intent of the phenomenon causally shape it? (Thermostat setpoints, design intent in artifacts, expectation effects in human systems.) <span class="lab lab-slot">&nbsp;</span></li>
+        <li><b>The observers:</b> what attention, expectation, or classification did we bring? (<a class="t" data-t="observer-effect">Observer effects</a> in the everyday sense.) <span class="lab lab-slot">&nbsp;</span></li>
+      </ul>
+      <p class="note">
+        The source text asserts more — &ldquo;THE ALL is Mind&rdquo; — a metaphysical claim this profile neither
+        needs nor makes; record it, if at all, as an <span class="lab lab-a">A</span>.
+      </p>
+      <aside class="guard">
+        <span class="g-eb">Guardrail &middot; the category error of this lens</span>
+        <p>
+          Instrument limits — noise floors, resolution, bandwidth — are facts about the <em>measuring
+          apparatus</em>, not properties of the phenomenon; keep the apparatus's fingerprints separate from
+          the object's features. And the <a class="t" data-t="observer-effect">observer effect</a>, in either
+          its everyday or its quantum sense, does not license &ldquo;consciousness creates reality&rdquo; claims.
+        </p>
+      </aside>
+      <div class="sw">
+        <div class="s-good"><span class="swt">Strong entry</span>&ldquo;Charge response visible only through the <a class="t" data-t="charge-amplifier">charge-amplifier</a> channel; below 0.1&nbsp;pC it drowns in amplifier noise, stated bandwidth 0.1–100&nbsp;Hz&rdquo; <span class="lab lab-m">M</span> (about the apparatus)</div>
+        <div class="s-bad"><span class="swt">Weak entry</span>&ldquo;Observing it changes its energy&rdquo; — unlabeled, and smuggling metaphysics through instrument language.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ CHECKLIST ═════════════════════════ -->
+<section id="checklist" class="col">
+  <div class="eyebrow">Completeness &middot; when is a profile done?</div>
+  <h2 style="font-size:clamp(1.7rem,3.8vw,2.3rem); margin-top:0.6rem;">Cross-lens checks</h2>
+  <p style="margin-top:1rem; color:var(--ink-2);">
+    A <b>quick profile</b> is done when the header and seven labeled paragraphs are complete.
+    A <b>full profile</b> is done when every box below checks. (The boxes work — tick them as you go;
+    they reset when you leave.)
+  </p>
+  <ul class="check">
+    <li><input type="checkbox" id="c1"><label for="c1">Header complete, including <b>system boundary</b> and <b>observation window</b>.</label></li>
+    <li><input type="checkbox" id="c2"><label for="c2">Every field carries a value or an explicit <span class="lab lab-u">U</span> — no silent blanks.</label></li>
+    <li><input type="checkbox" id="c3"><label for="c3">Every entry labeled; every <span class="lab lab-c">C</span> cites its measurements, every <span class="lab lab-i">I</span> its evidence, every <span class="lab lab-r">R</span> its source.</label></li>
+    <li><input type="checkbox" id="c4"><label for="c4">No <span class="lab lab-a">A</span>-claim is load-bearing under an M, C, I, or R claim (the firewall).</label></li>
+    <li><input type="checkbox" id="c5"><label for="c5">Each lens has at least one <span class="lab lab-m">M</span> or <span class="lab lab-c">C</span> entry, or a note explaining why none is obtainable.</label></li>
+    <li><input type="checkbox" id="c6"><label for="c6">Every correspondence carries a strength grade and states its shared relation; grades 5–6 are labeled <span class="lab lab-a">A</span>.</label></li>
+    <li><input type="checkbox" id="c7"><label for="c7">Every rhythm names its polarity axis or is marked axis-free; the Vibration/Rhythm cutoff is stated.</label></li>
+    <li><input type="checkbox" id="c8"><label for="c8">Every Gender entry names its generated product and passes the reduction test.</label></li>
+    <li><input type="checkbox" id="c9"><label for="c9">The Cause-and-Effect sheet lists at least one <a class="t" data-t="confounder">confounder</a> and one controllable variable.</label></li>
+    <li><input type="checkbox" id="c10"><label for="c10"><b>Measurement plan:</b> every <span class="lab lab-u">U</span> appears as a row — quantity, proposed instrument, feasibility.</label></li>
+    <li><input type="checkbox" id="c11"><label for="c11">Synthesis complete: no empty brackets, every sentence tagged, unknowns clause filled.</label></li>
+    <li><input type="checkbox" id="c12"><label for="c12"><b>Label census:</b> count the letters. If <span class="lab lab-a">A</span> outnumbers M + C + I + R, the profile is primarily a symbolic portrait — the synthesis must say so.</label></li>
+  </ul>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ SYNTHESIS ═════════════════════════ -->
+<section id="synthesis" class="col">
+  <div class="eyebrow">The deliverable &middot; one honest paragraph</div>
+  <h2 style="font-size:clamp(1.7rem,3.8vw,2.3rem); margin-top:0.6rem;">Synthesis template</h2>
+  <p style="margin-top:1rem; color:var(--ink-2);">
+    Every filled slot keeps its label inline; a synthesis sentence without a tag is invalid.
+  </p>
+  <div class="synth">
+    <b><span class="slot">[Phenomenon]</span></b> is a <span class="slot">[physical classification]</span>
+    <span class="lab lab-slot">&nbsp;</span> within <span class="slot">[environment / system]</span>, profiled at
+    <span class="slot">[scale / observation window]</span>. Its vibrational identity is
+    <span class="slot">[dominant spectral facts, per domain]</span> <span class="lab lab-slot">&nbsp;</span>.
+    Its primary polarity is <span class="slot">[axis]</span>, currently at <span class="slot">[state]</span>
+    <span class="lab lab-slot">&nbsp;</span>, with <span class="slot">[neutral point and type of opposite]</span>.
+    Across scales it corresponds to <span class="slot">[repeated relation]</span> at grade
+    <span class="slot">[1–6]</span> <span class="lab lab-slot">&nbsp;</span>. Its rhythm is
+    <span class="slot">[cycles, feedback]</span> <span class="lab lab-slot">&nbsp;</span>, swinging along
+    <span class="slot">[polarity axis / axis-free]</span>, driven by <span class="slot">[inputs &rarr; mechanism]</span>
+    and producing <span class="slot">[effects]</span> at <span class="slot">[causal confidence]</span>.
+    Its generative coupling is <span class="slot">[projective + receptive &rarr; product]</span>
+    <span class="lab lab-a">A</span>. It is known through <span class="slot">[channels and models]</span>
+    <span class="lab lab-slot">&nbsp;</span>. <b>Key unknowns are <span class="slot">[the U items]</span>
+    <span class="lab lab-u">U</span>, which would be resolved by <span class="slot">[the proposed measurements]</span>.</b>
+    Taken whole: <span class="slot">[one-sentence integrated impression, honest about which register it speaks from]</span>.
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ WORKED EXAMPLE ═════════════════════════ -->
+<section id="example" class="col">
+  <div class="eyebrow">Worked example &middot; the instrument in use</div>
+  <h2 style="font-size:clamp(1.7rem,3.8vw,2.3rem); margin-top:0.6rem;">A quartz crystal, profiled</h2>
+  <p class="note" style="margin-top:1.1rem;">
+    <b>Header.</b> Phenomenon: single &asymp;40&nbsp;mm natural quartz point. Boundary: the crystal itself;
+    mount and room are environment. Window: bench observation over five days. Instruments: calipers,
+    <a class="t" data-t="polariscope">polariscope</a>, <a class="t" data-t="charge-amplifier">charge amplifier</a>
+    + multimeter, IR thermometer, temperature logger. Profile type: full (abridged here). Status: complete.
+  </p>
+
+  <div class="exlens" style="--lens:var(--vib)">
+    <h3>I &middot; Vibration</h3>
+    <p>
+      Mechanical resonance modes are set by dimensions, cut, mounting, and loading
+      <span class="lab lab-c">C</span> (from measured dimensions and literature stiffness values).
+      This specimen's own mode spectrum: <span class="lab lab-u">U</span> &rarr; impedance or
+      vibrometry sweep. For engineered cuts, tuning-fork resonators run
+      <span class="mono">32.768&nbsp;kHz</span> with <a class="t" data-t="q-factor">Q</a> around
+      <span class="mono">10&#8308;–10&#8309;</span> in vacuum, and AT-cut plates
+      <span class="mono">1–30&nbsp;MHz</span> depending on thickness <span class="lab lab-r">R</span>
+      (resonator literature). Visible appearance is the transmitted and scattered spectrum of room light —
+      broadband, no selective absorption in this specimen <span class="lab lab-m">M</span>; quartz is
+      <a class="t" data-t="birefringence">birefringent</a>, with
+      <a class="t" data-t="refractive-index">refractive indices</a> <span class="mono">n&#8338;&nbsp;&asymp;&nbsp;1.544</span>,
+      <span class="mono">n&#8337;&nbsp;&asymp;&nbsp;1.553</span> at 589&nbsp;nm <span class="lab lab-r">R</span>
+      (optical-mineralogy reference). &ldquo;Reads as still, coherent&rdquo; <span class="lab lab-a">A</span>.
+    </p>
+  </div>
+  <div class="exlens" style="--lens:var(--pol)">
+    <h3>II &middot; Polarity</h3>
+    <p>
+      Under axial squeeze, <a class="t" data-t="piezoelectric">piezoelectric</a> charge separation opens a
+      genuine electric axis with a zero point at rest <span class="lab lab-m">M</span> (charge amplifier);
+      <span class="mono">d&#8321;&#8321;&nbsp;&asymp;&nbsp;2.3&nbsp;pC/N</span> <span class="lab lab-r">R</span>
+      (resonator literature). A second, intrinsic axis: <a class="t" data-t="chirality">chirality</a> — quartz
+      grows left- or right-handed (<a class="t" data-t="enantiomorphic">enantiomorphic</a> forms), the two
+      distinguishable by <a class="t" data-t="optical-rotation">optical rotation</a> <span class="lab lab-r">R</span>
+      (crystallography literature). This specimen's handedness: <span class="lab lab-u">U</span> &rarr;
+      <a class="t" data-t="polarimetry">polarimetry</a>. Thermal and mechanical-stress axes also measurable
+      <span class="lab lab-m">M</span>. Primary axis: mechanical &harr; electric coupling
+      <span class="lab lab-i">I</span> (from the charge-amplifier measurements).
+    </p>
+  </div>
+  <div class="exlens" style="--lens:var(--cor)">
+    <h3>III &middot; Correspondence</h3>
+    <p>
+      <a class="t" data-t="trigonal">Trigonal</a> <a class="t" data-t="lattice">lattice</a> symmetry (micro)
+      expresses as prism-and-point habit and direction-dependent optics (meso) through crystal growth —
+      grade 1–2, shared mechanism and shared symmetry mathematics <span class="lab lab-i">I</span>
+      (cites the diffraction-established structure plus the growth model). Inferential use: the lattice
+      symmetry predicts which faces develop and where the <a class="t" data-t="optic-axis">optic axis</a>
+      lies — checked against this specimen's habit and polariscope figure <span class="lab lab-c">C</span>.
+      &ldquo;Clarity of structure &harr; clarity of mind&rdquo; — grade 6 <span class="lab lab-a">A</span>.
+    </p>
+  </div>
+  <div class="exlens" style="--lens:var(--rhy)">
+    <h3>IV &middot; Rhythm</h3>
+    <p>
+      In circuit use, a cut resonator sustains driven oscillation at resonance <span class="lab lab-r">R</span>
+      (resonator literature). On the bench: day-night thermal cycling, swinging along the thermal polarity
+      axis, amplitude <span class="mono">&plusmn;1.5&nbsp;&deg;C</span>, symmetric to within the logger's
+      resolution — <a class="t" data-t="compensation">compensation check</a> passes
+      <span class="lab lab-m">M</span> (5-day temperature log); the neutral point shows a slow
+      <a class="t" data-t="monotonic">one-way drift</a> over the log <span class="lab lab-m">M</span>, whose
+      seasonal attribution is an inference <span class="lab lab-i">I</span> (the drift plus known seasonal
+      forcing). Cutoff used: period &ge; 1&nbsp;s &rarr; Rhythm.
+    </p>
+  </div>
+  <div class="exlens" style="--lens:var(--cau)">
+    <h3>V &middot; Cause and Effect</h3>
+    <p>
+      Squeeze &rarr; <a class="t" data-t="polarization-charge">polarization</a> (direct effect), verified
+      locally <span class="lab lab-m">M</span> (charge amplifier); the converse effect (voltage &rarr; flex)
+      and its reversibility <span class="lab lab-r">R</span> (resonator literature); mechanism named —
+      displacement of charged lattice sites in a <a class="t" data-t="non-centro">non-centrosymmetric</a>
+      structure <span class="lab lab-r">R</span> (published crystal structure). The
+      <a class="t" data-t="alpha-beta">&alpha;–&beta; transition</a> at <span class="mono">573&nbsp;&deg;C</span>
+      changes the symmetry and with it the piezoelectric response <span class="lab lab-r">R</span>
+      (mineralogy literature). Confounder logged: bench charge readings could include
+      <a class="t" data-t="triboelectric">triboelectric</a> artifacts; control: repeat with guarded electrodes
+      <span class="lab lab-i">I</span> (cites the charge-amplifier measurement chain).
+    </p>
+  </div>
+  <div class="exlens" style="--lens:var(--gen)">
+    <h3>VI &middot; Gender</h3>
+    <p>
+      Direct effect: squeeze (driven port) + lattice (structured medium) &rarr; charge separation; converse
+      effect: voltage (driven port) &rarr; flex. <b>Product generated:</b> polarization, or strain, depending
+      on which port is driven — the roles belong to the interaction, not the stone, with coupling strength
+      <a class="t" data-t="coupling-k">k</a> <span class="lab lab-a">A</span> as reading; the physics lives
+      on Sheet V.
+    </p>
+  </div>
+  <div class="exlens" style="--lens:var(--men)">
+    <h3>VII &middot; Mentalism</h3>
+    <p>
+      Known through <a class="t" data-t="xrd">X-ray diffraction</a> (lattice) <span class="lab lab-r">R</span>
+      (published crystal structure), polariscopy (optic axis) <span class="lab lab-m">M</span>, and charge
+      measurement (piezo response) <span class="lab lab-m">M</span>. Its frequency stability is why the world
+      uses quartz to keep time — information-bearing in a precise, non-mystical sense
+      <span class="lab lab-i">I</span> (cites resonator literature). The labels on this sheet are the audit
+      trail. Traditional attributions (amplification, clarity) remain grade-6 symbolic entries
+      <span class="lab lab-a">A</span>.
+    </p>
+  </div>
+
+  <div class="census">
+    <b>Measurement plan:</b> mode spectrum of this specimen (impedance analyzer or laser vibrometry; easy);
+    handedness (polarimeter; easy).<br>
+    <b>Label census:</b> M/C-dominant; R entries name their sources; two U's, both in the plan; A entries
+    present and firewalled. A physical portrait with an explicit, clearly bounded symbolic margin.
+  </div>
+
+  <div class="synth" style="margin-top:1.4rem;">
+    <b>Synthesis.</b> This quartz point is a trigonal <a class="t" data-t="sio2">SiO&#8322;</a> single crystal
+    <span class="lab lab-i">I</span> (identified from habit and optic figure) on a bench, profiled at hand
+    scale over five days. Its vibrational identity is mechanically resonant <span class="lab lab-c">C</span>
+    and optically transparent across the visible spectrum <span class="lab lab-m">M</span>; its primary
+    polarity is stress-induced piezoelectric charge separation, zero at rest <span class="lab lab-m">M</span>,
+    with chirality as a second intrinsic axis <span class="lab lab-r">R</span>; across scales its lattice
+    symmetry repeats as facet geometry and optic axis, grade 1–2 <span class="lab lab-i">I</span>, with the
+    habit and optic-axis predictions checked <span class="lab lab-c">C</span>; its bench rhythm is day-night
+    thermal cycling along the thermal axis, symmetric <span class="lab lab-m">M</span>; squeeze causes charge
+    <span class="lab lab-m">M</span> and voltage causes flex <span class="lab lab-r">R</span>, established and
+    reversible; its generative coupling is driven port + structured lattice &rarr; charge or strain
+    <span class="lab lab-a">A</span>. It is known through diffraction <span class="lab lab-r">R</span>,
+    polariscopy <span class="lab lab-m">M</span>, and charge measurement <span class="lab lab-m">M</span>.
+    <b>Key unknowns are this specimen's mode spectrum and handedness <span class="lab lab-u">U</span>,
+    resolvable by a vibrometry sweep and polarimetry.</b> Taken whole: a measured physical portrait whose
+    symbolic reputation for clarity rides alongside — labeled, and never mixed in <span class="lab lab-a">A</span>.
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ SOURCES ═════════════════════════ -->
+<section id="sources" class="col">
+  <div class="eyebrow">Sources</div>
+  <p style="margin-top:1rem; font-size:0.92rem; color:var(--ink-2); line-height:1.8;">
+    <em>The Kybalion</em> (Three Initiates, first published 1908; public domain):
+    <a href="https://sacred-texts.com/eso/kyb/kyb04.htm">ch.&nbsp;II — The Seven Hermetic Principles</a>;
+    per-principle chapters
+    <a href="https://sacred-texts.com/eso/kyb/kyb10.htm">VIII (Correspondence)</a>,
+    <a href="https://sacred-texts.com/eso/kyb/kyb11.htm">IX (Vibration)</a>,
+    <a href="https://sacred-texts.com/eso/kyb/kyb12.htm">X (Polarity)</a>,
+    <a href="https://sacred-texts.com/eso/kyb/kyb13.htm">XI (Rhythm)</a>,
+    <a href="https://sacred-texts.com/eso/kyb/kyb14.htm">XII (Causation)</a>,
+    <a href="https://sacred-texts.com/eso/kyb/kyb15.htm">XIII (Gender)</a>;
+    Mentalism in <a href="https://sacred-texts.com/eso/kyb/kyb06.htm">ch.&nbsp;IV</a>–<a href="https://sacred-texts.com/eso/kyb/kyb07.htm">V</a>;
+    the axioms collected in <a href="https://sacred-texts.com/eso/kyb/kyb17.htm">ch.&nbsp;XV</a>.
+  </p>
+</section>
+
+<footer>
+  Where the traditions genuinely touch, it is marked. Where they only rhyme, that is marked too.<br>
+  <a href="index.html">&larr; back to Promethean Theoria</a>
+</footer>
+</div>
+
+<div id="tipbox" role="tooltip" aria-hidden="true"></div>
+
+<script>
+/* ═════════════ hover glossary — plain words, low math ═════════════ */
+const TIPS = {
+  "phenomenon":       ["Phenomenon", "Anything you can watch happen: an object, an event, a living thing, a storm, a machine. If you can point at it and study it, it counts."],
+  "kybalion":         ["The Kybalion", "A short 1908 book that sums up the Hermetic tradition in seven principles. This page borrows its seven ideas as questions to ask — not as beliefs you must hold."],
+  "hermetic":         ["Hermetic", "An old philosophical tradition that looks for patterns repeating through the world. Here it is used only as a source of good questions."],
+  "lens":             ["Lens", "Not a glass lens — a point of view. Each principle is a different way of looking at the same thing, like walking around a statue."],
+  "boundary":         ["System boundary", "The imaginary line you draw around your subject. Inside the line is the thing; outside is its surroundings. Where you draw it changes every answer, so write it down."],
+  "observation-window":["Observation window", "How long, and at what zoom, you watched. One second and one year tell different stories — both can be true, so say which one you made."],
+  "claim":            ["Claim", "Any single statement you write down — like “it is 21 °C” or “it feels calm.” Every claim gets exactly one letter."],
+  "weakest-link":     ["Weakest-link rule", "A conclusion is only as solid as the shakiest claim it stands on. If any step in the chain was a guess, the final answer is a guess too."],
+  "frequency":        ["Frequency", "How many times something repeats each second. A hummingbird beats its wings about 50 times a second — a frequency of 50 hertz."],
+  "hertz":            ["Hertz (Hz)", "The unit for “times per second.” 440 Hz means 440 complete back-and-forth swings every second — the pitch of an orchestra's tuning note."],
+  "harmonics":        ["Harmonics", "The extra, higher notes that ride on top of a main vibration — at 2×, 3×, 4× the main rate. They are why a guitar and a piano sound different on the same note."],
+  "mode-shapes":      ["Mode shapes", "The particular ways an object likes to flex when it vibrates — like the patterns a drumhead can make. Each shape rings at its own frequency."],
+  "resonance":        ["Resonance", "The push-at-the-right-moment effect. Push a swing in time with its natural rhythm and small pushes build a big motion. Every object has favorite frequencies where it responds strongly."],
+  "q-factor":         ["Q factor", "A score for how “ringy” a resonance is. High Q: a struck wine glass that sings for seconds. Low Q: a knock on a pillow — the sound dies instantly."],
+  "bandwidth":        ["Bandwidth", "How wide the sweet spot of a resonance is. Narrow bandwidth means the object only answers to almost exactly the right frequency."],
+  "damping":          ["Damping ratio", "How quickly a vibration fades. High damping: quick fade, like a pillow. Low damping: a long ring, like a bell."],
+  "spl":              ["dB SPL", "Decibels of sound pressure — the loudness scale. A whisper is about 30, conversation about 60, a rock concert about 110."],
+  "em-spectrum":      ["EM emission / absorption", "Light in the broadest sense — radio, infrared, visible, ultraviolet. Materials swallow some colors and give off others, and those fingerprints identify them."],
+  "wavelength":       ["Wavelength (nm)", "The length of one ripple of a light wave, in nanometers — billionths of a meter. Red light is around 650 nm, blue around 450 nm."],
+  "dominant-wavelength":["Dominant wavelength", "The single rainbow color that best matches what you see. Some colors — like magenta — are not in the rainbow at all, so they have no such number."],
+  "illuminant":       ["Illuminant", "The light you viewed it under. Colors shift between sunlight and a warm lamp, so record the lighting along with the color."],
+  "thermal-motion":   ["Thermal motion", "Heat is motion: the atoms themselves jiggling. Warmer means faster jiggling, and it never fully stops above absolute zero."],
+  "spectral-identity":["Spectral identity", "The full chord of an object's frequencies — its mechanical wobbles, its sound, its light — instead of one single note."],
+  "polarity-axis":    ["Axis", "A slider between two opposites, like a thermometer running from cold to hot. A real axis measures one quantity and has a middle point."],
+  "charge":           ["Electric charge", "The property that makes things attract or repel electrically, measured in coulombs. Rub a balloon on your hair and it picks some up."],
+  "charge-density":   ["Charge density", "How crowded the charge is — how much charge per patch of surface or per volume of material."],
+  "potential":        ["Electric potential (volts)", "Electrical pressure, always compared to a chosen zero point. A AA battery holds 1.5 volts between its two ends."],
+  "dipole-moment":    ["Dipole moment", "A measure of “plus on one side, minus on the other.” A water molecule has one — which is why a microwave oven can shake water molecules and heat your food."],
+  "magnetization":    ["Magnetization", "How strongly a material is acting as a magnet, counted per amount of material."],
+  "flux-density":     ["Flux density (tesla)", "The strength of a magnetic field at one spot. A fridge magnet is about 0.005 tesla; a hospital MRI is around 1.5 to 3."],
+  "redox":            ["Redox potential", "A voltage that says whether a chemical wants to grab electrons or give them away — always measured against an agreed reference, in a specific liquid. It belongs to the pair-in-a-place, not to the object alone."],
+  "stress":           ["Stress (pascals)", "How hard a material is being squeezed or stretched inside — force spread over area. Stretching is written as plus, squeezing as minus."],
+  "lyapunov":         ["Lyapunov exponent", "A number that says whether tiny differences grow or fade. Positive: chaos, like a pinball machine. Negative: stability, like a marble settling into a bowl."],
+  "eigenvalue":       ["Dominant eigenvalue", "From the math of how a system responds to a nudge: its sign says whether disturbances die out (stable) or grow (unstable). The sign is the story; the math can wait."],
+  "zero-crossing":    ["Neutral point", "The middle of the slider — where the value passes zero, balances, or flips over. Like the still moment at the top of a pendulum's swing."],
+  "symmetry-group":   ["Symmetry group", "The complete list of turns and mirror-flips that leave a shape looking unchanged. A snowflake survives six turns; a square survives four."],
+  "fractal":          ["Fractal", "A shape that repeats itself at every zoom level — like a fern whose every leaflet looks like a tiny fern."],
+  "scaling-law":      ["Scaling law", "A rule for how one property changes as size changes. An animal twice as long is roughly eight times as heavy — that relationship is a scaling law."],
+  "isomorphism":      ["Mass-spring ↔ circuit twins", "Two different systems can obey the exact same equation. A weight bouncing on a spring and electricity sloshing in a simple circuit are mathematical twins — measure one, predict the other."],
+  "nyquist":          ["Nyquist rule", "To record a rhythm honestly, check it more than twice per beat — comfortably five to ten times. Check too rarely and you record a lie."],
+  "aliasing":         ["Aliasing", "The fake pattern you get from sampling too slowly — the reason wagon wheels seem to spin backward in old films. The false rhythm is in your recording, not in the world."],
+  "duty-cycle":       ["Duty cycle", "Out of each cycle, the fraction spent “on.” A turn signal that is lit half of each blink has a 50% duty cycle."],
+  "phase":            ["Phase", "Where in its cycle something is right now — and whether two cycles are in step (peaks together) or out of step."],
+  "modulation":       ["Modulation", "A slow change riding on a faster cycle — like your breathing gently speeding and slowing your heartbeat."],
+  "feedback":         ["Feedback", "When the output loops back and changes the input. Negative feedback steadies things, like a thermostat. Positive feedback snowballs, like a microphone squeal."],
+  "confounder":       ["Confounder", "A hidden third thing that explains the pattern. Ice-cream sales and sunburns rise together — the confounder is summer."],
+  "control-variable": ["Controls", "The knobs you could actually turn in an experiment to test whether your suspected cause is the real one."],
+  "post-hoc":         ["The post hoc trap", "“B happened after A, so A caused B” — one of the oldest mistakes in reasoning. After does not mean because."],
+  "piezoelectric":    ["Piezoelectric", "Squeeze the crystal and a voltage appears; apply a voltage and the crystal flexes. Real, measured physics — it is how quartz watches keep time and how barbecue lighters spark."],
+  "coupling-k":       ["Coupling coefficient k", "A zero-to-one score for how well the squeeze-to-electricity conversion works. Higher k, better conversion."],
+  "polarization-charge":["Polarization", "Inside the material, the plus and minus charges shift slightly apart — leaving the faces of the crystal oppositely charged."],
+  "non-centro":       ["Non-centrosymmetric", "A crystal grid without a perfect center of balance. Only such lopsided grids can be piezoelectric — squeezing a perfectly balanced grid cancels itself out."],
+  "lattice":          ["Lattice", "The neat repeating 3-D grid of atoms inside a crystal — like oranges stacked perfectly at every scale."],
+  "trigonal":         ["Trigonal", "Quartz's lattice family, built on three-fold symmetry: rotate it a third of a circle and the atomic grid lines up with itself again."],
+  "birefringence":    ["Birefringence", "The crystal splits light into two rays traveling at slightly different speeds. Look through a clear calcite crystal and printed text appears doubled."],
+  "refractive-index": ["Refractive index (n)", "How much a material slows and bends light. Higher n bends harder: water is about 1.33, quartz 1.55, diamond 2.42."],
+  "optic-axis":       ["Optic axis", "The one direction through the crystal where the two split light rays travel together as one."],
+  "polariscope":      ["Polariscope", "Two polarizing filters with the sample in between. The colors and dark crosses that appear reveal hidden structure and locked-in strain."],
+  "polarimetry":      ["Polarimetry", "Measuring how much a material twists the wiggle-direction of light passing through it."],
+  "optical-rotation": ["Optical rotation", "Some crystals twist light's wiggle-plane to the left or to the right as it passes through. The twist direction reveals the crystal's handedness."],
+  "chirality":        ["Chirality (handedness)", "Like left and right gloves: same parts, mirror shapes, and no way to turn one into the other. Quartz grows in both a left-handed and a right-handed form."],
+  "enantiomorphic":   ["Enantiomorphic", "The formal word for “comes in mirror-image twin forms” — like a pair of gloves."],
+  "charge-amplifier": ["Charge amplifier", "A sensitive instrument that turns a tiny burst of electric charge into a voltage big enough to read."],
+  "xrd":              ["X-ray diffraction", "Shine X-rays through a crystal and they ricochet in a precise pattern that reveals the exact atomic grid — echolocation for atoms."],
+  "alpha-beta":       ["The α–β transition", "At 573 °C quartz's atoms snap into a different arrangement, and its properties — including the squeeze-voltage trick — change."],
+  "triboelectric":    ["Triboelectric", "Static electricity from rubbing — the balloon-on-hair effect. A careful profiler rules it out before crediting the piezoelectric effect."],
+  "shannon-entropy":  ["Shannon entropy (bits)", "How much surprise a signal carries. A fair coin flip carries 1 bit; a die roll carries more; a coin that always lands heads carries none."],
+  "thermo-entropy":   ["Thermodynamic entropy", "The physics measure of disorder, in joules per kelvin — a different quantity from information entropy, even though they share a name. Don't mix them."],
+  "snr":              ["Signal-to-noise ratio", "How loud the message is compared to the static behind it, in decibels. Higher means cleaner."],
+  "observer-effect":  ["Observer effect", "Measuring something can disturb it — a tire gauge lets out a puff of the very air it measures. It does NOT mean that minds create reality."],
+  "model-dependent":  ["Model-dependent", "A “fact” that would change if you changed the theory used to read the data. Worth flagging, because theories improve."],
+  "calibration":      ["Calibration", "Checking your instrument against a known standard — so that when it says 21.4, you have a reason to believe it."],
+  "sio2":             ["SiO₂", "Silicon dioxide: one silicon atom bonded to two oxygens, repeated in a perfect spiral grid. Quartz is this; sand is mostly broken quartz."],
+  "monotonic":        ["One-way drift", "A change that keeps heading in one direction — steadily up or steadily down — without wobbling back. Its steadiness is a clue about its cause."],
+  "compensation":     ["Compensation check", "The pendulum test: does it swing as far, and for as long, toward one pole as toward the other? Swing symmetry is a real, checkable fact."]
+};
+
+const tipbox = document.getElementById("tipbox");
+let tipTarget = null;
+
+function showTip(el){
+  const entry = TIPS[el.dataset.t];
+  if(!entry) return;
+  tipTarget = el;
+  tipbox.innerHTML = '<span class="tt"></span>';
+  tipbox.querySelector(".tt").textContent = entry[0];
+  tipbox.appendChild(document.createTextNode(entry[1]));
+  tipbox.classList.add("show");
+  tipbox.setAttribute("aria-hidden", "false");
+  const r = el.getBoundingClientRect();
+  const bw = Math.min(310, window.innerWidth - 24);
+  tipbox.style.maxWidth = bw + "px";
+  let x = window.scrollX + r.left + r.width/2 - bw/2;
+  x = Math.max(window.scrollX + 12, Math.min(x, window.scrollX + window.innerWidth - bw - 12));
+  tipbox.style.left = x + "px";
+  tipbox.style.top = (window.scrollY + r.bottom + 9) + "px";
+  const tb = tipbox.getBoundingClientRect();
+  if(tb.bottom > window.innerHeight - 8){
+    tipbox.style.top = (window.scrollY + r.top - tb.height - 9) + "px";
+  }
+}
+function hideTip(){
+  tipTarget = null;
+  tipbox.classList.remove("show");
+  tipbox.setAttribute("aria-hidden", "true");
+}
+document.querySelectorAll(".t").forEach(el => {
+  el.setAttribute("tabindex", "0");
+  el.setAttribute("role", "button");
+  const entry = TIPS[el.dataset.t];
+  if(entry){ el.setAttribute("aria-label", entry[0] + ": " + entry[1]); }
+  el.addEventListener("mouseenter", () => showTip(el));
+  el.addEventListener("mouseleave", hideTip);
+  el.addEventListener("focus", () => showTip(el));
+  el.addEventListener("blur", hideTip);
+  el.addEventListener("click", (e) => {
+    e.preventDefault();
+    tipTarget === el && tipbox.classList.contains("show") ? hideTip() : showTip(el);
+  });
+});
+document.addEventListener("keydown", e => { if(e.key === "Escape") hideTip(); });
+document.addEventListener("scroll", () => { if(tipTarget) hideTip(); }, {passive:true});
+
+/* ═════════════ wheel ═════════════ */
+const QS = {
+  "sheet-1": ["I · Vibration", "What periodic, spectral, oscillatory, or wave-like behavior characterizes it?"],
+  "sheet-2": ["II · Polarity", "What measurable or conceptual axis has opposed poles?"],
+  "sheet-3": ["III · Correspondence", "What patterns recur across scales or domains?"],
+  "sheet-4": ["IV · Rhythm", "What cycles, pulses, flows, or recurrences occur — and along which polarity axes?"],
+  "sheet-5": ["V · Cause & Effect", "What produces it, changes it, or results from it?"],
+  "sheet-6": ["VI · Gender", "What complementary generative roles couple here, and what does the coupling produce?"],
+  "sheet-7": ["VII · Mentalism", "How is this phenomenon represented, perceived, modeled, or information-bearing?"]
+};
+const cap = document.getElementById("wheelCap");
+const capDefault = cap.innerHTML;
+document.querySelectorAll(".wnode").forEach(n => {
+  const id = n.dataset.sheet;
+  n.addEventListener("mouseenter", () => { cap.innerHTML = "<b>" + QS[id][0] + "</b> — " + QS[id][1]; });
+  n.addEventListener("mouseleave", () => { cap.innerHTML = capDefault; });
+  n.addEventListener("focus",  () => { cap.innerHTML = "<b>" + QS[id][0] + "</b> — " + QS[id][1]; });
+  n.addEventListener("blur",   () => { cap.innerHTML = capDefault; });
+  const go = () => document.getElementById(id).scrollIntoView({behavior:"smooth"});
+  n.addEventListener("click", go);
+  n.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); go(); } });
+});
+
+/* ═════════════ rail ═════════════ */
+const railBtns = [...document.querySelectorAll(".rail button")];
+railBtns.forEach(b => b.addEventListener("click", () =>
+  document.getElementById(b.dataset.go).scrollIntoView({behavior:"smooth"})));
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if(en.isIntersecting){
+      railBtns.forEach(b => b.classList.toggle("on", b.dataset.go === en.target.id));
+    }
+  });
+}, {rootMargin: "-30% 0px -60% 0px"});
+railBtns.forEach(b => { const s = document.getElementById(b.dataset.go); if(s) spy.observe(s); });
+
+/* ═════════════ theme toggle ═════════════ */
+const themeQ = new URLSearchParams(location.search).get("theme");
+if(themeQ === "light" || themeQ === "dark"){ document.documentElement.dataset.theme = themeQ; }
+const themeBtn = document.getElementById("themeBtn");
+themeBtn.addEventListener("click", () => {
+  const root = document.documentElement;
+  const cur = root.dataset.theme ||
+    (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  root.dataset.theme = cur === "dark" ? "light" : "dark";
+});
+</script>
+</body>
+</html>

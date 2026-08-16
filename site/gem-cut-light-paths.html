@@ -1803,7 +1803,22 @@ function boundsForZoom(zoom){
   // their own unpadded slice box.
   if (CURRENT.key !== 'round'){
     const ub = CURRENT.sliceBounds, gem = CURRENT.bounds || { xMin:-50, xMax:50, yMin:-50, yMax:50 };
-    if (!ub || zoom === 'gem') return gem;
+    if (!ub) return gem;
+    if (zoom === 'gem'){
+      // A lens whose own focus falls outside the crop reads as a broken
+      // render even when every traced angle is exact -- which is exactly
+      // how this was reported: a quartz sphere focuses at -70.93 while the
+      // plain gem crop bottomed out at -66, hiding the one thing a glass
+      // ball is famous for. Drop the floor just far enough to contain the
+      // convergence, clamped so a faint far crossing can never shrink the
+      // stone to a speck. Faceted cuts get null back and are unchanged.
+      const cd = convergenceDepthFor(CURRENT.key, state.material);
+      if (cd === null) return gem;
+      const stoneH = ub.yMax - ub.yMin;
+      const wanted = cd - stoneH*0.10;          // breathing room below the focus
+      const floor  = ub.yMin - stoneH*2.0;      // hard clamp on how far out we'll pull
+      return { xMin:gem.xMin, xMax:gem.xMax, yMin:Math.max(floor, Math.min(gem.yMin, wanted)), yMax:gem.yMax };
+    }
     const cx = (ub.xMin+ub.xMax)/2, halfW = (ub.xMax-ub.xMin)/2, spanY = ub.yMax-ub.yMin;
     if (zoom === 'exit'){
       // pull back all around, biased upward like round's -- but with real
@@ -1944,21 +1959,34 @@ function buildFan(material, exitLen){
   }
   return rays;
 }
-function buildFanFor(solid, bounds, material, exitLen){
+// The drawn aperture, derived from the cut's OWN widest extent -- NOT from
+// the padded drawing frame (corrected 2026-08-07, user-reported via the
+// sphere). paddedBoundsFrom adds a 12%+4 unit DISPLAY margin; feeding that
+// back in as a physical aperture put fan columns outside the solid. On the
+// sphere (R=50) it produced a span of 52.8: two of 26 columns missed the
+// stone entirely and were silently dropped, and the survivors reached
+// 0.97R -- grazing incidence, where a ball lens' marginal rays focus on its
+// own back surface, so the picture read as light collapsing onto the skin
+// rather than converging below it. Padding is a drawing margin; it has no
+// business deciding where light enters.
+const APERTURE_FRAC = 0.8;  // inset off the rim: keeps the outermost column clear of the grazing edge, where Fresnel transmission collapses and the outline is tangent to the ray
+function apertureSpanFor(sliceBounds){
+  return (sliceBounds.xMax - sliceBounds.xMin) / 2 * APERTURE_FRAC;
+}
+function buildFanFor(solid, sliceBounds, material, exitLen){
   // The same static fan, from an ARBITRARY cut's own aperture (2026-08-07:
   // the fan was round-brilliant-only before this; traceTree is exact for
   // any solid, so that boundary was presentation, not physics -- only the
-  // §4c caustic crossings carry round-pinned numbers). Columns use the
-  // currentRayOrigin/sampleAperture span convention, so the fan covers
-  // exactly the x-range the entry-offset slider can reach; intensity uses
+  // §4c caustic crossings carry round-pinned numbers). Takes the UNPADDED
+  // slice box (see apertureSpanFor above); intensity uses
   // dominantExitGeneral (no fixed §2b depth to hardcode off round's
   // corridor). 26 columns matches round's FAN_RANGE/FAN_STEP grid; 25
   // intervals never land on x=0 (the axis vertex, §3's "vertex grazes"
   // case) and z=0.001 dodges apex vertices on the z=0 symmetry plane, the
-  // same way currentRayOrigin does. Columns whose ray misses the solid are
-  // skipped, not errors (sampleApertureGeneric's own policy) -- the padded
-  // span can overshoot a narrow outline at its edges.
-  const span = (bounds.xMax - bounds.xMin) * 0.4, originY = bounds.yMax + 500;
+  // same way currentRayOrigin does. A column that still misses is skipped,
+  // not an error (sampleApertureGeneric's own policy) -- a non-convex
+  // outline like the merkaba's can have a notch at any inset.
+  const span = apertureSpanFor(sliceBounds), originY = sliceBounds.yMax + 500;
   const rays = [];
   const nCols = 26;
   for (let i=0; i<nCols; i++){
@@ -1974,6 +2002,46 @@ function buildFanFor(solid, bounds, material, exitLen){
     });
   }
   return rays;
+}
+/* ---- where a cut's own light actually converges (2026-08-07) ------------
+   Returns the DEEPEST point at which this cut's drawn exit rays cross the
+   viewing centreline, or null if they never do outside the stone. Used only
+   to keep the "gem" crop from cutting a lens' own focus off the bottom of
+   the frame -- a converging shape whose convergence is off-screen reads as
+   wrong even when every traced angle is exact (which is how this was
+   reported). Nothing here feeds a physics readout.
+
+   Restricted to quadric-bearing solids on purpose: curvature is what makes
+   a refractor a lens, and §4c already establishes the faceted case -- a
+   round brilliant's exit fan is PARALLEL, not focused, so "the focus" is
+   not a thing a faceted cut has. Cached per (cut, material) because the
+   focus moves with n: quartz (n 1.5443) puts a sphere's paraxial focus at
+   -70.93, outside the stone, while diamond (n 2.4175) puts it at -42.6 --
+   INSIDE its own radius, so a diamond sphere has no external focus at all
+   and correctly gets no frame extension. */
+const CONVERGE_CACHE = new Map();
+function convergenceDepthFor(cutKey, materialKey){
+  const ck = cutKey + '|' + materialKey;
+  if (CONVERGE_CACHE.has(ck)) return CONVERGE_CACHE.get(ck);
+  const entry = CUT_BY_KEY[cutKey] || CUT_BY_KEY.round;
+  const solid = entry.build();
+  let depth = null;
+  const isQuadric = solid && !Array.isArray(solid) && Array.isArray(solid.quadrics) && solid.quadrics.length > 0;
+  if (isQuadric){
+    const sb = outline2DBounds(sliceSolidAt2D(solid));
+    // long exitLen: we read direction only, but buildSegments needs one
+    const fan = buildFanFor(solid, sb, MATERIALS[materialKey], 1e4);
+    for (const ray of fan){
+      if (!ray.dir || !ray.fromPoint || Math.abs(ray.dir[0]) < 1e-9) continue;
+      const t = -ray.fromPoint[0] / ray.dir[0];
+      if (t <= 0) continue;                    // already diverging -- crossed inside the stone
+      const y = ray.fromPoint[1] + t * ray.dir[1];
+      if (y >= sb.yMin) continue;              // crossing at or above the stone's own floor is internal, not a focus
+      depth = depth === null ? y : Math.min(depth, y);
+    }
+  }
+  CONVERGE_CACHE.set(ck, depth);
+  return depth;
 }
 function drawFan(fan){
   ctx.lineCap = 'round'; ctx.lineWidth = 1.1;
@@ -2138,10 +2206,12 @@ function drawMarkerAt(built, frac){
 let LAST_BUILT = null, LAST_FAN = [], LAST_CAUSTIC = [];
 
 function currentRayOrigin(){
+  // shares apertureSpanFor with buildFanFor so the scrubbed ray lands ON a
+  // fan column's line rather than drifting outside the drawn fan
   const isRound = CURRENT.key === 'round';
-  const b = isRound ? null : CURRENT.bounds;
-  const xSpan = isRound ? 25 : (b.xMax - b.xMin) * 0.4;
-  const originY = isRound ? GMETA.tableY + 500 : b.yMax + 500;
+  const sb = isRound ? null : CURRENT.sliceBounds;
+  const xSpan = isRound ? 25 : apertureSpanFor(sb);
+  const originY = isRound ? GMETA.tableY + 500 : sb.yMax + 500;
   return [isRound ? state.xoff : (state.xoff/25)*xSpan, originY, isRound ? 0 : 0.001];
 }
 
@@ -2163,7 +2233,7 @@ function render(){
     LAST_FAN = buildFan(material, exitLen);
     LAST_CAUSTIC = fanCaustic(LAST_FAN);
   } else {
-    LAST_FAN = buildFanFor(CURRENT.solid, CURRENT.bounds, material, exitLen);
+    LAST_FAN = buildFanFor(CURRENT.solid, CURRENT.sliceBounds, material, exitLen);
     LAST_CAUSTIC = [];  // §4c crossings: round-pinned, never faked for other cuts
   }
   if (state.zoom !== 'gem') drawLens();
@@ -3714,11 +3784,45 @@ window.__selfTest = function(){
   for (const key of ['oval','starofdavid','merkaba','sphere']){
     const fanEntry = CUT_BY_KEY[key];
     const fanSolid = fanEntry.build();
-    const fanBounds = paddedBoundsFrom(sliceSolidAt2D(fanSolid));
-    const gfan = buildFanFor(fanSolid, fanBounds, MATERIALS.quartz, 400);
+    const fanSlice = outline2DBounds(sliceSolidAt2D(fanSolid));  // UNPADDED -- see apertureSpanFor
+    const gfan = buildFanFor(fanSolid, fanSlice, MATERIALS.quartz, 400);
     ok(gfan.length >= 20, `${key}: generic fan only ${gfan.length}/26 rays hit the solid`);
     ok(gfan.every(r => r.intensity >= -1e-9 && r.intensity <= 1+1e-9), `${key}: generic fan intensity out of [0,1]`);
     ok(gfan.every(r => r.segs.length > 0), `${key}: generic fan ray with no drawable segments`);
+    // no column may sit outside the solid's own half-width -- the padded-bounds
+    // aperture used to push them past the rim (2 of 26 missed the sphere entirely)
+    const maxAbsX = Math.max(...gfan.map(r => Math.abs(r.x)));
+    ok(maxAbsX <= (fanSlice.xMax-fanSlice.xMin)/2 + 1e-9,
+       `${key}: fan column at |x|=${maxAbsX} lies outside the solid's half-width`);
+  }
+  // the sphere is the exact case -- a disc of radius 50, nothing to notch a
+  // ray -- so with a correct aperture NO column may miss
+  {
+    const sphSlice = outline2DBounds(sliceSolidAt2D(spherePlanes()));
+    const sphFan = buildFanFor(spherePlanes(), sphSlice, MATERIALS.quartz, 400);
+    ok(sphFan.length === 26, `sphere: only ${sphFan.length}/26 fan columns hit -- aperture overshooting the disc again`);
+  }
+
+  // A sphere IS a ball lens and its paraxial focus is closed-form:
+  // f = nR/2(n-1) from the centre. convergenceDepthFor must reproduce it,
+  // because the gem crop's floor is sized off it (2026-08-07: the crop used
+  // to bottom out at -66 and hide the -70.93 focus -- reported as "not the
+  // correct refraction pattern", though every traced angle was already exact).
+  {
+    const R = 50, nQz = MATERIALS.quartz.n;
+    const fClosed = -(nQz*R/(2*(nQz-1)));
+    const cd = convergenceDepthFor('sphere','quartz');
+    ok(cd !== null && near(cd, fClosed, 0.05),
+       `sphere/quartz convergence ${cd} != closed-form ball-lens focus ${fClosed}`);
+    const savedKey = CURRENT.key, savedMat = state.material;
+    selectCut('sphere'); state.material = 'quartz';
+    const gemB = boundsForZoom('gem');
+    ok(gemB.yMin <= cd, `sphere: gem crop floor ${gemB.yMin} does not reach its own focus ${cd}`);
+    // n > 2 focuses INSIDE the stone, so a diamond sphere has no external
+    // focus and must get no frame extension at all
+    ok(convergenceDepthFor('sphere','diamond') === null,
+       'sphere/diamond: reported an external focus, but n>2 converges inside the stone');
+    state.material = savedMat; selectCut(savedKey);
   }
 
   // §4c framings, generalized (2026-08-07): gem/exit/bench exist for every
