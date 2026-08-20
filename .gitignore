@@ -6,3 +6,6 @@ __pycache__/
 *.pyc
 *.log
 /lifetube
+
+# Decimated preview intermediates -- rewritten on every render/report run
+_*_dec.stl

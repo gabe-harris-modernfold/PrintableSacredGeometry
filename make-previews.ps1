@@ -1,5 +1,5 @@
 # Regenerate menu-page preview images in site/previews/.
-# Screenshots each root HTML page with headless Edge, then resizes to 800px WebP.
+# Screenshots each web/ HTML page with headless Edge, then resizes to 800px WebP.
 # Usage: .\make-previews.ps1            (all pages)
 #        .\make-previews.ps1 -Only bifilar-rodin-coil-simulator   (one page)
 param([string]$Only = "")
@@ -12,7 +12,7 @@ $tmp = Join-Path $env:TEMP "psg-previews"
 New-Item -ItemType Directory -Force $tmp | Out-Null
 New-Item -ItemType Directory -Force "$PSScriptRoot\site\previews" | Out-Null
 
-$pages = Get-ChildItem "$PSScriptRoot\*.html"
+$pages = Get-ChildItem "$PSScriptRoot\web\*.html"
 if ($Only) { $pages = $pages | Where-Object { $_.BaseName -eq $Only } }
 
 foreach ($page in $pages) {
