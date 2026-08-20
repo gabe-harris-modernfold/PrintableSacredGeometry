@@ -3,6 +3,24 @@
 Parametric sacred-geometry solids and optical/physics studies, output as printable STLs and
 self-contained HTML visualizers.
 
+## Repository layout
+
+- `projects/<name>/` — one directory per buildable thing: its generator scripts, STLs and preview
+  renders live together. **New work gets a new project directory here**, not a file at the root.
+- `lib/` — shared modules: `mesh_kit`, `render_mesh`, `ray_optics`, `validate_mesh`.
+- `web/` — source for the HTML visualizers. `site/` is the Netlify publish dir; `deploy.ps1` copies
+  `web/*.html` into it, so **edit `web/`, never `site/`** (except `site/index.html`, which is the
+  menu page and lives there only).
+- `docs/` — tooling notes and research writeups. `assets/` — brand art not tied to one build.
+
+Build scripts read and write **bare relative filenames**, so run them from inside their own project
+directory (`cd projects/tetrahelix && python tetrahelix.py`); that is where their output lands. A
+script needing `lib/` adds it to `sys.path` itself, relative to its own file:
+
+```python
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "lib"))
+```
+
 ## Python tooling
 
 A full numeric / CAD / simulation stack is **already installed and verified** — NumPy, SciPy,

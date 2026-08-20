@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate an STL for 3D printing using PyMeshLab.
 
-Usage:  python validate_mesh.py [path-to.stl]   (default: vortex_horn_torus.stl)
+Usage:  python ../../lib/validate_mesh.py path-to.stl
 
 Checks: watertight (closed, 0 boundary edges), 2-manifold, single component,
 no self-intersecting faces, and outward-facing normals (positive volume).
@@ -18,7 +18,9 @@ if spec and spec.submodule_search_locations:
     os.add_dll_directory(spec.submodule_search_locations[0])
 import pymeshlab as ml
 
-path = sys.argv[1] if len(sys.argv) > 1 else "vortex_horn_torus.stl"
+if len(sys.argv) < 2:
+    sys.exit("usage: validate_mesh.py path-to.stl")
+path = sys.argv[1]
 ms = ml.MeshSet()
 ms.load_new_mesh(path)
 m = ms.current_mesh()
