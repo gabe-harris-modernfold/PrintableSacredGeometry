@@ -162,7 +162,7 @@ tt.setStyle(TableStyle([
 tt.hAlign = 'CENTER'
 E.append(tt)
 E.append(Spacer(1, 150))
-E.append(Paragraph("Set down in the month of July, 2026 · the incense-vortex folio",
+E.append(Paragraph("Set down in the month of July, 2026 · the incense_vortex folio",
     S['attrib']))
 E.append(PageBreak())
 

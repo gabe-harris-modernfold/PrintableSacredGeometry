@@ -10,7 +10,7 @@
 :root{
   /* dark-field lapidary: the palette of a stone under a dark-field loupe,
      where the ground is extinction and only the returned light is bright.
-     Ray hues inherited from photon_quartz_simulation.html's own tokens. */
+     Ray hues inherited from photon-quartz-simulation.html's own tokens. */
   --ground:   #10131A;   /* extinction dark, biased violet — never neutral black */
   --panel:    #171B25;
   --panel-2:  #1D2230;
@@ -265,10 +265,10 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
       pyramid geometries are traced by exactly the same tracer as a princess cut. Attributed
       properties — prana, amplification, structuring — are text and cosmetic canvas only,
       and cannot feed a value back into the physics. Byte-identical isolation check, as in
-      <code>photon_quartz_simulation.html</code>.</li>
+      <code>photon-quartz-simulation.html</code>.</li>
       <li><strong>Zero dependencies.</strong> Hand-written WebGL for the solid, 2D canvas
       overlay for annotation — the pattern already established by
-      <code>embryonic_torus_heart.html</code>. No external <code>&lt;script src&gt;</code>
+      <code>embryonic-torus-heart.html</code>. No external <code>&lt;script src&gt;</code>
       anywhere in the repo, and that stays true.</li>
       <li><strong>Two implementations, one truth.</strong> The 2D section tracer and the 3D
       kernel are separate code, and for any ray in a symmetry plane — where facet normals have
@@ -652,7 +652,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
   <p>Deliberately out, and said once in the notes rather than hidden: diffraction (facets are
   10³–10⁴ wavelengths across — geometric optics is the correct theory, not a shortcut),
   interference between branches (millimetre path differences against micron coherence;
-  <code>photon_quartz_simulation.html</code> already computes that washout and is linked, not
+  <code>photon-quartz-simulation.html</code> already computes that washout and is linked, not
   re-derived), and frustrated TIR (nothing sits within a wavelength of a facet).</p>
 </section>
 
@@ -686,7 +686,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
       <em>angular-diversity</em> control, connecting the quasi-collimated regime to the
       full-cone regime continuously. Peak irradiance at focus (900 W/m² direct sun, τ_lens
       0.92) is ≈540 W/cm² — instantly pyrogenic, and the page carries the same hazard note as
-      <code>photon_quartz_simulation.html</code>. Lens Fresnel and absorption losses are
+      <code>photon-quartz-simulation.html</code>. Lens Fresnel and absorption losses are
       ignored and stated.</caption>
     </table>
   </div>
@@ -742,7 +742,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
   amplified by the steeper exit (dθ/dn carries a 1/cos θ_out factor). Both fans are pinned
   acceptance values. True wave interference is deliberately <em>not</em> modelled: path
   differences inside a gem are millimetres, thousands of wavelengths, and sunlight is
-  incoherent, so fringes wash out. <code>photon_quartz_simulation.html</code> already computes
+  incoherent, so fringes wash out. <code>photon-quartz-simulation.html</code> already computes
   that washout and this page links to it rather than re-deriving it.</p>
 </section>
 
@@ -1354,7 +1354,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
       <caption>Path is the pinned §8 vector — 120.59 units, scaled to a 6.5 mm girdle (about
       one carat). Moissanite carries light 1.742× slower than glass, so switching material
       visibly changes the pace as well as the path. The slowdown factor must be
-      <em>on screen</em>, as <code>photon_quartz_simulation.html</code> already does for its
+      <em>on screen</em>, as <code>photon-quartz-simulation.html</code> already does for its
       own animated layer — an unlabelled 10¹¹× slowdown is a lie of omission.</caption>
     </table>
   </div>
@@ -1396,7 +1396,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
     <em>drawn</em>. Otherwise the load-time asserts become frame-dependent and worthless.</li>
     <li><strong>The marker is not a photon.</strong> It is a phase marker on a ray path, and
     the label must say so — carrying forward the markers-are-not-photons invariant from
-    <code>photon_quartz_simulation.html</code>.</li>
+    <code>photon-quartz-simulation.html</code>.</li>
     <li><strong>Never the only channel.</strong> Every value an animation conveys is also
     available as a static number. Motion is emphasis, never the sole carrier.</li>
     <li><strong>Honour <code>prefers-reduced-motion</code>.</strong> All four stop; the page
@@ -1618,7 +1618,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--tir); outline-offs
     <div class="phase"><div class="id">P7</div><div>
       <div class="t">3D view + scintillation sweep</div>
       <div class="d">Hand-written WebGL solid with the 2D annotation overlay, following the
-      <code>embryonic_torus_heart.html</code> pattern. Orbit, facet pick, ray tree in depth.
+      <code>embryonic-torus-heart.html</code> pattern. Orbit, facet pick, ray tree in depth.
       Carries animation 3 from §7b — the sweep that turns sparkle into something visible.</div>
       <span class="gate"><b>gate</b> 60 fps at the default ray count on integrated graphics, sweep running</span>
     </div></div>

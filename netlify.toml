@@ -1,6 +1,22 @@
 [build]
   publish = "site"
 
+# Old page names (pre kebab-case rename) — keep previously shared links working.
+[[redirects]]
+  from = "/conception_sacred_geometry.html"
+  to = "/conception-sacred-geometry.html"
+  status = 301
+
+[[redirects]]
+  from = "/embryonic_torus_heart.html"
+  to = "/embryonic-torus-heart.html"
+  status = 301
+
+[[redirects]]
+  from = "/photon_quartz_simulation.html"
+  to = "/photon-quartz-simulation.html"
+  status = 301
+
 # Site is share-by-link only: tell all search engines not to index anything.
 [[headers]]
   for = "/*"

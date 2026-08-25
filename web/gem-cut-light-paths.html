@@ -1308,7 +1308,7 @@ function outlinePts(slice){
    {parts:[...]}), same rule -- this is a RENDERING-only subsystem,
    the physics never touches a triangle. Planar facets get FLAT
    per-facet normals via duplicated vertices (a gem is faceted, not
-   smooth -- the deliberate divergence from embryonic_torus_heart.html's
+   smooth -- the deliberate divergence from embryonic-torus-heart.html's
    smooth-shaded organic surfaces); quadric surfaces (sphere/egg/
    cabochon dome/lens) get smooth per-vertex analytic normals, because
    those surfaces really are smooth. Clipped/double quadrics (cabochon,
@@ -2376,8 +2376,8 @@ function prefersReducedMotion(){
 }
 
 /* ================================================================
-   P7 -- 3D VIEW: hand-written WebGL, following embryonic_torus_heart.html's
-   shader/buffer/matrix pattern (§7 "following the embryonic_torus_heart.html
+   P7 -- 3D VIEW: hand-written WebGL, following embryonic-torus-heart.html's
+   shader/buffer/matrix pattern (§7 "following the embryonic-torus-heart.html
    pattern") with two deliberate departures: FLAT per-facet normals (built
    into the mesh already, see buildMesh3D above) rather than that file's
    smooth organic shading, and a MODEL matrix -- absent there -- carrying
@@ -2584,7 +2584,7 @@ function render3D(){
 
   // two-pass cull-flip translucency: back faces first (depth write off, so
   // the front-face pass beneath is never occluded by its own far side),
-  // then front faces -- same technique as embryonic_torus_heart.html.
+  // then front faces -- same technique as embryonic-torus-heart.html.
   gl.depthMask(false);
   gl.cullFace(gl.FRONT); gl.uniform1i(uniforms.uBackPass, 1);
   gl.drawArrays(gl.TRIANGLES, 0, mesh.triCount*3);

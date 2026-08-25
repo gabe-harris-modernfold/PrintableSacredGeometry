@@ -14,7 +14,7 @@ self-contained HTML visualizers.
 - `docs/` — tooling notes and research writeups. `assets/` — brand art not tied to one build.
 
 Build scripts read and write **bare relative filenames**, so run them from inside their own project
-directory (`cd projects/tetrahelix && python tetrahelix.py`); that is where their output lands. A
+directory (`cd projects/boerdijk_coxeter_tetrahelix && python tetrahelix.py`); that is where their output lands. A
 script needing `lib/` adds it to `sys.path` itself, relative to its own file:
 
 ```python
