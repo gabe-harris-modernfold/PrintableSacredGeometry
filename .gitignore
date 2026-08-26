@@ -5,7 +5,16 @@
 __pycache__/
 *.pyc
 *.log
-/lifetube
 
 # Decimated preview intermediates -- rewritten on every render/report run
 _*_dec.stl
+
+# Oversized build outputs (>50 MB) -- regenerate with the project's build script
+# instead of committing. GitHub warns at 50 MB and hard-rejects at 100 MB.
+/projects/multifunction_terrarium/drip_gutters.stl
+/projects/faraday_instability_disc/faraday_disc.stl
+/projects/golden_ratio_scrying_pool/scrying_pool.stl
+
+# Private -- personal content, never publish
+/projects/lifetube/
+**/lifetube*
