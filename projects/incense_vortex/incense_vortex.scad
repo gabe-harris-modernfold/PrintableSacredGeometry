@@ -14,29 +14,29 @@
      0 = assembly preview (tube ghosted)
      1 = base drum        (print upright, no supports needed*)
      2 = top collar       (print as oriented, flange down)
-     3 = printable tube   (only if you don't buy 3" acrylic;
-                           clear PETG, 0.8 nozzle, spiral or 2 walls)
+     3 = printable tube   (reference only at this size: 394 mm
+                           exceeds the 320 mm bed — use the acrylic)
    *mouthpiece boss: 3 mm of bridging, fine on any printer.
 
-   Swirl is CLOCKWISE viewed from above. Tube: 3" (76.2 mm OD)
-   acrylic, 1/8" wall — or part 3. PETG or ABS recommended.
+   Swirl is CLOCKWISE viewed from above. Tube: 100 mm OD acrylic,
+   2 mm wall, 15.5" (393.7 mm) long. PETG or ABS recommended.
    ============================================================ */
 
 part = 0;
 
 /* [Tube fit] */
-tube_od    = 76.2;   // 3 inch acrylic
-tube_wall  = 3.175;  // 1/8 inch acrylic wall
-tube_len   = 220;    // for printable tube / preview
+tube_od    = 100;    // 100 mm OD acrylic
+tube_wall  = 2;      // 2 mm acrylic wall
+tube_len   = 393.7;  // 15.5 inch tube
 fit_gap    = 0.4;    // radial slip-fit clearance
 
 /* [Swirl geometry] */
-chamber_r  = 32.5;   // swirl chamber radius (= ceiling exit hole)
+chamber_r  = 45.5;   // swirl chamber radius (= ceiling exit hole)
 vane_angle = 68;     // entry angle from radial; tan = swirl ratio
 n_slots    = 12;
-slot_w     = 7;      // slot channel width
-slot_h     = 30;     // slot height
-base_or    = 60;     // base drum outer radius (120 mm plinth)
+slot_w     = 10;     // slot channel width
+slot_h     = 41;     // slot height (12*10*41 / pi*45.5^2 = 0.76 bore)
+base_or    = 88;     // base drum outer radius (176 mm plinth)
 
 /* [Base build] */
 floor_th   = 3;
@@ -48,21 +48,21 @@ recess_r   = 15;     // fits 30 mm metal cap / foil disc
 recess_d   = 2;
 
 /* [Top collar] */
-exit_r     = 25;     // nozzle exit radius (50 mm opening)
+exit_r     = 35;     // nozzle exit radius (70 mm opening)
 
 /* [Printable tube] */
 ptube_wall = 1.6;
 
 /* derived */
-tube_or   = tube_od/2;            // 38.1
-tube_ir   = tube_or - tube_wall;  // 34.925
-groove_or = tube_or + fit_gap;    // 38.5 outer groove wall (inner face)
-groove_ir = tube_ir - fit_gap;    // 34.5 inner collar outer face
-chord_p   = chamber_r*sin(vane_angle);   // chord offset -> 68 deg entry
+tube_or   = tube_od/2;            // 50
+tube_ir   = tube_or - tube_wall;  // 48
+groove_or = tube_or + fit_gap;    // 50.4 outer groove wall (inner face)
+groove_ir = tube_ir - fit_gap;    // 47.6 inner collar outer face
+chord_p   = chamber_r*sin(vane_angle);   // 42.19 -> 68 deg entry
 z_slot0   = floor_th;                    // 3
-z_slot1   = floor_th + slot_h;           // 33
-drum_h    = z_slot1 + ceil_th;           // 36  (groove floor)
-base_h    = drum_h + collar_h;           // 46
+z_slot1   = floor_th + slot_h;           // 44
+drum_h    = z_slot1 + ceil_th;           // 47  (groove floor)
+base_h    = drum_h + collar_h;           // 57
 
 $fa = 3;
 $fs = 0.5;
@@ -71,20 +71,22 @@ $fs = 0.5;
 module slot_cut() {
     // one-sided chord cut: pierces outer wall and chamber wall on
     // the -x side only, so every slot injects the SAME handedness
-    translate([-32.75, chord_p, z_slot0 + slot_h/2])
-        cube([48.5, slot_w, slot_h], center=true);
+    // (outer wall sits at x=-77.2 on the chord; chamber wall at
+    //  -17.0; cut spans -84..-8, stopping short of the far wall)
+    translate([-46, chord_p, z_slot0 + slot_h/2])
+        cube([76, slot_w, slot_h], center=true);
 }
 
 /* ---------------- mouthpiece bore (slot #0) ------------------ */
 module breath_bore() {
     // 9 mm bore coaxial with slot 0's chord; blow here to add swirl
-    translate([-60, chord_p, 12]) rotate([0, 90, 0])
-        cylinder(d=9, h=45);
+    translate([-89, chord_p, 12]) rotate([0, 90, 0])
+        cylinder(d=9, h=55);
 }
 
 module breath_boss() {
-    translate([-58, chord_p, 12]) rotate([0, 90, 0])
-        cylinder(d=18, h=18);
+    translate([-86, chord_p, 12]) rotate([0, 90, 0])
+        cylinder(d=18, h=22);
 }
 
 /* ---------------- base ------------------ */
@@ -97,7 +99,7 @@ module base() {
                 // outer groove collar with sloped shoulder + entry flare
                 rotate_extrude()
                     polygon([[groove_or, drum_h], [base_or, drum_h],
-                             [46, base_h], [40, base_h],
+                             [58, base_h], [52, base_h],
                              [groove_or, base_h-2]]);
                 // inner groove collar, top tapered for tube lead-in
                 rotate_extrude()
@@ -130,13 +132,13 @@ module pedestal() {
 /* ---------------- top collar ------------------ */
 module top_collar() {
     lip = [ for (a = [0:15:180])
-            [26.25 + 1.25*cos(a), 24 + 1.25*sin(a)] ];
+            [36.25 + 1.25*cos(a), 27 + 1.25*sin(a)] ];
     rotate_extrude()
         polygon(concat(
-            [[34, 8], [38.5, 8], [38.5, 0], [41, 0], [41, 10],
-             [27.5, 24]],
+            [[47, 8], [50.4, 8], [50.4, 0], [53, 0], [53, 10],
+             [37.5, 27]],
             lip,
-            [[25, 21], [34.6, 9.6], [34, 9.6]]
+            [[35, 24], [46.6, 12.4], [47, 12.4]]
         ));
 }
 

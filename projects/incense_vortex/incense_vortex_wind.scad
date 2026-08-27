@@ -9,7 +9,7 @@
    wind azimuth, the windward fins form converging funnels (~4:1
    area contraction) that accelerate the breeze and inject it as
    same-handed tangential jets. Ram pressure of a 2-3 m/s breeze
-   (~5 Pa) is ~15x the cone's stack-effect draft.
+   (~5 Pa) is ~8x the stack-effect draft of the 394 mm tube.
 
    VENTURI COWL (top): stacked-disc chimney-cowl. Crosswind is
    squeezed through the converging gap between a 45-degree skirt
@@ -25,31 +25,31 @@
      1 = wind base: slotted drum + pinwheel fins + staked skirt
      2 = venturi head: slips over tube top (print as oriented)
      3 = venturi hat: press-fits onto the head's three posts
-   Tube: 3" (76.2 mm OD) acrylic, or reuse vortex_tube_printable.stl.
+   Tube: 100 mm OD acrylic, 2 mm wall, 15.5" (393.7 mm) long.
    ============================================================ */
 
 part = 0;
 
 /* [Tube fit] */
-tube_od    = 76.2;
-tube_wall  = 3.175;
-tube_len   = 220;
+tube_od    = 100;
+tube_wall  = 2;
+tube_len   = 393.7;
 fit_gap    = 0.4;
 
 /* [Swirl geometry] */
-chamber_r  = 32.5;
+chamber_r  = 45.5;
 vane_angle = 68;
 n_slots    = 12;
-slot_w     = 7;
-slot_h     = 34;     // taller than indoor version: more catch area
-drum_or    = 55;
+slot_w     = 10;
+slot_h     = 47;     // taller than indoor version: more catch area
+drum_or    = 78;
 
 /* [Wind intake] */
-fin_len    = 35;     // guide fin length beyond the drum
-fin_th     = 2.47;
-fin_clip_r = 84;     // fins trimmed to this radius
-skirt_r    = 86;     // stability skirt
-stake_r    = 79;     // bolt-down / tent-stake holes
+fin_len    = 50;     // guide fin length beyond the drum
+fin_th     = 3.2;
+fin_clip_r = 119;    // fins trimmed to this radius
+skirt_r    = 121;    // stability skirt
+stake_r    = 112;    // bolt-down / tent-stake holes
 
 /* [Base build] */
 floor_th   = 3;
@@ -61,30 +61,32 @@ recess_r   = 15;
 recess_d   = 2;
 
 /* [Venturi cowl] */
-throat_r   = 23;     // exit throat radius
-post_r_pos = 30;     // post circle radius
+throat_r   = 32;     // exit throat radius
+post_r_pos = 40.5;   // post circle radius
 post_d     = 6;
-post_len   = 17.5;   // 13 mm gap + 4.5 mm socket
-hat_r      = 55;
+post_len   = 20;     // 15.5 mm gap + 4.5 mm socket
+hat_r      = 70;
 
 /* derived */
 tube_or   = tube_od/2;
 tube_ir   = tube_or - tube_wall;
-groove_or = tube_or + fit_gap;           // 38.5
-groove_ir = tube_ir - fit_gap;           // 34.5
-chord_p   = chamber_r*sin(vane_angle);   // 30.13 -> 68 deg entry
+groove_or = tube_or + fit_gap;           // 50.4
+groove_ir = tube_ir - fit_gap;           // 47.6
+chord_p   = chamber_r*sin(vane_angle);   // 42.19 -> 68 deg entry
 z_slot0   = floor_th;                    // 3
-z_slot1   = floor_th + slot_h;           // 37
-drum_h    = z_slot1 + ceil_th;           // 40 (groove floor)
-base_h    = drum_h + collar_h;           // 50
+z_slot1   = floor_th + slot_h;           // 50
+drum_h    = z_slot1 + ceil_th;           // 53 (groove floor)
+base_h    = drum_h + collar_h;           // 63
 
 $fa = 3;
 $fs = 0.5;
 
 /* ---------------- swirl slot (one chord channel) ------------- */
 module slot_cut() {
-    translate([-32.75, chord_p, z_slot0 + slot_h/2])
-        cube([48.5, slot_w, slot_h], center=true);
+    // drum wall sits at x=-65.6 on the chord; chamber wall at
+    // -17.0; cut spans -78..-8, stopping short of the far wall
+    translate([-43, chord_p, z_slot0 + slot_h/2])
+        cube([70, slot_w, slot_h], center=true);
 }
 
 /* ---------------- pinwheel guide fins ------------------ */
@@ -95,7 +97,7 @@ module fins() {
         union() {
             for (i = [0 : n_slots-1])
                 rotate([0, 0, i*360/n_slots])
-                    translate([-42 - fin_len, chord_p + slot_w/2 - 0.2, 0])
+                    translate([-62 - fin_len, chord_p + slot_w/2 - 0.2, 0])
                         cube([fin_len + 0.2, fin_th, drum_h]);
         }
         cylinder(r=fin_clip_r, h=drum_h);
@@ -113,7 +115,7 @@ module wind_base() {
                 // outer groove collar with sloped shoulder + entry flare
                 rotate_extrude()
                     polygon([[groove_or, drum_h], [drum_or, drum_h],
-                             [46, base_h], [40, base_h],
+                             [58, base_h], [52, base_h],
                              [groove_or, base_h-2]]);
                 // inner groove collar, tapered tube lead-in
                 rotate_extrude()
@@ -152,24 +154,24 @@ module venturi_head() {
     union() {
         rotate_extrude()
             polygon([
-                [34, 8],       // ledge inner, underside
-                [38.5, 8],
-                [38.5, 0],     // sleeve inner wall
-                [41, 0],
-                [41, 10],      // sleeve outer top
-                [30, 22],      // dome outer -> skirt launch
-                [48, 4],       // skirt underside, 45 deg out-down
-                [50, 5.5],     // skirt rim
-                [32.5, 23],    // skirt topside = venturi lower disc
-                [28, 23],      // flat post band
-                [25.5, 24.5],  // throat lip chamfer
-                [23, 24.5],    // throat lip inner edge
-                [25, 21],      // bore below lip
-                [36, 9.6],     // interior dome, 44 deg
-                [34, 9.6]
+                [47, 8],       // ledge inner, underside
+                [50.4, 8],
+                [50.4, 0],     // sleeve inner wall
+                [53, 0],
+                [53, 10],      // sleeve outer top
+                [41.5, 22.5],  // dome outer -> skirt launch
+                [60, 4],       // skirt underside, 45 deg out-down
+                [62, 5.5],     // skirt rim
+                [44, 23.5],    // skirt topside = venturi lower disc
+                [37, 23.5],    // flat post band
+                [34.5, 25],    // throat lip chamfer
+                [32, 25],      // throat lip inner edge
+                [34, 21.5],    // bore below lip
+                [45.9, 9.6],   // interior dome, 45 deg
+                [47, 9.6]
             ]);
         for (a = [0, 120, 240]) rotate([0, 0, a])
-            translate([post_r_pos, 0, 22])
+            translate([post_r_pos, 0, 22.5])
                 cylinder(d=post_d, h=post_len + 1);   // seats into band
     }
 }
@@ -200,7 +202,7 @@ module assembly() {
     wind_base();
     %translate([0, 0, drum_h]) ptube();
     translate([0, 0, drum_h + tube_len - 8]) venturi_head();
-    translate([0, 0, drum_h + tube_len - 8 + 36]) venturi_hat();
+    translate([0, 0, drum_h + tube_len - 8 + 39]) venturi_hat();
 }
 
 if (part == 0) assembly();

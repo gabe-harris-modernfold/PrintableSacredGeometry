@@ -1,11 +1,11 @@
 # Passive Incense Tornado
 
 A fully passive helical smoke vortex — **no fans, no electronics**. The burning
-cone's own heat drives the updraft (stack effect in a clear 3" tube), and twelve
-tangential slots in the base drum force the incoming makeup air into rotation
-(the classic slotted-chimney fire-tornado principle, miniaturized). As the
-swirling air converges from the chamber wall (r ≈ 32 mm) to the smoke core
-(r ≈ 5 mm), conservation of angular momentum amplifies the spin ~6×, wrapping
+cone's own heat drives the updraft (stack effect in a clear 100 mm tube), and
+twelve tangential slots in the base drum force the incoming makeup air into
+rotation (the classic slotted-chimney fire-tornado principle, miniaturized). As
+the swirling air converges from the chamber wall (r ≈ 45 mm) to the smoke core
+(r ≈ 6 mm), conservation of angular momentum amplifies the spin ~7×, wrapping
 the plume into a standing helix. One slot carries an external **mouthpiece
 nozzle** — a gentle puff injects extra angular momentum and visibly tightens
 the column.
@@ -16,18 +16,19 @@ Swirl direction: **clockwise viewed from above.**
 
 | File | Part | Print notes |
 |---|---|---|
-| `vortex_base.stl` | Slotted swirl drum, 120 × 120 × 46 mm | Upright as-is. PETG/ABS, 0.2 mm layers, 3 perimeters, ~15 % infill. No supports (slot roofs are 7 mm bridges; optionally add a dab of support under the mouthpiece tip). |
-| `vortex_top_collar.stl` | Exit nozzle cap, Ø82 × 25 mm | Flange down, as oriented. Overhangs ≤ 44°, no supports. |
-| `vortex_tube_printable.stl` | Optional tube, Ø76.2 × 220 mm | Only if not buying acrylic. Clear PETG, print slow + cool for max clarity. For vase mode set `ptube_wall = 0.8` in the .scad and re-export. |
+| `vortex_base.stl` | Slotted swirl drum, 176 × 176 × 57 mm | Upright as-is. PETG/ABS, 0.2 mm layers, 3 perimeters, ~15 % infill. No supports (slot roofs are 10 mm bridges; optionally add a dab of support under the mouthpiece tip). |
+| `vortex_top_collar.stl` | Exit nozzle cap, Ø106 × 28 mm | Flange down, as oriented. Overhangs ≤ 45°, no supports. |
 
-**Better tube option:** buy 3" OD (76.2 mm) × 1/8" (3.175 mm) wall clear acrylic
-tube, any length 200–350 mm — the groove fits both it and the printed tube.
-A truly transparent wall is what makes the vortex worth watching; acrylic wins.
+**Tube:** the build is sized for **100 mm OD × 2 mm wall clear acrylic tube,
+15.5" (393.7 mm) long**. There is no printable-tube STL at this size — Ø100 ×
+394 mm exceeds the 320 mm bed (the `part = 3` module remains in the .scad for
+reference only). A truly transparent wall is what makes the vortex worth
+watching; acrylic wins anyway.
 
 ## Bill of materials
 
 - 1× printed base, 1× printed collar
-- 3" OD clear tube (acrylic or printed), ~220 mm
+- 100 mm OD × 2 mm wall clear acrylic tube, 393.7 mm (15.5")
 - 1× metal bottle cap or 2–3 layers of aluminum foil, ≤30 mm — sits in the
   pedestal recess as a heat shield under the cone (**required** — PETG softens
   at ~80 °C)
@@ -51,8 +52,8 @@ A truly transparent wall is what makes the vortex worth watching; acrylic wins.
   resistance. 60–72° is the useful band; too high starves the draft, too low
   gives a lazy column.
 - `tube_len`: taller tube = stronger stack draft = faster, more stable vortex.
-- `exit_r` (25 mm): smaller exit tightens the core at the outlet but adds
-  resistance. 22–30 mm reasonable.
+- `exit_r` (35 mm): smaller exit tightens the core at the outlet but adds
+  resistance. 31–42 mm reasonable.
 - `slot_w`, `slot_h`, `n_slots`: total slot area is ~0.76× the bore area;
   keep the ratio ≥ 0.6 or the chimney will choke.
 
@@ -77,7 +78,7 @@ each extending one tangential slot's guide wall outward — a fixed turbine
 stator. From any wind azimuth, the windward fins form converging funnels
 (~4:1 area contraction) that accelerate the breeze and inject it as
 same-handed tangential jets. Ram pressure of a 2–3 m/s breeze (~5 Pa) is
-roughly **15× the stack-effect draft** of the indoor version, so the vortex
+roughly **8× the stack-effect draft** of the 394 mm tube, so the vortex
 carries far more angular momentum. Leeward slots sit in separated low-pressure
 flow, so net circulation stays clockwise.
 
@@ -90,11 +91,11 @@ chimney in calm air.
 
 | File | Part | Print notes |
 |---|---|---|
-| `wind_base.stl` | Pinwheel drum + staked skirt, 172 × 172 × 50 mm | Upright, no supports. Three countersunk holes in the skirt take M4 screws or tent stakes — anchor it; a 300 mm tower in wind needs it. |
-| `wind_venturi_head.stl` | Venturi skirt + posts, Ø100 × 40 mm | As oriented (flange down). All overhangs ≤ 45°. |
-| `wind_venturi_hat.stl` | Hat disc, Ø110 × 10 mm | Flat side down. Press-fits onto the head's three posts (dab of CA glue optional). |
+| `wind_base.stl` | Pinwheel drum + staked skirt, 242 × 242 × 63 mm | Upright, no supports. Three countersunk holes in the skirt take M4 screws or tent stakes — anchor it; a 450 mm tower in wind needs it. |
+| `wind_venturi_head.stl` | Venturi skirt + posts, Ø124 × 44 mm | As oriented (flange down). All overhangs ≤ 45°. |
+| `wind_venturi_hat.stl` | Hat disc, Ø140 × 10 mm | Flat side down. Press-fits onto the head's three posts (dab of CA glue optional). |
 
-Tube: same 3" interface — reuse `vortex_tube_printable.stl` or acrylic.
+Tube: same 100 mm interface — the same acrylic tube as the indoor version.
 
 **Behavior:** happiest in a steady 1–4 m/s breeze (porch, open window,
 sheltered garden). In gusty wind the core will intermittently burst into

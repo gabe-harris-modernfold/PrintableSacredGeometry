@@ -3,7 +3,7 @@ import pymeshlab
 import os
 
 folder = os.path.dirname(os.path.abspath(__file__))
-files = ["vortex_base.stl", "vortex_top_collar.stl", "vortex_tube_printable.stl",
+files = ["vortex_base.stl", "vortex_top_collar.stl",
          "wind_base.stl", "wind_venturi_head.stl", "wind_venturi_hat.stl"]
 
 for f in files:

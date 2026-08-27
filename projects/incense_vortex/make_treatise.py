@@ -171,7 +171,7 @@ E.append(Paragraph("THE DOCTRINE OF TWO LENSES", S['h1']))
 E.append(rule())
 E.append(Paragraph(
     "This treatise documents three desktop instruments, printed in PETG and "
-    "raised around a common standard — the clear tube of three inches — whose "
+    "raised around a common standard — the clear tube of a hundred millimetres — whose "
     "single purpose is to persuade air to reveal itself. The first stands a "
     "helix of incense smoke by heat alone; the second does the same work with "
     "harvested wind; the third teaches a spoonful of powdered earth to rise up "
@@ -202,8 +202,8 @@ E.append(Paragraph(
     "v = %sr, and must be continuously driven. In the <i>free</i> vortex, "
     "conservation of angular momentum sets v·r = constant, so fluid drifting "
     "inward is compelled to accelerate: a rim breeze of half a metre per "
-    "second, carried from a 60 mm wall to a 5 mm core, arrives spinning some "
-    "twelve times faster. Every instrument in this folio is a machine for "
+    "second, carried from a 76 mm wall to a 5 mm core, arrives spinning some "
+    "fifteen times faster. Every instrument in this folio is a machine for "
     "arranging that drift. Geometry grants the air its first angular "
     "momentum; convergence multiplies it; and because friction forever taxes "
     "the spin, each device must also supply a steady revenue of new momentum "
@@ -213,7 +213,7 @@ E.append(axiom("“As above, so below; as below, so above.”",
                "— The Kybalion, on the Principle of Correspondence (1908)"))
 E.append(Paragraph(
     "Fluid mechanics states the second principle with unusual candour. The "
-    "equations that govern a smoke-helix in a tube of 76 millimetres govern "
+    "equations that govern a smoke-helix in a tube of 100 millimetres govern "
     "likewise the dust devil on the plate, the waterspout, the hurricane, "
     "and, in their gravitational translation, the spiral galaxy. Scale falls "
     "away in the dimensionless numbers — Reynolds, swirl — which are the "
@@ -233,15 +233,15 @@ E.append(Paragraph("PLATE I — The Hearth Tornado assembled: slotted drum, "
 E.append(voice("THE MEASURED ACCOUNT"))
 E.append(Paragraph(
     "The hearth tornado is a chimney taught to spin. A standard incense cone "
-    "burns on a heat-shielded pedestal inside a 120 mm drum; the clear tube "
+    "burns on a heat-shielded pedestal inside a 176 mm drum; the clear tube "
     "stands over it. The ember's few watts warm the column and the stack "
-    "effect supplies the draft, %sP = %s g H (%sT/T) — roughly a third of a "
-    "pascal for a 220 mm tube. Feeble, but free. Make-up air can reach the "
+    "effect supplies the draft, %sP = %s g H (%sT/T) — roughly six-tenths of a "
+    "pascal for a 394 mm tube. Feeble, but free. Make-up air can reach the "
     "plume only through twelve slots cut not on radii but on chords, tangent "
     "to an inner circle, so every entering filament arrives at 68 degrees "
     "from radial. Slot area is held at 0.76 of the bore area, resistance low "
-    "enough that the whisper of draft survives. Converging from the 32 mm "
-    "chamber wall to the 5 mm smoke core, the swirl multiplies about sixfold, "
+    "enough that the whisper of draft survives. Converging from the 45 mm "
+    "chamber wall to the 6 mm smoke core, the swirl multiplies about sevenfold, "
     "and the plume is wrapped into a standing clockwise helix. A 9 mm "
     "mouthpiece bore, coaxial with one slot, accepts the operator's breath as "
     "a tangential injection of angular momentum — the column visibly tightens "
@@ -275,7 +275,7 @@ E.append(voice("THE MEASURED ACCOUNT"))
 E.append(Paragraph(
     "Outdoors the budget improves by an order of magnitude. The ram pressure "
     "of moving air is q = ½ %s v² — about 5.4 Pa in a 3 m/s breeze, some "
-    "fifteen times the hearth draft — and the wind edition spends that wealth "
+    "nine times the hearth draft — and the wind edition spends that wealth "
     "twice. At the base, twelve tall guide fins radiate from the slotted drum "
     "as a fixed stator: from any compass direction the windward fins form "
     "converging funnels of roughly four-to-one contraction, accelerating the "
@@ -289,7 +289,7 @@ E.append(Paragraph(
     "and the device degrades gracefully into its indoor cousin. In gusts the "
     "swirl briefly outruns the axial flow and the core shatters — vortex "
     "breakdown — then gathers and stands again. Three countersunk holes "
-    "anchor the skirt; a tower of 300 mm keeps real company with the wind."
+    "anchor the skirt; a tower of 450 mm keeps real company with the wind."
     % RHO, S['sci']))
 E.append(voice("THE HERMETIC READING"))
 E.append(axiom("“Everything flows, out and in; all things rise and fall; "
@@ -426,15 +426,15 @@ comp = [
      "The Wind hath carried it in its belly", "The Earth is its nurse"],
     ["Driving power", "Ember heat (stack effect)",
      "Wind ram + venturi suction", "Wind ram (+ solar floor)"],
-    ["Pressure budget", "~0.3 Pa", "~5 Pa at 3 m/s", "~5 Pa at 3 m/s"],
+    ["Pressure budget", "~0.6 Pa", "~5 Pa at 3 m/s", "~5 Pa at 3 m/s"],
     ["Swirl generator", "12 chord slots at 68°",
      "12-fin stator, 4:1 funnels, 68°",
      "12-fin crown at 58°; throats 9 mm (XL: 13 mm)"],
     ["Visible working body", "Incense smoke", "Incense smoke",
      "Zinc stearate powder"],
-    ["Confinement", "76 mm clear tube", "76 mm clear tube",
+    ["Confinement", "100 mm clear tube", "100 mm clear tube",
      "None — a free devil"],
-    ["Stature, assembled", "~296 mm", "~305 mm", "79 mm · XL280: 99 mm"],
+    ["Stature, assembled", "~460 mm", "~490 mm", "79 mm · XL280: 99 mm"],
     ["Fair weather", "A still room", "Steady breeze, 1–4 m/s",
      "Sun and steady breeze, 2–5 m/s"],
 ]
@@ -479,8 +479,8 @@ for b in [
 E.append(Paragraph("COLOPHON", S['h1']))
 E.append(rule())
 E.append(Paragraph(
-    "Instrument I — vortex_base.stl, vortex_top_collar.stl, "
-    "vortex_tube_printable.stl (source: incense_vortex.scad). "
+    "Instrument I — vortex_base.stl, vortex_top_collar.stl "
+    "(source: incense_vortex.scad; tube: 100 mm OD x 2 mm acrylic, 393.7 mm). "
     "Instrument II — wind_base.stl, wind_venturi_head.stl, "
     "wind_venturi_hat.stl (source: incense_vortex_wind.scad). "
     "Instrument III — dust_plate_arena.stl, dust_plate_roof.stl; XL280 "
