@@ -1,0 +1,1815 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="The convective plume rising off a standing human body, simulated live with a thermal lattice-Boltzmann solver and measured per-segment skin temperatures. Incense smoke traces the flow. Why the swirl is buoyancy and not infrared, and why the Rankine vortex is a ruler rather than a cause.">
+<title>The Body's Own Weather — the plume you stand in</title>
+<link rel="canonical" href="https://promethean-theoria.netlify.app/human-thermal-plume.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="The Body's Own Weather — the plume you stand in">
+<meta property="og:description" content="A live thermal lattice-Boltzmann simulation of the human convective plume, driven by measured skin temperatures and traced with incense smoke.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/human-thermal-plume.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/human-thermal-plume.html">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{
+  --ground:#F6F5F1; --panel:#EFEEE8; --panel-2:#E7E6DE; --rule:#D3D2C9; --rule-soft:#E2E1D9;
+  --ink:#1C2028; --ink-2:#454B57; --muted:#656B79; --faint:#8B909C;
+  --gold:#8F6F24; --gold-soft:rgba(143,111,36,.10); --gold-line:rgba(143,111,36,.35);
+  --smoke:#3A4150; --ember:#C25B1E; --cool:#2F6E8F;
+  --ok:#2C7A4E; --warn:#9A4A1E;
+  --serif: Charter,'Sitka Text',Cambria,Georgia,serif;
+  --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code',Consolas,'SF Mono','Roboto Mono',monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ground:#10131A; --panel:#171B25; --panel-2:#1D2230; --rule:#2A3040; --rule-soft:#1F2431;
+    --ink:#E9E6DD; --ink-2:#B0AFA8; --muted:#868DA0; --faint:#5C6377;
+    --gold:#C9B070; --gold-soft:rgba(201,176,112,.10); --gold-line:rgba(201,176,112,.35);
+    --smoke:#DDE2E9; --ember:#E8933B; --cool:#6FB4D6;
+    --ok:#4FA872; --warn:#D87A3C;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.65 var(--sans)}
+main{max-width:980px;margin:0 auto;padding:28px 20px 60px}
+a{color:var(--gold)}
+header.masthead{text-align:center;padding:26px 8px 6px}
+.eyebrow{font:600 12px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--faint)}
+h1{font:400 40px/1.15 var(--serif);margin:14px 0 4px;letter-spacing:.01em}
+.sub{color:var(--muted);font-style:italic;font-family:var(--serif);font-size:18px}
+.epigraph{max-width:640px;margin:22px auto 0;padding:14px 22px;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line);
+  font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink-2)}
+.epigraph .src{display:block;margin-top:6px;font-style:normal;font-size:12.5px;color:var(--faint);letter-spacing:.06em}
+h2{font:400 26px/1.25 var(--serif);margin:46px 0 6px;color:var(--ink)}
+h3{font:500 19px/1.35 var(--serif);margin:26px 0 6px}
+h2 .rl{font:600 11px/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;vertical-align:middle;margin-left:10px;padding:4px 8px;border-radius:3px;white-space:nowrap}
+.rl-m{color:var(--ok);border:1px solid var(--ok)}
+.rl-h{color:var(--gold);border:1px solid var(--gold)}
+.rl-l{color:var(--warn);border:1px solid var(--warn)}
+p.lede{color:var(--ink-2);font-size:17px}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;margin:16px 0}
+.simwrap{display:grid;grid-template-columns:minmax(280px,400px) 1fr;gap:22px;align-items:start}
+@media (max-width:820px){.simwrap{grid-template-columns:1fr}}
+canvas#plume{width:100%;height:auto;display:block;background:#0B0E14;border:1px solid var(--rule);border-radius:8px}
+.ctl{margin:14px 0;font-size:14.5px;color:var(--ink-2)}
+.ctl label{display:block;font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:600 13px var(--sans);padding:8px 13px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--gold-soft);color:var(--gold)}
+button.act{font:600 14px var(--sans);padding:9px 16px;border:1px solid var(--gold);border-radius:7px;background:transparent;color:var(--gold);cursor:pointer;margin-right:8px}
+button.act:active{transform:scale(.97)}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.reads{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:16px}
+.read{background:var(--panel-2);border:1px solid var(--rule-soft);border-radius:8px;padding:10px 12px}
+.read .k{font:600 10.5px/1.3 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.read .v{font:500 19px/1.3 var(--mono);color:var(--ink);margin-top:2px}
+.read .u{font-size:12px;color:var(--muted)}
+.herm{border:1px solid var(--gold-line);background:var(--gold-soft);border-radius:10px;padding:18px 22px;margin:16px 0;font-family:var(--serif)}
+.herm p{color:var(--ink-2);font-size:16px}
+.herm .ax{font-style:italic;text-align:center;font-size:17.5px;color:var(--ink);margin:14px 0 2px}
+.herm .axsrc{text-align:center;font-size:12.5px;color:var(--faint);font-family:var(--sans);letter-spacing:.05em;margin-bottom:14px}
+.note{border-left:3px solid var(--gold);padding:10px 16px;background:var(--panel);border-radius:0 8px 8px 0;margin:16px 0;color:var(--ink-2);font-size:15px}
+.warnbox{border-left:3px solid var(--warn)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{text-align:left;padding:7px 11px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+th{font:600 12px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+td.num{font-family:var(--mono);font-size:13.5px;text-align:right}
+td code{font:13px var(--mono);color:var(--gold)}
+figure{margin:22px 0}
+figure img{width:100%;height:auto;display:block;border:1px solid var(--rule);border-radius:8px;background:#fff}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;font-family:var(--serif);font-style:italic}
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+.vc{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.vc .tag{font:600 10.5px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;padding:3px 7px;border-radius:3px}
+.vc .tag.y{color:var(--ok);border:1px solid var(--ok)}
+.vc .tag.n{color:var(--warn);border:1px solid var(--warn)}
+.vc .tag.p{color:var(--gold);border:1px solid var(--gold)}
+.vc h4{font:500 16px/1.3 var(--serif);margin:9px 0 6px}
+.vc p{font-size:13.8px;color:var(--ink-2);margin:6px 0}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);color:var(--faint);font-size:13.5px;text-align:center}
+footer .test{font-family:var(--mono);font-size:12px;margin-top:8px}
+.refs{font-size:13.5px;color:var(--muted)}
+.refs li{margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+
+<header class="masthead">
+  <div class="eyebrow">Promethean Theoria · Printable Sacred Geometry</div>
+  <h1>The Body's Own Weather</h1>
+  <div class="sub">the plume you are standing in, simulated and measured</div>
+  <div class="epigraph">
+    “For the Air is the body of the Soul, and the Soul rideth in it.”
+    <span class="src">— CORPUS HERMETICUM X, TR. G. R. S. MEAD, 1906</span>
+  </div>
+</header>
+
+<p class="lede" style="max-width:770px;margin:26px auto">
+  A person standing still in a quiet room is not standing in still air. Skin runs several degrees
+  above the room, the air touching it warms, becomes buoyant, and climbs — a sheet a few millimetres
+  thick at the ankles, thickening as it rises, breaking into a turbulent column somewhere around
+  waist height, and shedding discrete rings of rotating air above the head every few seconds. It is a
+  weather system, roughly two metres tall, and it belongs to you. This page simulates it from measured
+  boundary conditions, and traces it with the oldest instrument for the job: incense smoke.
+</p>
+
+<h2>The instrument <span class="rl rl-m">Computed live</span></h2>
+
+<p>
+  Below is a thermal lattice-Boltzmann solver running in your browser. Air is treated as an
+  incompressible Boussinesq fluid: buoyancy is the only body force, and it is proportional to
+  the local temperature excess over the room. The figure's surface is held at
+  <b>measured</b> skin temperatures, segment by segment, and those temperatures are not uniform —
+  the anterior neck runs 35.0&nbsp;°C while the sole of the foot runs 29.8&nbsp;°C, so the buoyancy
+  driving this flow is nearly twice as strong at the throat as at the floor.
+</p>
+
+<div class="panel">
+  <div class="simwrap">
+    <div>
+      <canvas id="plume" width="408" height="672" aria-label="An infrared thermal scan of a standing person, with simulated incense smoke rising along the body and detaching above the head"></canvas>
+    </div>
+    <div>
+      <div class="ctl">
+        <label>Censer position</label>
+        <div class="seg" id="censer">
+          <button data-c="ankle" class="on">At the ankles</button>
+          <button data-c="hand">By the hand</button>
+          <button data-c="brow">Between the eyes</button>
+          <button data-c="away">Across the room</button>
+        </div>
+      </div>
+
+      <div class="ctl">
+        <label>Show</label>
+        <div class="seg" id="view">
+          <button data-v="smoke" class="on">Smoke only</button>
+          <button data-v="temp">Smoke + heat</button>
+          <button data-v="speed">Smoke + speed</button>
+        </div>
+      </div>
+
+      <div class="ctl">
+        <label>Smoke density <span id="dens-val" style="color:var(--muted);font-weight:400;letter-spacing:0">2400 particles</span></label>
+        <input type="range" id="dens" min="400" max="6000" step="200" value="2400">
+      </div>
+
+      <div class="ctl">
+        <button class="act" id="puff">Puff the censer</button>
+        <button class="act" id="labels">Show temperatures</button>
+        <button class="act" id="pyr" title="Symbolic overlay — not part of the physics">Pyramid overlay</button>
+        <button class="act" id="pause">Pause</button>
+        <button class="act" id="reset">Restart</button>
+      </div>
+
+      <div class="ctl" id="scalewrap">
+        <label>Air temperature <span style="color:var(--muted);font-weight:400;letter-spacing:0">the scan's palette, on a stated scale</span></label>
+        <div id="scalebar" style="height:14px;border-radius:4px;border:1px solid var(--rule)"></div>
+        <div style="display:flex;justify-content:space-between;font:11.5px var(--mono);color:var(--muted);margin-top:4px">
+          <span id="scale-lo">—</span><span id="scale-hi">—</span>
+        </div>
+      </div>
+
+      <p style="font-size:13.5px;color:var(--muted);margin:14px 0 0">
+        The scale beside the head rises a metre from the crown, ticked every
+        5&nbsp;cm. The frame ends at 2.7&nbsp;m, and that top edge is an open outflow
+        rather than a ceiling — the plume leaves there, it does not pile up against it.
+      </p>
+
+      <div class="reads">
+        <div class="read"><div class="k">Sim clock</div><div class="v" id="r-clock">0.0</div><div class="u">seconds of room time</div></div>
+        <div class="read"><div class="k">Peak air speed</div><div class="v" id="r-vmax">0.00</div><div class="u">m/s</div></div>
+        <div class="read"><div class="k">Layer at chest</div><div class="v" id="r-bl">—</div><div class="u">cm half-thickness</div></div>
+        <div class="read"><div class="k">Playback</div><div class="v" id="r-rate">—</div><div class="u">× real time</div></div>
+      </div>
+
+      <div class="note" style="font-size:14px;margin-top:16px">
+        The smoke is passive: particles are carried by the computed velocity field and do not
+        push back on it. That is also true of real incense smoke at these concentrations, which
+        is why it has been the standard tracer for this flow since long before anyone owned a laser.
+      </div>
+
+      <div class="note warnbox" style="font-size:14px">
+        <b>The figure is a real thermal photograph — and its colours are not the physics.</b>
+        The outline is traced from an anterior infrared scan, and the solver's collision
+        boundary is taken from that same outline, so the smoke cannot slip through an arm you
+        can see. But a clinical scan's palette is uncalibrated false colour for one individual.
+        The temperatures actually driving this flow are the measured population values in the
+        table below, applied by body region. Read the picture as a shape, not as a
+        thermometer.
+      </div>
+
+      <div class="note" style="font-size:14px">
+        <b>Two colourings, one palette, only one of them quantitative.</b> Switch to
+        <i>Smoke&nbsp;+&nbsp;heat</i> and the air is painted with the scan's own colours on the
+        scale printed above — ambient at the blue end, the hottest skin at the red end. The body
+        keeps the photograph's colours, which are on no scale at all. So the air is directly
+        readable and the figure is not, and the air can never appear hotter than the skin it
+        came off.
+      </div>
+    </div>
+  </div>
+</div>
+
+<p>
+  Put the censer at the ankles and the smoke is captured almost immediately — it is drawn into the
+  thin rising sheet on the skin and carried the whole length of the body. Put it by the hand and it
+  joins higher up, where the layer is already thick and unsteady. Put it between the eyes and
+  capture is instant: the brow sits inside the fastest, hottest part of the whole system, a few
+  centimetres from skin running 35.0&nbsp;°C, and within five seconds every grain of that smoke is
+  above the crown — against none of the smoke lit at the ankles in the same five seconds. It does
+  spread once it is up there, because the air above the head is slow and the column is done
+  accelerating. Put it across the room and nothing is captured directly — but
+  leave it running and the smoke creeps along the floor toward the figure, then turns upward at
+  the ankles. A rising column has to be fed, and it draws its replacement air in along the floor.
+  Smoke lit three-quarters of a metre away arrives at the feet, not at the height it was lit.
+</p>
+
+<p>
+  That last case is the one worth sitting with, because the simulation corrected the obvious guess.
+  The reach of a thermal plume is not the distance it can pull smoke <i>up</i> from — it is the
+  distance over which it quietly drags the whole floor-level air supply toward itself. Measured in
+  this run, that inward creep runs at 0.043&nbsp;m/s while the plume climbs about ten times faster,
+  which is why it stays invisible until you put a tracer in it.
+</p>
+
+<div class="note" style="font-size:14px">
+  <b>On the brow position.</b> This is a two-dimensional slice taken looking at the figure
+  head-on, so it has no “in front of the face” direction to put a censer in. The source sits on
+  the brow line just clear of the traced head outline, which measures 8.8&nbsp;cm from the midline
+  at that height — as close to between the eyes as a front-facing slice can get.
+</div>
+
+<h2>What is actually driving it <span class="rl rl-m">Measured</span></h2>
+
+<p>
+  It is tempting — and wrong — to say the body's infrared radiation stirs the air. Radiation is
+  real, and it is the <i>larger</i> of the two channels over the torso. But it does almost nothing
+  to the air, because air is very nearly transparent at the 9–10&nbsp;µm wavelengths skin emits.
+  That energy crosses the room and is absorbed by walls, furniture, and other people. The air moves
+  for a different reason: conduction across the few millimetres in contact with skin, and then
+  buoyancy.
+</p>
+
+<p>
+  The cleanest way to see this is to plot what the skin actually emits. Below, Planck's law is
+  evaluated live for skin at 310&nbsp;K with an emissivity of 0.98 — the figure measured for a
+  human hand — against a 298&nbsp;K background, with the atmospheric transmission window shaded.
+</p>
+
+<div class="panel">
+  <canvas id="planck" width="880" height="330" style="width:100%;height:auto;display:block"
+          aria-label="Planck spectral exitance for skin at 310 K and background at 298 K, with the 7.5 to 14 micron atmospheric window shaded"></canvas>
+  <div class="reads" style="margin-top:14px">
+    <div class="read"><div class="k">Peak wavelength</div><div class="v" id="p-peak">—</div><div class="u">µm, skin at 310 K</div></div>
+    <div class="read"><div class="k">Emitted in the window</div><div class="v" id="p-frac">—</div><div class="u">% of total, 7.5–14 µm</div></div>
+    <div class="read"><div class="k">Net radiative flux</div><div class="v" id="p-net">—</div><div class="u">W/m², skin → 298 K room</div></div>
+    <div class="read"><div class="k">Implied h<sub>r</sub></div><div class="v" id="p-hr">—</div><div class="u">W/m²K at full view</div></div>
+  </div>
+</div>
+
+<p>
+  The peak sits at 9.35&nbsp;µm, and it sits <i>inside</i> the window — which is the whole point,
+  and the point cuts both ways. That band is called a transmission window precisely because the
+  atmosphere barely absorbs there. It is why a thermal camera can photograph a hand across a
+  room, why a hand can serve as a genuine incoherent infrared source, and, by exactly the same
+  physics, why the 41% of the body's output that falls in that band reaches the walls rather than
+  the air. <b>The property that makes the body a usable infrared lamp is the property that stops
+  it heating the medium in between.</b>
+</p>
+
+<p>
+  The remaining 59% is worth being careful about rather than waving away. Outside the window,
+  water vapour and carbon dioxide do absorb, so some of that fraction genuinely is taken up by
+  air over a few metres of room. It still cannot drive this flow, for a reason that has nothing
+  to do with how much energy it is: absorption along a metres-long path deposits heat
+  <i>diffusely through the whole room volume</i>, not in the millimetres of air touching skin.
+  Buoyancy needs a sharp local temperature gradient. A faint, uniform warming of the entire room
+  produces no gradient anywhere, and therefore no plume. Convection wins not by carrying more
+  energy — it does not — but by putting its energy in one thin, steep place.
+</p>
+
+<p>
+  Note also what kind of source it is. Emission from skin is incoherent and omnidirectional — a
+  lamp, not a laser. There is no beam, no phase relationship, and nothing to converge. Whatever
+  organised motion the body produces in the air around it, radiation contributes no momentum
+  and no direction to it.
+</p>
+
+<p>
+  The two channels can be separated with measured coefficients. A 16-segment articulated thermal
+  manikin, standing, in still air, gives the radiative coefficient <i>h<sub>r</sub></i> and the
+  natural-convective coefficient <i>h<sub>c</sub></i> for each body part:
+</p>
+
+<table>
+  <thead><tr><th>Segment</th><th>Skin °C</th><th>Skin °F</th><th>h<sub>r</sub></th><th>h<sub>c</sub></th><th>Radiative share</th><th>Goes to</th></tr></thead>
+  <tbody>
+    <tr><td>Anterior neck</td><td class="num">35.0</td><td class="num">95.0</td><td class="num">4.1</td><td class="num">3.6</td><td class="num">53%</td><td>walls / air</td></tr>
+    <tr><td>Chest</td><td class="num">33.6</td><td class="num">92.5</td><td class="num">4.5</td><td class="num">3.0</td><td class="num">60%</td><td>mostly walls</td></tr>
+    <tr><td>Upper arm</td><td class="num">32.6</td><td class="num">90.7</td><td class="num">5.2</td><td class="num">2.9</td><td class="num">64%</td><td>mostly walls</td></tr>
+    <tr><td>Thigh</td><td class="num">31.9</td><td class="num">89.4</td><td class="num">4.3</td><td class="num">4.1</td><td class="num">51%</td><td>walls / air</td></tr>
+    <tr><td>Lower leg</td><td class="num">32.7</td><td class="num">90.9</td><td class="num">5.3</td><td class="num">4.1</td><td class="num">56%</td><td>walls / air</td></tr>
+    <tr><td>Foot</td><td class="num">30.0</td><td class="num">86.0</td><td class="num">3.9</td><td class="num">5.1</td><td class="num">43%</td><td>mostly air</td></tr>
+  </tbody>
+</table>
+
+<p>
+  The pattern inverts what intuition suggests. <b>Feet have the lowest radiative coefficient and the
+  highest convective one; the chest and back have the opposite.</b> A broad flat torso grows a thick,
+  insulating boundary layer and sheds heat poorly by convection, while thin distal limbs sit at the
+  cold base of the plume with a small characteristic diameter and shed heat efficiently. Only the
+  <i>h<sub>c</sub></i> column is what the simulation above computes. Everything in the
+  <i>h<sub>r</sub></i> column leaves the scene entirely and turns up as warm walls.
+</p>
+
+<p>
+  Those two datasets were measured by different people using different instruments, so it is
+  worth checking they agree. Linearising the Stefan–Boltzmann law at these temperatures gives
+  <i>h<sub>r</sub></i>&nbsp;=&nbsp;4εσT<sub>m</sub>³&nbsp;=&nbsp;6.2&nbsp;W/m²K for a surface
+  that radiates freely in every direction. The manikin measures 4.5 at the chest and 4.1 at the
+  hand — ratios of 0.73 and 0.66. Those are effective radiating area fractions, and a standing
+  human is quoted at about 0.70 to 0.73: limbs and torso partly face each other, so not all of
+  the skin sees the room. The measured coefficients are exactly the blackbody figure times a
+  plausible view factor, which is a good sign that the numbers on this page are describing the
+  same person.
+</p>
+
+<div class="note">
+  <b>Why this distinction matters for the vortex question.</b> Nobody has built a device that turns
+  human infrared into a vortex, because there is no mechanism by which it would: the air the IR
+  passes through barely absorbs it. What people <i>have</i> measured, repeatedly and carefully, is the
+  buoyant plume — and that plume genuinely does shed rotating structures. The swirl is real. Its
+  cause is a temperature difference and gravity, not radiation.
+</div>
+
+<h2>The ruler and the river <span class="rl rl-m">Computed</span></h2>
+
+<p>
+  A <b>Rankine vortex</b> is a mathematical idealisation: solid-body rotation inside a core radius
+  <i>a</i>, and irrotational free-vortex flow outside it.
+</p>
+
+<div class="panel" style="font-family:var(--mono);font-size:14px;text-align:center">
+  v<sub>θ</sub>(r) = Γr / 2πa²&nbsp;&nbsp;for r &lt; a&nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp;v<sub>θ</sub>(r) = Γ / 2πr&nbsp;&nbsp;for r &gt; a
+</div>
+
+<p>
+  It is <i>kinematics</i>. It describes a velocity field that already rotates and says nothing about
+  what set it rotating — which is why the same model gets applied to tornadoes, hurricanes, bathtub
+  drains, and optical vortices in partially coherent light. Applying it to the human plume is holding
+  up a ruler, not naming a cause. The offline study behind this page does exactly that, on the same
+  criteria the experimental groups used: it computes the velocity-gradient tensor, isolates rotating
+  cores with the swirling-strength criterion λ<sub>ci</sub>, and then fits each core's azimuthal
+  profile twice — once with Rankine, once with the viscous <b>Oseen</b> vortex.
+</p>
+
+<figure>
+  <img src="assets/plume/fig_criteria.png" alt="Three side-by-side fields above the head: vorticity, Q-criterion, and swirling strength, with detected vortex cores circled on the third">
+  <figcaption>
+    Why λ<sub>ci</sub> and not vorticity. Vorticity cannot distinguish a rotating core from plain
+    shear, and the plume's edge is nothing but shear, so a vorticity map lights up along the whole
+    column. Swirling strength is non-zero only where a fluid particle actually spirals.
+  </figcaption>
+</figure>
+
+<figure>
+  <img src="assets/plume/fig_rankine.png" alt="Azimuthal velocity profiles of four detected vortex cores with Rankine and Oseen curves fitted to each">
+  <figcaption>
+    Four cores drawn across the fit-quality range — not the four that fit best, which would
+    flatter whichever profile was used to rank them. Rankine's corner at r&nbsp;=&nbsp;a is where
+    the two models disagree; a viscous core is smooth through that radius, and a strained one is
+    not.
+  </figcaption>
+</figure>
+
+<p>
+  The textbook expectation is that Rankine should lose. Feed the same fitter a <i>synthetic</i>
+  Oseen vortex of known circulation and it does, emphatically: Oseen recovers the circulation to
+  0.3% at R²&nbsp;=&nbsp;1.000, while Rankine, given identical data and the same two free
+  parameters, cannot beat R²&nbsp;=&nbsp;0.87. Against an ideal viscous vortex, the corner really
+  is fiction.
+</p>
+
+<p>
+  Then run it on the 695 cores this plume actually sheds, and the expectation inverts.
+  <b>Rankine is the better fit on 61% of them.</b> Oseen keeps a higher <i>mean</i> R²
+  (0.77 against 0.74) but that is a different claim: it earns the average by failing less badly on
+  the worst cores, while on a typical core the kinked profile is closer. Their medians are
+  effectively tied, 0.80 apiece.
+</p>
+
+<p>
+  The number that matters most, though, is that <b>only one core in ten reaches
+  R²&nbsp;=&nbsp;0.9 under either model</b>. Neither profile is the shape of a shed core, because
+  a shed core is not a steady axisymmetric vortex — it is a lump of rotating fluid being stretched,
+  tilted and carried away while you measure it. So the literature's “Rankine-like” comes out of
+  this better than the clean theory predicts. As shorthand for near-solid-body rotation inside and
+  decaying circulation outside, it is honest and it is usually the closer of the two. As a claim
+  about the shape of any particular vortex, it was never going to survive contact with one. The
+  ruler is the right length; nothing you measure with it has straight edges.
+</p>
+
+<h2>What the simulation does and does not earn <span class="rl rl-l">Limitations</span></h2>
+
+<p>
+  The full-scale problem has a Rayleigh number of about 4.9×10⁹ over body height. Resolving that
+  directly is far beyond a browser tab and beyond the offline study too, so the simulation runs at a
+  reduced Rayleigh number and every claim below is scoped accordingly.
+</p>
+
+<div class="verdict">
+  <div class="vc">
+    <span class="tag y">Reproduced</span>
+    <h4>Structure along the body</h4>
+    <p>A thin laminar sheet at the ankles, thickening upward, going unsteady, detaching above the
+    head. The sequence and its ordering match what schlieren and PIV imaging show.</p>
+  </div>
+  <div class="vc">
+    <span class="tag y">Reproduced</span>
+    <h4>Discrete shedding above the head</h4>
+    <p>The probe 0.5&nbsp;m above the head oscillates at 3.6&nbsp;s, confirmed independently by
+    peak counting at 3.7&nbsp;s. In dimensionless form that is St&nbsp;=&nbsp;0.62 against the
+    measured 0.44 — the right mechanism running about 40% fast. A separate 9&nbsp;s meander of the
+    whole column sits underneath it and is not the shedding.</p>
+  </div>
+  <div class="vc">
+    <span class="tag p">Partly</span>
+    <h4>Per-segment convective ordering</h4>
+    <p>The counterintuitive part comes out right: foot highest, chest and abdomen lowest, exactly
+    as the manikin measures. Across all eleven segments the correlation is r&nbsp;=&nbsp;0.79 —
+    but drop the foot and it falls to 0.48, so one extreme point is carrying much of it, and the
+    middle of the ranking scrambles. The magnitude is worse still: this run exaggerates the
+    foot-to-chest contrast to 30× against a measured 1.7×.</p>
+  </div>
+  <div class="vc">
+    <span class="tag n">Not reproduced</span>
+    <h4>The 0.80 m transition height</h4>
+    <p>Measured transition sits at a local Rayleigh number of ≈3.8×10⁸. The reduced-scale run never
+    reaches it, so on-body laminar-to-turbulent transition is absent by construction — not a result,
+    an admission.</p>
+  </div>
+</div>
+
+<p>
+  The whole scorecard, in the units each claim has to be compared in:
+</p>
+
+<table>
+  <thead><tr><th>Quantity</th><th>Simulated</th><th>Measured</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>Shedding cadence above the head</td><td class="num">3.6 s</td><td class="num">≈5 s</td><td>St 0.62 vs 0.44</td></tr>
+    <tr><td>Peak plume speed, 0.5 m above the head</td><td class="num">0.41 m/s</td><td class="num">0.2–0.3 m/s</td><td>~40% high</td></tr>
+    <tr><td>Per-segment conductance, all 11</td><td class="num">r = 0.79</td><td class="num">—</td><td>0.48 without the foot</td></tr>
+    <tr><td>Foot / chest convective contrast</td><td class="num">30×</td><td class="num">1.7×</td><td>order right, size wrong</td></tr>
+    <tr><td>On-body transition height</td><td class="num">none</td><td class="num">0.80 m</td><td>not reproduced</td></tr>
+    <tr><td>Mean fitted core radius</td><td class="num">0.11 m</td><td class="num">—</td><td>no direct counterpart</td></tr>
+  </tbody>
+</table>
+
+<p>
+  Ra<sub>sim</sub>&nbsp;=&nbsp;10⁷ against a real 4.9×10⁹, a factor of 488. The run covers
+  90&nbsp;s of room time in 91,840 steps and did not diverge; the first 36&nbsp;s are spin-up and
+  are excluded from every number above.
+</p>
+
+<div class="note warnbox">
+  <b>Two dimensions flatter the picture.</b> 2D turbulence has no vortex stretching, so simulated
+  cores stay coherent longer and look cleaner than real ones. The vortices you see above the head are
+  more legible than the shed structures in a real room, and their persistence should not be read as a
+  measurement. The full study's figures carry the same caveat.
+</div>
+
+<h2>The Hermetic reading <span class="rl rl-h">Tradition, not measurement</span></h2>
+
+<div class="herm">
+  <div class="ax">“That which is Below corresponds to that which is Above.”</div>
+  <div class="axsrc">THE EMERALD TABLET, AS RENDERED IN THE KYBALION, 1908</div>
+
+  <p>
+    Nothing in this section feeds a number into the simulation above, and nothing above is
+    evidence for anything below. Kept separate, on purpose.
+  </p>
+
+  <p>
+    The Hermetic tradition liked the correspondence between the body and the cosmos, and the
+    thermal plume is an unusually literal instance of it: the same buoyant convection that lifts a
+    thunderhead lifts the air off your shoulders, differing in scale by four orders of magnitude
+    and in mechanism not at all. A person is a heat engine standing in a fluid, and the fluid
+    organises itself around them into a column with a rotating top. The tradition's image of the
+    body as a small world with its own airs and its own weather is, in this one narrow respect,
+    a decent physical description rather than a metaphor.
+  </p>
+
+  <p>
+    The censer between the eyes sits where the tradition puts the inner eye, and it is the one
+    position where the smoke goes almost straight up. That is worth saying plainly in both
+    registers at once, because they do not agree about why. The reason the smoke behaves that way
+    is that the brow is a few centimetres beneath the warmest skin on the body, inside a boundary
+    layer that has been accelerating since it left the floor. The tradition's interest in that
+    point long predates anyone measuring the temperature there, and the measurement does not
+    vindicate the tradition — it just happens that the hottest part of a standing body is also
+    the part the tradition looked at hardest.
+  </p>
+
+  <h3 style="font-family:var(--serif);font-weight:500;margin-top:26px">The pyramid on the crown, and why it nearly works</h3>
+
+  <p>
+    The <b>Pyramid overlay</b> button puts a Great Pyramid section on the top of the head: an
+    isosceles triangle whose faces meet the base at 51.84°, the slope a seked of 5½ palms per
+    cubit gives, and the one the monument actually has to within a few arc-minutes. It is scaled
+    to head width — about 20.5 cm across and 13.0 cm tall — because the head is the only natural
+    scale on offer. Nothing about it enters the simulation. It is drawn on top of a finished
+    frame and could be deleted without changing a single number.
+  </p>
+
+  <p>
+    The overlay also does something the symbol alone cannot: it puts the pyramid's slope next to
+    the plume's <i>measured</i> slope, in the same units, on the same screen. And the answer is
+    uncomfortably close. The pyramid's face stands 38.2° off vertical. The plume above the head,
+    measured live as the second moment of its temperature field against height, spreads at
+    roughly 33°. Five degrees apart. If you wanted to claim the crown's plume rises in the
+    pyramid's angle, this is where you would stop looking.
+  </p>
+
+  <p>
+    So here is why that would be a mistake, and it is worth being specific rather than merely
+    sceptical. <b>First, the number is not stable.</b> The offline study at Rayleigh 10⁷ — a
+    hundredfold closer to a real body than the browser run — measures 15.3°, not 33°. Same
+    physics, same method, less than half the angle. A quantity that halves when you improve the
+    simulation is not a quantity that has agreed with anything. <b>Second, the plume has no
+    apex.</b> A pyramid rises from a point; the plume leaves the crown already 20–30 cm wide,
+    because it has been fed by the whole body on the way up. Two shapes can share a slope and
+    still be nothing alike. <b>Third, the angle is a choice.</b> "Where the plume ends" is a
+    threshold someone picks; move it and the angle moves with it. Classical plume theory, for
+    what it is worth, puts a real turbulent plume nearer 6–15°.
+  </p>
+
+  <p>
+    That is three independent reasons the resemblance is empty, and it took a measurement to
+    produce any of them. The overlay is here because a coincidence you can put a number on is far
+    more useful than one you can only argue about — and because the honest result of measuring
+    this particular correspondence is that it dissolves the moment you measure it twice.
+  </p>
+
+  <p>
+    Where it stops being a decent description is the moment the correspondence is read backwards —
+    as though the resemblance were evidence of a shared cause, or as though naming the shape
+    “Rankine” explained why it turns. It does not. The vortex above your head is made by warm air
+    and gravity, and it would form identically above a bucket of water at 33&nbsp;°C.
+  </p>
+</div>
+
+<h2>Sources <span class="rl rl-m">Measured</span></h2>
+
+<ul class="refs">
+  <li><b>Regional skin temperature.</b> 30 subjects, 24.4&nbsp;°C ambient, 46% RH, 15 exposed sites,
+      supine; ten statistically distinct thermal zones spanning 29.8–35.0&nbsp;°C. Anterior neck
+      warmest at 35.0&nbsp;±&nbsp;0.5&nbsp;°C; sole of foot coolest at 29.8&nbsp;±&nbsp;1.6&nbsp;°C.
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7992731/">PMC7992731</a></li>
+  <li><b>Whole-body thermal mapping.</b> Trunk warmest overall, distal lower limb coolest; a Y-shaped
+      cooler zone over the anterior torso and a T/Y-shaped warmer zone posteriorly; hot spots at skin
+      creases. Chudecka et&nbsp;al.</li>
+  <li><b>Per-segment heat-transfer coefficients.</b> 16-segment articulated thermal manikin in a
+      boundary-layer wind tunnel; radiative and natural-convective coefficients isolated per body
+      part, standing, still air (v&nbsp;&lt;&nbsp;0.1&nbsp;m/s).</li>
+  <li><b>Plume structure and velocity.</b> Laminar at 2–4&nbsp;mm near the ankles and knees,
+      thickening to roughly 20&nbsp;cm at chest height; peak velocity 0.2–0.3&nbsp;m/s about
+      50&nbsp;cm above the head.
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7817963/">PMC7817963</a></li>
+  <li><b>Discrete vortex shedding.</b> Time-resolved PIV above a thermal manikin's head; intermittent
+      vortex structures shed roughly every 5&nbsp;s, isolated with vorticity, Q-criterion and
+      λ<sub>ci</sub>.</li>
+  <li><b>Exhaled breath and the plume.</b> Paired counter-rotating vortices formed at the mouth,
+      advected upward into the plume.
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7118971/">PMC7118971</a></li>
+  <li><b>Rankine-like profiles in buoyant plumes.</b> Swirling fire-plume cores follow solid-body
+      rotation in the core decaying outside it.
+      <a href="https://www.mdpi.com/2076-3417/10/10/3428">Appl. Sci. 10(10) 3428</a></li>
+  <li><b>The hand as an infrared source.</b> Thermal emission from a human hand, emissivity
+      ≈&nbsp;0.98 at 310&nbsp;K, peaking inside the 7.5–14&nbsp;µm atmospheric transmission
+      window; irradiance mapping shows an incoherent, omnidirectional source, unlike a laser.
+      The Planck curves on this page are computed from the same premises and reproduce the
+      published peak of ≈&nbsp;36&nbsp;W&nbsp;m⁻²&nbsp;µm⁻¹.</li>
+  <li><b>Effective radiating area of a standing human</b>, ≈&nbsp;0.70–0.73 of total skin area —
+      the view factor that reconciles the manikin's h<sub>r</sub> with 4εσT³.</li>
+  <li><b>Great Pyramid slope.</b> A seked of 5½ palms per cubit gives a rise-to-run of
+      7&nbsp;:&nbsp;5.5 and a face angle of 51.84° (51°50′) against the base, which is 38.2° from
+      vertical. Used in this page only as a labelled symbolic overlay.</li>
+  <li><b>Rankine vortex, definition.</b>
+      <a href="https://glossary.ametsoc.org/wiki/rankine-vortex/">AMS Glossary of Meteorology</a></li>
+</ul>
+
+<footer>
+  Where the traditions genuinely touch, it is marked. Where they only rhyme, that is marked too.
+  <div class="test" id="selftest">running self-test…</div>
+</footer>
+
+</main>
+
+<script>
+"use strict";
+/* ===================================================================
+   Thermal lattice-Boltzmann solver: D2Q9 momentum (TRT collision,
+   Guo forcing) + D2Q5 temperature, Boussinesq coupling.
+
+   Ported from the validated offline solver in
+   projects/thermal_plume/plume_lbm.py. Two boundary-condition details
+   are load-bearing and were found the hard way:
+
+   1. Guo forcing takes the tau_minus prefactor, not tau_plus. Momentum
+      is an odd moment and relaxes at tau_minus under TRT; using
+      tau_plus delivers a few percent of the intended buoyancy.
+   2. A population leaving a solid node is reflected only if it would
+      land on fluid. Reflecting into another solid cell lets adjacent
+      solid cells bounce off each other, and anti-bounce-back's
+      eigenvalue of -1 grows an unbounded alternating mode in theta.
+   =================================================================== */
+
+const CX = [0, 1, 0, -1, 0, 1, -1, -1, 1];
+const CY = [0, 0, 1, 0, -1, 1, 1, -1, -1];
+const WT = [4/9, 1/9, 1/9, 1/9, 1/9, 1/36, 1/36, 1/36, 1/36];
+const OPP = [0, 3, 4, 1, 2, 7, 8, 5, 6];
+const TCX = [0, 1, 0, -1, 0];
+const TCY = [0, 0, 1, 0, -1];
+const TWT = [1/3, 1/6, 1/6, 1/6, 1/6];
+const TOPP = [0, 3, 4, 1, 2];
+// cs^2 = 1/3 throughout, so the collision below writes *3 for 1/cs^2, *4.5 for
+// 0.5/cs^4 and *1.5 for 0.5/cs^2 rather than dividing in the inner loop.
+
+// ---- physical setup -------------------------------------------------
+const T_AMBIENT = 24.4;                 // degC
+const BODY_H    = 1.70;                 // m
+const DELTA_T   = 35.0 - T_AMBIENT;     // 10.6 K, anterior neck
+const U_FF      = 0.765;                // m/s, sqrt(g beta dT L)
+const RA_SIM    = 1.0e6;
+const PR        = 0.71;
+// Lattice velocity trades compressibility error against playback speed: the time step
+// scales with it, and Ma = 0.147 here costs about 2% in the equation of state, which a
+// qualitative exhibit can afford. The offline study runs at 0.05 instead.
+const U_LAT     = 0.085;
+
+// Grid and domain width must match build_body_asset.py, which bakes the mask.
+const NX = 130, NY = 228;
+const DOMAIN_W = 1.90;                  // m — the scan's pose is 0.93 m across
+const DXM = DOMAIN_W / NX;              // m per cell
+const N = NX * NY;
+const LBODY = BODY_H / DXM;
+const BODY_X = NX >> 1;
+const BODY_Y = 2;
+
+const RE_SIM  = Math.sqrt(RA_SIM / PR);
+const NU      = U_LAT * LBODY / RE_SIM;
+const ALPHA   = NU / PR;
+const TAU_P   = 3 * NU + 0.5;
+const MAGIC   = 3 / 16;
+const TAU_M   = 0.5 + MAGIC / (TAU_P - 0.5);
+const TAU_G   = 3 * ALPHA + 0.5;
+const G_LAT   = U_LAT * U_LAT / LBODY;
+const DT      = (U_LAT / U_FF) * DXM;   // seconds of room time per step
+const SPONGE  = Math.round(0.55 / DXM);
+
+// ---- body outline, traced from an anterior thermal scan --------------
+// The exhibit draws a real thermal photograph rather than a drawn figure, so the
+// solver's collision mask is derived from that same photograph's alpha channel --
+// otherwise smoke would visibly pass through arms and fingers the eye can see.
+// Regenerate both with projects/thermal_plume/build_body_asset.py.
+//
+// The scan supplies shape only. Its palette is uncalibrated false colour for one
+// individual, so wall temperature still comes from the measured population values.
+// Prefer the embedded copy; the file is kept as a same-name fallback.
+const SPRITE_FILE = "assets/plume/body_thermal.png";
+const SEG_TEMP_C = [34.8, 35.0, 33.6, 32.8, 32.2, 32.6, 32.6, 33.8, 31.9, 32.7, 30.0];
+
+// Generated by build_body_asset.py -- do not edit by hand.
+// Body outline traced from the anterior thermal scan, so the solver's
+// collision mask and the drawn sprite share one silhouette.
+const MASK_X0 = 34, MASK_Y0 = 2;
+const MASK_W = 63, MASK_H = 116;
+const SPRITE_X0 = 33.1232, SPRITE_W = 63.7536;
+const SPRITE_Y0 = 2, SPRITE_H = 116.3158;
+const SEG_THETA = [0.98113, 1.0, 0.86792, 0.79245, 0.73585, 0.77358, 0.77358, 0.88679, 0.70755, 0.78302, 0.5283];
+const SEG_NAMES = ["head", "neck", "chest", "abdomen", "pelvis", "upper_arm", "forearm", "hand", "thigh", "lower_leg", "foot"];
+// The scan's own false-colour ramp, coldest first, as 0-1 RGB.
+const THERMAL_RAMP = [[0.036, 0.3392, 0.6831], [0.1829, 0.7811, 0.0674], [0.4607, 0.8478, 0.0281], [0.6032, 0.987, 0.0147], [0.7994, 0.9765, 0.0436], [0.9906, 0.9906, 0.0341], [0.9459, 0.7379, 0.0471], [0.9808, 0.5717, 0.038], [0.9617, 0.2448, 0.1677]];
+// Where to hang each segment's temperature label, in lattice cells.
+const SEG_ANCHORS = {"head": {"row": 112, "col": 72, "side": 1, "c": 34.8, "f": 94.6}, "neck": {"row": 104, "col": 70, "side": 1, "c": 35.0, "f": 95.0}, "chest": {"row": 88, "col": 80, "side": 1, "c": 33.6, "f": 92.5}, "abdomen": {"row": 74, "col": 75, "side": 1, "c": 32.8, "f": 91.0}, "pelvis": {"row": 68, "col": 76, "side": 1, "c": 32.2, "f": 90.0}, "upper_arm": {"row": 79, "col": 83, "side": 1, "c": 32.6, "f": 90.7}, "forearm": {"row": 72, "col": 87, "side": 1, "c": 32.6, "f": 90.7}, "hand": {"row": 60, "col": 36, "side": -1, "c": 33.8, "f": 92.8}, "thigh": {"row": 52, "col": 53, "side": -1, "c": 31.9, "f": 89.4}, "lower_leg": {"row": 24, "col": 74, "side": 1, "c": 32.7, "f": 90.9}, "foot": {"row": 4, "col": 72, "side": 1, "c": 30.0, "f": 86.0}};
+const T_AMBIENT_C = 24.4, DELTA_T_REF_K = 10.600000000000001;
+// The scan itself, embedded so the page needs no external asset and
+// renders the same wherever it is opened from.
+const SPRITE_DATA = "data:image/webp;base64,UklGRmCSAABXRUJQVlA4WAoAAAAQAAAAKwEAIgIAQUxQSJQkAAABFAVt20gJf9j77whExASQq4xVZ2yqI2emPcndeNYFG2rlCR0TtdXc4BE3KAAKs6HpL4xN32AadIM7HnHNwhu2bYZt27b1fhGZpVndtm3btm3btm1brfdh2922bfc+Wq+9oWRGfO+YqlPli6/8jIgJ8Idtu2o7zf/dzxhjrnhIiBBSEpwgbfMiLVYL7lDDvd7ibnV3d8XdgmtwCH1DcLcIlJCGkCDZa44xnvuPtfZeY4y1EnK87z8RMQEoSCuYtiwqUyfeDQj6hOIw6NKlqsz5/HoS+wMGOHImMzd8DZX0Awwm/4AMmodNezOi+M+Y1Z6lD8yeeCMq8Z6YxktsssSWN6IW51l8kZ5ldnkzgu+s3YpNLYQNb0blO+xPz2Ibno/KcVY+sSRoObn5eNYY/NYwJ7PJgluegeg3a56mlsSGO6PymsUxjCxLzwm102x1Ir2WRQ6ME/GZ4DmNLLzleag9Jhj2l4WqpeX0yfwhuKxBKotvuS6iw4xs/lbsBl3SZQ38lU2Wn3gPgr/EjpipoQsy3/WYlSMZ2Y3tlL2k8hdmxdAVXe6LjreMbDovaFck/npYEGc5fIE1u1LJqeCvg7RrBkY77BB2zaRp+yds9TrU7jqse3int6QyB4Tuuc1brQ8wrBSx2OHxRx9/h9otd/vK4RB2catX+cqYTV6sfbcoJ46DeAoONzJ0jU4Z6y0zo3syvxktzsLtXaP5i2VDQJ8k81l42+G2rmGaePD0UXxl7+geZv4Etacc9vQ1uzbxIFS++jS7p+WFqOCrA7qo4b6hdpUx/zM/aPccBV/B4UaGLsn61tRBnGVmdA9fRICzcKd2z8viLYOPUbsH7pLJS4P2S1DjMk5ZaSJh6kfpu6LNmyB6C4KRD7HuCq7uMASMfox1eSm/MUsUf6HGgQ8xltceigoeDxg6I8bSyDEiLkMDmzIU1rbjR0b43MrHSkv8DBCniRt6nYaScmq3ChFer/Av+oKU3BQRfpOLS9IwYWPU8LvBRl4L4jcIcLxglZrlep4Zo+/GlVRzQ1S+G1tQ4F0jKvRN4gPon0Qei9gvifrEiCDeC8U0+Rt04Lwxb5eiftEnJPgOlZzBuoyaX4KD93B8IVGvHlWJ/04shevDom+im8lKFG6KlSYa39lEVprU/Asq/B+Lk1eqfGUlyiBzNsNKEeOcwxQqy/ibG/TervXMF0Ms5Ld4Ly8NN/mLR/yNpQbO+Nza1jjNOgBPkQxaSOtTQO0wYwww8sxzQl0HlhuXxc8PQojiKhEHYPdj/8PiNfLxvQGIuMlYAOv+8AmSwZdGKvnyVjUgDhLnRICJE3+7iGSt7MaYyF/OOAIximPEOOcEAD7we+/JEJXdmhPb52YGEN1i0XaP3W59aSnJoOzqTH51wcYRHXEK7C7XXXv9XWz17IGZ5GPbA0DwhRhrq2rf29nqfYzKnqipIS+aMUbEEMQNAuC7r80lY/A+sKcm5bcff7YpAKmjC5zFKpv8/XVSA3txQ7L56UILAYhVFQtPBJj0KElV9mhVJcmfXLknAEQpOQNzxM/fZozKXq5JM8kz9thrA0DKzULOJxm5HEytkuRB0wC1lFnAmAc4uVUa6es68Nn1RgJSYjW2+J6ZtgbW/znKIkhxRWytTLQ2kryiAqSwKqycktJe1WX82fTDEQqr8yu2tDmyeXZ6xJKqcQ5bWp2Vz0+NUE4hzvBJq2aRLV+ZOUgxRZzJRMu7vCPUpSTVTJ+lbBqbifMgFlKFU9jQ9sTxUkgVNmtamvccykjiVA/TvJzfmqUKJRQwJzPNz3wVRRTl3JzsY6vboCqgCk+wBJI+PqyS4nFx5QmtFgATN0csHoPfMrEI0jNDqtIxWCsllmGTtkVVOA1cyG4pcKvSEZnwmmox7Fc6ButTWYjKz2uUzhq5GNjkI1EXzlYsB+WHM4iUjJNb2RYDlQtIKBpML4lWx6MqGCvbLE5aDpq+W0xiuTjszZYFmXi/hJLZU4si6xcoWIePsyjYTt4TVbEILmEqioYXhbpYgIXMRUE2s0DK5cUVDo4pmPBeaSQ9XapiwTul0fBn6BRKwLyfZy2LpA9OE6VMapzDhoXZcj3EUjlRy0PXKpeTWR5cMRTLiVociT9HKJVzWRyaJq+FWCQRGw8kLQw2PBF1kQB4m7k49LBiCe8XCI8oFrzXV3m7r/J1HyXgBqbyOLJUKqzGtjwOLpfNysPzrFCVykZaHMpmKkihbMECmTJtoUic6jFNxTG5Uyio8Cu2hcGc9kXsm7T8qdRFEmX1fyYtjxtQJjXWZsvSzPmtuUMokSAXaSoOJi6HWCLAV8wFor9CKJJR7xUJ3xhRIjWOYsMCbfLOqMujineyLZGWl3Wq4ghYjMoSVbaAlEYtP8ltmaRJ20osDoxnmbDLW9ApjCCLf5G0TDR/MKdIWUTZiC0LNXNZhLIQPKG5VJL+McSiEJnhg4LhgyiLDg5il6Wq6bMVJJRExHimYmGXu6AqiIClqSzXrM+JFERd/yK31sUcyoGpUI5RlkmJ5msGNvls1MUQ8Htap3yemqHlj0ZVUggSRr6h1vnmtN+yTkflzAiFUGM/bWh74ExsWlPT5XyUxDIQGfUh1bz7BL+eFzVZ4oOoCgGY+L+T1QYMw7WxTqbpi5UkFkEMO01JNL6lYQ9nTMaWO0pVBB3cyu7/Qs5vf0w1wZnqSY3Jsr6CIjR22itRM7Q86LfMJliHg+gzLJwIWQGwmMnA9Im340UrYPGDGFKxyTPRWP4ZM+W5EDN0uY+8bIaTHemTBU53VpZ7FfZlkxlbboMXzRA7+twQUlH5cdjlnrjrNWZIPAR4zgwYTKQm82FGw60AvEPNsoRYInb8Iwyp6P0044yrcFxdM71PfxzRsQQOB0afLPJuGNuM2/hlxgyRq6E2BYInqanUN3dEbVqF2xmYPvDPEoMtzhzCOhUD73AQwyxOXFYzYx3WkcoYKx9Z6jUVA68ZVYtZgkFvM2bwPBoRAU9bAouLGJKxyS0RrRLbeCAGpo/xkfGVIOAtE+7px5gNQ0yn9ddLxMooi70ZmbHmVaiAgGtMmN0PKncu62T0vBvBJiubN5uaQ/kxCUDEBkw9L/JTMO0cTq99OiZeNqQ2yWFvembtWxUCBLzObMCU/gRVTU3HhsshWiTmMY05av7EVvgPz5qw6QDMoOs1ZsjNK7OFYBGeZRbfdzjcf/KcCVP7Q4VD2czAhuch2uPk40u8Zoh8CW3tETNlYYwZNE+cOog1IriJgTl0vllOweL7DBnY5AtRGyPVsIsYmNPzq3DLK7NRHs3fro9gi8XubDJn0NljrCyvZLN3sjDx+aGVKdZs8p9as3heA4d2z1uDCn+nz8Fu2jpWllT4Gz0zXS/tIjZmMufiTJkvwVKHo+iZ6170t4w5Bls1VXMw5SNjNMPYUc+EmCnql2H7WVGtEQx6m3lIzhODFVa+xsDMygkw/axMA+IHOxgTcrX5blRm4GHNpbpwLWkXZPFvs/Y8bj4wGfESYx5NE7ZEsMHI1q8GzVTH76BC+xp3sO1xQe8ea2UAqPAl1nmY+UUHNlbmcDaZi78ciNzT82r+AhUGdqLmYrc9NNQmCB5izBTjrEki/eFOA86VgYkZ/7pqJuXHw4IFDp+hZ+Ym90WF/qoHep3Gvt1gBwSLkxgyMfEwVL1PqqEPasik9YLNreknYoWU2OO9/hhVB/Ih1tnSG1NX0vMs9mRg5sDtYDGA5djzav6tE1TD76bPRM+vwvY663ZaWmumWu8eUslA1rfgTx0ZbPdmzBXj3BGm1wELqcyrkbvBov8QnmO2Bw2cEZuZWMcvou5pYt2fvGderf2+sBgInrbgL9KR2FXe0JjJ8w+oeprBh5jd83A0MMBKNpzQau/7JTqCxVcYNI8q10PoZU5uCD5T8E+OqmQgNQ5nw14f9aHVjXQCh8+HmIc+nhPrnobpzOX5ZTgMbA/tfYz8MExHxoyjZmJ4dwGJvUvssDs15Ik8Cw4DrsJpbA2IaycQO/Tn9Ln4AHpYJZ+kZ1ZfnwWHAQtGT6H2vsAfiO0IEPyRPpO+WvcwwWOMWRregEHopJ5gw2yksG7DRU3NwrrZHlWvqrCv98yZuGiqNR1Ucmpq2fujzl7VSGew2JExj+dZiD1K4rhHGHNkfjoFBh12cD27BrDmEXAJpBpyr/osyinTQHoUxjJrbj5bFA4dSpz+H5pM0H2TwGFPquZgky9C3ZOkHnWfjzlaXoIGOg2Yn5kWRj5eSQpYHPpu0Bwtfza66kkRm9EzY8PfxxodR1yVkwnKpYORtoEbYsjBzHkk9KAQl/qk0Qya29UQE8jztOJ1JLZ2C2qWpIcj9h4R9wYj08dY7wmLBPiHFXHJhjBJYBvfaoYcMc4Za6TnOHMKPdMr4+6okGLE02oDa55XVWkEQmoG1jzeuJ7TwMVZ6rd3QYWEDruyoZGqG8CksUMuiyGH6mvouRaHvR2YvuZxaCDNLoYwFUTwYog54pJNxfQWcXYuM8QwY2wlKyyw+DzrDGzyJ2j0Fofr1DO5Bk6BxYqL2NEPMmSIOnOIkV5SYStGpvc8pnJItZMWAASjZseYjpGHwvYQg23fDhma/AUsku3DEkADn2LI4OP94nqHNRsv0cjkgS+v40wqE+Z5O+cCgMUZdZ2B09FDHP7KmskD56wPg+QRf2UqAVS4mT5ZjE9OsKZXNPAVNpk88NW14ZAhvGRHXD+LsVNfCZqKnqfA9giHyc+HmMxzzlpwyBiwx8RsBTfKggpHsy9ZjAuHmV4gpoEJzzIydeTL68Mia4272JgQdeY4Izng3NlspmIdz0Cj+yKA1b/Pmqkj56wDh7xVOCa1JjT5czSQVQz+wZhK9Y1tYLsrBIHsdOWLDEze9F9GA/knUA1QXbqZSB6IxT+9T8TIJeta0z0SKiBsfTPJwOSR/xGD3BHbdhMt4ELkF8GbjIno+RvYrhEAG/98DhlDZHKt39qpgBr3sLHhv4Pzwdo9+6iJNCx5nzHdYSyGHXrzIpKBOQN3g0UB15rRKAAGuy2qNQ0jX3S2PGOsA943m2RQZc7ABwZXUoDcWBIYjL/z3UQMPBRVaQIAG/74TcagzFzrJ+GQPWDRlFkQ1h0+i6qJwiNDIWVZTJ46/d5FZGT2Jr8FhwJk/q+y2rCgDAiGHdikJmHkraOdlGQw6FqS9MrskU+v4UwB6OA2dm1YVggssPNbUZOwjydgkCnHYoPnl4UQlPljeH4yDEqM2LNJFgROd6YMyGCcoXUa9UumAVYKcbLea1SWWfMYNFCkAN9RDah1L7hCIG7MgqBJqOy7cgtAqsrlcxj1CgPL9PwHHEoZN2ADv1gOLE6nT0Ml+cUxAGAyGYMpv2Fgmdpc8gFji6m+s0DDK5uLKca41eeGmIYaIpv/OP6kI2GdZBDgz4sZWGjg+XAoNMjSk9SAwHthUa7DN+gTkVS2/giAk0QidsJfSc9CY7xycCWldHAju7TgJlOSmBFNajLS13XgDX+YCJgkFjAL6JWFKvuGQVCohOkf12xA5PowBcGajy32mq41kM0fDIftyFQVht34so8stuY3bYVSA5ZjpgmHlAWHQ+nz0AflKWNQDchYADj6cRZd82soac5sQuAjsEVJY9QTIeQh2cfHRkGc9Ae4T/zkt2TQovSYgiLOYLLhHikLFp9jzMYmH/lKBVhrTMuk01/zZIzsX7UEnlLUizawrj8LV5TYoY8yZmMgnz8IrVXl5BWStWf/QVlg1JcnGinoQSt4cGFo4Ads5mOM5L/vPvX9GwAAvSr710C+824BfBQG5cijZhxRmpFtl0TNR2pNkst+9/szhnKgWpP3HjZySijgRSkJDxqhnN9A8a+wCDKEGElyydzQDO08+e4lg4BR+QJvQDlRNvq+VSPeKM/9p5RWrevAQ0hqDFEDXzh0S4iTdfL5vi1gi6mwBxsa8d/yTC4NIWh/rVqd+qt72PYv6wFWKpxPn8nrdFehoJ21YF7N1FZV+1ENAAZv+IsZW224EVAZoMJF2ZRTYUrahQWzMIvy7Rl3zlhKstaWoCRchfbOAIAbfHU2vjlKZMVkcHnPZIl8GMCH58xfwFYlX/kNADHWGWPQamULeuat9XSpUNJOdixE6Q6fYZ3lZVc5iBnx3SUkeetnHTq2+ApDtu+gJAx9k2qELv0gpLR9swSeBwMDABPWXHPyWgYwnYgZ+YrGPKrvrAspCd9awZp/RFWWxa5v+wyeO8MCgFRoa9FxJcfFmnkDfwGDcqNsPjHRjJ9JYXCYyZAu8lkxLYAYY4ygY5GhC6iZPKeZqqAOrmTXjh+gNIuf53kM/aQ2WMtrJg1vTRNbjsjM76taoTpvkpiyDCYxZtDnG5Acxqz5XIzM63kNHMoNWJRKM5Ubo7hNNAMDZwwzksFiUwZmu15KqvBLTYbo5C5gDiWHSxb5ZCzgOpT1FxoS+A+4suAGX0ifjt6fgSqdGDylvab+uy33SmkVfso6Q9Q5YyuTzDT+GgJ7SoXNcktLbkRx8tssDDwVNpUAgVrANWVtRUuizhprpTD8MA9rnmRNIme+sCwwfezv1kFFbWkKPfeFK0rMKs9qzKIah4mkqfA31hkY29DrrnAFbW2MfqowKycxMG30/SwC0hjZZ3HUDM+wO9YzhjsV5nC/piK1hSH8a5CVFBYPMTB55NSL6dvwkwUJfs9sSeRNkJKsfGxB0DY+DMzzn1+lV5KM3E5MEnuHZghc75usScb4+JrGFAN8TbVEuQhFV9ibTZLUyP5jS81v4Fj6lhBnwCZw2LFZM7nn5dUaS6lk0PtXtVLQB9a8VJa131XfQl52F7VNv++MacxhJBnjk2sa6Uzc/YwZ4tUYvqSFnvvAFfSRNUvKAt6kkjG+tA0+TN+y7KnYEvhrTHpalWSTnzJVZ8BiarrI/TCiv72K+sCWwN/CFGSx59KgZOCxqHZpiZyFpVTS6+0We4WaZNALYDoymLo4poucaWToGy0a5k8VW9BXtnh+FFVBDfyETTLqE6Mb2LHd/yK00PftZAbN0kAyxi1hOnFDL6Fnq2p/2l/No8QMiy2eV8Kh2IjDNVkS+YCRgtyQv6gnm/onDMEO2qLPj/42fQs/CuzGSLKpP0ajA4PVqexf2ygZ+gnHo+H+ytByvRRUYwu2ligXoGAjq7E1cns0sBs9yZr778KaZOA5kLX6WqI+NMTIwCyO0NgSedrBjC0aX5v2OpVk5NxKGjiAdct1KMiYTedntSQu+hBMMRYHaiQDb4ExZsOXYmz51L5tIhdIw/411iQjPw87MId76duNW5vaEjh7Qq0tXg+BdfhiF8DhBiZD2OSv0ChF7OjHNFD9W9OMhcMl9C1fGvm0xpZnYbBWVCV9vAuuk+vaaORql9O3ifv+hTVbuAOcw+e7wtxui69PgivFYS96MvBBWMDJ9HZH4UWGlpeHisOv6UnPWxqJvB6I8/vhhO+1ifHpKcYMYHpZuM0U5SKDYh121TaPSAuubXe0/KKFtZ6CIbJ/rEl63QOug7uiJ2vOxqA7NZDU+NK6l6knWfM6ODgcqS1xxgpM5K2QgnZjS9wNFjDYNGrL4Zga2/B0VHbUCyGQnnt2YPFpNkOTs8a6KxhIsuZf38dIkhp3FwOHo1mTkfvArrB43QmutD5+qN1EkoycJR9lu9NQWXyeNeljJ2IH3U1y9ljgOY0kNca9V49tyHEwMLLp4jrU+mDDSlG32MIDygp9UfnwGlYAsavMYKBSsfpDMfYjdpWHWMc+dgJB4+zLLhqNat2Xo5Ks+U18gS2RT403Alj8jSQ/CYei7rdEw8KtxRYDN3gmWV8yBgYAKpyoNVXf+RjOpieVb4wTMRj9KMnfDrboUNDawMmsSbLJ0+0zDCRrnooKgFT27KefOQoWJVvsyWxH4HRUKFfkA7965ipA0EZ+zpps6nXyOw1snQiBxejPP/VrCDoW55xU+Jq2aHh1CzzQLn5TWvo1KNpgEtUOjfM+aEw5EABwgrYGWy+qfai5O0a/SyXph0MAAQBJ0LbC0WyJfAm4tyXqoqFoL0bEoLQNLaHnfnAFwRgRDHQRSd4HjNUWjXvAABArBqkrfE1rUsOi/Rwej4H08XjYdt1osIExnyyrU/PhrX780P7DnazygkbS8zpUyFzhFDbJOl6LwTiezRD6uKO4rlJTwl7d1H8DJ7LZcn4+K59YFpt1zRONM6OfJ8nvVhbdtCENCbwNDl1srTVWYLHDu7XS69X5YLBLTfJUWBi8b8Y9930HBt0kkz5WNUPD0mliu6h/gxu4rO7jj+GywWHLgw7aCwaAoFXQ1RXOZ2MGPT8L1wOkGnUHyddGQPLBAIBFq7HWWnTbZaboPj0BgmE//dkZlUWR1jmHnlnjUlP4yd4AwXLaGt2nR0Cqyr334b69Ynlti4aFW4ntlwTeCIf+ye2yMuU2/H+Fi0y5eYXvBlNmruAFLD+Q1YrIQ2BX6AB8RjM0ToRZwRs2xRC+f0UvhovYGhE4fbiVFTuHrdgY0fBc1Ci93Qy5XMpvF0MuRfntrHZcXHyIQ59ksuJaB+BhI1QnzAfpm/BzlH/E02YMDPXAeCMyn6ml+ALm12xCo9ugcsDSNIJ7e0Dm/iSrAdpOWFdi8aHGFWwMSPwHIhwgdxnxqHigwhGpNeFBeEAQvqNa8KITRi5ZHmQej+CCEWH5MJcL4OxP6JcHS/mgwmGslwNpMS98SXtfw9tiDR8cx+XBDfCBkQ1fjtrz9AonwOAJxh6nHBgHcYK5vDCNXTHcCxZTNZSkpNfgtbSRfvg4i+KimSxeOckNRjZ6JWoxkXtM2OvGQ6bf2EctqNUTQgUnVvg7fUHj0PaTDAV1eTA6bpDzijrVVM423FoxlqP506UluAHnFhT4bzjA4IMsKPMpBPjhvKJubxE37BL1Bb0QPPHPkuLNLRiM37NZ0FPwg2BSk6XW/O3wCoABDqlDMSmvjeiIUb4Yz3ONA4CNNm28Qi2GK7tizJJiGLkZjMU+ng8vZqlZH50+ihtQyVmsSwnhDrgGfseSW96MGn4UGfOyxlJ4NpyY8YfNekcLul88AcETLCToHUOsAMBa5LJyrocvZF4pjEs2gAGMHf+zT85gKIPd6SCeMLiKoRDlB1ra/ruYSVP5wmIr+iKUb31mhEibwbinGE7rjR2KWQQIWo354LwYi0j89bAIX0yLxVhpV+FoNllko/ugdsYuLIO+PgqujZjVntRYBk9zhpjJj8RYRM0/oGoDi/sYStD8xTISXAGHK1gXJzPLyHwRAl9a+T1DCapLp8D0g3+X8mnwhmAci1QuFEh/d5WReDqCO9aIhbw7dCDblNHmZRHdMYlFRs5uyAD+pxBu5A7YoZcxFFBzPzj0t1kRSZ+cIYo3KhyvdRFHFNfyXlTwx49ZxmFd8Efxh8GGC6P2IuVGCO4A8BJjLyLHQRxi5vSoNKtL0KvYRwn8/ciIfknNo1C75MUedbr45L896lR4xOBChhIOH9Dm790cptGXcPCApr6X26eMA2Uwq3huzxKUXwyF/FcP9z2+HdRjfY+vBvWy5/YuY/KwwZzhue1KiHyoI4OY12+CGxjy1dwWFf6rZf0GvM5Ywp6DWspzL5Wxe79gThl7DGrJ3OeIuwxqOfY1Av+3E/FfhjD76zn3Nf6NQaDGtWz7GncMTq7R/saWgxJMPZHax4hT/xsjv+trcMsORlFXXsQ4e6IxA7GDbmZYaeH5RzQwUIdPLPaa7QxxWtCfiRsQDJ5nzHYUfKZ8azikA/M9zRX5t9FBPFbzLKkwcIvNGDKRnBUu8337wnUgbtXbNeTKM7kscjYMOq3wd/W5OLPTnpHORNZmfq9dhxQjX1JdGRF0C9iO0MBpbL4Xk3z8eAorOy0O+h4ML2cKvGmok84geI7xPdjQ+Zk8/4AKKczsbLM6pMKZrJnXTxBJ4bAzfaapXPKNbH1jkWiHTMq1ERzy9WxcLZnmafk7VO4KvGGoRZrdmOtHDqt5FKokVqa+GjTPT/oIcLiUPs9PxSPfyBR52zAjaWR6rvvhkVMzkZyARLg6T9InZ4jiDVf9nj6L5/eNQ6Kr8rDl+ojOEKzBzJG3DzOSxl6XK6/pkPdpJpKrIYnDdt4zD9f1CLM3x6XaidmWc8ga+XyyHXMl3o3gjtV6VuZHEGc4/ImhZ73ikGvps63WNa875PIChq1EuCKbhmkwaXZZGeF5Nao0K/QnzksTcB1TP+KCNIJPmfsob/RVXvbYpd1SYVO2/rq5gIsk0dr+MvgkNds/kWhdfwlGMXfUWROtrCyYFHMx8BOwKw2YL26z0sCMvIMxF7ddWYAKJ7DuVa84RL7Vuz5xCM7sVYkXIngDGDafsSe1XBbRH3ixV+k6HpH/9iqu7xCDixh6Uc7vLRiCOxym0ef6SKIdNE/L8ajgkL01V3PLRLsz18/EJZ9kHs+LTYWExkx5McY8P4RDrGzzRtA85yMJHC6hz/MHj8Dhavo8F6SSa/IoN0HwiNyV66JUuDIPOQ7iEIufM+TQsCFMolszpVldYjCBmoN+FCSJxS7ULPTK+jFPPT6RwRhlxsA/jorwCfMw3VrMWfMo1B6BG3IBfTrlK6tKIpmwkJpBTxWfVPgW63Q1j0eFtBXOYp2B58Erv8pzSoZvaDoN32+G6BKHY7zPcXKGnzJd5jvw66vULjDY7L9R070X3FItyXJSMgALGNN9Aq+KuY8xw2npxNyZruV+iE5x2FPrdOFr6Rx2pk+m66Fyy6FMFvmcEaT7dAZu7RYrH3/DazqkEzvsHg1pNH25gkSnwOJ2hi6Aw/VM1PKXqOAWubtL5L5k+nvxi8E2jN1g8VPGNMplEBwzpTsMVqcmUf16JvHMJr5LNkzU8GzU8Gtlz2Gd6uk86ye7wjUOpwWf6rU8G6RR/XIOiGME9g1qksBvw+ZYt5mGA3CtYNi7iTy3gUuHyvyadYKkP4rBM7DmLPpEO+TBT5J0uRVq1zgcxDrRJzP9LEXOr80VxDlfTBT5NKS0xD8iwrViRz6mIc3z3fCMOAcWDzLRc+Vl7oTgHZmV6tkuyHP4BzvERHO6gEs4aAsmure4Vn8+ohLniJ0wU2MCz+3gCmt4CWp4t4G/s06yUxfcKv5x8kOGJDuWpjqwIIJ7BEMXU8v7aQJ+IxD3oDInaJ1il0y/STFlhItwEpNsnUUwebFqB5nPDxEHGdlwXtSOAs+HyQDgdXbScCdUcLDBk4wdRb4KydJY2Jnu5SNr9qNP8HSmKgEPcpJs9m6K5wrL+a3Zg3gIlVxIX5rrKPERRPgI15TmcFb07OTV4CSDT6iWVeFXrDvaDU4SjKyZQPL8tDNdyEuo3HdZd/QM8vysM67oJ5zSmc4ZK1JQ0t+MrMRNJ2knrHk6qoJa3oAaXpZBLzF2dFIW+UVn48VReD7ByVnwnU5SPhOV607JIGbC4xoHpJw0DOKouQmON+kM1qOyg4lTOcrhcPoOlK80RFI5nB1DJ81YV23XEQNPhUs29AF29PloV+3amdcrUSVyslP0HHjDI1DDUbt0xrB0qtg0FmcwdLS3+/hJk0YweonGDjKfHSHiushHYJJU+E6s2aGS4+Cp3RNonLOumDTfYoLvp3bVtglY8wRUxUysHGXwN4YE+uVimNu9EN0keJMxAb9aTssfonaTwa1dd4ujHD6hvstuc9Ue7LZ7HCV2+J0aukh14gIIboLD1fSd6ZfLIUdCHGWuScHji0n88bDoJ2e3eMdrJxqW7Co2zTe0o5YXdCq42eBqBnYa+XhlkOan7EjJIRAvWXyoL2hHrHkMqhQGH1sStZPc3RrRS85cTs8Un08DYA5jB0x8YkQlPjKYSmVCz2+JS2Pmd8bELSX6qHJXRp9C2VwVkgTzUuhT8JG1m/d5JvXxt1KVkvM7s1bBQxWmMyTi79EohZmvwUMWu74bNE2MT42xJoVJwpbbYoh7rOwYqUwceDxsCsxJkvTJYRDn2CG4i56pY5g73khHImst0BRM/P2ycK0Y4A/0TF/zC3AdNfB1Npk0sTs6VMEtBtjh5IUac+ihnYkdcRNDGk5pzwYgPnEVRtzgmbfmYZ0ZrMnkmr/92Xozo+MRA6x5D7XWPHpoijVisv/0vVkh7nAGJ/yGjCQZY4yail9IMUk70Zzzf9Csmrt87aAg3gB+R2ogychWTaD0y96aJrazyayVOoBMkg2pJJOSnAJnCM5+gIwkI8nnnnn2mdepA/PeK0lOh0VHsvoykgyxnfKL11//kKpMr5PMr7y2C4I3XonHLGj2NSOb8Z8AMOmJGEmNMYYYgpLksvriE8Yb6QgGW53wWL2MDJFkbl6YBRh1AvPAetjkZ93X4dFVRmKVMWPHv38OeQAalZkWm0rP/s87+7x9x4xH+iHjxn13HukjyQ3gDHCd/zIqYMw4keAPoELrpLtm7QNr8ZGnSbJv1kOzHpz14602R/tK0pgKACae+CzJhVtXAlRuPx5hnMV7VBGIiBi0F9gbOP+oaei3qiorgvQi4oBVj7qEc9BqsPFRG8JAREwBVlA4IKZtAADwIQGdASosASMCPkkgjUSioiEWC+SYKASEtjd+PkzF4AGcpcn+96+Ccvb/6j+x/9N/cz5J6f/V/65/gP8p/bf2n+On+7/w34zdjnPv/O+4D3bfLf0//Wf4D/N/9//Kf/////cb/I/9//P+4/9G/9j8//oC/V3/pf4n/U/sz9Iv+d+3nuQ/cn1B/2f/P/+b/mfv/8qP+h/8P+d9z39F/zn/N/y3+N//P0B/zP+4f8f8+/mW/5P/u9yr/Jf77/+e4T/R/8V/4fz0+Xf/pfuR/xfk7/sn/C/br/kf//6Ev6R/mP/f/pv3/+QD/4+oB/3/Yn/gH7/+6P1d/w3oQ76fyvg/+O/Pv5v+8/u3/jPcAxf+h/1n/l9C/5D9+P2/949H+9v5C6gv5j/Vf+N6Ln4HY8bt/xfQI98vwX/O8I7/f/1nqx+qf6b/gfdZ9gv8h/qf+9/wn7zf4r///Un/J8O38l/xf2x+AP+f/3X/W/4H/Sf9L/Mf/////i1/l/+j/h/63/y/4v3VfWn/m/1XwEfyv+t/7b/Df6b/4/5z////P73v/t71/Qh/VH/WfnwzB/Xcg21GFp6lvr5nK23Qps++jfDDHVdI9uitHkRzxpq0KIfTI1Xx6LtTwoi4toy8ysOAVHygcM3AEFsccwKp/9odRjfaiHvOUaXIh9LDmndOIsVluKjxfROvWTP3WouFVar4C36zPt2YEb5IdvqLB/XcjuRYqwHe0JfspNuhzue9wpy2jzlKGtcNzcPfLq4sdIVyIfTI1XwzbwxFK9PItvB94nKa2ql3XrGqpJ5MhpciH0yMoIw9Pdn0+R2jKzv0+KzvxfE7TogQmuBy89xviM3b/F65Xeh2X6g9L3O/1Hm0KiwftoAd+X/ewWmQ+Yyvx7IYX9e0CUgmhWGNinEW4X65GfpW6fJHghnEAJCuNPsm2KjYILrlJEmlclRrTyY9MemE45CIXpOiIp0pgsJdXFjiNu8+VJRmxaOEb+7ax040PWv1Oc5tgFCV+PXoEVEmDjHKtm0ppqBUPRo34f0BlPSW//m5HcjrK+n9WoE1bpQtjsh+j59+AetqawY64880Qd4qwQTHwOwi2hmXpSI7zsb0waRXZY4pluTN7+yR/QNwpSNmlxeR0CSE+SY9MdiO/huZ6Qj76RKEd/fznKWejuQ5NvUYNzhcPCQFRiOXpJU088uhcDRJvC4ReWyPICaAyZ7JffvdxtDFQbpxpTKD+u5Dtk5/GLflvJCc995Cz7rxMj94aeaiqSse5WZ3xc6gb7BtykMaBDO33+ONNGZbkTPhucAoac4kVxqHRkdjKKB50k9H/8blar46/iqj492U512tvfkeukGHJtRN6I72DIHOOGTJ1UZyzRrXDvefpXHBBUghg9OlabzWfop+TtuhW0TXhyi4jc15LEr9u/VOYQNBGTS5D34U/XIml2AZC1qnQ2WqFh6m2B4ZlBw5TMxR9q3c4CDQ4RUcpzdCqLGbY+T/i6N87L7pctaIYA//aJt0SA5ZmLPBbmKrHNuNQWYfYb5fjuHQx+9Waq+kfulxXsRm9cf/hXhoFsYe2DW9x+ilcCMQpDIF75AMFpjX0pGBb80DbZi78LPIEIiGvNX8h0yx0Uw8jsD85ArG6dJWzhs2mc3CBxzJd0oaSQS+sd4c/MtUdIAkyGYIZC+JqulRZ3wWeCwt82oijSxlRiq7EON7cEsa0mpL4YEDuoWeuZp+JGGTeHl9q8dIWQN4XawbRKYk3nXKzUjqmO7mTtu0qgkKD/nt5qt0AW2hus4bJ+qFiyKmVzlysWRGiE348lUF8Hv4D9TBMBpQXGjx6abx49RKgMcMHhm00Qo0PL+ong+Xb//++uJXkH95kzwTRJtqvoGhUu9pkUt6PVzQX4NZ6UwEz5RhLJhBufaKW/8oN+kCih7iuvjel9oQsUVlqnzH8NCTB79rIaR6bZ+wxwP2Nxx6Ag1wEModGXNqBars6qoBeUNlACaklZh81RquUGpkOuCcHFuO3iuzH3xwTQ43DqZwIL0kTPIFJWRr6qh7XLkpdvWX9/GKopATwEj8fhr/Gdp0Apb1SRPEWVS6K5D1p0WCf6+OhaZn9EHP9ZUn1rmGgfl7hv+h8nBptFZH8EHAuFam8JHKThxdBLGxhEIF9Nt5nieECnV+hO1IaZgn91iBTEfDFG1FcomHH4NHdQ1NjQ0GIAduXl9U+A5BXpfZN3dIgmHqU6UFR/PeqdzTBKmwwxk7aiVn91PFARacZxmTTkQJ6jL8qq3E6yv3bAHp0D8Hzr/jYszdOUAOyWU3g93SbgfyB4Fw57cnPUoCs/Zr6mWbAyQIywi4mCvf8pOGIynxcsnqLnY9Qp+hamgqelVUQxYlMiFJIz52hswh/tyi8uF5aJIgHm72eLOBAAx/klIN0/aEjMSMMISGT+PuWjFKVNCaqw9V8emPS+F90vbOb3gprKbwMV7WOii3wN9lb5t9Hb7HxcILy3d/W4qx/A/csH9dyO4Tkd8AwfgTfUV+Mo/baWRxJvLyOLDtL2YVe0YPeMg5WvB43iPqLG4VCDcjuR3I7h6t13A9z41XIu9sW3px2KA5aONHDRr7EL/iI8AjKoQGu578WUAD3nKNLkQ+bSR0/tUv1kiHwsYgsCatLaM4AkGs43sHZ0jvjEYYHISrteq+PTHpjpJ+yXi0h+AtblqUfyZvjwo5eCTqXJeiE/WA/UTfoPiwMZLZmEP9uUYTKBL0Jt4rpuSXWXDeDd2JbnAp7oljeY4kNrePHh9r+9Idaw85RpciHy2a1H0eWR9DI5PCraHekXv/6K/R9Rkd98V6yEcNgT+zYmHnKNLkQ+bT4DqSuT/Ly2gBGmgPCWrRECBEh/FrP7gZw/0mXZHcjuR3HoGmPlZpQulubcLt4bCTaaVMALGnHWM1EalENhwh/tyjS5DvKL7c0eAYUc7sUs5nScQV+vI4d2zaypaXIh9MjVcy162HqUpqygC+m6sGz1SmjTEFpmqD2uot/mIfTI1Xx2Au6FKOVV0TEcluZZfbYvzLFnWw2OXvlbBMtOSCF2/u5/OT8x4DlGlyIfTH/v32LNxzXMgt8DULSbd2+3enNGSXSjGHAf12/AAA/v6MDsUUql/F94M9UHLvHbMQ0H8Pb0ByLf++39VufDl77Ztbs+2emYxqC2ZtOxKoFXUdDOI3xnWj1Udoj9DCiBbCa42e9GUAQiXKdsk10Bttpf8qd1u7HljMBiyOgOcBgByqIDCzC92Aamo9r/zd/m8bPC/X70F8AzPq9WwLk9o+XbN6CbvKAboFE/DI3IYcpbu9aGcDW+oH4vRwp4t3yTkSbYRaFd+O99mVCSBtsklkOC0J9uE7F9umwiTXzlUMaIzy0TXQpCyqDVb8GOdrLpdaCuPP9uncpomXqmXDcxRVVkofGK6H6RRX6JmICtfTV9FR1OAkaJIV7KPTgJGdRaPDzi1UsDadcOkwWRGVV576nIcu0Y9kFOZPTs3l3/v+PmRPrjfGMic6xgi8CiaiGexKPsbBO1+Ata6EIDMJOJ/vxy3eARFpd2JeQM3B+1+imtOWxfQMtFCAYp3tzhoYRQK80n1xVmJ+oBxGKOWwqnByKdYmKmSEOdrxOmYJnaJCJdRpqeEwtFYiSisOEbjQcIp/zATfSwLuoHzvPsgqnFB16QHIm503pT2cT4wE5kcySnxvnDaxyXftzoMsuDeuqtWYWfHSi6Fyy+ZCpL/6Y0QbjblN00/0eePEmGQiGtAjepaioWK/xbgsdOl+OGx8XbykaZIfzKh90DPgNvyQRUQ3K9TZR8TcsJ6rIijnAxbxBCHyBHO0AOaxObnWNattMNnJS7doUQqvRsKDZrKrAJRH3o3OKEbSDFBhG5tfIRTbZT1Njhz8kybcPugF+etEhrhpkzW8Cf8usX+tcUlUUTDny+QTFk0sG08gWrrLEtRxGsgHf4fPLAPLVuRwN5npdL1v9E4DpgqrS431PE4cbVdqOze4rJR2BjvQ98nQb0tnl2sXV450Oz/Bc1fP7ewfnLcxd1t+2IBc3IUDvTnCypASZvIfTq8BBd213V3n1RP4wWsoIuXxLWwnYArh/1a7dqj0DtPaWq5XzGyid42KdsNo0hgxcJywPH4kcbxZUdrOCP8IEdm/Bq2hRKClkLMhwGbjVCzvLq+pNTzGe9JE+m8p+vT6zL4Z1kqQqtFnuT6SNLjPqvo2AtXy7/GeMaMkRR1pBAXj20w7x7eRcNrnQbovYXQyKRccerlFVmGUxLtZIIMnAKufDY07zqbrUZoKa95FXfr8ArF5ZjqPgj22wVfM6xC8VDhD3eNPqHrLTaOnEeNILabsi1gAi6sPo2xGKxkd9GSjk4Qp3+EHJDaznsciwo0TXge1nNpP0AK6vgX0p0/S4xun2h9FtTsMuVWtqceBgiHiIepkqzHz6k+76rd5x+Ry67mxdXXw7jmTAxaTwOxgv1cj0SOX51vZPY8PXKJOQSOKhURfhR9OTeUe4KOIIqHBKSUPd2FTNzevVrEq+ISw9W+x43IMafy8VEaEHnFvzjf6TrrMT9YewJIUmSqaUsHQcp11+2FvMSc9sqRSVydQBdIFe+yauUoJo9jgDU9yk1BUo4xmyrzZjVeK3x3QLGRrZ99a9j0/LdgYRb+/EnqOL7QUXvWoOxq2ishE4bBZGCb2cWZ+R/EXanSo0h64/mM1HWJRQh6AO227JZouLvFsjk7hwjlfPLjF+2I5S9akajQsITiX233uCp5NLAciaJXNK/fex4Jr0jm0/bC+vs5PLZzMeEO6drEqzZ49vXLUwpqL1joqiYC/es2QFQqG3j6ElhTY4JKLnh/MXCTI6eMl9AsdaEBtWgxPLqhRFUIAvkQbN2SfESgH/Rbi2kZpQsMdJ4lRT9hJS2/Nq7flrUEANGOjqklxUeKoVAWXNw4FysCI8jNM/4e3RuvoNioasCI6642ltHZnCpxH3q631n+CIhw2CDvZoYkaRlZQkT3IZ3KSvnfmG2oD3WZbZKIDpNUgpj3rY5oehymzD1Lut3ctSUUOLtpg0vgC8DbTZeiuKjdbA1yeKzOwof0dP+B8HBaZdyYTxeMDDx+akMW6eIdZ+BD179Rt5ChH/XHmj0XD+uQKFBcJOXmBJj1N7gwX0MgWjDeXQHUIwX+o99+l+R3b9qUBexpfIErG8dz5VKsmHVqKeey1aKPTkkjro2YUjSs84Dvnm4zxmgAuOuHh1QmvMCH4nm0AwnpLslwQBOBOtbMGJjZTqodakakEGgfbPXp1RJK1wBrQKuzCd46LTM1wjoBe6ivRadmPkZErJJl5ObMfN9AIyWIR8FNUbGf2gn9lBrAGL5lR5LgQxpot//T7MGvag9VKft8YKS2iUCq6F0WC7ViGjk6Nc1zHlzl/4bO+w4vmxiRH3qZAvjuFTJkhTNlJ+UmproRR02dXzf94+9JoUWG5Ocw1MQyHC+7xSCfQNYKMGvleZc7LnWIDIUdirgi3ZUC69C3ddKgY0oVYzVdXkmU41pre7doTiUuBpp3GVW1Si1mzqXXJ/DHn+LF8nhL/u7zfPRubFwLy76I8SiROKxfvcp5aG2d3eAaN2VI+giRaTKhQ70rlk/wwBeSspBJBsVNBzo92c1pD9t6s35FxSA4eocmACQJjYaGLXQh5CoFKNNMLtq9bFAGgXWhM3LoDJEn2aLH9R4gWif0kYjM1jXgvF+RXfb3FXNSZGeQt+jtdI/BnKggTj45a2WKekp0RtZZNhOGw26rAWC5/AU/b5aLbzpcUn/Tc3raThoiFIuHuayBEZ6FOf2nQYaug7F/QRH6f+eZWkH3DyrMDiD6NvPwM0gVHEo2V7Bv9zxzcr5288ryvpYU3YyYxByc3hSUMrwX9EqEE0mCD/DLaNicu6AIdGG9MmzK5PU7VcSJ+727410gpQRta+ivzvm1XT3FI7sNM+75C22C5YDs6HsTD/qMwHQVqR//Dqmjc6G8Sf7zYc5ilE3awpzGAnhV5EnRFe3KYDAbmY9/ZVPC8jE3slU/jrs3D8MwZ0kIKIxpUITNhlq89sjrnXbkei/4Siva2qym6wyxvmueQv5mNrUtq+A0yal7Wk4eiTTxexKOf/7m1w5R0XXuWRW0luoDnXs/ejK1vEg9cWDSJbJydXC4UG/1+jl78A0gBEVxU/eKvNMwIp+gB8fxVLrxw1Ewe6P4i79/AI7X579z8K8/bjucXTUOpWUXFrlVJh2fQ/ogakQ2rzmXjeKsWfDxH9SWbar2NBASq2bGt8d3UeKf4lFpuDVGfoun5naYSTWlDt6smxMwXeeyf1yCztNc4cMV4G+MJNWPIZib2OQjuaRDEqprx8kExzuzlH6iaABuH5n1Vksa+rHosMP39cZxmSuAisvWPeeRLx38JmJLQdZsHlPeibeNKkzem/pm5523Yv+OPUFbh+62KRTXQV7Sf0tV5JMiFUABIoaJgrP8otW+GeQ8sQg1RNUmkOStvkjJrqrvbmzvpgSZn+KAzFWvct03s6l/cgzUVbojF5l1nRBh+9dPcWVKWpRiJfAAv0YEXrHi0qAXh9iWut0x1SHq1VaBUDCPMczvHOEr+2VzWeWxkgHB90lqC9JbkzuE2XVRRkXPYwfalIX3TFdU264SiF+ljPuv02KNnGWlcVQZaVnq7OOKIPP2fgtR6RjRdsYawGhEPOyARKYglfgICRT3Cr54O208FKTBYgavpmOTIYzvi84KbLOxXaqVLpi1k/zdmCFfEmMaVYJyckUBvVJ8SGFOEqmlM+c6ZE0ji//W2VZIfw0Tyl76IHnUGMiN1jqoy5+Av/qC+9S+XYm8NGaHLYtDTg+jLEQoYcdm9eNKuVXA3AYvs94cBWxOkGI6PJnsgbwocNYiC2NHRqPOWZeMTOybrtKIwAAl/vi1uJ6aNLRGejjOBAhcQuSkLITsbvTNR5WasuiJdzCPUSj076NjlyyEluHnrL2t+k0YP2t3xLE0eyfTcRR7tMpb4wuG6xo8qivP3vwnhw3L/Bg+WUfXXPTK8opRALaLArPvmxf2PuyApSefxklw/Pl5K8jHVA2iTfYsJsS5mMbO0ULuoDLRWXgst97QN276+g4XBfgwr6GZaJeSG3I/115FhAxrHu/LuGd33ib8dhfGIwNA5CR/Hn6gw073DftbttCD/dlaVv+QsG5Og+mGMt37idwDjryk5/8UgNJ2drlEhOjWKyA2lb0Ze0af3+znX2Y9Y+5fo6DxYKsVPnbavWxo8VJivTLKj022BdQgpenyyjSSmDxrRoztM1NEYJUhk2/5+rra6V1OUkDUS0REuyuh+ag00SEHf1qo0Dr9MkYS8eDpZIG/Gtv/iHtL8cWU7OM+NPymJfL6eEbqiBCYOatEqLgyMz1YWCV4cJAzWsux0NWwK31lEnAbjAToMWHEHZ5B7Ot5QW2LB8nxpCgbtOJzon10+UeD2CkJH73haah2G//xZLJz75SSDCErtTZyZizlY50UhcBlekfYH/ClH82+2GrRy8GIK93BKzGT3WEzpdh46L86YiJpNMwcHj+kWmVazhPo+cXjZ0ErZ9p7VdiZcFZdEsJbOftwK7Zw/CC6hPz9J6JNVthyFWNv7dLyc9fmvH5BC3AcUt5meFB/y9fkgmq0XLRHjx5ah9lYlUwMlaPfDsFA6F10w7NYDst4mp5n4Oto8+CGrt73JXbFKt0x3K9Ri3O0kxxPYNftkTcydQ1aidA1fpH90nP/OM3p24AgiBIa/VFQhunSH+oWFKEyAg/Qs+WCZxuxxKgyMhEHx6mFoFlzPWk+BMIFbv5LpUeq5PqGr20Fh6CdtvAhmBC4lL9SmB5pE8rWsjxqryBSvpM5ZL28gsbcwXMW5IlyabHrXp36wxRQjnYMK+0hanidFj1rnRvPCNEfQTL65ExhLA6c2XsxWOuIknQCvHRCZBgGjmmjFcPkiYgoksHsdnXCQVQujLKCWaOPA+7zHW2XCCV97k9pFfPqbtuUM948Q0CDEtkilQQQgmsjp4sQmG0k2mfZL9rkj2dsjMWQQNwOjorEegcLX1To2f0I/jtE2yMrDM4lGoG9bwOv9AADJssP20BGQdjQSvfqUT287lWzu1ZwzN6wfMjpP6a86cF8UJFc7sDZ7DK69akCLpF4awDqo7Et0XOZtHKD+qLW8asCJLpf09jMVOwKXr7M5+d+tkydCR7vmmWwooHnSU9QlUscZCs7DciOUmvDZsfBOrFgoJnWJopr33iE3x/4X4QfO6uHMr31GkjlcyZbXI47KkM1cby21TOiQ7xDs5V7IyckTvTJqQsFCbijLAGKkwEv7ZwPCZWulYWvQDcBfnuZO5ryWvq+IlNJa/hN7xkPo7PRwDuamgKrXcm/TYocNPpokIVewAJ/ZtuKfHlT2dGVwsrhYO4PLHDT+hVkS8/fRKbPYT45T2vUPXTcFLhxN2t3Rq1UKL+BNiEN5ptI0ptHtkt66Eiac1KZtEMYESAQ82dR1M2YgFfxMcq4nzt1Orl8OR6YIRtvtr/lT4h9sJOoFSIJmce7lOVXhCpN08Y6aPGepEvE1DFjBPjK8tKTQEr9SeBVQs5P1bPbLzC8/Xpg0oGSzYJr3kBfFYTHRgYF+EACXkMo4haYC8U7Ymp1OHsGq551PiCzAajF9MBru9861TC50yB4Zo4FlD50gvHbPCCgF/aPzBvzTggiIFLt02Er4QEiPZIFBzDYbq4a1NX28NH2fLoWIuU4D7o1N7kiT1KiLnoQrtN7YkK1X28fCQU6hNc6wM8yVWawqFo4gGBjHgl4ERYXwgQdBBuSX2m1RZX1jQJBJUwcVoXARB27f13EEsSPtoZQKpL4SzN4Uu/y20rrayIaPWCi5Gjk9dXIcWSJpC3VvViyJhVh0Lr8L8yutoy//Krn6i/BjIiQcPAZxTggahHvqzEzB29kHto7wPtAmD/2MarWXOxt1YBGxEo9HSLvdJi9tPtL3DiW2Zg7mMwVl1H/uY+9440GlSZnpBViefCMK5iKjLW/LgiRZ4RJsRlWcJP/2+ugTr4OSmSnZXVLav4WhTcl5MaRojYYvN1PoSQAalNU3eIq6fS/+H8rMc957T4uQO85vNkrNflxzUq/67yDHko5jYxf+cKXf1EJ82Kxj5cJZtTq5aI3WFLXh0eFjR6YEScgCpJnkOKg3e5LCZscyxxfXWjTi12NF01pAbiKPtMONl5WpxMBG5ciZ0TKYW+0rkmk5fr/LiCoN1xvyy+vQ/LcljLeECFmQ4EjVEva3vUiEHp7y1qQ5XV/JukSXffwR4KQeyO4HEu0urR1T4genyWShQmmgYyqbrN8Znd4SW8DQQaTqME4ywL280NLjPVfsO0akzhmuBpI4Dz0e0xIn1KGRaLuckAcxfc+AZgcJHJCi1eo0qUziJIGgm3aJAh5vLDv0nMeyLzQEYK2BaAkvh4h7N0RMDRKLrf1/2Ngwdq1Z03vzP0Sy5tMmAUKmEx6vMC2ObSxwmVa1FRbeb5Q98k6YhkDfJWH3kRqKK3KM4D4uX6nH+tdgpkMg3sFCHUkAEMKawFdlGwQyDwankiSqXasaN9CmE6iWRCRfMIOC55dgQVANfLFn6mU1FOir3uxex+MP2zBb0ohwsjwtMd2N0fvN/6+sn/Pirefvi5XzHO6mfZsjp1Qbug4SX+a/xCvKEp/FAquBFFpsNElUWiM0phl/haYlQoDUJIxBcFRaKlOQx4wXoEpv/H4Fcx1c5OZcm5EZhPaUmKic9ne8cELDJqPnl8YG0K/KL9AfhvkKfqdnbWmRybJsJK+4Mt47EMER2fylLehsLojthxjEukORSewqzfNDu8U7205M4nNcxhAvE2ZuzKxpKlOLqprwBe3PjmCiPAXFEq2UwGvAvxXtO8Vzhts3VY36GLh7IYTUcdyW2Z12a0eUS5aic6RS7n79+5GkVuKTYX4gTE1Mx9VnmcR9WsnuZFW7dxWhflbZ5dDhmY0df0Uk5NX2FH32iUY6KvcUhYuCzcDoqYhOKhkzQxmmmEFZPoPRkPaIdnx7ff1MpH6BapAtBv583KqPCTAM6pDvKZ/dmosXe56AHifdFaXemN/Ye1Rh3gxuOiJ/mi6gVCyb+eOI/i+KE4ODxXuMQutln8Yl1ClovNSfso+qDVbzRF1cdzUxLUAgNyAcH61i6wp/llTnr6HmB6oHH4Zo8nrYPmB4nUKXtj43rNjCQPryHhI/IynTyXA8/evC7VGaecAQuRALuO66Mno4k2E20QuLBkrhZcgCyns7Id8KIxXI/bOBxyMzRyR3h3NBgApwQ5KcebdbnEGkgR5UhZyq7Aj/yEZ1kiw4pp1qbvkWLNI0Ty9FY16yXAPoPHQT8pafjSXDLc/aQxrr6bFn65ud9HC4xIbsEzD9wiS7Zp7gWCBuoo5AdpX2OXoQv9GD8SHB6kUNK5gCuuEHq7MSvFZJti1U955mcL33mqgWRA9gcl3jLcUZ6PVFw5ycPWhjgAZlt93gYg2k38oYSwvurJzRPehzVxBcwFdh/X+Mij/VuCUmGQExPM8xi2MZzAgdVVDtNbDUw5JQKqY9vfVSC/4N//Wso9WKGls9iF5h7A4agtskjuL3qPIj9Zagfas95SxNRVZOrMj2cJ6VdEXN3iS+2q3jA3u0Kr4o98IzldHctK5BUk4tPAYy11hlIaHiKnzhiOp4w1hdtrOklTQgkxIuGttF33MCd4WJU3/OkbZ3VoFqwhCR42bUpVuBDu7opT8OHPPs33fdR8lzMZJg9RNdGhZ2QNbuQW7JN4vckHObX+gXepMy10Dftc6ieQkasFqopfICJfr3cv3EmaKIlG9S0K7ZaW/nKFvFCqMiASiEHuHiq6Knx+Gzd7+5oCyoHzBung3YK0znNT1bQOejEp37MrtMxF8SqzA8HsvHidHvSPvMWdvEnt9pyGuELYpBQfPJl+FngEs5qotY+wvwPSxtmHS2SG3Jcs9fO4hjfDxUAqOHcGKgVaAaNEIKejpOcDqyFGhIRJRcSEtOeHnEd2ODnZtX80DmV65biX/YTLqSfba9ObVeWuzn1MEy90xB3rK3jqx/7aGP+wRgKY25aNbNJx4+FrcCUYs9B6W7kkOvi6a7JD09YDMdYuv0B6+TWh4EqGThoSt5tJsalt8Xiz2hcqM4zamBGGzz0c/umZTWb2DOrVwVHQ3rvnhIvQ78nww0LfVsTPCSc6zNCKq+jc8zeIzmxtKM+dm2VFUwi3V0mNLXnkaI3t9G2ZcufRpxJ8Fuit4vyfb12rXuhuYcFA2Y9H2XkpLvE9SSvGTGYPJQpNRttiNBTeWMsLNQWw0TjbFuQFKdmj3LulzHhXHOLbmVqPvAewLW8HZtJanjTI2j/gm2VpIG6hpuN64KnpGn0N4sL9jp50kg8Vty25NyvRgh8czwcifA29frpnCaTmD/83eZA6ocZzqbaZhMz7MURTBGYYoENC88Y9YVEDttZMEz4nxaCDcegmCb13Fj80ol+yze4fEpwDi1bDG/OemQhS93Kr8VVGPWAnYs+in4EnbXTmFOACb/sdtVDfqOd5+Xoh18ebYnL/tjOmVDSSvF14NbbfYLXMygvhNHukjxPVVXhkR0F4O3MVP8VK4t5AW+PVjNPYEOxtm4ABwLG0WtmLDBdImVvA4M5zpY2Ry5cpCKzP8fkSG0tAvqz/7oJVRWvTGnI6Xsu/v1zbe2HxEw0zSJGMyF5n5R7frhDotIIDsmqEhbR51IfsPrr1fIYHeavUVvZvBjjvHLPBPiU1Qz2Hc/uG8tML/TGTx1UVplacNvul6nmxjaXXMd8gBox3fv5A3/ZT/Q40UgA8xlOmz1zkkYzuuLUpF/KczTZVtTwNprZh+rlwFFc8P5+gk/u9ZUtlEGMbGjIJpqVsjipMtH8GhChIaNBpsnsjzk1MR8ZpuU0E9kosXDu4W2faCxaHDzQ4oCtziAYryga1aNtRTgjVIsDOSYzIgW0s5cMyLECpEbQVqqzRGIdqPTnprWCxf2ORth2+pflZ7q6a2w4fgHNe3BbzQ+di918YAmnL1etC/0mvRSOY4n0C5m0Ok/jSqdNnLwHL+IaFMwmcxRE7s8bAoGntlTdaiTHWsUcPs/s2kwGHx/6u32VI2GeFnQytdN23KCMFO+o5UIP0rvtlhx30+UDMlxsxmpgmSVFLzL4LR72QJtA7sjmmjr+/GNTRbfNJuD1wQeISLOwPcfY0EZ51wFv0wy2Tiz6RkabANYU9ptpaLGCRcjsrUU0wuOmnGqy5jDCvfMxI+O48yyiZ6x+vciPqHaC9MC7n8AKIX+LtJ8SJZrj9QL/EEPY48mPSqjyJM5ICmxLsq1UpWTVl5zw32yy3+8loAeK8+ypBSBmWTjo4/8VA4r9pPQj6U9VjSKTlO+poUjQ7IHD29jH1jvxekzFTq7ihfJkP655w0jUhHJ95WJ1Y3DPa7FFolSkD3yUEiJ4/rVJvlT9Z9nvddWbrwAdMs9p5XTmgAzq+36dm30qpWpFsJ3dhUe75e9N11hM0QwprtNLAPeJ+dId4cwTK4JEkNwpEaRPNTL1xuDURDCESWl6856UJUhH3HoaNg2kJgN3mHaTvNP+YeM95EUyfbMkn+E8QuJXh7PGI2aAw6tDdhW/LLPdtYlc6Iov8s4Dxl3/0nEHy9hi9N5tX7mCBNiOUInLqgWTc8iMECECgb3KRd6lpScGgcjk/F4bUCYqZbFY5JUhLc09RNmjuArQhxyT5SXJWXj2naK0AeJmsgTLLCipHRfGT/Ae5ZWDUZXuhOCDXtEzOsMM+rfSm3X9njpEzlrEjzi1MlTvyz2yQQPzXfIoSCgVB3fYZjBbG5Fn8y8dKEMeOX6uUBRCXXgnaipfkVnJf5NgKJBY9vk+CKLDAp1tHx85UI8tXksKbdWApm4gE/p8FOysKz49g/SR+ZpKns9HPdM4EG9/i+qvXXTxRnfH6jEaNpTpTVF/2JFApjBYgT/91Rb3ecf1VbK1v0Ol9+Btx5ZiuQRGRsgtvCpO9rYjTcr0pt1EbzlVYrqaxW9uFwagjr2fFj5IJ4mjSOYPFPEnyWRIfljwN+6lCl/azwosxCpWKGuc32VpIFtzk1WnkbEl5lj5d3leUQgMlndKQp7SsXAcEnIQnfbNK+NjiCBNUwZqIK4t1TpNWnaRweVt8hWK4AB/ihIla+5D5evIg7/kqGt71fhoNPwWt9Ms6hVtfEC+juTLi8WzmLZ7x1/E/wTuyEgd6A8i/gjugA/R7inXRFHCukryq3k7Qvs9Gyq/cU3wHWWPgawFkLntXuVoP+m8hH4r9nQFTcxXp0t4SCbG96uuQKdwsPrdHII+JNxz45xu7CIf1xlBMccRXWCoNwufH+dkPjzEV2t6+LBXt7rXgVErhzN4AwLqA50NbGBgE9LQm/NpOgXTttIrct5Kg4qgBaHWX0BhWA2TCLij/QY54OqltYOh8dLa+yXRagiHf7RfiQVN86ngbzibHdOZVKnUBGBFqCYJZBTMuOG6S6/JUTu/wr97JI/d3Nxd486b0nMD4st3GxnmfedZyXuaB17Twm+R1KaC0e4a7gUuRtOWqwers4h1n/D4fYEQcjK1XjDlV3aBd3aQKJ1lykhkIDq6SOmV3632NXnQN8xf1QS4VBNJctIQn/+/CiT4/RzfaqtO/xqqxxtGBoFRpGuaArRQ8188inNrHk6KXXMvoydUrw+CrO/DD+NNfGyAZMxDEvWSUFYlHNDej4ZaXDUJh89dMpaTaTJ6d9upkCvoTcNAzta0U6ARAyWpAOKTQO09Y0dN56xPaaURciD9FttW+wtQG0KtWMSY5zx4bqJ8dC3ON83yA12LBfKxkv4uOFZxPHFzk+Bpi4yyf3In2rmzUDYho8l5x2wrFNiSjG9yewc/plHgSqEfsewX3myyR7AkFqJnXb0rVEEBZBUCI5V6OhS9SGiol7OLwIcOeWlhDaXYsAMio67tbb1S+zVj+QMlEhyIyz8I6U85Vw6xzj8vwZtXqSaKK5z94qXK+Ufi4RbT6XsJvWllmm39dhx/SwNrdw4wDSNRxPvojn13Vg+GlRijXLJBbotwer64HnJE6Sj49HP8V9X3fzv39lia2nsjhF0l72pSTq1mwBBpmTPuQuUeedDXRsJn3r0GNn61m3emUH2BchYgKBr8tdFe887JCNQ4tQur0uv5rhj0iuIqRf+LTdkYDMSk9I1A3KQq99zz7+i8EBSPUOR+h1BwE8eBByhDerH6OwHwJaDvJgEfNXMYpRC2ILuvYR5fgmgm8uqtynUpJrpzpwwJD8pEgx1UUSmKMnJxzAdO6zZdOpVcx2/bbM8AHFgciso39+AAAN/8OgXm25Y4V25Bwu9Z8Xp7ZJP6Oo3MH0MZJ4m9dvIFrp5dsHWvcxzZwoxOs8l942nFK6YF/o5XVJ5PcHQKnMwiCgLb00pNoSVyVn3TYHP9T8Gm1hrrZgvZKECyntH1MOtO/bffzyyo5bK2BMOERGrifnvkbJkwKOMi2keije334dfNp/XNh5WYewa3n784UH3gjZxmqCWWv2n1bl5SiLs5ZpMg/qxCeKD/HAisfgWE8uiEowyS6XzogjYTqCoQmxJZeHyiAUamuWlC5WY6yPLI86Q8Azj2k0eMqQT8BWFyvimjb7KQ5N05s+0cPNgk1CmUUrdWuTTdk8aaEFqDokWDRKfSjG1HPq9fLQ1297w6FEtJZGa/AFFI/2BdaZZRl8l+ZqUFnvKVY0fzV1ak/RnIfqBbk9D7LEBAPx5AD+c95C+FA4UOwYl6XsQPd4HMzDxIYsisc9fTHRPJ1eHKAnL39jNQggm2LD8ADh/R18gj6KU/5DJ/q0FJ/wbzZESye+4bvAaDMpxjJisiLjGqEyl5uVV2y8/22noH9VkoazUHWkg74q7Pf/BGZeU0cFUqh8cnz59x1cjIgQTZbeLkFMCJ40GbPrMeLjc+xiwi/kWGvLQN8BiFFzmRtux/LTVglqGjrYlU6YENMMvPNyvVdPWPYHF/mz3MGX10RE0KFJ3xk5LmDxX+wxFMSAcQfEqU9wG0u8WWfjqQpAHhb+biA1e3DjOTtKdeZL8JQKy9VVqMtOY45WHunK8DbldEri28FZ9e+NvFYlAp3buxfY6yoZfIx2TCP3mvv30CeA+KM0XnIJ4mftQRtL5uEVt2NFt01YAOD34b0zfakxka/VSXoL1y3xF8o2Li5RFWvBK1kTND+hYjXPb3OscnsQ81fOk6Gf9VZm4zlU6HnqkPtP3W72DbeBun63Km0OHoqTLFtvleLksAWkxOjqzNrD9Wr5ffzPtLuEg+m51Hawxtbr+/U0L2lw8LfXkuXdCtZCMXdk5yWzmNdgQ/H1GZ0xoT8GYJmr43G7cJkTjG59PuZ7toBrBuHqZ65avfFKJOBxjG443PPOh+Ee1DNYpPSr9wCGNa10+zP8RE+aq3OG66V4t8fbOeaqXWgrDQInt0bhD5+CFw0Ynxvfj0eSiuQaNTYAst3GDEE+IuvP+JD+vuTLZS+wpWNvaxP/XwnyBIit61OUl7OAi/a3hCJRfj1IfpCGLs6ouaoNxcRns8PYMV3UUwT6ysg8cyj52W+/TCHDT0M0N5G+fa+FCAus2gv0CLjjj/zebu5N8Aa6C7Sy6JdNVOxJjHmS+yxkytYCRRiD+hVNuJq1TxqXq0g7SUAnLcPwILx7IFTF5h7g1xMavWJFxQwkxhArc2c8WuGtK9ud4ztMjr5LUihmfbNQbnWTvJAwpC8/405uzBjhh3AjePFdNPmEa95ZMYTkNLwOfMzNsPHWzmxjygjmVnzKvJBJ3R/WZg/CWsNJqZgBd7Hm39mOCgzIOA1wdQ5yiSXX1fdXGmse9xop6GlIu6yZ1p4+7Sdd++NMb/gMQBnF2dJz2IRTwUDM5m0lhj9Mm7ju3BqRQbbHznJHyPG3Cx3Xti5odkCmjvwXfaA+k9riazw7na4YQn6vDDP5D2hCWJN1tIf1maFueRqeY0ZyOVXpRWz8+JBFcEB2bE2kJ0/25+Ssnz/muyynOM+Bi7Gyi2uUtta3boUPV1r6hCe1oUXwlvetvNA6ElCgFSd9TynpjtYE4kXL2LtZw5PfxXHzH5zOoaKiRCjvS0Z/2L8Rfr4vOb69wqG2URODcvG41/e+zoNYbZP8VoKtjKK6cKwdgXWpje6MaKf25drRNRgOaijznOR625t+x8vJ3sYgNyD6MaQMQy76gVVwdrvffFdvWWxSRnCyjlMMYQIXAe6U6LtWLZM62RlBO9vIR9OLtL8/VM8qJeKFdi/EuJveImFT7h8HHeoXwHbvl8mc7nHQETPhLQ2idMCqto7W0EXEMaOSk09Vn9feFBsVCuVCahwhsLDKH0kWmhW0Omk3HUS75IrkpSsl3/rfe4EU2oT9wILsPo10xqUreAq44c+lVGEaMOHyxA+zEZ3pEB3+p9fnMXybFFuNAk0HqUBc0lIyThV42CEhK4Fw7X6YEvE0sha0IIOJ3LrQ+mMuH9i8ktJT1VSl3VXRUWEEpCyvKHGTuhd3cd6tufZuEnEcHV8hX+nCkSYGRA3AXPAFlUlLRsr+L6V/lEiZTkzhccVwXj8bmbZTMSxFHy26zjGSgCN1BpyrWF6LiSYGTp0WrO4BWZksfP1aGab7vy4Jsnx0n8RApUH38KlI9HqxebDDsJoR4VX9OiPZBGji8Bl10N9AYgkuxsZCKczZzQMqXl2OvsF9vmDXvIDM1Pb3QqjTVocAnf9V6U4EpY2DC38Com/mk4PmEGkbA7AS9y+xiFCGmhUnpVCCm8fB8S/8oBWF7oGzUUgEtjtp8shJlA/RSEzbsGVqlj+xbMsQtGukxGQWLFdoZI/QvIW1fCx9y5f4WQUn1yURKRLn2RZvNFoElILW1ZE02cdkpPCOu3gEc2n08gx1eC+3En0F3GRnXvHdVtxs87zE5lF3plmV6dA1W36tsZjwnIlUkFNKZKDIZgv+GG0qxjPn0ozUocXPs4v2w79iXq/y9mXkO5lBQcIAcy/ad8BKKijEQ0DLA2SDitJJZZbC8qbo6PoBjtK1MEBCRHnvnVMna+QcDX1Xhl6ngbatewckfJae8Vh8G2q8zY3uEK9XcuKfTisrB3vceDy7AnY+L+WMkm1LOfwQWqzk8OtoLV0CNfPpp5GkrNr48L2dG/w0jpG/nHw7YXU6fsTxaUeFM8lFY+VV1e/Sp7u4sgSQ6Jv5ylGuF6Y1teWSLHN+oA9m7IvFSwh5xBql88TvVuMyfs59/AgI6Ub/fw21blq5Xm9cM9m+ahj+4EDikyd+hdZdGtuVT1elYnxTNLwGYqW90nD5B/zhOJVnj7LGvVdJbyR7XryWXAS12BznABP9TCjn+c9e1D0ZfV4a88Mupk2tRCj+JQP5ml77k0XIDSomNSk9cKCdKQj9KkRx30TCeErLaD6jiawckcq0JjONzl+7Dmut8b1O4Z+WgzmmpsgOgHoUDTA8DOsczrKn2U7/oTRUfuEObwL/K48+zSdY4EqhhYUvXxnvPiDMhdmIZiq+fGnDD59aAFPLQ3cod9/gWN0RLio8xiHRN/2o54uITrjEZdoitJuWvwnyKbn2mtmFOGYPqPOwlIrGbEdSYY+n9Qp6ZmIXcC5g9rK+UPxtI2z/u8CBXOPVWC32aV1NOroZEBpmM4s4Rm1/6eba+JEfK6n2rWEdlk+1TPMHesVS3r/PusddEWBdCe8WYgdqG9/JAd5pFxSjz5wN2VcY9lqkJBaB8n6JVRDUjEDmU5r6Hv+VejdOMgk0QNmsEj4ZgVWWU/7azB+xbbIkjFSJlGTUSNZxKAstwfD9k1WCwy9dod+mMGF/UvSLYSq4ALLX3OuCrRWH71C7Hd5OSM18mJgFWx2i2puIDhhru0GKfR8s0ELElFrCqDBNHM48y3qm04nT7Vb44mthtA+kiKnKL4UlsI1MskknyGjhmi05rwEg7s09GG3mDm8EM3/NBmcGD0+JuLkq0JUrZBLHa+9GEupcS3T9kc7GFX1d+9BFDLXh6+4M8+syHhWqZ1VbiOeisw7moBxngVrxKL5kCuysjPJxhc7RxC1CsFyBY5xm47TKHqN+HiLwBiA+XmamQusHTD3qshctFhjerxcNPj+RiFHKlHX6SDKt9/uS++WTRG/iDosMdniLElMrMTknMLmFyolHxTBF+dq0pbZrWMtVKJDBRYioJxCN6CvXWRiY28r1cVW0sKWD1oT3Ax8g/1U87jxEI0i98kbutUD6bv/LX0YJr/MoDme0MyFNXpEkaop+DchlALNPS0DE4W6MZw0zWJkJtlKDCnonIrKX2I2tyMiLXmAaHP4YRwSjVBF2dcSjXFs3kbddDBdwSVhKhvjOJrT0RYdiHwT/m8g/V1Wn66D1TayTuKGti9uTEdqniIffohzRuzPG+cY7PXrJdbumuTpmOilZCU9X7NDdi+Wp8ZxqMb+tYuNGT5yCOWURt9gwopDsw/uVmFbojHGiPbqb7bLuI7qr+lBJhIYjfXRRuU0bdmwyIBznucXgoNIqOYuHTV5LTMxr7Qs5ADkut5BqbnMWjCU+mAREyd+p9Da0yqpxZksvb7oVqedTXAliRWVbMjG4voMebBSLXb6pr2yZJRD743WzvOR/XlvG3/g/8RyC613AIsNWnGn65tU9wvLTCvOLCpOPJslOs4NvAG1yC0PMLrquSX+fKBJoxOUqkjxQfr5ykHZOkiM9bOf+oVp6v5g2nxsWVEQm1xUzmxZQkGlVx598tq02joeS67i6Wq2wG4+PBhDaGb8ZhO0/C5tBH+qX+BN/aLwxQ1/7yiIKkBBkJnXrYWu6m//dpUU/xo8AUXhpB4KQh2+dZ6fPjyL02vDB2k5nzQjKbqQ1eIZIvIauD5TrcCRML0WMGZhngO5MPMI35uyagOQ8Oi3EzLU9aEAsbOh9Ip4NfwrB/dT+FpPYYPb36tpwOOkCiwXFCDpknhEZ27RVFyNlZgYaeoEagmN7leSoYq04RLoZWceZ4CQhAYmVg0crq51SyKvLhq1o26N4etXey81XHW8/bF3UFmF35FXThMI4gZdymYRsKUsFSkFWUkjt9EQNeJe4BT3sQ2snHrhM2YSTIpgRY392pHiIBVBMmdUCZhZbJFVWerNbazwzC29i7R+oJnLLwQsX0/2pznqkUwVQ8tTllSYY6csGR9W2b0z9XBthq5qvcpIOaeYYJLe56FaHRdqjjxN+fQc9IX+ahObS83cnHjfXFCPUHTCXBPTVuAyNY8uCU9T1JGqFP5F/6xPjnFkMi1k6KHSdr37nyDnHjqv0Krlm6iBHijU4ANeu6vG2Tagn2wjdqak+HKYqT4m5itvbR8w43hqyi7U8lHU0ZtJjcUsZSQjEE/H9GjX0ytPsJrnyfkGayERda9ibDzw2tRCnVLlOhW5cKo4O6X+0EsQR5cvHIdoOH3su6CX0CSLDPxP04PVt/nSE40/geCJ8uNrzmyHByHou/w5abNsef5TJR5jy4rQHEImfxy13i1KUCWI1udplCnh7ggjGlIEh/iJ9JaH2rTphADfU34x9aIcvedMoc3Ly0W5QKB8YpJcJhH4ZYdljsZH4yFSejRsSbezk5H2tk2YcFymVaSZ/8I0tljAp+JdMEjrvcOMOm7LSy3FUSKvfPpB8hqInMy4HO8LR/AFJOHnTcFIK02P2rf8uJ6wBgISw3bBm5VpOq2PfGKIb1sPKrjj0xdRux6//U8Arf6NQySlWFJJ/67oLO45qedLU59ggqww4lsqo2KitjAoLsyXEuuR2nI4L+jRI+micRGmcr1tvvb1td9Z0+LRi42JzUh6No8UGY9O3J/qPhLyWPfKhqI4aXkKCuwEwTLoKyoUO2CwqpSi8oc/WdT1PePYtrakDQB03WUBX1StuTa5gjpEFTlVahB5NjUuDzsgQrQALHg0CMOxFdWB5UWKzWrD1sARHlonet/Hn75OzJUFCEfAHIPe55JX5gssLmj4TDK6wSjPMv9+1h4ZJegZlnf5DI/4+PxEyTgJXO+NPT0nqi6sAB+duwTgpuG7Jq2774D/ez1nfaPMQwVo/ud66+41aI6VNxdUwlNDK4ktQVXhWCjVTDS3+NcyTSN+sunvPEZ9dBzyS644PNTx+iQIxosukzrQEKCHDzZE3HMi6PjTE2aFhLl97IpjDxcUGr9YFYf65/mr20BUi98ouDsaJEj9qhpJn7bTIwteOvO/cwfi/urJ3jDYEfocTWZAgrs/74vUOhUha7Ge5mo4t9ybESSgVDWo5PiV8ls5V90CZj4EfLOgGfTDHi1pFwXW5biwlkifmDOPn6MqEWA5y65lfciKYkUk3a228MbhTlzWYzIgK2KRY0u/qAbkFTEJJ4BskFeukF7KjHV/fJ+Q7B00ISN9hBGisfJtSkhK75bAOYnEJX0D23vyuG1rlt8eys7ie87bihE0HAED0L9nG5b2/pd2xiPvpzLm+LfogbwzDlBYll5aHlBloOu5FuaZgnuZlQQeOhqT+VkHN1jMA4o3NEWJuEmgyeBDjtPTiY7v4jphzgGOkflNjXkLHkQPbkJVOvsqCnMKEYJ9exp4pZeJEF10AcCiqVa8I/7cLPjDhSpW03vgG1aftwjDtWnso3//F0sjmxR/kA6kRCREQJcFc81LPIzDs8iQSDEnbfAi1ek29o+E8q7Y4M5WUcJSNvqbFD50SEZo0jRvONmM9OwrgEQuySC1+Etoawj+9CsD4enx7/0803sCzzP2N1nLwqGAQxsYFDGGIP3IHdjfjIvf7UWNMQnPQamjUV13knxt3jq4bbpKzlJTtpOf7VpmWkcsizxD2CJ/Fkz78Q0TtMvSbBed8ww20njTGeq0zpgWrB9bETyMLAnZTvpv8eYEKvxMzp/leFMVVcRqdvZArkiGUG0x9r8fy3W1wE6iTK3vB+KNLro/PBg2jcZvfcEmEiEwZcABrPYzH/yirFZvMXR/MgQZOg5wRjNwkH46rBhTaS+qZrMGF4bqOLDTHKjLvtITIQATvOa4ci9okthmS1S1370RsSDahDd7cpcqvk8SWBfQ6nVuFk38gg8YPl7vz1SZSskd37LJMpD34v/uciOyrTPNTsP9XUeZkkHxp/NFaPs4bEAAHVCLnWhHvb6DYOzWdzZNwr5z5EAt9Ft/88VhZBn7qiFnoArV1WLrIE3JtMCrcyPDFQr5r2H3CYF53QoFv3hGUoWPrUlxNGgKli93Mo1Xjr0IVlbOVtg5sqxHpFEfEBrou75kBwoVyi9wrnhZPge2uKJMteOhHrQYR8NSYGiQGAjOHi4fGw9K2q4q02hCIMTCaVRyzj4JDvwkh4h4debElKXru5l7kzHW3KGPLHJiC+ZZeAOMzvO0SQPme2A4yUYruy9yxCOTvSW0GyFzPmYTkycHaOhAG2JLFv6RWrwmUUghVshEACYOXHSdjH8CZDxGklRow9KC3Pk1JBOXONawB1KTbllf/Y3Ji2RistNIFQo/WOMeiITSox1O8y0SBBo5J6v/XzBC5CCh7I0XPDLou9P8cFS4OEDRqe023KoWGRcXYXoeIqhlgIAUcM+zPA4cAwxYAmIDnQEjEqN1qn+LNr+gYEjRwTWYu2MhrDQpnzznJw2P5y9upzDJVXH5uKfOwJeVQbcPjAqh5Kk6BVG2l1aRoqsXwLjMFDUJVARotHaHRssZHAkVeDo5NnhgZobeimUCEISkTFeBag2y3fAqLK5gpMRAdiVwv2ksa1AGOKoA+g5A2kwkf3x+jtbhQ6I7VdT7UteJdJda+3cAp3ZtN7LhB4Ye0B/OtkE5RDsZe0foh/6uhA5bDq231uerbEvQptGPKbTA4c5HPHpJCE99HITGRMi1JN+fR9h43X5Ld1tEMJykz4AVgS/VY8igpXrPjuvcfnZ1gw0EBbc70ddR67LkOU66m439+RLy9WXus8TH5zuzeUoT0Xk26X4euodVUVgZqHzPbIDYjXyff3GePz6SsmDBHRckJhgYHQCGpNHbbPHsbfcpTRzl6OZ7/UyOQ83JtDfO0jSCVjFWzbj6nkcI0+ZwHPsqnFF6bHouxajIlenXcOnWWcbC9H6bSqu812u+5X5y8Gyfx8u8/DSBbs8MUsC8lcHc0juVbY/9Fap6ppiARCAQcW8fBp9AymFHx2/jNsvQopVkjDRaLeV1x4KxG536cmUilywU1UFgKIbtOKJm4T9wfY8UBuNPZyqGzPbxjDja7jpN5CJr9xmep0m4QdFObroyYo94cpZL6u76DD348MdA96YOTqhTXoumFrCuPOHGYtmqYdQF6y2BV00Od6O520l1nQVW1ujrKVtdgx+pGdtWdDV6rKzvQP8PKwF3d7zGCwpN/xzssQ1safbw7k5qAKhVN951Ja9EM9tV62SCpRCyk9qOkjRHuE0/NWulIY/Cd3b69p1abWQdN/P8PI7kGoprNcBFWwj9s13nB2J0pANVrBuguGZj9asusqJ8lAoxucJMP2pI6p7KXGKCsfkmd7L9gDZZiOiJJYKxWtOukNHC3E+Fwoev4zd/kTfd6j7LaHi4SKWYi4BCTGgCZJrbd5/aOeGS14gZ8sS+iKNj3aETRE+8bmm/SDBmiaBgrMnLjfu3Ur0ATsbLJZK8z79hsPHXxUIzr8xjbYpM3AsBcRL8ZkFCp+Dw4EY8LpfP9rv+0AqynFPe8ugssqb89W7PvczlgTLJOv8fiOH62EIkPjEPGCdb1au5oUu/di3EkGJaNqY1hh8YR/2vMPIxBCShF8dN26GVJ4BxZhRrb5NXl1EKRz8SjJmfAbNhMmf5Spho09zJNQvVNvhLndk+mzvaGgbQD8iAjRVXG13sIORrRtVkNAEK8xdB1qE4JqHA1je+cjIg1NsHJAkcyGGtYFM6DAOPCyEIxItFtEmgE+o50LBZoSBkfB36ZRVmLh4B/RbYX6nPg+KIv8Fxn25nnTS/sw1HGl6aXR+gPOQ27jUPFLIVN5pbf0UXgrjbApK7X2AoCZjR1YRkpGXamB1LbwOKcWs4z5vJ0ZJKqCMwHFISLaEc85KDo96NP26GMDc78AapdPApWI7ow1enrIT61Xxm3ZymS6FaLaXUJiViaixmwM9uq22gP+RyOZSu7XeLHFftkRcOaOU+FikzOWQSKb+HcLWqVRtqNGSXu7nbNwQE2QKdYCzUjU+zPc6joLmii+oQnjcY4CpyX+x1hb4LnGGnOuCXSmc11IMjb5hnMvsiollWZmvXRVfOa1bVBJeZs0vPvz/XbmjgTqPcFOMcjVJKNlnQeTcVeafPiK8wNoz72BvoXW+3IOWXhjDDvUlRM0NM/7Pou2P7Y7erKQGYMlIJBqkd2xPUbkcQSagOz/DjtEVt2RztAKrgugR50tJiEFbpneE+HrzMvlb+0bdF1KAz8gCU5fPXXJGNuthkXIYC3KLEBwqonp4vD/6NWR0w1F5Nsj/3FddNPmHCqMK0QH9xWzvVIBHS9dK3fVLl6KBcXevy6uopz7rHXa3S9wlLcdZ8a1AXoB3Ha4/QfCc9qVgM8YBGC8IWJY6PQfHiWKdKGQaA82JxvnwZT9PLg3IZkF4HJ3SN67S5YXPHdl7o2rAkH0h7F/OMf2ocfWUyJyGLhyUQqGeA8fWf1jQMvHCl/BgGUNS/LkEUrd1D7zKQ6EPW/eiVe7HLyw4DUzhM7sXpIM2GnHiyUelHPMsVCz/K6xIe/BdM8cCQ3QMBFAty+GND7CJY5BlAky8NsgMrYtZiA6/wIK/1Augn4cadZgsyLG4OV47AtewXkov3dm2vb9oGuAD+LwG8zkik05xQ0ZMHwNT+lzhyx5omqyHMTKpOpQkuCxeaoCdhrP3QQ2APNxk9lM39e69/R5i3YmFIMazMOAD8VfIBsPqGXh9o3Maxo+132bxu33OxOjhtMFVMpRYB06Fb+7y2zHNndbK4qrfGcJmK3a5ZROlUODV23Tw02CQXRsQiknq+5+yAtuQZ8fc++Ng+xFdLArfKPQ/u9RUy9mq4sWx5dVjj2xX7LFcn/amX+GoD5RRayRyNZjuOeF4qqI39/37ERLvHVQUJKWbisK4Fm52dkMmZtSpaC/is4Vw5mgLYS3hF7f9USvgz6I4OQAsVll2bQssYhsdfrHES7USTdfMc7xFRtQaX3PaVrxGdLI8LYuc+gL3zpHHV5rZEcOTaJSLXreDGT82kDLJtZodR2eC23VELwwIvEKeRVmTMNWTbYP+NC9jISsdqgL0iDqsG8INvZph43H5+HZoaFvbG6xCbGyYyIMEgReuI3dbUJ4tT9psxDGGNteHpQ87O3+xTXwg0dXeV3IqperQZh/131MfGezqbN1FfnXtwWrT7LB9+aTVbT4LqCNdgzZG4UQ+zlE2RTsqiR0sZGnR1Onlyd0W6Q2lDVRsZDpFbg9NKEQmaz2cqZDaINfNuhOLgBLlFmJ5MXID8mQmfseq5kA1QVdSEErtg903qgPFJFzo2kiwP9XxrHeDCiOcMYjvvhc0qCjf3PbZOIxuUvx+KFmfAhGR8T3bdnxMQVOV0Y9EatEkJCg4FhbjhQDgMXwqzVEiY7moLXINIiw0K1HlpaCMroXp28J68pG+sW5fSaJ3WORHiMm5h8nm4oymsbGVeSRJXYVsHmkd37NH7SxpBr0MiYpxaUD6HJ+62+vVo+e7w3ymwgB/pXKGEBBhmrZKmmJaKX5afrFopqYqCuDMiH9bFPdAV5et/snvdkaaXVrr0PhN6VvYFqmv2MASLLlWJCYf4IDa5PBweHqH66EkQ2fs5ynqnbmQQmA3Rrctuo7UlCbOsayxIJWZOEYwnbck8exTo/4PdUvZHqq/PMbvGPFUv8m9ZMBy+sCthxwtx5ImICIPJ3RlZqLAMVFDAJDwOykJUNCO/H44aBsCzY/pVibjNhMpvOh+up4ZllcERdYftf8jx5AYb3QkL2DVKa6WZWP2CCBsOCLGC5eiU9P1/lpkXRU23naZP3dByjoubyNjMRUCSRZ6sZwTXYxiIF+k6pRBZxBV1IGSRp1F7b/qOr2funrgd4mxnVIjeh6zCcAU087oFV6AhGeWnyH3M86ecYc+SSQKecY5aIkgKZb3uBpfL7k038G0/2K4HT4Bgw4uysaI9V5kCm6j4C8cYGowZQHdMoEIY1mJnfZC8QPV9n38ACtPcRAluyRv+p28zr4K38R/6L0mkUmunibSaORmW98u0ZTfyLkrJIT0B3zgupEtKSq82LmqPkgj4poWf6Y/T9EOgCGL10OwAw6UnEdKvZuCU7BMZroS9qBOWyeGLkDGzNUdxwelTAbs7Lu4mnj2a/toKYhZ//BGkQjY6g5KRWZKnDK8c1E8uSTiC6dcAZ6yvgC9qkMvwdVDtQ05qs46c58CS+O4NppdmyYXCbqFlyGIdl1gPzjigk9JKgWZ16GyJHru5xTscnk4dAUcP6G6ihzbWg2HTXmA4WCza9Rh4y5iu/BqTeRZ+1FN31c7XHUYe0mCDGWuY2okJuqf1OiKsCwbFITVXZmBrT760ppzfE/D3GFnoQPuge4WUd84NZjhNUxTd9KMEtXXC40BFNuPk+wub8rbkgG8R/5ItA5ePn+PggJ47zZdqIwuN2/LpieVQ4T/d3e5WDC6HxxqLrGtXQmq7EjsYo2hT17c71s8S2xC//A5TV3S1V/R6Vfv7Zf/UDwD/mZ5SJCngRvrej2mZvrJ+B4WUoWosSOqNbWv98uRZDgG7e0Bam73Y9s8SmVW2ttRkU2Q22fdygDctZ3wV74UjfM0YWwWE6Mhgk8hjEMGW2ittbSpBb+YV5UMuvUkJ9ClOsi3LA7uRvyX9IJc8fH9oyPuR0q/bRGAJQeAQ8CGiFr+0gBlA70Cvpc5mzWZaX1maEj26hTL9BQ5pzla7UU9ZU6QiADSttw56fQxbDXG2gObtiYyahF8OxZ/qI9rZtw76MDJjl03lLv3HQ+YBGyM0lW9QUGGpgoR5XIu+Bp42hom9cmR8ADVWQfSrcw6qrkHrQxL33xHhGRFnYTNLPqaI92GWpVY7vigTkdkXgD7CcpFYK4nXdRj/gu/YQa17ES4JE1nI4eYFljNPImI09rZUzbCfuBCAd63YP2DUZOpsxwm4lbJj+GQv40jGnRQ4xyIeM1d3mze1qpuAfAEqtTvjugP9OR7nGm0pqlPexytrhQ6MSKBzyhUXVg7NDvf2c8pCzx7atW4mffP9YrUpU6JEAFAkExURScieXTTX4DnoAjpm6Icb24El3/tMdPSONZ6FudkWRRidqEeNbrrgu/UEItfKi97m8G0p3S2SqEDu+4Z5GmcVM/TkVlC2mM6yj/xaBvQv5jfrjDbmcWDnnhYkfftKmiO9kwQrJTBMRdtTtsPkPokKRVmCpZQfbXhATuzzbG2nBYOrTahG6grmPDZm1ds6NVvqmsTo7Wgx6tW111jU0huDEzIegukNxDOKuoCFBT7F0beyEPbf1jyQTQJsBRooY0Ct1av5H75xOWB9bnXTm6s8Dpf0r+QFTqki4nllql2E0aBwzaOmnDZJfP580iXaQo3amVVPToBybSPH52+cIiBMHH/cUwAgItsx07LHcV9cWZ8XAbwoUvYIe4+PMcpd3b5q2xT1tW9OSmGNRJ1vNabDDseOii7t4RXuQpEz8FTaBuaua8OOIbV+54SSN8TG5fjC72Jv6PqUnPUmOEOAfixuq1Se8c1nN78chbrWdW/5en8bfq66CQyMG2Kae12FApOCQPMo2ffpLjSHsR9sTQgbraSDOvaxvcRnB3NWfTwASEMN6TjXsG/CnnHqLEDNL65sZi0UQWRQM0MIqJyK/wkEPkuDlU7ifAM7W6gnDswq0fn6IFpojSjOWag9w3sGBA3m5QksP4JqGxBUE60JEKQrlEIMAUFnhTZ+E8rjDqexGUv31TPmFDh96Kd1JNT6MmccD/AoLCmAucwu/3SvroApmyFIb0gWdpccgCTEW7N1L3Ydhc0YQHqGRcGsL3cmVyFIwxXGzFjMFxqeomK99tDTjnfhqsPxyiK20VTQPIWV40Es0PIwL0kWQaDCN5ZHG1LKLO7geGuDXWYzzifFJK9nS706LX4mX5H1qGzX0HxI7xWh12IpWNvP84BWinoyLZuWrTuIJdPjkcaiKksBUQy7LBO/6jGX8eOp0aQZBJYDj4aBMbJCZ/kHvLq7guS1ZP/DdQoCs9vIYnHtyD2KvBU5RfHfBbqSti/Pu/Uk2tNJSKvujf8DVSaHL9dbvGCe8u7byqE1XZTs54XHkeLG8m/qESNqkvnX5FmfzT2in5atSf2jUj5F5HKAFcnS6Pxkl7ySzqBhu302UFu5K0a59qsnkT6X69409UQrkY+rlWkIBqDfY9YJ+cOaK2SxOZCkFshKhrosXbTlNOKSyAR+7W7cgFwVTweBqbFjlnZawzhmQFZuglEXni85dbIAhIHQA6v8GoOTc0bDdOjFEypnwLX0WEVlAxZqsbZN2TXWW6+r3A8jcwLplb+8+RJYCghBdyWeDTtZ16GTf92wkUXdaLPa2J40+TTGGqmQd1l4ljdpKL911/hfAA1X6iYWLV5JxQvgDDqiq+e/H3BPvQCW8AAd7aACriC3p+6I9MnKVrvecZ+Z38lOPC482RDLjZ4kL6Tk8a70ErqTHG/zlm1ONPl5CbCozalk8g1YPpRRZH+Caxc5sMUpYkxEsu7Nx5Pq3mIk9KcAGu4HONdeMzw/PC/YsyTN1Gb82wmM7d7dIaMnQLU8YHsimy2vwVvJBh9WrsN00xrXcXx4uby6RQGIE5A+eQjnEmvdNOQSb2J9uuWkXPjVbjbW6u+1CfIzLgI4zxbRurV8brGdrV5ZVZZyP/4dC6lgpBjSqGnECTz/5GaP152W/jIo1UHZRrWtnnBwgzTSHgONkYfCrhNTszWKlMoyvfSTfz2o2Si8Rt1bzBMPt2HsT25X0O4Q1v08rDpaGtjdSSmvEVuhx0DYuoGbla6MKTNM1biOFE7M2RUw9Y1sKlp0RoAvTaaEhBRaaPvkA1WcO9pWJ2FidPH9m0Bc1Af2GvBqcnuDlATKLN6RCVx1K7lMX7QxDzSJtzlyQNBBNFW5Z3xcNqZNOnKe6YpERYNWP+i2WKSteSX88EaYQtS2zs/IUma8JE2MQVdIebF5ZW4XON0cpTXMsIuknnFNc1AgBGrk8CC26fQGWJSdvEFffzESCJpEVg/Iq12gxDwXA4n0apauc29hGLmNcdnESpPTepEoJvG3mFwvAnN+9g7No4ydm7zICj0SttUnrUhN5iBjsKiV609HxT6QxuhfK1G78EBltIjh+SEA89pKPlRazUl3FJVGSs3owrDljC4qXiaYlm23nzbHCGK36oc2x6HiSS+eFT85dLcEB/h5f5k2HhcucQ37bwj0+1ukVHm70As94pLHzPIo+tiJ8CWl8XW0dwcJy8Xu19QslP85n5obJgTGkNYupOhGQuBlc197idiRLZCOYEL534GVLramKL/VtF6UsTVn9mn7jcCAscq+kZCok1TWHvdJ4yXGwKE1AOmvS2xTU+bSJfJlZrmSDNIZvAuoR1+lukhFKFtk2GQGRCDAc5WNsZdlBSqtjrVhgeTK3zDkQLxhIUN2c+6LdCaRtTwL80wHZ4HR7F0hT3pAMQdIfs3kPwpku0OcyuDfFUPCd+sKbLGImdnXZupc5nUK1ZH5YfF/G58dXlTdQEJuO5WwMgO3wXPksp5hSU/avHjJSO4MoYq54mTeDZo+G4EZoU9+kx2C1wD6Doo7joXqBWsCKtGPsOrrYyvoHomUBd/clFopFrrzU8NChTcd7qfHtPFPJ/tYBQlL4Rkm7OEM9xlcigZ8+NF91EkSlekSzS6sis7eEfzjE2So+6ga3noHSZegOj7byCKlFf0pHfX54eD1FvMo1ayeKwNEkYvahdQevH9FTYujYraac1A37x+tp6j075oP2yKgSd9eoLQtTs6p4oXyR2OUs70M6OJGN4cF/De22Y1JWYZqMbvO2jdiz9cQKkJcYITa0JL/JCu68RMU4C3/3rNGVaLWAsbw/z3PxFrvFKmB/B0DuSlXlmBRFztuwbTQPw5F4J9HL0XrKL1j2YoPWR8uFNwMasTgpd/mooIMnGe8UOqXsdCPGqQZIQwXUjs5njbDe/4b2xgsvYMrDZadYayk/rMvcVqOI8QK2N8U1HMTGyXl6ylj3JSjoIng1EWQGAxZ7lESYd6kjVd8PRK1wwGiwBWMsfeqCCavXacwjEUTeIFyIiNkABaS288kYZw9eFHDz6Imr6kbhDzLJe+6a1V4KX3u3J8/ofQ4SfbS8qCDfsdxBkLBM2KqRLrwRmre4MHZGLq0E7EBgkqSAkkpXGkbo1nKssaJMbTiFRdGwEQCCjhxQhvm7itPfbvHVFFVfV5ZF7VDTOXi5BBlu5aTkvckDzlDDM6JVtvlvlOemIWvVRgFOO9h+L9l5zwcrD9FuDLgdyjxFE8nKauqglbjZHc8Zrossq6FTk4OqKqp/HHn0YBcPqj5YEPpBBpsvzUic34lnExDREeSZKXVKu/xerGTjKto0mPkT9pX/o7unSF4m5yCxdyg0zx9u5O473pz1TFbmf/seysvwZMNYdH8mepw9JtlwdUsuWFDi2CGJMP3ObNNEsBNvn5/HkbKuyf2uObDWfow/64xMtPflYRR7mhqJSEEPn40KIZR0QyCVix3mXAb6YCrmPof0Dep57dDuMOcEZyps9uTQVmacp3z0i7zdqici90gYwTQHbEmvL4iMtre7lVnLJZMDwIe6aKpzqIYmm/KbNCdCc4UcH4VKH+Ad9SRBS7Kn/Qs/csZ4kmVE8BUGgN3JF2GAI80mO4T3pfPl1T0ggPn2B6rmridGm1m3GfmV87Rh7pbvWFHyeD9zJXsPEGu7VPKgxlsPN9MDzHQvFRWbupxNJ2x+8xRXEP3yLoACfEAqw66K1wUj1+oAzhfAOSyrYyNoekc9TLpaWRfI9E+6AqJXt5r6+IiYyKUZcGR7JtrYsJKgXxg27qj3uGbKXvyY4hm7s4Hm31Acn5brZBF2D2/N2EzseUFtMOXk542b8F/uoTw0f71oRfgTF9T/ZwtJLly4ffPvyQoseKLB2ZhbtSDIA0pS7ipRqJLPnPgATuGfrVzRIGBUHst0aD14grLvjfkuolGM6L3m1xhptXh6H1Lw4VZ9oPZb9cir7QPq8P41ioauAVvu0e58M0rPiSHPGWEjFT+ZtuvOVEgnntbwWMUcHWBGygaozPnbxFsDEkWXAz5+3H/zQnRLZSIZqFSJdtg8cy9wnYw6RekaXgR8zbSKkWbe7lMLd+3uCeh1agKYNRuvCg/8xqEUYOjItzbFynl7lI1cOtEtCbktyU4LJaW5PawSuwXudUy0FvfFBat2IX8ncMdfXeVJ4MzILZtZt8s4PiQdUf32hYY7Rp/a42MOt/3ewIW2Bm30thbkL4mI0t4owUX4GQYcH2E1qHUc6eFpTFnEJT3n/cv8DqfcgZf2c6C29O9IAWhunTGm9YG5/xHitFKT+yLFN+16xefwTSlMyb7Aoo4XzkfHi809WcJPNmwxuX03W26whk+wHlwNTJ3ZQ1yR5WvD/Xw0qcdFO4B9R7n32z+OPt6Az8G0e8Xs5U0OvCAJJrc8dEJ7w1maq8W5aY6syz4cwjpAzNmRr0ntuIpyyvUa/SRVte6DREo8abbrXUpf5Sibo4WyFCWAXWlrNoEu7jiFSLpSYvClKqjtMhp0IgdW8gBviS/9Urr7XGmpIDGMc8AsYIUO6H8j5yBXc6dPtPYD5+UGpT/fYY4zcnaGbIGCTfiXrSZkEF8yryyfMVz+kj6/3/HjatijE0Q6GvrWS5EqOjtPtu7ufUQ73dpSn5HQfPjsFB/XW2DapC7FNKUmlaYxZu5HgJtm9WItASRS6GQ+81oGO2zeSraZCD7HGxYAc72kMJrL3djn+CSePSfJ0AJMMDPJmQGpLhZQ7VO9YCg4TL/masAe8n0xIj8dNxSu/VT30f5H+aBG8g6QIQVscbwRuuTAOY8NzABGGDyiNO/iszpVSn1gBemEBxQNeFfvTaT3ryiqzcwVUAGw/U1TS1fjbWf1yCHmm+KnxHWsEwqACDpzm2QcyNkK7YB5Nk2+PWA6TshLy4kvoENYz1Nafe0ZAq6SZpM6YEMSlwl2b8lSbE0uWPLwMncFZ0wUo991VIXVv3KWfnlHWCt2D56lA6LQuMsx3xS85JRDKVwrFl6C/lVgYLrMsSjYRTcrbTwtFrDh1fHE7aYptM4lSAWGgawGTiP4ZM2Bs9cPT1ANt+a4C2BKvjcYV1Faf5ylkrCauYr14QyGE/U011P57EAFn3M7RAN3oXHJhMO5bG/o8VnLZJJ8o2YvtC64LfC5h/1HanfeTyQSDqriKY4K0qvywb09ZI9HeGYaD/reeUXrP8BxSB4TwXk0YBBmmYDgEGdPxszf80zbcXwMw6lAzELDaQxrSSb5LubdkGFU7dfcpYGfdaJlHijcnm4dvtQVNtx8oX8CwAcC1Ocjh7+khf8dKp3KFTlyYP1ixo983lTc5gAq103poSg5ERoWCnEy0N5jb+KQOnsoqVO94IcfMzDRflj1tMD0Vev0dmpGzHav/8t8tCUsGSKJODw648oDQ2U4QlbdszgRUKbMH/7yO/bgrZXX6E1gh+X3r0pF5y8W92HUedbwmoucp/YvAkXYbnuRtEb889QcI8BSlCrAYk6MBYaWNqaJMmpNBYybub8ls0SLfNz9LTXuqHEtiIBTBgOwO2whDFkwi3TVBsHLFBusAfPgOdRQiS+zl8on+1dXih74Ahn8OyCMwdyz0glYttRy9JcIeCc7+BJomMhUr1lPSw+Z28dNR03dmQRgLSPg6crHZkeP1i4T3Sm7LvgMi3sxxl49UJY37/wBTNSDHGIRQocg+bZCgLCgLjt8sTKDrLprCN9cARlUJl+kUtJjJstIekIg4tRFIO7N++w4BvPtOUtIyybiHxFHgzJrGpgzBnnfJ4zzhHcxPX5HOw7yJwrHmshbdScFyffu9+PMT2rx30F4Xk8R6TNHUypovd1Jfwq6uWKEVGoguELUw4fp4jVkrjShTB2SeBTIkvgWV3fS2KyLmmgIYJHt93B9c5Z3wFzsmzbkCv3Wuj395z55ByeM/Tre0s2lDcZrtkSY50ijEA77YEeuRmi1oIwjzpBh4bhjY9CxnsG06WPljhNBVJGXSRPhF4gyuaC1m3kSe+zpZTHvyQBFhmZqrNqo8tUJP+uOgo9+lmSQIKT1cwBvZecL1zZcqsKuPQu5lED80kVSd4ktlWMNUBtjqJYyGn+pOB4e0LFZZuW4NNHA1JE949aGw0qKG8QNAd3ReaowDm52czLU33BFBL+LILriZQlPXsQbKhoQCLXRc1FIZJFvFBHrwuWpIz44g9C8HQWiy6Ap+YmKfle5idia/Z7KdCafLcntJOcHlJ74Jbx8xUbI7qokIMz70taz3wlV6bKHXX2Vx0/HKWkKq5T48y67xCpm5vTIdwR8QGXjeDsVWUhUgOlJUwAO3eP29a8eX0+wghXBWg2Z3Q/KczST1SQlg3/PuZa2gtS8ciTLYvmcZ/IpQQxSLO9QxvcePpP4uAvYg//wx2P/7ssmeqb0qRyR1nE6PBEvEUYp15FFYdUPfrqCrPyEao6VMQpKogcOoOjHNqqeNzmd8SRe56xAgdqwxhpOHJMwR8eenXJMP7LQTlLpibDsiLfX6F+1x3TrHvTgkJw561QSqgM8RzuL0F94JT+yp9tmFSfUf9BwXLtIPWLdaQyTX1evHdiqevW4YmVQjgZno6r8eedq3sDXUr1xX49HM3GZfyNz2CcoD7iIGAVxt7kEuphby/FVY/Psgvu9s+2te71QckBiSoRWtblxHE5C7wC+ICSJH0V7c8qf6qDfhvN5V1Ar2woN3QYJQUtSFH3WUs+N2zFkmoX7rMfwZA6ODHcj44w8JQNmHeOFWUKVbZ1xSJWz+TKcfkYMj6ayU319A+3hqxy0wbVD4JKfjiTEniBi6KklvXYFDXensu/u5+pXsA3Ww9rxDDkf4y63b0cB7vKxUxIonug6TEBE/mn6bqnk0Tkw34V1MFFLvK1lNld72AzY3zM5SmCVZqofrSPED7ZRuzJTrn5/jvUUWhHLayXcLzfzyUUO8v9mCTzCaHo/V2AUtk0FZ9ySUnAJT8lFP0c5VpiitcjJ6ofOBquo5T0ods1c4n3TQo7mTUnl6L0OsjfOEoDit2Abh0BG6Vu2L4j0CqAg8zpqfYc5qpCvEbx/VFu8Y4Y9oTvAQGHNleOEGC8ykXSF5krD2DzTNORh3abw+W7sUgnU3RDxpKFzC2ueSGhIw6IY/dPaC+JxSV6tuFY7BJYv3q/+to/XD7Ky6aeJPQqA580uFGveCebU4qyRiz5EFnMMYj1RkIKm59K8Gz6HafZC0uL457X4DdpYt+CMdHCWnREQ2c4uEhba9rrTZCI8iM98eTRR/mntJlnpyIuQg0/YCF1kR4mEuePUUthIuYTyJX6C3Pq6/U9PwA1jn2blsF4V21chrmC5Fh6L0c3emz4It5vDut5lkp1qSigsobWIFYT0l4YVwLde+m/k5ZuZl7cQ5sVTtjpTZrV4teynbUWDCjBLzN78OsG2SkvhBdLfdaqjiMx61TYbfXurF1FYGYU76X4NUKN8tN1hNqcxF9cLarsaOzI8D8tVQgEeIEYHyw1/T93SUB+vuapP3KoXcUrm0Z957DEhXIyxVsWdzyle4kPMEm/vOI2d+rdJAghdQI5Kc6YIUqqO0I9Sox645Jej/47uNINynqzOywdPXsw6QkS+CWxisuDstvoXHglBqCkLSyCxQXk+nwAXGdjLHR4UgNN2wnLJeU0CVtW104O1FdqBhgcetqFr5oEjm8zoa96VrZT4D+PwX1BantSHcZeyb/JLI+tItO6FjX6CMjKUjF7eXbNHzfosKGDVyb8J97AelSUOx5Isu2BRpU+nBhkGOEmXs/ijLSOy7H42apyw4yQn9g8pe05KmUWtr2FZqnaqnAH9D+7Bnikg7nWc6VeYuudIGRrAeFZW/t4TyGk5p9c1A4M8cdv1I1kWX6NtlVZS9rbkn4+U3Z5A3h55kGINweqGEZSYxG5a3eCFoOJZE8Egq45QIcJPiSZY8W2M20cDZbSxdS+ulAsGUkHrDd6c0WZ87u0NYVPGZLd053VRa0L8wd9E3Hc0P2MoxVKU6xAM9+pEigOg+hFCnRm4pUHDmTAyH8IUOxT1rL3rhzTRtkbCV17cZDBXwaDTaIKSLTiuePmu8BsrgSxHahshwevsTdlxW3oaEYhX1RbdY207B9wwq3MS8+3NDltTyjGhk+b2S7gSS7B5Ixir914BRANWxjequMfszC4vUtHtZ6hP1I+UD4silReF/WgBifFo7k/yZKY4TNDXUD/XPrq+ByEp+ku11CR+8pv5nRq00fQaSdrWMhpSVrDA5pRXom0YdWW4OKSZXA4VE5kaILHpsdn8I5ylmKpKSN35FyyeAz0ZsSs8U6JiqoCz1c0fmM3oNQ5VmN/0Cu30+26Hfpn0s+T4ydXppXsddOcw9JSNHKPcPlu02RqcQUiDpPS44bd4Y/xg3txITvhR4JGBi2v273qFSW2nUiMVOnKoZ+/fWMQOBhWFjtQAeUO3acCmoDDQXLmPZc+P1EMuMnXkyNhUNQXGDKX9EmOIh4F+VkXoMjNF9IyFiivoIdRLNKmn8SS4sWRek6AnWd9bSHE/c82PHwYZ1gRZbZjdGt/9LOi2tMSjyuFrp5Wyy4DCDYz/ehsFff/lz4yfkXapvoHCAl/w1uwmmuRCWOGk7UmTL/aJ8gUpQY0QboMVOLDgEMgIsq8NEQ4NXjYkrODhorf6fOGbTcV4bY2ZRYa4qSJ7nIxT6u4h4FVpca/f0r6n1qVZkLAHFGoqW37VWkiOVynifzcVsT86706uubqieu+eh9zT7S+k8uaBNr5RZw3SDp+GWXYIw6a4uTEjKDTHn47PGxwabRvUw+UI/0+LRJchGgPP9ifE0C8M+Y6omPbMQFKChWq0VT+NElLRPxp2FbYi9fQflqmHjOOVu7uFDUirdBLFvt0gSqZqkN0CGM7ipxEso5JO9V+V9uPkuQsRrmanIWhSnDmfNBnmBtowSuLEUWV/Odof6ODBethpz4Pbh0tfEB6P7kbABpYQCxzYKSBnwR/7RvhHZxTU9huo9hLIJftEDlq6wzF3QPyS8gmyImFrY2jJdCGYvl1aWS9ovfHPWRtJlp5vy1Q31qqW2TW1tU1RYuq7XcwSjQZvwLe5xRZoGY0Bv2wmtADXwJ69GaRO2at577D6VeMNfmXhru1Zh3C8K0BaLHgrf/eOt/HQ4aIuSj7NYyeP4XM/kLBAxsikjNrdnMXSRGwZ2sujEjhtbY1dnJWHF+lLQ8hj7spvOpSIMavjSzPuDlp0TyVZ1bWP+mcGvSAVHPr0spqlh7KOitMLmkmeKGlTOeb7mCv2VqYW5DFiTn6ovKt36P0jEMxnLnEfBGRCfpz3G6Ckge5XPN5S58lPUUNXUpizfHpxUORzcA8lMeuWTK7v8Ot7ZMbYzizgJVs428RoTNZz34AL5p1y8e8XbaACMyRVMrKqkIucW+QGQ1j03/z9V8JI8XPVdAhJJyIalIXcH/JJ7CB3UIg39u7+WmuHiiir+ydrtDY+b5snELcKmsV5PTiDxpyn3igKBqKCk1YV+SGxRUcNR1E37DX7YeAJhiMONFlR83Yu+pJb1N6SwP8CvAAAFCCMfaVf2SbNMlgO1uNBD0O9QewNx+GYIES00uGki+JX3irdd1lKZH5+e65pL1NLxaLoc6ai2cATF2ifBcw3I84K5eZY3jYCadc2X8zjctSI4F7FGl0TG7Wc6c1/VuRBQ5DrS/F6mMwitFDQxUPVLL39f6BHwm38Z/7HZ6KtrWVzfYIfwtlVW5QkOelmeNTeIvvMOyh0zzDH64TSavZzDwyFQfPwq5FVZXtEj4n4boOScP4whKHWUbkQgclq2yP6uJVjLYBXvXXFYQWpv5mZ548mXeusMIpkQ7Q1faPIvxF4rGyJ3KQVY0LSSNLYCJKnQyP+I61q4sIwmIVTK/trFdX0enMYSQ9t+v3XAjyuKHCiJkcHlEuD3XLvoA+/MVTmaCt1TkI58zbhN5yCkfBin3rC2T8aJzEWHT7bxR04KVkPJ9qAq2MKaknsHUrzdW2myrJZ1E2+KsteJO9y0mFQdDxvDX243PZPQcWLX9rHLuaZEM9+T6EymQEZt3N6WfE6597+weT8rhdU18C72zv9pZq+dwE8sBHCNJ1seaGHIDuxUVO4EzXNNBkk1eGb5qJxF5peVV7hOjjWDZmIl30NKk3BG5Dqasv/Z7IMv1p+iYgq8oZhzoz7uAshksTfcTC53r+J+f3ha7aVRhzRlphDZm3f9iBePCL+/M0RbCPlBBNOCMeEAR7/QmRZsar7YzDv6JpfH8a94XI/FVcxU0aneRByrWBpCfdnvqNB8+wSd4W7zORNucAPpNh84MmByT1HnbwjsLc1GdYfsjCRzm4WEfiEXArx4cm+mYq+rl57Lv45W/sea8kS3jzhYVWcwQsit+bYUQScuYhN7uxZxCmDtG5NYhf697RgBjeDebywetKd0dI6YXIfOWARv22ecOW9g2qpqh5IEyqFYfEKGgShZQIIFopC4HATTcSp+CEaIb+2oupgsU+PWJX3jABJQRdo480opX/m9mx2VHlK3+BIgMHs784hN7esuvy2496wWLxxsjRNUUhWz4+JHRpRVnIfLj4HaVSO1Tzy6CXPKIMQ6zCKZeXbbNM7Dtv66jqQYXJHq6Lt1SsflbXEZ3vYRNv0fCyestQEBiRmlij2W1JKM9MGn00wE0ew9+qsA7/hYtu1o1hX0qvAwWIncq3xSFj3qlG51OVH4rXobkCGzGAlEq+6NgDytH8vRhVw1gvvDA3gFSd2Q4v8vlG3ZbvPUGU9T0J8MlxirBNQIePtfz1Vp3/pDp1k2SA/JzppsEv9whrwmmUYz5M+NVp4d4UDYJl2QOH7qn6oaV3fisNvdT9iKklLoww0kL74IXQsaXcsCnOAfQyeOZpF9AUeZKHcgYT3Fvl8vrfpk/UAvKTww2ik/Pa7/4Tn00QRPHB7SSDRxc0nZiA+TnYzuuH5Oev79hlVPe6RVj8qOTnV19U+OwrKtEMRr1NUYZ97qCc1qL2Sntw4UmnIZkBY9lj8REjhuBvKcbsB6PwTrp1MAGC/5hwD0f9K2SdteM/ky5MFil45ks5TTUrTVB+ViaxPFR4KSop+4KEY1VHiaB5EkSjoBAF7BCr+3bGWaSPRVKWz6fsT8TvHCBaIF/yYJ4HVYyHmhda84jWsN37+ur9YB7HPfXk9O46qzSwpuZ6Olr65szB9jKIANR/orMPRuEqg0EO4TM6WFVoj71BI2YsFcOeWLHBpF/GA/25xlE+uSJUqKU9YT5gn+kA30pgbUlMVZrsRddEuu1p3GGoAAAA==";
+const MASK_B64 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsLAAsLCwsAAAAAAAALCwALAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsLCwsLCwsLAAAAAAsLCwsLCwsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwsLCwsLAAAAAAsLCwsLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwsLCwsLAAAAAAsLCwsLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsLCwsAAAAAAAsLCwsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsLCwsAAAAAAAsLCwsLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoAAAAAAAoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoAAAAAAAoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoAAAAAAAAKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgoKCgoAAAAAAAAKCgoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgoKCgoAAAAAAAAKCgoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgoKCgoAAAAAAAAKCgoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKCgoKCgoAAAAAAAAKCgoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKCgoKCgoAAAAAAAAKCgoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKCgoKCgoAAAAAAAAKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKCgoKCgoAAAAAAAoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKCgoKCgoAAAAAAAoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAAAAoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAACgoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoAAAAACgoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoKAAAACgoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoKAAAACgoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoKAAAKCgoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoKAAAKCgoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKCgoKCgoKAAAKCgoKCgoKCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkJCQkJCQkJAAAJCQkJCQkJCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkJCQkJCQkJAAAJCQkJCQkJCQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkJCQkJCQkJAAAJCQkJCQkJCQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQkJCQkJCQkJAAAJCQkJCQkJCQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQkJCQkJCQkJAAAJCQkJCQkJCQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQkJCQkJCQkJAAkJCQkJCQkJCQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQkJCQkJCQkJAAAJCQkJCQkJCQkJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQkJCQkJCQkJCQkJCQkJCQkJCQkJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAAAAAAAAgAAAAAAAAACAgICAAAAAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAAAAAACAgAAAAAAAgACAgICAAICAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAgIAAgICAgACAAAAAgICAgICAAICAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAgIAAgICAgICAAAAAgICAgICAgICAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAgIAAgICAgICAAAAAgICAgICAgICAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAICAgICAgICAAAAAAICAgICAgICAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAICAgICAgIAAAAAAAICAgICAgICAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAICAgICAgIAAAAAAAACAgICAgICAAAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAICAgICAgAAAgACAgACAgICAgICAgAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAICAgICAgICAgICAgICAgICAgICAgAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJAAAAAAAAAAAAAAgICAgICAgICAgAAAgICAgICAgICAgAAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJAAAAAAAAAAAAAAgICAgICAgIAAAAAAAHBwcHBwcHBwcHAAAAAAAAAAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJAAAAAAAAAAAABwcHBwcHBwAAAAAAAAAAAAcHBwcHBwcHAAAAAAAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQAAAAAAAAAABwcHBwcHAAAAAAAAAAAAAAAABwcHBwcHBwAAAAAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQAAAAAAAAAHBwcHBwcAAAAAAAAAAAAAAAAAAAcHBwcHBwcAAAAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQAAAAAAAAcHBwcHBwAAAAAAAAAAAAAAAAAAAAAHBwcHBwcHAAAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQAAAAAABwcHBwcHBwAAAAAAAAAAAAAAAAAAAAAABwcHBwcHAAAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQAAAAAABwcHBwcHBwAAAAAAAAAAAAAAAAAAAAAABwcHBwcHBwAAAAAFBQUFBQUFBQUFBQUFBQUFBQUFBQUFAAAAAAAHBwcHBwcHAAAAAAAAAAAAAAAAAAAAAAAAAAcHBwcHBwcAAAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAAAAcHBwcHBwcHAAAAAAAAAAAAAAAAAAAAAAAAAAcHBwcHBwcHAAAABAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAAAAcHBwcHBwcAAAAAAAAAAAAAAAAAAAAAAAAAAAAHBwcHBwcHAAAABAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAABwcHBwcHBwcAAAAAAAAAAAAAAAAAAAAAAAAAAAAHBwcHBwcHBwAABAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAABwcHBwcHBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwcHBwcHBwAABAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAABwcHBwcHBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwcHBwcHBwAABAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAHBwcHBwcHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcHBwcHBwcAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAHBwcHBwcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYGBgYGBgYAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAGBgYGBgYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAYGBgYGBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICAgICAgICAgICAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgICAgICAgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgICAgICAgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgICAgICAgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgICAgICAgICAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgICAgICAgICAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgICAgICAgICAgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAgICAgICAgICAgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQEBAQEBAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQEBAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+// ---- state ----------------------------------------------------------
+let f, f2, g, g2, rho, ux, uy, th;
+let solid, thetaWall, reflectF, reflectG, sponge;
+let steps = 0, simTime = 0, running = true;
+
+function buildGeometry() {
+  solid     = new Uint8Array(N);
+  thetaWall = new Float32Array(N);
+
+  // Decode the packed segment map: 0 is fluid, n>0 is SEGMENTS index n-1.
+  const bin = atob(MASK_B64);
+  for (let r = 0; r < MASK_H; r++) {
+    for (let c = 0; c < MASK_W; c++) {
+      const v = bin.charCodeAt(r * MASK_W + c);
+      if (!v) continue;
+      const j = MASK_Y0 + r, i = MASK_X0 + c;
+      if (j < 0 || j >= NY || i < 0 || i >= NX) continue;
+      const idx = j * NX + i;
+      solid[idx] = 1;
+      thetaWall[idx] = SEG_THETA[v - 1];
+    }
+  }
+  for (let i = 0; i < NX; i++) { solid[i] = 1; thetaWall[i] = 0; }   // the floor
+
+  headTopRow = 0;
+  for (let j = NY - 1; j > 0; j--) {
+    let any = false;
+    for (let i = 0; i < NX; i++) if (solid[j * NX + i]) { any = true; break; }
+    if (any) { headTopRow = j + 1; break; }
+  }
+  // Measure the head's own extent over the top 0.16 m of the body. Centring on the
+  // lattice midline is wrong: the traced bounding box is centred on the arms, and
+  // this subject's arms are not symmetric, so the head sits slightly off it.
+  let hMin = NX, hMax = -1, hSum = 0, hN = 0;
+  for (let j = Math.max(0, headTopRow - Math.round(0.12 / DXM)); j < headTopRow; j++) {
+    for (let i = 0; i < NX; i++) {
+      if (!solid[j * NX + i]) continue;
+      if (i < hMin) hMin = i;
+      if (i > hMax) hMax = i;
+      hSum += i; hN++;
+    }
+  }
+  if (hN > 0) {
+    headCenterCol = hSum / hN + 0.5;      // +0.5: cell index to cell centre
+    headHalfCells = Math.max(1, 0.5 * (hMax - hMin) + 0.5);
+  } else {
+    headCenterCol = BODY_X;
+    headHalfCells = 6;
+  }
+
+  // Per-direction reflection masks: reflect only into fluid.
+  reflectF = new Uint8Array(9 * N);
+  reflectG = new Uint8Array(5 * N);
+  for (let j = 0; j < NY; j++) {
+    for (let i = 0; i < NX; i++) {
+      const idx = j * NX + i;
+      if (!solid[idx]) continue;
+      for (let d = 1; d < 9; d++) {
+        const nj = j + CY[d], ni = i + CX[d];
+        if (nj >= 0 && nj < NY && ni >= 0 && ni < NX && !solid[nj * NX + ni])
+          reflectF[d * N + idx] = 1;
+      }
+      for (let d = 1; d < 5; d++) {
+        const nj = j + TCY[d], ni = i + TCX[d];
+        if (nj >= 0 && nj < NY && ni >= 0 && ni < NX && !solid[nj * NX + ni])
+          reflectG[d * N + idx] = 1;
+      }
+    }
+  }
+
+  sponge = new Float32Array(NY);
+  const j0 = NY - SPONGE;
+  for (let j = j0; j < NY; j++) sponge[j] = 0.35 * Math.pow((j - j0) / (SPONGE - 1), 2);
+
+  const si = [];
+  for (let idx = 0; idx < N; idx++) if (solid[idx]) si.push(idx);
+  solidIdx = Int32Array.from(si);
+}
+
+function initFields() {
+  f = new Float32Array(9 * N); f2 = new Float32Array(9 * N);
+  g = new Float32Array(5 * N); g2 = new Float32Array(5 * N);
+  rho = new Float32Array(N); ux = new Float32Array(N);
+  uy = new Float32Array(N); th = new Float32Array(N);
+  for (let idx = 0; idx < N; idx++) {
+    rho[idx] = 1;
+    for (let d = 0; d < 9; d++) f[d * N + idx] = WT[d];
+    for (let d = 0; d < 5; d++) g[d * N + idx] = 0;
+  }
+  // Warm start. Spinning up from a dead-cold room takes about ten seconds of solver
+  // time before anything rises, which is ten seconds of a viewer looking at nothing.
+  // A standing person has been standing there a while, so the run begins with a
+  // thermal layer already wrapped around the body and a little upward motion in it.
+  // The solver relaxes this guess to its own solution within a few hundred steps.
+  const dist = new Float32Array(N).fill(1e9);
+  const near = new Float32Array(N);
+  let front = [];
+  for (let idx = 0; idx < N; idx++) {
+    if (!solid[idx]) continue;
+    dist[idx] = 0; near[idx] = thetaWall[idx]; front.push(idx);
+  }
+  for (let ring = 1; ring <= 14 && front.length; ring++) {
+    const next = [];
+    for (const idx of front) {
+      const j = (idx / NX) | 0, i = idx - j * NX;
+      for (let d = 1; d < 5; d++) {
+        const nj = j + TCY[d], ni = i + TCX[d];
+        if (nj < 1 || nj >= NY || ni < 0 || ni >= NX) continue;
+        const nb = nj * NX + ni;
+        if (solid[nb] || dist[nb] <= ring) continue;
+        dist[nb] = ring; near[nb] = near[idx]; next.push(nb);
+      }
+    }
+    front = next;
+  }
+  for (let idx = 0; idx < N; idx++) {
+    if (solid[idx]) continue;
+    const j = (idx / NX) | 0;
+    const h = (j - BODY_Y) * DXM;
+    const d = dist[idx];
+    let t0 = 0, v0 = 0;
+    if (d < 1e8) {
+      t0 = near[idx] * Math.exp(-d / 4);
+      if (h > 0.12) v0 = 0.30 * U_LAT * Math.exp(-d / 6) * Math.min(1, h / 1.2);
+    }
+    const n1 = (Math.random() - 0.5) * 2e-4;
+    const vx0 = n1, vy0 = v0 + (Math.random() - 0.5) * 2e-4;
+    const usq = vx0 * vx0 + vy0 * vy0;
+    for (let d9 = 0; d9 < 9; d9++) {
+      const cu = CX[d9] * vx0 + CY[d9] * vy0;
+      f[d9 * N + idx] = WT[d9] * (1 + 3 * cu + 4.5 * cu * cu - 1.5 * usq);
+    }
+    for (let d5 = 0; d5 < 5; d5++) {
+      const cu = TCX[d5] * vx0 + TCY[d5] * vy0;
+      g[d5 * N + idx] = TWT[d5] * t0 * (1 + 3 * cu);
+    }
+  }
+  steps = 0; simTime = 0;
+}
+
+let solidIdx;
+
+// Streaming is a shift by a constant flat offset, because the lattice is contiguous
+// row-major -- so one bulk copy per direction, not one per row. Horizontal shifts
+// wrap a single cell between adjacent rows, but those are exactly the left and right
+// boundary columns, which the open-boundary fix-up overwrites immediately after.
+function shiftInto(dst, src, off, cx, cy) {
+  const sh = cy * NX + cx;
+  if (sh >= 0) dst.set(src.subarray(off, off + N - sh), off + sh);
+  else dst.set(src.subarray(off - sh, off + N), off);
+}
+
+function step() {
+  const invP = 1 / TAU_P, invM = 1 / TAU_M, invG = 1 / TAU_G;
+  const gpre = 1 - 0.5 * invM;                 // tau_minus, NOT tau_plus -- see header
+
+  // --- collide -------------------------------------------------------
+  for (let idx = 0; idx < N; idx++) {
+    const a0 = f[idx], a1 = f[N + idx], a2 = f[2*N + idx], a3 = f[3*N + idx],
+          a4 = f[4*N + idx], a5 = f[5*N + idx], a6 = f[6*N + idx],
+          a7 = f[7*N + idx], a8 = f[8*N + idx];
+    let r = a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8;
+    if (!(r > 0)) r = 1;
+    const t = g[idx] + g[N + idx] + g[2*N + idx] + g[3*N + idx] + g[4*N + idx];
+
+    const fy = G_LAT * t * r;                  // Boussinesq buoyancy
+    const sol = solid[idx];
+    const vx = sol ? 0 : (a1 - a3 + a5 - a6 - a7 + a8) / r;
+    const vy = sol ? 0 : (a2 - a4 + a5 + a6 - a7 - a8 + 0.5 * fy) / r;
+    rho[idx] = r; th[idx] = t; ux[idx] = vx; uy[idx] = vy;
+
+    const usq = vx * vx + vy * vy;
+    const c15 = 1.5 * usq;
+
+    const eq0 = (4/9) * r * (1 - c15);
+    f2[idx] = a0 - (a0 - eq0) * invP + (4/9) * gpre * fy * (-3 * vy);
+
+    // The four opposite pairs, unrolled. A loop over an array-of-arrays here costs
+    // more than the arithmetic it saves.
+    const w9 = (1/9) * r, w36 = (1/36) * r;
+    const c9 = (1/9) * gpre * fy, c36 = (1/36) * gpre * fy;
+
+    // (1,3): c = (±1, 0), cu = vx, no vertical component
+    {
+      const eqp = w9 * (1 + 4.5 * vx * vx - c15), eqm = w9 * 3 * vx;
+      const fd = a1, fo = a3;
+      const rp = (0.5 * (fd + fo) - eqp) * invP, rm = (0.5 * (fd - fo) - eqm) * invM;
+      const s = c9 * (-3 * vy);
+      f2[N + idx] = fd - rp - rm + s;
+      f2[3*N + idx] = fo - rp + rm + s;
+    }
+    // (2,4): c = (0, ±1), cu = vy
+    {
+      const eqp = w9 * (1 + 4.5 * vy * vy - c15), eqm = w9 * 3 * vy;
+      const fd = a2, fo = a4;
+      const rp = (0.5 * (fd + fo) - eqp) * invP, rm = (0.5 * (fd - fo) - eqm) * invM;
+      f2[2*N + idx] = fd - rp - rm + c9 * (3 + 6 * vy);
+      f2[4*N + idx] = fo - rp + rm + c9 * (-3 + 6 * vy);
+    }
+    // (5,7): c = (±1, ±1), cu = vx + vy
+    {
+      const cu = vx + vy;
+      const eqp = w36 * (1 + 4.5 * cu * cu - c15), eqm = w36 * 3 * cu;
+      const fd = a5, fo = a7;
+      const rp = (0.5 * (fd + fo) - eqp) * invP, rm = (0.5 * (fd - fo) - eqm) * invM;
+      const sw = 9 * cu;
+      f2[5*N + idx] = fd - rp - rm + c36 * (3 * (1 - vy) + sw);
+      f2[7*N + idx] = fo - rp + rm + c36 * (3 * (-1 - vy) + sw);
+    }
+    // (6,8): c = (∓1, ±1), cu = vy - vx
+    {
+      const cu = vy - vx;
+      const eqp = w36 * (1 + 4.5 * cu * cu - c15), eqm = w36 * 3 * cu;
+      const fd = a6, fo = a8;
+      const rp = (0.5 * (fd + fo) - eqp) * invP, rm = (0.5 * (fd - fo) - eqm) * invM;
+      const sw = 9 * cu;
+      f2[6*N + idx] = fd - rp - rm + c36 * (3 * (1 - vy) + sw);
+      f2[8*N + idx] = fo - rp + rm + c36 * (3 * (-1 - vy) + sw);
+    }
+
+    const t6 = (1/6) * t;
+    const b0 = g[idx], b1 = g[N + idx], b2 = g[2*N + idx],
+          b3 = g[3*N + idx], b4 = g[4*N + idx];
+    g2[idx]       = b0 - (b0 - (1/3) * t) * invG;
+    g2[N + idx]   = b1 - (b1 - t6 * (1 + 3 * vx)) * invG;
+    g2[2*N + idx] = b2 - (b2 - t6 * (1 + 3 * vy)) * invG;
+    g2[3*N + idx] = b3 - (b3 - t6 * (1 - 3 * vx)) * invG;
+    g2[4*N + idx] = b4 - (b4 - t6 * (1 - 3 * vy)) * invG;
+  }
+
+  // --- wall conditions, over solid cells only -------------------------
+  for (let s = 0; s < solidIdx.length; s++) {
+    const idx = solidIdx[s];
+    for (let d = 0; d < 9; d++) f2[d * N + idx] = WT[d];
+    const tw = thetaWall[idx];
+    for (let d = 0; d < 5; d++) g2[d * N + idx] = TWT[d] * tw;
+    for (let d = 1; d < 9; d++)
+      if (reflectF[d * N + idx]) f2[d * N + idx] = f[OPP[d] * N + idx];
+    for (let d = 1; d < 5; d++)
+      if (reflectG[d * N + idx])
+        g2[d * N + idx] = -g[TOPP[d] * N + idx] + 2 * TWT[d] * tw;
+  }
+
+  // --- stream, row-wise so the copies stay contiguous ------------------
+  f.fill(0); g.fill(0);
+  for (let d = 0; d < 9; d++) shiftInto(f, f2, d * N, CX[d], CY[d]);
+  for (let d = 0; d < 5; d++) shiftInto(g, g2, d * N, TCX[d], TCY[d]);
+
+  // --- sponge + open boundaries --------------------------------------
+  for (let j = NY - SPONGE; j < NY; j++) {
+    const s = sponge[j];
+    if (s <= 0) continue;
+    for (let i = 0; i < NX; i++) {
+      const idx = j * NX + i;
+      let r = 0;
+      for (let d = 0; d < 9; d++) r += f[d * N + idx];
+      if (r <= 0 || !isFinite(r)) r = 1;
+      for (let d = 0; d < 9; d++) {
+        const k = d * N + idx;
+        f[k] = (1 - s) * f[k] + s * WT[d] * r;
+      }
+      for (let d = 0; d < 5; d++) g[d * N + idx] *= (1 - s);
+    }
+  }
+  for (let i = 0; i < NX; i++) {
+    const top = (NY - 1) * NX + i, in1 = (NY - 2) * NX + i;
+    for (let d = 0; d < 9; d++) f[d * N + top] = f[d * N + in1];
+    for (let d = 0; d < 5; d++) g[d * N + top] = g[d * N + in1];
+  }
+  for (let j = 0; j < NY; j++) {
+    const l = j * NX, r = j * NX + NX - 1;
+    for (let d = 0; d < 9; d++) { f[d * N + l] = f[d * N + l + 1]; f[d * N + r] = f[d * N + r - 1]; }
+    for (let d = 0; d < 5; d++) { g[d * N + l] = g[d * N + l + 1]; g[d * N + r] = g[d * N + r - 1]; }
+  }
+
+  steps++; simTime += DT;
+
+  if (steps % 200 === 0) {           // hold mean density at 1
+    let sum = 0, cnt = 0;
+    for (let idx = 0; idx < N; idx++) if (!solid[idx]) { sum += rho[idx]; cnt++; }
+    const mean = cnt ? sum / cnt : 1;
+    if (isFinite(mean) && mean > 0.5 && mean < 2) {
+      const inv = 1 / mean;
+      for (let k = 0; k < 9 * N; k++) f[k] *= inv;
+    }
+  }
+}
+
+// ---- incense smoke --------------------------------------------------
+const CENSERS = {
+  // `trail` pre-seeds smoke up the plume so the page opens with an established
+  // column. It is off for the distant censer, whose whole point is that its smoke
+  // mostly never gets there -- pre-seeding it would answer the question for free.
+  // Placed against the traced outline: the body's right edge measures +0.102 m at
+  // ankle height, +0.424 m at the hand, and +0.088 m at the brow. Fingertips reach
+  // 0.453 m, so the distant censer sits 0.31 m beyond them.
+  ankle: { x: 0.20, y: 0.05, label: "at the ankles", trail: true },
+  hand:  { x: 0.50, y: 0.80, label: "by the hand", trail: true },
+  // Between the eyes. The slice is anterior, so it has no in-front-of-the-face
+  // direction; the source sits on the brow line just clear of the head outline,
+  // which at this height is 0.088 m from the midline.
+  brow:  { x: 0.118, y: 1.630, label: "between the eyes", trail: true },
+  away:  { x: 0.76, y: 0.05, label: "across the room", trail: false },
+};
+let censer = "ankle";
+let nParticles = 2400;
+let px, py, pAge, pLife;
+
+const NBUCK = 8;
+const BUCKET_STYLE = Array.from({ length: NBUCK },
+  (_, b) => `rgba(226,232,240,${(0.40 * (b + 0.5) / NBUCK).toFixed(3)})`);
+let bucketX = [], bucketY = [], bucketN = new Int32Array(NBUCK);
+
+function initSmoke() {
+  px = new Float32Array(nParticles);
+  py = new Float32Array(nParticles);
+  pAge = new Float32Array(nParticles);
+  pLife = new Float32Array(nParticles);
+  bucketX = []; bucketY = [];
+  for (let b = 0; b < NBUCK; b++) {
+    bucketX.push(new Float32Array(nParticles));
+    bucketY.push(new Float32Array(nParticles));
+  }
+  for (let i = 0; i < nParticles; i++) seedParticle(i, true);
+}
+function seedParticle(i, spread) {
+  const c = CENSERS[censer];
+  // On a full reseed, scatter part of the smoke up the plume so the page opens with
+  // an established trail rather than a puddle at the censer's feet.
+  if (spread && c.trail && Math.random() < 0.55) {
+    const h = c.y + Math.random() * Math.max(0.25, 2.05 - c.y);
+    px[i] = BODY_X + (c.x / DXM) * (1 - 0.55 * Math.min(1, h / 1.6))
+            + (Math.random() - 0.5) * 6;
+    py[i] = BODY_Y + h / DXM;
+    pAge[i] = Math.random() * 4000;
+    pLife[i] = (18 + Math.random() * 22) / DT;
+    return;
+  }
+  const jitter = spread ? 1 : 0.25;
+  px[i] = BODY_X + (c.x / DXM) + (Math.random() - 0.5) * 3.5 * jitter;
+  py[i] = BODY_Y + (c.y / DXM) + Math.random() * 2.5 * jitter;
+  pAge[i] = 0;
+  // Age is counted in solver steps, so lifetime has to be set in solver steps too.
+  // A grain of smoke needs roughly eight seconds to ride the layer from the ankles
+  // to above the head; anything shorter and none of it ever arrives.
+  pLife[i] = (18 + Math.random() * 22) / DT;
+}
+// Returning a pair from here would allocate an array per particle per frame.
+let sampleVx = 0, sampleVy = 0;
+function sampleVel(x, y) {
+  const i = Math.floor(x), j = Math.floor(y);
+  if (i < 0 || i >= NX - 1 || j < 0 || j >= NY - 1) { sampleVx = 0; sampleVy = 0; return; }
+  const fx = x - i, fy = y - j;
+  const a = j * NX + i, b = a + 1, c = a + NX, d = c + 1;
+  const w00 = (1 - fx) * (1 - fy), w10 = fx * (1 - fy), w01 = (1 - fx) * fy, w11 = fx * fy;
+  sampleVx = ux[a] * w00 + ux[b] * w10 + ux[c] * w01 + ux[d] * w11;
+  sampleVy = uy[a] * w00 + uy[b] * w10 + uy[c] * w01 + uy[d] * w11;
+}
+function advectSmoke(sub) {
+  for (let i = 0; i < nParticles; i++) {
+    const ox = px[i], oy = py[i];
+    sampleVel(ox, oy);
+    px[i] = ox + sampleVx * sub + (Math.random() - 0.5) * 0.045;
+    py[i] = oy + sampleVy * sub + (Math.random() - 0.5) * 0.045 + 0.004;
+    pAge[i] += sub;
+
+    // Smoke slides along skin, it does not stick to it. Deleting particles that
+    // stray into the body would have the boundary layer steadily eating the very
+    // tracer meant to reveal it, so push them back out instead.
+    const idx = (Math.floor(py[i]) * NX + Math.floor(px[i])) | 0;
+    if (idx >= 0 && idx < N && solid[idx]) {
+      px[i] = ox + (ox >= BODY_X ? 0.35 : -0.35);
+      py[i] = oy + 0.05;
+    }
+    const out = px[i] < 1 || px[i] > NX - 2 || py[i] < 1 || py[i] > NY - SPONGE;
+    if (out || pAge[i] > pLife[i]) seedParticle(i, false);
+  }
+}
+
+// ---- rendering ------------------------------------------------------
+const cv = document.getElementById("plume");
+const ctx = cv.getContext("2d", { alpha: false });
+const SC = cv.width / NX;
+// Show the domain only up to the sponge. Those top rows are deliberately damped
+// toward rest, so drawing them puts a broad artificial spreading cap on the plume
+// that looks like physics and is not.
+cv.height = Math.round((NY - SPONGE) * SC);
+let viewMode = "smoke";
+// ---- the scan's palette, and temperature labelling -------------------
+const cToF = c => c * 9 / 5 + 32;
+
+function rampColor(t) {
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  const x = t * (THERMAL_RAMP.length - 1);
+  const i = Math.min(THERMAL_RAMP.length - 1, Math.floor(x));
+  const j = Math.min(THERMAL_RAMP.length - 1, i + 1);
+  const f = x - i, a = THERMAL_RAMP[i], b = THERMAL_RAMP[j];
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f,
+          a[2] + (b[2] - a[2]) * f];
+}
+const rampCss = t => {
+  const c = rampColor(t);
+  return `rgb(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)})`;
+};
+
+function buildScale() {
+  const stops = THERMAL_RAMP.map((_, i) =>
+    `${rampCss(i / (THERMAL_RAMP.length - 1))} ${(100 * i / (THERMAL_RAMP.length - 1)).toFixed(0)}%`);
+  document.getElementById("scalebar").style.background =
+    `linear-gradient(90deg, ${stops.join(",")})`;
+  const hi = T_AMBIENT_C + DELTA_T_REF_K;
+  document.getElementById("scale-lo").textContent =
+    `${T_AMBIENT_C.toFixed(1)} °C / ${cToF(T_AMBIENT_C).toFixed(1)} °F`;
+  document.getElementById("scale-hi").textContent =
+    `${hi.toFixed(1)} °C / ${cToF(hi).toFixed(1)} °F`;
+}
+
+let showLabels = false;
+let showPyramid = false;
+let headTopRow = 0;                      // set from the traced mask
+let headHalfCells = 6;                   // half-width of the head, in cells
+let headCenterCol = 0;                   // the head's own centre, not the lattice midline
+
+// ---- the Great Pyramid overlay, and the measurement that answers it --------
+// Seked of 5.5 palms per cubit gives a rise over run of 7/5.5, so the face meets
+// the base at atan(1.2727) = 51.84 deg. That is the angle of a vertical section
+// through the middle of a face, which is the triangle people mean.
+const PYRAMID_SLOPE = 7 / 5.5;
+const PYRAMID_DEG = Math.atan(PYRAMID_SLOPE) * 180 / Math.PI;
+
+let plumeAngleDeg = null;
+
+// Half-width of the plume by second moment of temperature, fitted against height.
+// Measuring about each level's own centroid keeps the column's meander from
+// reading as spreading.
+function measurePlumeAngle() {
+  const zs = [], bs = [];
+  const jTop = NY - SPONGE - 2;
+  for (let j = headTopRow + 2; j < jTop; j += 2) {
+    let s = 0, sx = 0;
+    for (let i = 1; i < NX - 1; i++) {
+      const t = th[j * NX + i];
+      if (t > 0) { s += t; sx += t * i; }
+    }
+    if (s <= 1e-9) continue;
+    const xb = sx / s;
+    let v = 0;
+    for (let i = 1; i < NX - 1; i++) {
+      const t = th[j * NX + i];
+      if (t > 0) { const d = i - xb; v += t * d * d; }
+    }
+    zs.push((j - headTopRow) * DXM);
+    bs.push(Math.sqrt(v / s) * DXM);
+  }
+  if (zs.length < 6) return null;
+  let n = 0, sz = 0, sb = 0, szz = 0, szb = 0;
+  for (let k = 0; k < zs.length; k++) {
+    if (zs[k] < 0.05 || zs[k] > 0.95) continue;
+    n++; sz += zs[k]; sb += bs[k]; szz += zs[k] * zs[k]; szb += zs[k] * bs[k];
+  }
+  if (n < 5) return null;
+  const den = n * szz - sz * sz;
+  if (Math.abs(den) < 1e-12) return null;
+  const slope = (n * szb - sz * sb) / den;
+  const deg = Math.atan(slope) * 180 / Math.PI;
+  // Before the column establishes, the warm layer is widest low down and the fit
+  // comes back negative — a contracting plume, which is not a spreading angle at
+  // all. Report nothing rather than a number that cannot mean what it says.
+  return (deg > 1 && deg < 70) ? deg : null;
+}
+
+// A height scale rising one metre from the crown, so the plume can be read off
+// rather than guessed at. The probe that produces the shedding measurement sits
+// at 0.50 m on it.
+function drawHeadRuler() {
+  const x = Math.round((BODY_X - 0.34 / DXM) * SC) + 0.5;
+  const y0 = cv.height - headTopRow * SC;
+  const y1 = cv.height - (headTopRow + 1.0 / DXM) * SC;
+
+  ctx.strokeStyle = "rgba(201,176,112,.62)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, y0);
+  ctx.lineTo(x, y1);
+  ctx.stroke();
+
+  ctx.font = "500 8.5px 'Cascadia Code', Consolas, monospace";
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "left";
+  for (let cm = 0; cm <= 100; cm += 5) {
+    const y = cv.height - (headTopRow + (cm / 100) / DXM) * SC;
+    const major = cm % 25 === 0;
+    const probe = cm === 50;
+    ctx.strokeStyle = probe ? "rgba(232,147,59,.95)"
+                            : `rgba(201,176,112,${major ? 0.75 : 0.4})`;
+    ctx.lineWidth = probe ? 1.4 : 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (probe ? 13 : major ? 9 : 4.5), y);
+    ctx.stroke();
+    if (!major) continue;
+    const label = cm === 0 ? "crown"
+      : `${(cm / 100).toFixed(2)} m · ${(cm / 2.54).toFixed(0)}″`;
+    const w = ctx.measureText(label).width;
+    ctx.fillStyle = "rgba(8,11,17,.78)";
+    ctx.fillRect(x - w - 8, y - 6, w + 5, 12);
+    ctx.fillStyle = probe ? "#E8933B" : "rgba(201,176,112,.92)";
+    ctx.textAlign = "right";
+    ctx.fillText(label, x - 5, y);
+    ctx.textAlign = "left";
+    if (probe) {
+      ctx.fillStyle = "rgba(232,147,59,.9)";
+      ctx.fillText("probe", x + 16, y);
+    }
+  }
+  ctx.textAlign = "left";
+}
+
+function drawSegmentLabels() {
+  const entries = Object.entries(SEG_ANCHORS).map(([name, a]) => ({
+    name: name.replace(/_/g, " "), ...a,
+    x: a.col * SC, y: cv.height - a.row * SC,
+  }));
+
+  // Stack each side's labels so they cannot overlap: sort by height, then push
+  // any that crowd their neighbour further apart.
+  ctx.font = "500 9px 'Cascadia Code', Consolas, monospace";
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "left";
+  for (const side of [-1, 1]) {
+    const col = entries.filter(e => e.side === side).sort((a, b) => a.y - b.y);
+    const gap = 15;
+    for (let i = 1; i < col.length; i++)
+      if (col[i].y - col[i - 1].y < gap) col[i].y = col[i - 1].y + gap;
+    const overflow = col.length ? col[col.length - 1].y - (cv.height - 8) : 0;
+    if (overflow > 0) col.forEach(e => { e.y -= overflow; });
+
+    for (const e of col) {
+      const text = `${e.name} ${e.c.toFixed(1)}°C/${e.f.toFixed(1)}°F`;
+      const w = ctx.measureText(text).width;
+      const lx = side > 0 ? Math.min(cv.width - w - 6, e.x + 16) : Math.max(4, e.x - 16 - w);
+      ctx.strokeStyle = "rgba(255,255,255,.45)";
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(e.x + side * 2, cv.height - e.row * SC);
+      ctx.lineTo(side > 0 ? lx - 3 : lx + w + 3, e.y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(8,11,17,.80)";
+      ctx.fillRect(lx - 3, e.y - 6.5, w + 6, 13);
+      ctx.fillStyle = rampCss((e.c - T_AMBIENT_C) / DELTA_T_REF_K);
+      ctx.fillText(text, lx, e.y);
+    }
+  }
+}
+
+function drawPyramid() {
+  const half = headHalfCells * SC;
+  const cx = headCenterCol * SC;
+  const yBase = cv.height - headTopRow * SC;
+  const apex = yBase - half * PYRAMID_SLOPE;
+
+  // The section itself, sitting on the crown at head width.
+  ctx.beginPath();
+  ctx.moveTo(cx - half, yBase);
+  ctx.lineTo(cx, apex);
+  ctx.lineTo(cx + half, yBase);
+  ctx.closePath();
+  ctx.fillStyle = "rgba(201,176,112,.18)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(232,196,120,.95)";
+  ctx.lineWidth = 1.3;
+  ctx.stroke();
+
+  // A cone opening upward from the crown at the same slope, so the pyramid's angle
+  // can be laid against the plume over the whole metre rather than over 12 cm.
+  // Extending the faces themselves would be meaningless -- they meet at the apex.
+  const runPerRise = 1 / PYRAMID_SLOPE;
+  ctx.setLineDash([3, 4]);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(232,196,120,.42)";
+  ctx.beginPath();
+  ctx.moveTo(cx - yBase * runPerRise, 0); ctx.lineTo(cx, yBase);
+  ctx.lineTo(cx + yBase * runPerRise, 0);
+  ctx.stroke();
+
+  // The measured plume spread, from the same origin.
+  if (plumeAngleDeg !== null) {
+    const t = Math.tan(plumeAngleDeg * Math.PI / 180);
+    ctx.strokeStyle = "rgba(124,255,178,.8)";
+    ctx.beginPath();
+    ctx.moveTo(cx - yBase * t, 0); ctx.lineTo(cx, yBase);
+    ctx.lineTo(cx + yBase * t, 0);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // Angle arc where the face meets the base.
+  const r = Math.min(15, half * 0.8);
+  ctx.strokeStyle = "rgba(232,196,120,.95)";
+  ctx.beginPath();
+  ctx.arc(cx - half, yBase, r, -PYRAMID_DEG * Math.PI / 180, 0);
+  ctx.stroke();
+
+  // Base and height dimensions.
+  const dimY = yBase + 8, dimX = cx + half + 9;
+  ctx.strokeStyle = "rgba(232,196,120,.72)";
+  ctx.beginPath();
+  ctx.moveTo(cx - half, dimY); ctx.lineTo(cx + half, dimY);
+  ctx.moveTo(cx - half, dimY - 3); ctx.lineTo(cx - half, dimY + 3);
+  ctx.moveTo(cx + half, dimY - 3); ctx.lineTo(cx + half, dimY + 3);
+  ctx.moveTo(dimX, yBase); ctx.lineTo(dimX, apex);
+  ctx.moveTo(dimX - 3, yBase); ctx.lineTo(dimX + 3, yBase);
+  ctx.moveTo(dimX - 3, apex); ctx.lineTo(dimX + 3, apex);
+  ctx.stroke();
+
+  const baseM = 2 * headHalfCells * DXM;
+  const hM = headHalfCells * DXM * PYRAMID_SLOPE;
+  const fromVert = 90 - PYRAMID_DEG;
+  const spec = [
+    ["rgba(232,196,120,.98)", "GREAT PYRAMID SECTION"],
+    ["rgba(232,196,120,.86)", `face  ${PYRAMID_DEG.toFixed(2)}° from base  =  ${fromVert.toFixed(1)}° from vertical`],
+    ["rgba(232,196,120,.86)", `seked 5½ palms  ·  rise:run  7 : 5.5`],
+    ["rgba(232,196,120,.86)", `base ${(baseM * 100).toFixed(1)} cm · ${(baseM / 0.0254).toFixed(1)}″   height ${(hM * 100).toFixed(1)} cm · ${(hM / 0.0254).toFixed(1)}″`],
+    ["rgba(124,255,178,.95)", plumeAngleDeg === null
+      ? "plume  measuring…"
+      : `plume  ${plumeAngleDeg.toFixed(1)}° from vertical  ← measured`],
+  ];
+
+  ctx.font = "500 8.5px 'Cascadia Code', Consolas, monospace";
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "left";
+  let wMax = 0;
+  for (const [, t] of spec) wMax = Math.max(wMax, ctx.measureText(t).width);
+  // Park it low and right, clear of the crown, with a leader back to the apex.
+  const bx = Math.max(6, cv.width - wMax - 12);
+  const byTop = cv.height - spec.length * 12 - 14;
+  ctx.strokeStyle = "rgba(232,196,120,.3)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx + half * 0.4, apex + 2);
+  ctx.lineTo(bx + wMax * 0.5, byTop - 10);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(8,11,17,.88)";
+  ctx.fillRect(bx - 5, byTop - 8, wMax + 10, spec.length * 12 + 8);
+  ctx.strokeStyle = "rgba(232,196,120,.4)";
+  ctx.strokeRect(bx - 5, byTop - 8, wMax + 10, spec.length * 12 + 8);
+  let ly = byTop;
+  for (const [col, text] of spec) {
+    ctx.fillStyle = col;
+    ctx.fillText(text, bx, ly);
+    ly += 12;
+  }
+}
+
+let bodyLayer = null;
+let spriteReady = false;
+const sprite = new Image();
+sprite.onload = () => { spriteReady = true; bakeBody(); };
+sprite.onerror = () => { spriteReady = false; bakeBody(); };
+sprite.src = (typeof SPRITE_DATA === "string" && SPRITE_DATA) ? SPRITE_DATA : SPRITE_FILE;
+
+function bakeBody() {
+  bodyLayer = document.createElement("canvas");
+  bodyLayer.width = cv.width; bodyLayer.height = cv.height;
+  const b = bodyLayer.getContext("2d");
+  b.clearRect(0, 0, cv.width, cv.height);
+
+  if (spriteReady) {
+    // The sprite occupies exactly the rectangle the collision mask was sampled
+    // from, so the drawn outline and the solid cells cannot drift apart.
+    b.imageSmoothingEnabled = true;
+    b.drawImage(sprite,
+      SPRITE_X0 * SC, cv.height - (SPRITE_Y0 + SPRITE_H) * SC,
+      SPRITE_W * SC, SPRITE_H * SC);
+    return;
+  }
+
+  // Fallback if the scan cannot be loaded (opening web/ directly, where the
+  // assets folder only exists under site/). Shade the mask by wall temperature
+  // instead, stretched over the occupied range 0.53–1.00 so it is not flat.
+  for (let j = 0; j < NY; j++) {
+    for (let i = 0; i < NX; i++) {
+      const idx = j * NX + i;
+      if (!solid[idx] || j === 0) continue;
+      const s = Math.max(0, Math.min(1, (thetaWall[idx] - 0.50) / 0.50));
+      const r = Math.round(0x6E + (0xF2 - 0x6E) * s);
+      const gg = Math.round(0x7A + (0xC4 - 0x7A) * s);
+      const bb = Math.round(0x93 + (0x78 - 0x93) * s);
+      b.fillStyle = `rgb(${r},${gg},${bb})`;
+      b.fillRect(i * SC, cv.height - (j + 1) * SC, SC + 0.6, SC + 0.6);
+    }
+  }
+}
+
+function draw() {
+  ctx.fillStyle = "#0B0E14";
+  ctx.fillRect(0, 0, cv.width, cv.height);
+
+  if (viewMode !== "smoke") {
+    const img = ctx.getImageData(0, 0, cv.width, cv.height);
+    const D = img.data;
+    for (let j = 0; j < NY; j++) {
+      for (let i = 0; i < NX; i++) {
+        const idx = j * NX + i;
+        if (solid[idx]) continue;
+        let v, R, G, B;
+        if (viewMode === "temp") {
+          if (th[idx] < 0.008) continue;
+          // theta runs 0 at ambient to 1 at the hottest skin, so mapping it straight
+          // onto the ramp puts the air on exactly the scale the legend states. Any
+          // rescaling here paints air hotter than the body it came off, which is the
+          // one thing this picture must never imply.
+          v = Math.min(1, Math.max(0, th[idx]));
+          const c = rampColor(v);
+          const lum = Math.min(1, th[idx] / 0.15);
+          R = Math.round(c[0] * 255 * lum);
+          G = Math.round(c[1] * 255 * lum);
+          B = Math.round(c[2] * 255 * lum);
+        } else {
+          v = Math.min(1, Math.hypot(ux[idx], uy[idx]) / (0.55 * U_LAT));
+          if (v < 0.012) continue;
+          R = Math.round(11 + 235 * Math.pow(v, 0.75));
+          G = Math.round(14 + 150 * Math.pow(v, 1.15));
+          B = Math.round(20 + 60 * Math.pow(v, 1.7));
+        }
+        const y0 = cv.height - (j + 1) * SC;
+        for (let dy = 0; dy < SC; dy++) {
+          const row = ((y0 + dy) | 0) * cv.width;
+          for (let dx = 0; dx < SC; dx++) {
+            const o = (row + ((i * SC + dx) | 0)) * 4;
+            D[o] = R; D[o + 1] = G; D[o + 2] = B;
+          }
+        }
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  if (bodyLayer) ctx.drawImage(bodyLayer, 0, 0);
+
+  // censer
+  const c = CENSERS[censer];
+  const cxp = (BODY_X + c.x / DXM) * SC, cyp = cv.height - (BODY_Y + c.y / DXM) * SC;
+  ctx.fillStyle = "#C25B1E";
+  ctx.fillRect(cxp - 4, cyp - 3, 8, 4);
+  ctx.fillStyle = "rgba(255,170,80,.95)";
+  ctx.fillRect(cxp - 1, cyp - 5, 2, 2);
+
+  // Smoke, bucketed by opacity. Building an rgba() string per particle per frame
+  // allocates thousands of strings a second; eight prebuilt styles do not.
+  ctx.globalCompositeOperation = "lighter";
+  bucketN.fill(0);
+  for (let i = 0; i < nParticles; i++) {
+    const a = 1 - pAge[i] / pLife[i];
+    if (a <= 0) continue;
+    let b = (a * a * NBUCK) | 0;
+    if (b >= NBUCK) b = NBUCK - 1;
+    const n = bucketN[b]++;
+    bucketX[b][n] = px[i] * SC;
+    bucketY[b][n] = cv.height - py[i] * SC;
+  }
+  for (let b = 0; b < NBUCK; b++) {
+    const n = bucketN[b];
+    if (!n) continue;
+    ctx.fillStyle = BUCKET_STYLE[b];
+    const bx = bucketX[b], by = bucketY[b];
+    for (let k = 0; k < n; k++) ctx.fillRect(bx[k] - 0.9, by[k] - 0.9, 1.8, 1.8);
+  }
+  ctx.globalCompositeOperation = "source-over";
+
+  // The top of the frame is an open outflow, not a ceiling. Fading into it stops
+  // the boundary reading as a lid the plume has struck.
+  const fade = ctx.createLinearGradient(0, 0, 0, cv.height * 0.16);
+  fade.addColorStop(0, "#0B0E14");
+  fade.addColorStop(1, "rgba(11,14,20,0)");
+  ctx.fillStyle = fade;
+  ctx.fillRect(0, 0, cv.width, cv.height * 0.16);
+
+  drawHeadRuler();
+  if (showPyramid) drawPyramid();
+  if (showLabels) drawSegmentLabels();
+}
+
+// ---- readouts -------------------------------------------------------
+function chestLayerCm() {
+  const j = BODY_Y + Math.round(1.25 / DXM);
+  if (j >= NY) return null;
+  let edge = -1;
+  for (let i = NX - 1; i > BODY_X; i--) if (solid[j * NX + i]) { edge = i; break; }
+  if (edge < 0) return null;
+  let peak = 0;
+  for (let i = edge + 1; i < NX; i++) peak = Math.max(peak, uy[j * NX + i]);
+  if (peak <= 1e-6) return null;
+  for (let i = edge + 1; i < NX; i++)
+    if (uy[j * NX + i] < 0.10 * peak) return (i - edge) * DXM * 100;
+  return null;
+}
+
+// Frame timing is sampled in the animation loop, not here: updateReads runs once
+// every ten frames, so measuring the gap between its own calls reports a rate ten
+// times too slow.
+let frameTimes = [], lastT = performance.now();
+function noteFrame() {
+  const now = performance.now();
+  frameTimes.push(now - lastT);
+  lastT = now;
+  if (frameTimes.length > 45) frameTimes.shift();
+}
+function updateReads(subSteps) {
+  let vmax = 0;
+  for (let idx = 0; idx < N; idx++) {
+    if (solid[idx]) continue;
+    const s = Math.hypot(ux[idx], uy[idx]);
+    if (s > vmax) vmax = s;
+  }
+  document.getElementById("r-clock").textContent = simTime.toFixed(1);
+  document.getElementById("r-vmax").textContent = (vmax / U_LAT * U_FF).toFixed(2);
+  const bl = chestLayerCm();
+  document.getElementById("r-bl").textContent = bl === null ? "—" : bl.toFixed(1);
+
+  const mean = frameTimes.length
+    ? frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length : 0;
+  const ratio = mean > 0 ? (subSteps * DT) / (mean / 1000) : 0;
+  document.getElementById("r-rate").textContent = ratio > 0 ? ratio.toFixed(2) : "—";
+}
+
+// ---- loop -----------------------------------------------------------
+// Steps per frame self-tunes to hold a frame budget, so the exhibit runs as fast as
+// the viewer's machine allows instead of at a rate guessed on the author's. The
+// playback readout reports whatever ratio this actually achieves.
+let SUB = 4;
+const FRAME_LO = 15, FRAME_HI = 27;
+let tick = 0;
+function retune() {
+  if (frameTimes.length < 20) return;
+  const mean = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
+  if (mean > FRAME_HI && SUB > 1) { SUB--; frameTimes.length = 0; }
+  else if (mean < FRAME_LO && SUB < 10) { SUB++; frameTimes.length = 0; }
+}
+function loop() {
+  if (running) {
+    for (let s = 0; s < SUB; s++) step();
+    advectSmoke(SUB);
+  }
+  draw();
+  noteFrame();
+  if (++tick % 10 === 0) { updateReads(running ? SUB : 0); if (running) retune(); }
+  if (tick % 45 === 0 && running) plumeAngleDeg = measurePlumeAngle();
+  requestAnimationFrame(loop);
+}
+
+// ---- controls -------------------------------------------------------
+function bindSeg(id, fn) {
+  const wrap = document.getElementById(id);
+  wrap.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    [...wrap.querySelectorAll("button")].forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    fn(b.dataset);
+  });
+}
+bindSeg("censer", d => { censer = d.c; for (let i = 0; i < nParticles; i++) seedParticle(i, true); });
+bindSeg("view", d => { viewMode = d.v; });
+
+document.getElementById("dens").addEventListener("input", e => {
+  nParticles = +e.target.value;
+  document.getElementById("dens-val").textContent = nParticles + " particles";
+  initSmoke();
+});
+document.getElementById("puff").addEventListener("click", () => {
+  for (let i = 0; i < nParticles; i++) if (Math.random() < 0.55) seedParticle(i, false);
+});
+document.getElementById("labels").addEventListener("click", e => {
+  showLabels = !showLabels;
+  e.target.textContent = showLabels ? "Hide temperatures" : "Show temperatures";
+  e.target.style.background = showLabels ? "var(--gold-soft)" : "transparent";
+});
+document.getElementById("pyr").addEventListener("click", e => {
+  showPyramid = !showPyramid;
+  if (showPyramid) plumeAngleDeg = measurePlumeAngle();
+  e.target.style.background = showPyramid ? "var(--gold-soft)" : "transparent";
+});
+document.getElementById("pause").addEventListener("click", e => {
+  running = !running;
+  e.target.textContent = running ? "Pause" : "Resume";
+});
+document.getElementById("reset").addEventListener("click", () => {
+  initFields(); initSmoke();
+});
+
+// ---- Planck spectrum of the skin, computed live ----------------------
+// Radiation leaves the scene entirely, so none of this feeds the solver. It is
+// here because the shape of the curve is the argument: the peak lands inside the
+// band the atmosphere does not absorb, which is simultaneously why the body reads
+// as an infrared source and why that output cannot heat the air in between.
+const PLANCK_H = 6.62607015e-34, PLANCK_C = 2.99792458e8, PLANCK_K = 1.380649e-23;
+const STEFAN = 5.670374419e-8;
+const WINDOW_LO = 7.5, WINDOW_HI = 14.0;      // µm, atmospheric transmission window
+
+// Spectral exitance in W m^-2 µm^-1 for wavelength in µm.
+function planck(lambdaUm, T, eps = 1.0) {
+  const lam = lambdaUm * 1e-6;
+  const a = 2 * Math.PI * PLANCK_H * PLANCK_C * PLANCK_C;
+  const x = PLANCK_H * PLANCK_C / (lam * PLANCK_K * T);
+  if (x > 700) return 0;                      // exp overflows; emission is nil here
+  return eps * a / (Math.pow(lam, 5) * (Math.exp(x) - 1)) * 1e-6;
+}
+
+function drawPlanck() {
+  const pc = document.getElementById("planck");
+  if (!pc) return;
+  const g = pc.getContext("2d");
+  const W = pc.width, H = pc.height;
+  const L = 62, R = 14, T = 16, B = 40;
+  const css = getComputedStyle(document.body);
+  const ink = css.getPropertyValue("--ink").trim() || "#1C2028";
+  const muted = css.getPropertyValue("--muted").trim() || "#656B79";
+  const rule = css.getPropertyValue("--rule").trim() || "#D3D2C9";
+  const gold = css.getPropertyValue("--gold").trim() || "#8F6F24";
+  const ember = css.getPropertyValue("--ember").trim() || "#C25B1E";
+
+  const T_SKIN = 310, T_AMB = 298, EPS = 0.98;
+  const LMAX = 20;
+  const N = 400;
+  let peakY = 0;
+  const skin = [], amb = [];
+  for (let i = 0; i <= N; i++) {
+    const lam = LMAX * i / N;
+    const s = lam > 0 ? planck(lam, T_SKIN, EPS) : 0;
+    const a = lam > 0 ? planck(lam, T_AMB, EPS) : 0;
+    skin.push(s); amb.push(a);
+    if (s > peakY) peakY = s;
+  }
+  const yMax = Math.ceil(peakY / 10) * 10 || 40;
+  const px = lam => L + (W - L - R) * lam / LMAX;
+  const py = v => H - B - (H - T - B) * v / yMax;
+
+  g.clearRect(0, 0, W, H);
+
+  // the window
+  g.fillStyle = "rgba(194,91,30,.13)";
+  g.fillRect(px(WINDOW_LO), T, px(WINDOW_HI) - px(WINDOW_LO), H - T - B);
+  g.strokeStyle = "rgba(194,91,30,.45)";
+  g.setLineDash([4, 3]); g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(px(WINDOW_LO), T); g.lineTo(px(WINDOW_LO), H - B);
+  g.moveTo(px(WINDOW_HI), T); g.lineTo(px(WINDOW_HI), H - B);
+  g.stroke(); g.setLineDash([]);
+
+  // axes
+  g.strokeStyle = rule; g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(L, T); g.lineTo(L, H - B); g.lineTo(W - R, H - B);
+  g.stroke();
+
+  g.font = "11px 'Cascadia Code', Consolas, monospace";
+  g.fillStyle = muted; g.textAlign = "center"; g.textBaseline = "top";
+  for (let lam = 0; lam <= LMAX; lam += 5) {
+    g.beginPath(); g.moveTo(px(lam), H - B); g.lineTo(px(lam), H - B + 4); g.stroke();
+    g.fillText(String(lam), px(lam), H - B + 7);
+  }
+  g.textAlign = "right"; g.textBaseline = "middle";
+  for (let v = 0; v <= yMax; v += 10) {
+    g.beginPath(); g.moveTo(L - 4, py(v)); g.lineTo(L, py(v)); g.stroke();
+    g.fillText(String(v), L - 7, py(v));
+  }
+  g.textAlign = "center"; g.textBaseline = "top";
+  g.fillStyle = ink;
+  g.fillText("wavelength  (µm)", (L + W - R) / 2, H - 17);
+  g.save();
+  g.translate(13, (T + H - B) / 2); g.rotate(-Math.PI / 2);
+  g.fillText("Mλ   W m⁻² µm⁻¹", 0, 0);
+  g.restore();
+
+  const curve = (arr, colour, dash) => {
+    g.strokeStyle = colour; g.lineWidth = 1.8; g.setLineDash(dash);
+    g.beginPath();
+    for (let i = 0; i <= N; i++) {
+      const X = px(LMAX * i / N), Y = py(arr[i]);
+      i ? g.lineTo(X, Y) : g.moveTo(X, Y);
+    }
+    g.stroke(); g.setLineDash([]);
+  };
+  curve(amb, muted, [5, 4]);
+  curve(skin, ember, []);
+
+  // Wien peak
+  const peakLam = 2897.771955 / T_SKIN;
+  g.strokeStyle = gold; g.lineWidth = 1;
+  g.setLineDash([2, 3]);
+  g.beginPath(); g.moveTo(px(peakLam), py(0)); g.lineTo(px(peakLam), py(peakY)); g.stroke();
+  g.setLineDash([]);
+
+  g.textAlign = "left"; g.textBaseline = "middle";
+  g.fillStyle = ember;
+  g.fillText("skin  310 K, ε = 0.98", px(11.2), py(yMax * 0.86));
+  g.fillStyle = muted;
+  g.fillText("room  298 K", px(11.2), py(yMax * 0.72));
+  g.fillStyle = "rgba(194,91,30,.95)";
+  g.textAlign = "center";
+  g.fillText("atmospheric window  7.5 – 14 µm",
+             (px(WINDOW_LO) + px(WINDOW_HI)) / 2, py(yMax * 0.05));
+
+  // Readouts: window fraction by numerical integration, and the net exchange.
+  let tot = 0, win = 0;
+  const dl = 0.01;
+  for (let lam = dl; lam <= 200; lam += dl) {
+    const v = planck(lam, T_SKIN, EPS) * dl;
+    tot += v;
+    if (lam >= WINDOW_LO && lam <= WINDOW_HI) win += v;
+  }
+  const net = EPS * STEFAN * (Math.pow(T_SKIN, 4) - Math.pow(T_AMB, 4));
+  const tm = 0.5 * (T_SKIN + T_AMB);
+  const hrIdeal = 4 * EPS * STEFAN * tm * tm * tm;
+  const set = (id, txt) => { const e = document.getElementById(id); if (e) e.textContent = txt; };
+  set("p-peak", peakLam.toFixed(2));
+  set("p-frac", (100 * win / tot).toFixed(0));
+  set("p-net", net.toFixed(0));
+  set("p-hr", hrIdeal.toFixed(1));
+}
+
+// ---- self-test ------------------------------------------------------
+function selfTest() {
+  const out = [];
+  // 1. Guo forcing must use tau_minus, or buoyancy is delivered at a few percent.
+  const delivered = (1 - 0.5 / TAU_M) + 1 / (2 * TAU_M);
+  out.push(`Guo momentum closure ${Math.abs(delivered - 1) < 1e-12 ? "exact" : "BROKEN"}`);
+  // 2. Wall temperatures must span the measured range.
+  const lo = Math.min(...SEG_TEMP_C), hi = Math.max(...SEG_TEMP_C);
+  out.push(`skin ${lo.toFixed(1)}–${hi.toFixed(1)} °C`);
+  // 3. The traced outline must have produced a body of plausible size.
+  let nSolid = 0;
+  for (let idx = NX; idx < N; idx++) if (solid[idx]) nSolid++;
+  out.push(`traced outline ${nSolid} cells`);
+  // 3. Every reflected population must land on fluid.
+  let bad = 0;
+  for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
+    const idx = j * NX + i;
+    if (!solid[idx]) continue;
+    for (let d = 1; d < 9; d++) {
+      if (!reflectF[d * N + idx]) continue;
+      const nj = j + CY[d], ni = i + CX[d];
+      if (nj < 0 || nj >= NY || ni < 0 || ni >= NX || solid[nj * NX + ni]) bad++;
+    }
+  }
+  out.push(`reflection targets ${bad === 0 ? "all fluid" : bad + " BAD"}`);
+  out.push(`Ra_sim ${RA_SIM.toExponential(0)} · τ⁺ ${TAU_P.toFixed(4)} · Δt ${(DT * 1e3).toFixed(2)} ms`);
+  document.getElementById("selftest").textContent = out.join("  ·  ");
+}
+
+buildGeometry();
+initFields();
+initSmoke();
+bakeBody();
+buildScale();
+drawPlanck();
+selfTest();
+
+// ?prewarm=N advances the solver N steps before the first paint, so a screenshot
+// captures a developed plume instead of the initial condition. Headless captures
+// need this: --virtual-time-budget does not drive requestAnimationFrame.
+const qs = new URLSearchParams(location.search);
+if (qs.get("pyramid") === "1") {
+  showPyramid = true;
+  document.getElementById("pyr").style.background = "var(--gold-soft)";
+}
+if (qs.get("labels") === "1") {
+  showLabels = true;
+  const b = document.getElementById("labels");
+  b.textContent = "Hide temperatures";
+  b.style.background = "var(--gold-soft)";
+}
+if (["smoke", "temp", "speed"].includes(qs.get("view"))) {
+  viewMode = qs.get("view");
+  document.querySelectorAll("#view button").forEach(b =>
+    b.classList.toggle("on", b.dataset.v === viewMode));
+}
+if (qs.get("censer") in CENSERS) {
+  censer = qs.get("censer");
+  document.querySelectorAll("#censer button").forEach(b =>
+    b.classList.toggle("on", b.dataset.c === censer));
+  for (let i = 0; i < nParticles; i++) seedParticle(i, true);
+}
+
+const prewarm = Math.min(30000, parseInt(qs.get("prewarm") || "0", 10) || 0);
+if (prewarm > 0) {
+  for (let i = 0; i < prewarm; i++) {
+    step();
+    if (i % 4 === 3) advectSmoke(4);
+  }
+  updateReads(SUB);
+  plumeAngleDeg = measurePlumeAngle();
+}
+
+if (window.matchMedia) {
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq.addEventListener) mq.addEventListener("change", drawPlanck);
+}
+
+loop();
+</script>
+</body>
+</html>

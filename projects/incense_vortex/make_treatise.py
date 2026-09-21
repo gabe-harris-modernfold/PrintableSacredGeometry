@@ -227,9 +227,9 @@ E.append(PageBreak())
 E.append(Paragraph("INSTRUMENT I · THE HEARTH TORNADO", S['h1']))
 E.append(Paragraph("“The Sun is its father”", S['h1sub']))
 E.append(img("preview_assembly.png", 1.85))
-E.append(Paragraph("PLATE I — The Hearth Tornado assembled: slotted drum, "
-    "clear tube, and exit collar. Twelve chord-slots visible in the base.",
-    S['caption']))
+E.append(Paragraph("PLATE I — The Hearth Tornado assembled: slotted drum "
+    "and clear tube, the exit open to the sky. Twelve chord-slots visible "
+    "in the base.", S['caption']))
 E.append(voice("THE MEASURED ACCOUNT"))
 E.append(Paragraph(
     "The hearth tornado is a chimney taught to spin. A standard incense cone "
@@ -269,24 +269,24 @@ E.append(PageBreak())
 E.append(Paragraph("INSTRUMENT II · THE WIND TORNADO", S['h1']))
 E.append(Paragraph("“The Wind hath carried it in its belly”", S['h1sub']))
 E.append(img("preview_wind_assembly.png", 1.85))
-E.append(Paragraph("PLATE II — The Wind Tornado: pinwheel intake fins below, "
-    "stacked-disc venturi cowl above, staked skirt at the foot.", S['caption']))
+E.append(Paragraph("PLATE II — The Wind Tornado: pinwheel intake fins "
+    "around the drum, staked skirt at the foot, the tube's crown open.",
+    S['caption']))
 E.append(voice("THE MEASURED ACCOUNT"))
 E.append(Paragraph(
     "Outdoors the budget improves by an order of magnitude. The ram pressure "
     "of moving air is q = ½ %s v² — about 5.4 Pa in a 3 m/s breeze, some "
-    "nine times the hearth draft — and the wind edition spends that wealth "
-    "twice. At the base, twelve tall guide fins radiate from the slotted drum "
+    "nine times the hearth draft — and the wind edition spends all that "
+    "wealth at the base. Twelve tall guide fins radiate from the slotted drum "
     "as a fixed stator: from any compass direction the windward fins form "
     "converging funnels of roughly four-to-one contraction, accelerating the "
     "breeze and discharging it through the same 68-degree chords, so that all "
-    "weather is translated into the one clockwise currency. At the crown, a "
-    "stacked-disc venturi cowl squeezes crosswind through a narrowing gap "
-    "above the exit throat; by Bernoulli's accounting fast air is cheap air, "
-    "and the pressure minimum draws the column upward. Push below, pull above "
-    "— one wind applied at both poles of the tube. The gap's perimeter area "
-    "equals the throat area, so in a calm the cowl does not choke the chimney "
-    "and the device degrades gracefully into its indoor cousin. In gusts the "
+    "weather is translated into the one clockwise currency. The crown is left "
+    "open. A stacked-disc venturi cowl was tried there — Bernoulli suction "
+    "over the exit throat — and the built instrument overruled the drawing: "
+    "the constriction taxed the column more than the suction repaid, and the "
+    "helix stands tallest discharging into free air. In a calm the device "
+    "degrades gracefully into its indoor cousin. In gusts the "
     "swirl briefly outruns the axial flow and the core shatters — vortex "
     "breakdown — then gathers and stands again. Three countersunk holes "
     "anchor the skirt; a tower of 450 mm keeps real company with the wind."
@@ -297,16 +297,17 @@ E.append(axiom("“Everything flows, out and in; all things rise and fall; "
     "— The Kybalion, on the Principle of Rhythm"))
 E.append(Paragraph(
     "This is the instrument of the fourth and fifth principles together. "
-    "<b>Polarity:</b> ram and suction — the crowding of air below, the "
-    "thinning of air above — are not two winds but one, identical in nature "
-    "and differing only in degree; and the column stands precisely between "
-    "the poles, as all manifest things do. <b>Rhythm:</b> the gust and the "
-    "lull, the bursting and regathering of the core, are the pendulum made "
-    "visible in smoke; the vortex does not fail when it breaks — it keeps "
-    "time. And the Tablet's third clause is enacted without metaphor: the "
-    "wind receives the smoke into its belly at the fins, gestates it in the "
-    "spiral, and delivers it skyward through the cowl. What the operator once "
-    "supplied with breath, the atmosphere now supplies with weather.",
+    "<b>Polarity:</b> the crowding of air on the windward fins and its "
+    "thinning in the leeward wake are not two winds but one, identical in "
+    "nature and differing only in degree; the drum stands between the poles "
+    "and mints their difference into rotation, as all manifest things stand "
+    "between. <b>Rhythm:</b> the gust and the lull, the bursting and "
+    "regathering of the core, are the pendulum made visible in smoke; the "
+    "vortex does not fail when it breaks — it keeps time. And the Tablet's "
+    "third clause is enacted without metaphor: the wind receives the smoke "
+    "into its belly at the fins, gestates it in the spiral, and delivers it "
+    "skyward through the open crown. What the operator once supplied with "
+    "breath, the atmosphere now supplies with weather.",
     S['herm']))
 
 # ======================= INSTRUMENT III =======================
@@ -425,7 +426,7 @@ comp = [
     ["Clause of the Tablet", "The Sun is its father",
      "The Wind hath carried it in its belly", "The Earth is its nurse"],
     ["Driving power", "Ember heat (stack effect)",
-     "Wind ram + venturi suction", "Wind ram (+ solar floor)"],
+     "Wind ram (pinwheel stator)", "Wind ram (+ solar floor)"],
     ["Pressure budget", "~0.6 Pa", "~5 Pa at 3 m/s", "~5 Pa at 3 m/s"],
     ["Swirl generator", "12 chord slots at 68°",
      "12-fin stator, 4:1 funnels, 68°",
@@ -434,7 +435,7 @@ comp = [
      "Zinc stearate powder"],
     ["Confinement", "100 mm clear tube", "100 mm clear tube",
      "None — a free devil"],
-    ["Stature, assembled", "~460 mm", "~490 mm", "79 mm · XL280: 99 mm"],
+    ["Stature, assembled", "~440 mm", "~445 mm", "79 mm · XL280: 99 mm"],
     ["Fair weather", "A still room", "Steady breeze, 1–4 m/s",
      "Sun and steady breeze, 2–5 m/s"],
 ]
@@ -479,10 +480,11 @@ for b in [
 E.append(Paragraph("COLOPHON", S['h1']))
 E.append(rule())
 E.append(Paragraph(
-    "Instrument I — vortex_base.stl, vortex_top_collar.stl "
+    "Instrument I — vortex_base.stl "
     "(source: incense_vortex.scad; tube: 100 mm OD x 2 mm acrylic, 393.7 mm). "
-    "Instrument II — wind_base.stl, wind_venturi_head.stl, "
-    "wind_venturi_hat.stl (source: incense_vortex_wind.scad). "
+    "Instrument II — wind_base.stl (source: incense_vortex_wind.scad). "
+    "Both tube instruments run with the exit fully open; the exit collar and "
+    "venturi cowl of earlier drafts were removed after field testing. "
     "Instrument III — dust_plate_arena.stl, dust_plate_roof.stl; XL280 "
     "variant — dust_plate_arena_XL280.stl, dust_plate_roof_XL280.stl "
     "(source: vortex_dust_plate.scad, rendered at two parameter stations).",

@@ -14,6 +14,9 @@ _*_dec.stl
 /projects/multifunction_terrarium/drip_gutters.stl
 /projects/faraday_instability_disc/faraday_disc.stl
 /projects/golden_ratio_scrying_pool/scrying_pool.stl
+# Solver snapshots -- ~100 MB per run. Regenerate with plume_lbm.py; the derived
+# figures, summary.json and core_fits.json are small and are kept.
+/projects/thermal_plume/run_*/fields.npz
 
 # Private -- personal content, never publish
 /projects/lifetube/

@@ -1,0 +1,44 @@
+{
+  "n_cores_fitted": 695,
+  "rankine_r2_mean": 0.7373734539608369,
+  "oseen_r2_mean": 0.7738347285053973,
+  "core_radius_cells_mean": 7.49897663386036,
+  "core_radius_m_mean": 0.11248464950790539,
+  "rankine_vs_oseen": {
+    "n": 695,
+    "oseen_mean": 0.7738347285053973,
+    "rankine_mean": 0.7373734539608369,
+    "oseen_median": 0.7979069783655635,
+    "rankine_median": 0.8034278144920232,
+    "oseen_win": 0.37553956834532376,
+    "rankine_win": 0.6115107913669064,
+    "tie": 0.012949640287769784,
+    "best_overall": 0.9800551399455527,
+    "frac_above_r2_09": 0.09928057553956834
+  },
+  "shedding_hz": 0.2780189182614769,
+  "shedding_period_s": 3.5968775299654236,
+  "shedding_period_peakcount_s": 3.7062420494579484,
+  "shedding_window_s": [
+    36.000134301662406,
+    89.9836762843409
+  ],
+  "strouhal": 0.6175530369079312,
+  "strouhal_measured": 0.4442525284032091,
+  "conductance": {
+    "pearson": 0.7911918896640479,
+    "spearman": 0.6313967470351151,
+    "pearson_no_foot": 0.48322066249767315,
+    "spearman_no_foot": 0.5062596541607013,
+    "foot_over_chest_sim": 30.257694326402216,
+    "foot_over_chest_measured": 1.7
+  },
+  "v_peak_over_uff": 0.7868056994659263,
+  "rankine_figure": true,
+  "probe_peak_over_uff": 0.5383568534944826,
+  "probe_peak_ms": 0.4120209081218633,
+  "probe_peak_ms_max": 0.4560431345288718,
+  "measured_probe_ms": "0.2-0.3",
+  "diverged": null,
+  "seconds_completed": 89.96113700164986
+}

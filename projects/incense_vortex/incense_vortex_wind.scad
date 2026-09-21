@@ -2,7 +2,7 @@
    WIND-POWERED INCENSE TORNADO — omnidirectional wind harvester
    ============================================================
    Variant of the passive incense tornado optimised to CATCH THE
-   WIND and convert it into swirl. Two harvesting stages:
+   WIND and convert it into swirl.
 
    INTAKE PINWHEEL (base): 12 tall guide fins radiate from the
    drum, each extending one tangential slot's guide wall. From any
@@ -11,11 +11,10 @@
    same-handed tangential jets. Ram pressure of a 2-3 m/s breeze
    (~5 Pa) is ~8x the stack-effect draft of the 394 mm tube.
 
-   VENTURI COWL (top): stacked-disc chimney-cowl. Crosswind is
-   squeezed through the converging gap between a 45-degree skirt
-   and a flat hat, dropping static pressure right over the exit
-   throat (Bernoulli) and sucking the column upward from any wind
-   direction. Also a rain / downdraft hat.
+   The tube exit runs fully OPEN. A stacked-disc venturi cowl was
+   tried on the crown and removed after field testing: it did not
+   enhance the helix. (Consequence: no rain / downdraft hat — this
+   is now a fair-weather instrument.)
 
    In dead calm it still works like the indoor version (heat-only,
    gentler). Swirl is CLOCKWISE viewed from above.
@@ -23,8 +22,6 @@
    Parts (set `part`):
      0 = assembly preview (tube ghosted)
      1 = wind base: slotted drum + pinwheel fins + staked skirt
-     2 = venturi head: slips over tube top (print as oriented)
-     3 = venturi hat: press-fits onto the head's three posts
    Tube: 100 mm OD acrylic, 2 mm wall, 15.5" (393.7 mm) long.
    ============================================================ */
 
@@ -59,13 +56,6 @@ ped_or     = 17;
 ped_wall   = 2.4;
 recess_r   = 15;
 recess_d   = 2;
-
-/* [Venturi cowl] */
-throat_r   = 32;     // exit throat radius
-post_r_pos = 40.5;   // post circle radius
-post_d     = 6;
-post_len   = 20;     // 15.5 mm gap + 4.5 mm socket
-hat_r      = 70;
 
 /* derived */
 tube_or   = tube_od/2;
@@ -149,46 +139,6 @@ module pedestal() {
     }
 }
 
-/* ---------------- venturi head ------------------ */
-module venturi_head() {
-    union() {
-        rotate_extrude()
-            polygon([
-                [47, 8],       // ledge inner, underside
-                [50.4, 8],
-                [50.4, 0],     // sleeve inner wall
-                [53, 0],
-                [53, 10],      // sleeve outer top
-                [41.5, 22.5],  // dome outer -> skirt launch
-                [60, 4],       // skirt underside, 45 deg out-down
-                [62, 5.5],     // skirt rim
-                [44, 23.5],    // skirt topside = venturi lower disc
-                [37, 23.5],    // flat post band
-                [34.5, 25],    // throat lip chamfer
-                [32, 25],      // throat lip inner edge
-                [34, 21.5],    // bore below lip
-                [45.9, 9.6],   // interior dome, 45 deg
-                [47, 9.6]
-            ]);
-        for (a = [0, 120, 240]) rotate([0, 0, a])
-            translate([post_r_pos, 0, 22.5])
-                cylinder(d=post_d, h=post_len + 1);   // seats into band
-    }
-}
-
-/* ---------------- venturi hat ------------------ */
-module venturi_hat() {
-    difference() {
-        union() {
-            cylinder(r=hat_r, h=3);
-            translate([0, 0, 3]) cylinder(r1=hat_r, r2=0.5, h=7);
-        }
-        for (a = [0, 120, 240]) rotate([0, 0, a])
-            translate([post_r_pos, 0, -0.5])
-                cylinder(d=post_d + 0.6, h=5);        // press-fit sockets
-    }
-}
-
 /* ---------------- printable tube (same as indoor version) ---- */
 module ptube() {
     difference() {
@@ -201,11 +151,7 @@ module ptube() {
 module assembly() {
     wind_base();
     %translate([0, 0, drum_h]) ptube();
-    translate([0, 0, drum_h + tube_len - 8]) venturi_head();
-    translate([0, 0, drum_h + tube_len - 8 + 39]) venturi_hat();
 }
 
 if (part == 0) assembly();
 if (part == 1) wind_base();
-if (part == 2) venturi_head();
-if (part == 3) venturi_hat();

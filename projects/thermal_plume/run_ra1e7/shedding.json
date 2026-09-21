@@ -1,0 +1,15 @@
+{
+  "window_s": [
+    36.0,
+    90.0
+  ],
+  "shedding_period_s": 3.6,
+  "shedding_period_peakcount_s": 3.71,
+  "slow_meander_period_s": 9.0,
+  "n_peaks": 11,
+  "strouhal_sim": 0.618,
+  "strouhal_measured": 0.444,
+  "ratio_sim_over_measured": 1.39,
+  "buoyant_time_s": 2.22,
+  "shed_intervals_per_buoyant_time": 1.62
+}

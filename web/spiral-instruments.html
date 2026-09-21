@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Three printable vortex devices — a heat-driven incense tornado, a wind-harvesting edition, and a dust-devil plate — with the swirl physics simulated live: Rankine vortex spin-up, stack-effect draft, ram pressure, and the field finding that removed the exit cowls. Hermetic reading kept in its own labeled register.">
+<title>The Spiral Instruments — three vortex devices, two lenses</title>
+<link rel="canonical" href="https://promethean-theoria.netlify.app/spiral-instruments.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="The Spiral Instruments — three vortex devices, two lenses">
+<meta property="og:description" content="A passive incense tornado simulated live: twelve tangential slots, Rankine spin-up, stack draft vs wind ram — and the built instrument that overruled the drawing.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/spiral-instruments.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/spiral-instruments.html">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{
+  --ground:#F6F5F1; --panel:#EFEEE8; --panel-2:#E7E6DE; --rule:#D3D2C9; --rule-soft:#E2E1D9;
+  --ink:#1C2028; --ink-2:#454B57; --muted:#656B79; --faint:#8B909C;
+  --gold:#8F6F24; --gold-soft:rgba(143,111,36,.10); --gold-line:rgba(143,111,36,.35);
+  --smoke:#3A4150; --smoke-b:#9AA1AC; --ember:#C25B1E; --tube:#8A8F98;
+  --ok:#2C7A4E;
+  --serif: Charter,'Sitka Text',Cambria,Georgia,serif;
+  --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code',Consolas,'SF Mono','Roboto Mono',monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ground:#10131A; --panel:#171B25; --panel-2:#1D2230; --rule:#2A3040; --rule-soft:#1F2431;
+    --ink:#E9E6DD; --ink-2:#B0AFA8; --muted:#868DA0; --faint:#5C6377;
+    --gold:#C9B070; --gold-soft:rgba(201,176,112,.10); --gold-line:rgba(201,176,112,.35);
+    --smoke:#DDE2E9; --smoke-b:#6E7683; --ember:#E8933B; --tube:#8F96A0;
+    --ok:#4FA872;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.65 var(--sans)}
+main{max-width:980px;margin:0 auto;padding:28px 20px 60px}
+a{color:var(--gold)}
+header.masthead{text-align:center;padding:26px 8px 6px}
+.eyebrow{font:600 12px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--faint)}
+h1{font:400 40px/1.15 var(--serif);margin:14px 0 4px;letter-spacing:.01em}
+.sub{color:var(--muted);font-style:italic;font-family:var(--serif);font-size:18px}
+.epigraph{max-width:620px;margin:22px auto 0;padding:14px 22px;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line);
+  font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink-2)}
+.epigraph .src{display:block;margin-top:6px;font-style:normal;font-size:12.5px;color:var(--faint);letter-spacing:.06em}
+h2{font:400 26px/1.25 var(--serif);margin:44px 0 6px;color:var(--ink)}
+h2 .rl{font:600 11px/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;vertical-align:middle;margin-left:10px;padding:4px 8px;border-radius:3px}
+.rl-m{color:var(--ok);border:1px solid var(--ok)}
+.rl-h{color:var(--gold);border:1px solid var(--gold)}
+p.lede{color:var(--ink-2)}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;margin:16px 0}
+.simwrap{display:grid;grid-template-columns:minmax(300px,430px) 1fr;gap:20px;align-items:start}
+@media (max-width:760px){.simwrap{grid-template-columns:1fr}}
+canvas#helix{width:100%;height:auto;display:block;background:var(--panel-2);border:1px solid var(--rule);border-radius:8px}
+.ctl{margin:10px 0;font-size:14.5px;color:var(--ink-2)}
+.ctl label{display:block;font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.seg button{font:600 13.5px var(--sans);padding:8px 16px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--gold-soft);color:var(--gold)}
+button.puff{font:600 14px var(--sans);padding:9px 18px;border:1px solid var(--gold);border-radius:7px;background:transparent;color:var(--gold);cursor:pointer}
+button.puff:active{transform:scale(.97)}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.reads{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-top:14px}
+.read{background:var(--panel-2);border:1px solid var(--rule-soft);border-radius:8px;padding:10px 12px}
+.read .k{font:600 11px/1.3 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.read .v{font:500 20px/1.3 var(--mono);color:var(--ink);margin-top:2px}
+.read .u{font-size:12px;color:var(--muted)}
+svg#rank{width:100%;height:auto;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:18px 0}
+.icard{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:16px 18px}
+.icard .shot{height:225px;border-radius:8px;border:1px solid var(--rule-soft);background:#FFFFE5;margin-bottom:12px;overflow:hidden}
+.icard .shot img{width:100%;height:100%;object-fit:contain;display:block}
+.icard .dl{font:600 13px var(--sans);margin-top:8px}
+.icard .dl a{text-decoration:none;border:1px solid var(--gold-line);border-radius:6px;padding:4px 10px;display:inline-block;margin:3px 6px 0 0}
+.icard .dl a:hover{background:var(--gold-soft)}
+.icard .clause{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:15px}
+.icard h3{font:500 19px/1.3 var(--serif);margin:6px 0 8px}
+.icard p{font-size:14.5px;color:var(--ink-2);margin:8px 0}
+.icard .spec{font:12.5px/1.7 var(--mono);color:var(--muted);border-top:1px solid var(--rule-soft);padding-top:8px;margin-top:10px}
+.herm{border:1px solid var(--gold-line);background:var(--gold-soft);border-radius:10px;padding:18px 22px;margin:16px 0;font-family:var(--serif)}
+.herm p{color:var(--ink-2);font-size:16px}
+.herm .ax{font-style:italic;text-align:center;font-size:17.5px;color:var(--ink);margin:14px 0 2px}
+.herm .axsrc{text-align:center;font-size:12.5px;color:var(--faint);font-family:var(--sans);letter-spacing:.05em;margin-bottom:14px}
+.herm h3{font:500 19px/1.3 var(--serif);margin:4px 0 10px;color:var(--ink)}
+.herm table{font-family:var(--sans);font-size:14px}
+.herm th{color:var(--gold)}
+.herm ul,.herm ol{color:var(--ink-2);font-size:15.5px;padding-left:24px}
+.herm li{margin:8px 0}
+.herm li b{color:var(--ink)}
+.note{border-left:3px solid var(--gold);padding:10px 16px;background:var(--panel);border-radius:0 8px 8px 0;margin:16px 0;color:var(--ink-2);font-size:15px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+th{font:600 12px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+td code{font:13px var(--mono);color:var(--gold)}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);color:var(--faint);font-size:13.5px;text-align:center}
+footer .test{font-family:var(--mono);font-size:12px;margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+
+<header class="masthead">
+  <div class="eyebrow">Promethean Theoria · Printable Sacred Geometry</div>
+  <h1>The Spiral Instruments</h1>
+  <div class="sub">three printable vortex devices, described twice</div>
+  <div class="epigraph">
+    “The Sun is its father, the Moon its mother, the Wind hath carried it in its belly, the Earth is its nurse.”
+    <span class="src">— THE EMERALD TABLET OF HERMES TRISMEGISTUS</span>
+  </div>
+</header>
+
+<p class="lede" style="max-width:760px;margin:26px auto">
+  Three desktop instruments, printed in PETG and raised around a clear tube of a hundred millimetres,
+  whose single purpose is to persuade air to reveal itself. The first stands a helix of incense smoke by heat
+  alone; the second does the same work with harvested wind; the third teaches a spoonful of powdered earth to
+  rise and dance. All three are children of one law: <b>converging flow must spin faster, because angular
+  momentum, once granted, is conserved.</b> As on every page of this site, the physics below is computed live
+  and the interpretation is labeled — you can always tell which register a claim belongs to.
+</p>
+
+<h2>The standing helix <span class="rl rl-m">measured — simulated live</span></h2>
+<p class="lede">A particle simulation of the smoke column, advected by a Rankine vortex: solid-body rotation
+inside the core, free-vortex spin-up (v·r = constant) outside it, riding the axial draft. Switch instruments,
+give the hearth a puff, or feed the wind edition a breeze. The swirl is clockwise seen from above — the slots
+only know one handedness.</p>
+
+<div class="panel">
+  <div class="simwrap">
+    <canvas id="helix" width="430" height="620"></canvas>
+    <div>
+      <div class="ctl">
+        <label>Instrument</label>
+        <div class="seg">
+          <button id="mHearth" class="on">I · Hearth</button>
+          <button id="mWind">II · Wind</button>
+        </div>
+      </div>
+      <div class="ctl" id="puffRow">
+        <label>Mouthpiece</label>
+        <button class="puff" id="puffBtn">puff the mouthpiece</button>
+        <div style="font-size:13px;color:var(--faint);margin-top:6px">a gentle breath feeds one tangential slot — breath converts directly to swirl</div>
+      </div>
+      <div class="ctl" id="windRow" style="display:none">
+        <label>Breeze — <span id="windVal">2.0</span> m/s</label>
+        <input type="range" id="windSlider" min="0" max="5" step="0.1" value="2">
+        <div style="font-size:13px;color:var(--faint);margin-top:4px">above ~3.5 m/s the swirl outruns the axial flow and the core intermittently bursts — vortex breakdown, not a defect</div>
+      </div>
+      <div class="reads">
+        <div class="read"><div class="k">Driving pressure</div><div class="v" id="rDraft">0.62</div><div class="u">Pa</div></div>
+        <div class="read"><div class="k">Wall → core spin-up</div><div class="v" id="rSpin">×7.0</div><div class="u">angular momentum</div></div>
+        <div class="read"><div class="k">Core radius</div><div class="v" id="rCore">6.5</div><div class="u">mm</div></div>
+        <div class="read"><div class="k">Regime</div><div class="v" id="rRegime" style="font-size:15px">standing helix</div><div class="u" id="rRegimeU">stack draft only</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>Of vortices in general <span class="rl rl-m">measured</span></h2>
+<p class="lede">Two ideal forms bracket every real whirl. In the <i>forced</i> vortex the fluid turns as a rigid
+body and must be continuously driven; in the <i>free</i> vortex, conservation of angular momentum sets
+v·r&nbsp;=&nbsp;constant, so fluid drifting inward is compelled to accelerate. A real confined column is a
+Rankine vortex — free outside, forced inside a viscous core. Air enters this build through twelve chord-cut
+slots at <b>68° from radial</b> (drag the slider), spirals from the 45.5&nbsp;mm chamber wall to a core of a
+few millimetres, and arrives spinning roughly seven times faster.</p>
+
+<div class="panel">
+  <svg id="rank" viewBox="0 0 900 320" role="img" aria-label="Tangential velocity versus radius for a Rankine vortex, peaking at the core radius"></svg>
+  <div class="ctl" style="max-width:420px">
+    <label>Vane angle — <span id="vaneVal">68</span>° from radial</label>
+    <input type="range" id="vaneSlider" min="60" max="72" step="1" value="68">
+    <div style="font-size:13px;color:var(--faint);margin-top:4px">
+      swirl ratio tan β = <span id="tanVal" style="font-family:var(--mono)">2.48</span> · steeper vanes buy more
+      spin per unit draft but tax the intake; the build holds slot area at <b>0.76×</b> the bore area, safely
+      above the ~0.6 choke line
+    </div>
+  </div>
+</div>
+
+<p class="lede">Two more measured ingredients complete the picture. Even a small rotational bias — an offset
+inlet, a wall texture, asymmetric heating — is enough for a buoyant column to organize into a corkscrew:
+laboratory work on <a href="https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/buoyancyinduced-columnar-vortices/E91D38AAD6905FB4C1BF9C314174E886" rel="noopener">buoyancy-induced
+columnar vortices</a> describes the coupled system as a spiraling boundary layer feeding a thermally driven
+vertical core, wrapped in a helical shear layer. This build simply makes the bias deliberate — twelve slots'
+worth. And buoyancy itself intensifies the spin: as the rising flow <a href="https://teachingfluids.wordpress.com/2015/08/28/fire-whirl-and-stretching-a-vortex/" rel="noopener">stretches
+the vortex vertically</a>, conservation of angular momentum narrows and quickens the core — the same mechanism
+that turns a bonfire into a fire whirl. What the instrument really sells is visibility: a normally invisible
+flow field, traced live by the smoke that rides it.</p>
+
+<div class="note" id="fieldnote">
+  <b>Field note — the open crown.</b> Both tube instruments were drawn with exit constrictions: a nozzle collar
+  on the hearth edition, a stacked-disc venturi cowl (Bernoulli suction over the throat) on the wind edition.
+  Built and lit, the instruments overruled the drawing — the constriction taxed the column more than it
+  tightened or lifted it, and the helix stands tallest discharging into free air. Both crowns now run fully
+  open, and the parts were removed from the build.
+</div>
+
+<h2>The three instruments <span class="rl rl-m">measured — as built</span></h2>
+<div class="cards">
+  <div class="icard">
+    <div class="shot"><img src="assets/spiral/hearth-assembly.webp" alt="Render of the hearth tornado: tall clear tube standing in a slotted amber drum with a side mouthpiece" loading="lazy"></div>
+    <div class="clause">“The Sun is its father”</div>
+    <h3>I · The Hearth Tornado</h3>
+    <p>A chimney taught to spin. The incense cone's few watts drive a stack-effect draft
+    (ΔP&nbsp;=&nbsp;ρgH·ΔT/T ≈ 0.6&nbsp;Pa for the 394&nbsp;mm tube — feeble, but free); make-up air can reach
+    the plume only through the twelve tangential slots. A 9&nbsp;mm mouthpiece bore feeds one slot: breath
+    becomes swirl, and the column visibly tightens at a puff.</p>
+    <div class="spec">176 × 176 × 57 mm · tube: 100 mm OD × 2 mm acrylic, 15.5″<br>indoors, still air · ~440 mm tall</div>
+    <div class="dl"><a href="stl/vortex_base.stl" download>⬇ vortex_base.stl</a></div>
+  </div>
+  <div class="icard">
+    <div class="shot"><img src="assets/spiral/wind-assembly.webp" alt="Render of the wind tornado: clear tube rising from a twelve-fin pinwheel drum on a staked skirt" loading="lazy"></div>
+    <div class="clause">“The Wind hath carried it in its belly”</div>
+    <h3>II · The Wind Tornado</h3>
+    <p>Outdoors the budget improves by an order of magnitude: ram pressure of a 3&nbsp;m/s breeze is ~5.4&nbsp;Pa,
+    some nine times the hearth draft. Twelve tall stator fins form converging funnels from any compass
+    direction (~4:1 contraction) and discharge through the same 68° chords — all weather translated into the
+    one clockwise currency. The crown is open; in a calm it degrades gracefully into its indoor cousin.</p>
+    <div class="spec">242 × 242 × 63 mm, staked skirt · same tube<br>fair weather (no rain hat) · ~445 mm tall</div>
+    <div class="dl"><a href="stl/wind_base.stl" download>⬇ wind_base.stl</a></div>
+  </div>
+  <div class="icard">
+    <div class="shot"><img src="assets/spiral/dust-plate.webp" alt="Render of the dust-devil plate: a round dished arena ringed by twelve guide fins" loading="lazy"></div>
+    <div class="clause">“The Earth is its nurse”</div>
+    <h3>III · The Dust-Devil Plate</h3>
+    <p>No tube at all: an open arena whose twelve-fin crown turns ambient wind into tangential jets over a
+    saucer of zinc-stearate tracer powder. The core's pressure minimum lifts the powder into brief, dancing
+    dust whirls — bursts that wander, die, and re-form. Honest expectations: intermittent by design; a free
+    devil, not a captive one.</p>
+    <div class="spec">Ø200 assembled (XL280: Ø280, needs a 300-class bed)<br>steady 2–5 m/s breeze · sun-warmed dark floor helps</div>
+    <div class="dl"><a href="stl/dust_plate_arena.stl" download>⬇ arena</a><a href="stl/dust_plate_roof.stl" download>⬇ roof</a><a href="stl/dust_plate_arena_XL280.stl" download>⬇ arena XL280</a><a href="stl/dust_plate_roof_XL280.stl" download>⬇ roof XL280</a></div>
+  </div>
+</div>
+
+<h2>The hermetic reading <span class="rl rl-h">interpretation — not physics</span></h2>
+<p class="lede">The treatise describes each instrument twice and never merges the voices. The second voice makes
+no claim upon the first: equations do not require blessing, and axioms do not require proof. They are two
+lanterns held to one whirlwind.</p>
+<div class="herm">
+  <div class="ax">“As above, so below; as below, so above.”</div>
+  <div class="axsrc">— THE KYBALION, ON THE PRINCIPLE OF CORRESPONDENCE</div>
+  <p>The equations that govern a smoke-helix in a tube of 100 millimetres govern likewise the dust devil on the
+  plate, the waterspout, the hurricane, and, in their gravitational translation, the spiral galaxy. Scale falls
+  away in the dimensionless numbers — Reynolds, swirl — which are the algebra of correspondence: shrink the
+  heavens to a desk and the form survives.</p>
+  <p><b>Vibration</b> (Instrument I): what appears a fixed and patient form — a rope of smoke holding its place —
+  is motion all the way through; the shape persists only because movement is continuously supplied.
+  <b>Polarity and Rhythm</b> (Instrument II): the crowding of air on the windward fins and its thinning in the
+  leeward wake are one wind differing only in degree; the drum stands between the poles and mints their
+  difference into rotation. The gust and the lull, the bursting and regathering of the core, are the pendulum
+  made visible in smoke — the vortex does not fail when it breaks; it keeps time.</p>
+</div>
+
+<h2>The reading of ascension <span class="rl rl-h">interpretation — not physics</span></h2>
+<p class="lede">A helical smoke vortex can be read as a compelling <b>symbol of ascension</b>: something dense
+and earthbound becomes heat-activated, rises, and organizes into a spiral rather than simply moving straight
+upward. In sacred-geometry language it presents a living image of transformation through cyclical motion,
+polarity, and upward movement — and that meaning is interpretive, not a claim that the vortex proves a
+metaphysical mechanism.</p>
+
+<div class="herm">
+  <table>
+    <tr><th>Observed feature</th><th>Sacred-geometric interpretation</th><th>Experiential meaning</th></tr>
+    <tr><td>Central axis of the tube</td><td>The <b>axis mundi</b> — a world axis linking lower and higher realms</td><td>A stable inner center or witnessing awareness</td></tr>
+    <tr><td>Upward motion</td><td>Ascension from dense/material to subtle/expanded states</td><td>Transformation, refinement, uplift</td></tr>
+    <tr><td>Spiral path</td><td>The spiral as growth through return rather than repetition</td><td>You revisit patterns, but at a changed level</td></tr>
+    <tr><td>Rotational circulation</td><td>Cycles of dissolution and renewal around a stable center</td><td>Integration rather than escape from embodiment</td></tr>
+    <tr><td>Expanding / contracting coils</td><td>Breath, pulse, and alternating concentration and expansion</td><td>Growth proceeds rhythmically, not linearly</td></tr>
+    <tr><td>Double helix, paired strands</td><td>Polarity in dynamic union — earth/sky, receptive/active, matter/spirit</td><td>Opposites become a generative braid rather than a conflict</td></tr>
+  </table>
+  <p>The core symbolic idea: ascension is not pictured as a straight line. It is a <b>spiral ascent</b> —
+  every rotation returns near a familiar direction, yet the flow has advanced upward. This is why spiral forms
+  recur in spiritual art, processional paths, labyrinths, coiled-serpent imagery, and contemplative symbolism;
+  <a href="https://destinationdeluxe.com/sacred-geometry-explained-healing-benefits/" rel="noopener">popular
+  sacred-geometry writing</a> commonly associates the spiral with movement between earthly and transcendent
+  domains, the development of consciousness, and the relation of part to whole.</p>
+</div>
+
+<div class="herm">
+  <h3>Why the double helix feels potent</h3>
+  <p>The simulation above draws what the built instrument sometimes shows: two strands of smoke that remain
+  distinct while sharing one axis and one upward direction. When the column stands as a double helix, the
+  symbol grows richer. You might contemplate it as:</p>
+  <ul>
+    <li><b>Duality becoming coherence.</b> The two strands never merge into one indistinguishable line; their relationship creates the larger form.</li>
+    <li><b>Alternation and balance.</b> One strand comes forward while the other recedes, then they exchange places — breathing, day and night, contraction and expansion, action and receptivity.</li>
+    <li><b>Embodiment and transcendence.</b> A double spiral can represent material life and inner awareness rising together, rather than a body to be discarded.</li>
+    <li><b>A living ladder.</b> Unlike a rigid ladder, the helix rises by circling — an ascent made through rhythm, recurrence, and adaptation.</li>
+  </ul>
+  <p>The ladder image is particularly apt. Each turn crosses the visual field at a new height, so the smoke
+  makes an ascending sequence of thresholds — and in symbolic language those crossings can be contemplated as
+  integrations: fear into discernment, fragmentation into relationship, raw sensation into conscious attention.</p>
+</div>
+
+<div class="herm">
+  <h3>A grounded way to use it</h3>
+  <p>Treat the experiment as a <b>contemplative instrument</b>, not as evidence for a specific cosmology:</p>
+  <ol>
+    <li>Set a single intention — such as <i>“what pattern am I ready to revisit at a higher level?”</i></li>
+    <li>Watch the centerline first, not the smoke. Notice the still axis around which the apparent complexity organizes.</li>
+    <li>Follow one strand from bottom to top. Observe how it repeats its circular relationship while never occupying exactly the same place.</li>
+    <li>If a second strand appears, notice where the pair separates, converges visually, and trades positions.</li>
+    <li>Record the conditions that produce each form — tube temperature, airflow, burn rate, room drafts — so the physical and the symbolic inquiries remain connected.</li>
+  </ol>
+</div>
+
+<div class="note">
+  <b>The important distinction.</b> The smoke's spiral is a real fluid-dynamic result of buoyancy, rotation,
+  shear, and instability. Its connection to ascension, sacred geometry, kundalini-like movement, or a cosmic
+  energetic pattern is a meaningful <b>human symbolic framework</b> — not something established by fluid
+  mechanics. That distinction does not make the experience empty: the value is precisely that nature supplies
+  a real, dynamic ascending pattern that the mind can use as a disciplined image for change, integration, and
+  reflection.
+</div>
+
+<h2>The build record <span class="rl rl-m">measured</span></h2>
+<table>
+  <tr><th>Fact</th><th>Value</th></tr>
+  <tr><td>Common standard</td><td>100 mm OD × 2 mm wall clear acrylic tube, 15.5″ (393.7 mm)</td></tr>
+  <tr><td>Swirl generator</td><td>12 chord slots, 10 × 41 mm (wind: × 47), tangent entry 68° from radial</td></tr>
+  <tr><td>Slot / bore area</td><td>0.76 (wind: 0.87) — held above the ~0.6 choke ratio</td></tr>
+  <tr><td>Chamber → core</td><td>r = 45.5 mm → ≈ 6 mm; free-vortex spin-up ≈ ×7</td></tr>
+  <tr><td>Handedness</td><td>clockwise viewed from above, every instrument in the folio</td></tr>
+  <tr><td>Sources</td><td><code>incense_vortex.scad</code> · <code>incense_vortex_wind.scad</code> · <code>vortex_dust_plate.scad</code> — OpenSCAD 2021.01, every mesh verified watertight and two-manifold; the STLs above are the exact validated exports</td></tr>
+  <tr><td>Field status</td><td>Instrument I built and lit, 2026-08: standing spiral wave on first assembly; exit cowls removed after testing</td></tr>
+  <tr><td>Treatise</td><td><a href="The_Spiral_Instruments.pdf">The Spiral Instruments (PDF)</a> — the full folio, both voices</td></tr>
+</table>
+<p style="color:var(--muted);font-size:14px">Safety, plainly: the ember is hotter than the vessel — PETG softens
+near 80 °C and the metal heat-shield disc under the cone is not optional. Never leave a burning cone unattended.</p>
+
+<footer>
+  <a href="index.html">← Promethean Theoria</a> — eight sibling studies, same rule: computed physics, labeled interpretation.
+  <div class="test" id="footTest"></div>
+</footer>
+</main>
+
+<script>
+(() => {
+'use strict';
+/* ---------- constants (mm, Pa, SI where stated) ---------- */
+const R_WALL = 45.5, R_TUBE = 48, R_CORE = 6.5, H_TUBE = 393.7;
+const RHO = 1.2, G = 9.81, DT_OVER_T = 40/300;
+const P_STACK = RHO * G * (H_TUBE/1000) * DT_OVER_T;        // ≈ 0.62 Pa
+const ram = v => 0.5 * RHO * v * v;
+
+const $ = id => document.getElementById(id);
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+let COL = {};
+function palette(){ COL = { smoke: css('--smoke'), smokeB: css('--smoke-b'), tube: css('--tube'),
+  ember: css('--ember'), pet: css('--gold'), panel: css('--panel-2'), faint: css('--faint') }; }
+palette();
+if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', palette);
+
+/* ---------- state ---------- */
+const state = { mode: 'hearth', wind: 2.0, puff: 0, t: 0 };
+
+/* ---------- Rankine profile ---------- */
+function vTheta(r, gamma){                       // gamma = circulation scale (arb.)
+  const rc = R_CORE;
+  return r < rc ? gamma * r / (rc*rc) : gamma / r;
+}
+
+/* ---------- helix particle sim ---------- */
+const cv = $('helix'), ctx = cv.getContext('2d');
+const W = cv.width, Hc = cv.height;
+const CXp = W * 0.5, Y0 = Hc - 92, Y1 = 40;      // tube bottom / top on canvas
+const SC = (Y0 - Y1) / H_TUBE * 2.5;             // mm→px radial scale (visual)
+const N = 620, P = [];
+let emit = 2.4;                                   // emitter phase: the cone does not rotate
+function spawn(p){
+  p.r = 4 + 30 * Math.pow(Math.random(), 1.7);
+  p.th = emit + (Math.random() - 0.5) * 0.6;      // coherent filament; rotation wraps the helix
+  p.y = Math.random() * 8;
+  p.a = 0.55 + Math.random() * 0.45;
+}
+for (let i = 0; i < N; i++){ const p = {}; spawn(p); P.push(p); }
+
+function drive(){
+  if (state.mode === 'hearth'){
+    return { draft: 1 + 1.1 * state.puff, gamma: 1 + 2.4 * state.puff, gust: 0,
+             pa: P_STACK * (1 + 2 * state.puff) };
+  }
+  const v = state.wind;
+  return { draft: 0.55 + 0.38 * v, gamma: 0.45 + 0.62 * v, gust: Math.max(0, v - 3.5),
+           pa: Math.max(P_STACK, ram(v)) };
+}
+
+function step(dt){
+  const d = drive();
+  emit += 0.12 * dt;                              // slow drift so the ribbon breathes
+  const wob = 2.2 * d.gust;
+  for (const p of P){
+    /* Rankine: ω = C/rc² inside the core, C/r² outside — θ decreases: clockwise from above */
+    p.th -= 420 * d.gamma / Math.max(p.r, R_CORE)**2 * dt;
+    p.r += (-0.55 * d.draft * (p.r / R_TUBE) + (Math.random() - 0.5) * 0.5) * dt * 12;
+    if (p.r < 2) p.r = 2;
+    p.y += d.draft * (1 + 1.6 * Math.exp(-(p.r*p.r)/(R_CORE*R_CORE))) * dt * 46;
+    if (d.gust > 0 && p.y > H_TUBE * 0.45 && Math.random() < 0.02 * d.gust)
+      p.r += Math.random() * 9;                              // breakdown burst
+    if (p.y > H_TUBE || p.r > R_TUBE - 1) spawn(p);
+    p.wob = wob;
+  }
+  state.t += dt;
+}
+
+function draw(){
+  ctx.fillStyle = COL.panel; ctx.fillRect(0, 0, W, Hc);
+  const d = drive();
+  /* base drum */
+  ctx.fillStyle = COL.pet; ctx.globalAlpha = 0.85;
+  const half = state.mode === 'hearth' ? 78 : 108;
+  ctx.fillRect(CXp - half, Y0, half * 2, 46);
+  if (state.mode === 'wind'){                                 // stator fins
+    ctx.globalAlpha = 0.55;
+    for (let i = -4; i <= 4; i++)
+      ctx.fillRect(CXp + i * 24 - 2, Y0 - 12, 4, 12);
+  } else {                                                    // mouthpiece
+    ctx.fillRect(CXp - half - 13, Y0 + 12, 13, 12);
+  }
+  ctx.globalAlpha = 1;
+  /* ember */
+  ctx.fillStyle = COL.ember;
+  ctx.beginPath(); ctx.ellipse(CXp, Y0 - 2, 8 + 2*state.puff, 3.4, 0, 0, 7); ctx.fill();
+  ctx.globalAlpha = 0.28;
+  ctx.beginPath(); ctx.ellipse(CXp, Y0 - 2, 16, 6, 0, 0, 7); ctx.fill();
+  ctx.globalAlpha = 1;
+  /* smoke */
+  const Rpx = R_TUBE * SC * 0.62;
+  for (const p of P){
+    const s = p.y / H_TUBE;
+    const yc = Y0 - 6 - s * (Y0 - Y1 - 10);
+    const xoff = (p.wob || 0) * Math.sin(0.8 * state.t + s * 7);
+    const x = CXp + xoff + Math.cos(p.th) * p.r * SC * 0.62;
+    const front = Math.sin(p.th) < 0;
+    ctx.fillStyle = front ? COL.smoke : COL.smokeB;
+    ctx.globalAlpha = p.a * (front ? 0.8 : 0.32) * (s > 0.85 ? (1 - s) / 0.15 * 0.7 + 0.3 : 1);
+    const rad = (front ? 2.2 : 1.6) * (1 + 0.5 * (1 - s));
+    ctx.beginPath(); ctx.arc(x, yc, rad, 0, 7); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  /* tube walls, open crown */
+  ctx.strokeStyle = COL.tube; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(CXp - Rpx - 6, Y1); ctx.lineTo(CXp - Rpx - 6, Y0 + 8);
+  ctx.moveTo(CXp + Rpx + 6, Y1); ctx.lineTo(CXp + Rpx + 6, Y0 + 8);
+  ctx.stroke();
+  ctx.lineWidth = 1.2; ctx.globalAlpha = 0.6;
+  ctx.beginPath(); ctx.ellipse(CXp, Y1, Rpx + 6, 5, 0, 0, 7); ctx.stroke();
+  ctx.globalAlpha = 1;
+  /* readouts */
+  $('rDraft').textContent = d.pa.toFixed(2);
+  $('rSpin').textContent = '×' + (R_WALL / R_CORE).toFixed(1);
+  $('rCore').textContent = R_CORE.toFixed(1);
+  const brk = d.gust > 0;
+  $('rRegime').textContent = brk ? 'bursting / re-forming' : 'standing helix';
+  $('rRegimeU').textContent = state.mode === 'hearth'
+    ? (state.puff > 0.05 ? 'stack draft + breath' : 'stack draft only')
+    : (brk ? 'vortex breakdown in gusts' : 'wind ram, pinwheel stator');
+}
+
+let last = performance.now();
+function loop(now){
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  state.puff *= Math.exp(-dt / 1.1);
+  if (state.puff < 0.01) state.puff = 0;
+  step(dt); draw();
+  requestAnimationFrame(loop);
+}
+
+/* ---------- controls ---------- */
+$('puffBtn').addEventListener('click', () => { state.puff = 1; });
+$('mHearth').addEventListener('click', () => setMode('hearth'));
+$('mWind').addEventListener('click', () => setMode('wind'));
+function setMode(m){
+  state.mode = m;
+  $('mHearth').classList.toggle('on', m === 'hearth');
+  $('mWind').classList.toggle('on', m === 'wind');
+  $('puffRow').style.display = m === 'hearth' ? '' : 'none';
+  $('windRow').style.display = m === 'wind' ? '' : 'none';
+}
+$('windSlider').addEventListener('input', e => {
+  state.wind = +e.target.value;
+  $('windVal').textContent = state.wind.toFixed(1);
+});
+
+/* ---------- Rankine chart ---------- */
+const rankSvg = $('rank');
+function drawRank(vaneDeg){
+  const tanb = Math.tan(vaneDeg * Math.PI / 180);
+  $('tanVal').textContent = tanb.toFixed(2);
+  const L = 70, Rr = 20, T = 26, B = 46, w = 900, h = 320;
+  const pw = w - L - Rr, ph = h - T - B;
+  const gamma = tanb * R_WALL;                    // vθ(wall)=tanβ (radial unit) → C
+  const vmax = Math.tan(72 * Math.PI/180) * R_WALL / R_CORE;
+  const X = r => L + (r / R_TUBE) * pw;             // r: 0..R_TUBE
+  const Y = v => T + ph - (v / vmax) * ph;
+  let dPath = '';
+  for (let i = 0; i <= 240; i++){
+    const r = 0.5 + (R_TUBE - 0.5) * i / 240;
+    dPath += (i ? 'L' : 'M') + X(r).toFixed(1) + ' ' + Y(vTheta(r, gamma)).toFixed(1);
+  }
+  const vc = vTheta(R_CORE, gamma), vw = vTheta(R_WALL, gamma);
+  rankSvg.innerHTML =
+    `<line x1="${L}" y1="${T+ph}" x2="${L+pw}" y2="${T+ph}" stroke="${COL.faint}" stroke-width="1"/>` +
+    `<line x1="${L}" y1="${T}" x2="${L}" y2="${T+ph}" stroke="${COL.faint}" stroke-width="1"/>` +
+    `<line x1="${X(R_CORE)}" y1="${T}" x2="${X(R_CORE)}" y2="${T+ph}" stroke="${COL.pet}" stroke-width="1" stroke-dasharray="4 4" opacity="0.7"/>` +
+    `<line x1="${X(R_WALL)}" y1="${T}" x2="${X(R_WALL)}" y2="${T+ph}" stroke="${COL.faint}" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>` +
+    `<path d="${dPath}" fill="none" stroke="${COL.pet}" stroke-width="3" stroke-linejoin="round"/>` +
+    `<circle cx="${X(R_CORE)}" cy="${Y(vc)}" r="5" fill="${COL.pet}"/>` +
+    `<text x="${X(R_CORE)+9}" y="${Y(vc)-10}" font-size="14" fill="${COL.smoke}">core r=${R_CORE} mm · forced inside, free outside</text>` +
+    `<text x="${L+pw}" y="${T+ph+34}" font-size="13" fill="${COL.faint}" text-anchor="end">chamber wall 45.5 mm</text>` +
+    `<text x="${X(R_CORE)}" y="${T+ph+34}" font-size="13" fill="${COL.faint}" text-anchor="middle">${R_CORE} mm</text>` +
+    `<text x="${L + pw*0.55}" y="${T+ph+34}" font-size="13" fill="${COL.faint}" text-anchor="middle">radius →</text>` +
+    `<text x="${L-8}" y="${T+10}" font-size="13" fill="${COL.faint}" text-anchor="end">vθ</text>` +
+    `<text x="${X(R_WALL)-8}" y="${Y(vw)-10}" font-size="13.5" fill="${COL.smoke}" text-anchor="end">enters at tan β</text>`;
+}
+$('vaneSlider').addEventListener('input', e => {
+  $('vaneVal').textContent = e.target.value;
+  drawRank(+e.target.value);
+});
+
+/* ---------- self-test ---------- */
+function selfTest(){
+  let n = 0, fail = 0;
+  const ok = (c, m) => { n++; if (!c){ fail++; console.warn('FAIL:', m); } };
+  ok(Math.abs(P_STACK - 0.618) < 0.02, 'stack draft ≈ 0.62 Pa');
+  ok(Math.abs(ram(3) - 5.4) < 0.01, 'ram at 3 m/s = 5.4 Pa');
+  const g = 2.48 * R_WALL;
+  ok(Math.abs(vTheta(R_CORE - 1e-9, g) - vTheta(R_CORE + 1e-9, g)) < 1e-6, 'Rankine continuity at core edge');
+  ok(Math.abs(vTheta(R_CORE, g) / vTheta(R_WALL, g) - R_WALL / R_CORE) < 1e-9, 'free-vortex spin-up = r_wall/r_core');
+  ok(Math.abs(12 * 10 * 41 / (Math.PI * R_WALL * R_WALL) - 0.756) < 0.005, 'slot/bore ratio 0.76 as built');
+  const p0 = { r: 20, th: 0.3, y: 50 }; const th0 = p0.th;
+  P[0].r = 20; P[0].th = 0.3; P[0].y = 50; step(1/60);
+  ok(P[0].th < th0, 'handedness: θ decreases — clockwise seen from above');
+  return { n, fail };
+}
+
+/* ---------- boot ---------- */
+drawRank(68);
+for (let i = 0; i < 420; i++) step(1/30);         // prewarm: the helix is standing at first paint
+draw();
+const st = selfTest();
+$('footTest').textContent = `Self-test at load: ${st.n} asserts, ${st.fail} failures.`;
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

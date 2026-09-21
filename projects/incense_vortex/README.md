@@ -17,7 +17,9 @@ Swirl direction: **clockwise viewed from above.**
 | File | Part | Print notes |
 |---|---|---|
 | `vortex_base.stl` | Slotted swirl drum, 176 × 176 × 57 mm | Upright as-is. PETG/ABS, 0.2 mm layers, 3 perimeters, ~15 % infill. No supports (slot roofs are 10 mm bridges; optionally add a dab of support under the mouthpiece tip). |
-| `vortex_top_collar.stl` | Exit nozzle cap, Ø106 × 28 mm | Flange down, as oriented. Overhangs ≤ 45°, no supports. |
+
+The tube exit runs **fully open** — an exit-nozzle collar was tried and removed
+after field testing: the constriction taxed the column more than it tightened it.
 
 **Tube:** the build is sized for **100 mm OD × 2 mm wall clear acrylic tube,
 15.5" (393.7 mm) long**. There is no printable-tube STL at this size — Ø100 ×
@@ -27,7 +29,7 @@ watching; acrylic wins anyway.
 
 ## Bill of materials
 
-- 1× printed base, 1× printed collar
+- 1× printed base
 - 100 mm OD × 2 mm wall clear acrylic tube, 393.7 mm (15.5")
 - 1× metal bottle cap or 2–3 layers of aluminum foil, ≤30 mm — sits in the
   pedestal recess as a heat shield under the cone (**required** — PETG softens
@@ -39,7 +41,7 @@ watching; acrylic wins anyway.
 1. Drop the metal cap / foil disc into the pedestal recess.
 2. Light the cone **with the tube removed**, place it on the disc, wait for a
    steady smoke ribbon.
-3. Lower the tube into the base groove; set the collar on top.
+3. Lower the tube into the base groove.
 4. The column spins up on its own within ~20 s as the tube warms. For a tighter
    helix, give short, *gentle* puffs into the side mouthpiece — it feeds a
    tangential slot, so breath converts directly to swirl.
@@ -52,8 +54,6 @@ watching; acrylic wins anyway.
   resistance. 60–72° is the useful band; too high starves the draft, too low
   gives a lazy column.
 - `tube_len`: taller tube = stronger stack draft = faster, more stable vortex.
-- `exit_r` (35 mm): smaller exit tightens the core at the outlet but adds
-  resistance. 31–42 mm reasonable.
 - `slot_w`, `slot_h`, `n_slots`: total slot area is ~0.76× the bore area;
   keep the ratio ≥ 0.6 or the chimney will choke.
 
@@ -71,7 +71,7 @@ watching; acrylic wins anyway.
 # Wind Edition (`incense_vortex_wind.scad`)
 
 Outdoor variant optimised to **catch the wind and use its power** — still zero
-moving parts. Wind is harvested at both ends of the tube, from any direction:
+moving parts. Wind is harvested at the base, from any direction:
 
 **Intake pinwheel (bottom).** Twelve tall guide fins radiate from the drum,
 each extending one tangential slot's guide wall outward — a fixed turbine
@@ -82,18 +82,14 @@ roughly **8× the stack-effect draft** of the 394 mm tube, so the vortex
 carries far more angular momentum. Leeward slots sit in separated low-pressure
 flow, so net circulation stays clockwise.
 
-**Venturi cowl (top).** A stacked-disc chimney-cowl: crosswind is squeezed
-through the converging gap between a 45° skirt and a flat hat, dropping static
-pressure right over the exit throat (Bernoulli) and sucking the column upward
-from any wind direction. The hat also blocks rain and downdrafts. The
-gap-perimeter area equals the throat bore area, so the cowl never chokes the
-chimney in calm air.
+**Open crown (top).** The tube exit runs fully open. A stacked-disc venturi
+cowl was tried on the crown and removed after field testing — it did not
+enhance the helix. With the hat gone there is no rain or downdraft shield:
+treat this as a fair-weather instrument.
 
 | File | Part | Print notes |
 |---|---|---|
 | `wind_base.stl` | Pinwheel drum + staked skirt, 242 × 242 × 63 mm | Upright, no supports. Three countersunk holes in the skirt take M4 screws or tent stakes — anchor it; a 450 mm tower in wind needs it. |
-| `wind_venturi_head.stl` | Venturi skirt + posts, Ø124 × 44 mm | As oriented (flange down). All overhangs ≤ 45°. |
-| `wind_venturi_hat.stl` | Hat disc, Ø140 × 10 mm | Flat side down. Press-fits onto the head's three posts (dab of CA glue optional). |
 
 Tube: same 100 mm interface — the same acrylic tube as the indoor version.
 

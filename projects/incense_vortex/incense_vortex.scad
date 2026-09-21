@@ -13,10 +13,13 @@
    Parts (set `part`):
      0 = assembly preview (tube ghosted)
      1 = base drum        (print upright, no supports needed*)
-     2 = top collar       (print as oriented, flange down)
      3 = printable tube   (reference only at this size: 394 mm
                            exceeds the 320 mm bed — use the acrylic)
    *mouthpiece boss: 3 mm of bridging, fine on any printer.
+
+   The tube exit runs fully OPEN — a top collar (exit nozzle) was
+   tried and removed after field testing: the constriction taxed
+   the column more than it tightened it.
 
    Swirl is CLOCKWISE viewed from above. Tube: 100 mm OD acrylic,
    2 mm wall, 15.5" (393.7 mm) long. PETG or ABS recommended.
@@ -46,9 +49,6 @@ ped_or     = 17;     // cone pedestal radius
 ped_wall   = 2.4;    // pedestal shell (hollow = heat break)
 recess_r   = 15;     // fits 30 mm metal cap / foil disc
 recess_d   = 2;
-
-/* [Top collar] */
-exit_r     = 35;     // nozzle exit radius (70 mm opening)
 
 /* [Printable tube] */
 ptube_wall = 1.6;
@@ -129,19 +129,6 @@ module pedestal() {
     }
 }
 
-/* ---------------- top collar ------------------ */
-module top_collar() {
-    lip = [ for (a = [0:15:180])
-            [36.25 + 1.25*cos(a), 27 + 1.25*sin(a)] ];
-    rotate_extrude()
-        polygon(concat(
-            [[47, 8], [50.4, 8], [50.4, 0], [53, 0], [53, 10],
-             [37.5, 27]],
-            lip,
-            [[35, 24], [46.6, 12.4], [47, 12.4]]
-        ));
-}
-
 /* ---------------- printable clear tube ------------------ */
 module ptube() {
     difference() {
@@ -155,10 +142,8 @@ module ptube() {
 module assembly() {
     base();
     %translate([0, 0, drum_h]) ptube();               // ghost tube
-    translate([0, 0, drum_h + tube_len - 8]) top_collar();
 }
 
 if (part == 0) assembly();
 if (part == 1) base();
-if (part == 2) top_collar();
 if (part == 3) ptube();
