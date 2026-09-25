@@ -59,6 +59,7 @@ works without setting `PYTHONPATH`.
 | [stellated_platonic_solids](projects/stellated_platonic_solids) | First stellation of each Platonic solid, at 150 mm. |
 | [multifunction_terrarium](projects/multifunction_terrarium) | Multifunction terrarium — brief and idea notes. |
 | [boerdijk_coxeter_tetrahelix](projects/boerdijk_coxeter_tetrahelix) | Boerdijk–Coxeter tetrahelix: plain, braided three-ply, ribbon and stellated variants. |
+| [volumetric_sound_forms](projects/volumetric_sound_forms) | Browser tool: mp3/wav → printable STL, as a spectral cylinder or as the cavity form (the clip's standing-wave pressure in a rigid vessel, lobes fused to the shell), plus the node/numpy/FEM harness that verifies the page. |
 
 ## Project timeline
 
@@ -76,6 +77,7 @@ First commit of each project's files (renames followed), oldest first:
 | 2026-08-13 | [bravais_crystal_lattices](projects/bravais_crystal_lattices), [faraday_instability_disc](projects/faraday_instability_disc) |
 | 2026-08-18 | [e8_torus_lattice](projects/e8_torus_lattice), [multifunction_terrarium](projects/multifunction_terrarium) |
 | 2026-08-20 | [stellated_platonic_solids](projects/stellated_platonic_solids) |
+| 2026-09-25 | [volumetric_sound_forms](projects/volumetric_sound_forms) |
 
 ## Web visualizers
 

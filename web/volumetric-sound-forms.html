@@ -1,0 +1,2906 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Volumetric Sound Forms — print what you hear</title>
+<meta name="description" content="Upload an mp3 or wav and print its form: its spectrogram raised on the wall of a cylinder, or the standing-wave pressure it sets ringing inside a vessel, the loud lobes fused to the shell. A watertight STL, computed in the browser; nothing is uploaded.">
+<link rel="canonical" href="https://promethean-theoria.netlify.app/volumetric-sound-forms.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="Volumetric Sound Forms — print what you hear">
+<meta property="og:description" content="Upload a sound and print it two ways: the spectrogram stood up as a cylinder, or the three-dimensional standing wave it makes inside a vessel. Watertight STL sized for a 320 mm printer, computed live in the browser.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/volumetric-sound-forms.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/volumetric-sound-forms.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+html, body { margin: 0; padding: 0; background: #0B0D14; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   TOKENS — the mineral-lattices palette: birefringence tints against the
+   dark field of the petrographic microscope. Dark by default, light by
+   preference, either forced with #theme=dark|light.
+   ═══════════════════════════════════════════════════════════════════ */
+:root{
+  --ground:      #0B0D14;
+  --ground-2:    #12151F;
+  --ground-3:    #191D2A;
+  --rule:        #2A3040;
+  --rule-soft:   #1E2331;
+
+  --ink:         #E9E5DA;
+  --ink-2:       #B4B3AC;
+  --muted:       #868DA1;
+  --faint:       #5A6175;
+
+  --fire:        #E2573B;
+  --earth:       #CBA52C;
+  --air:         #79C1DC;
+  --water:       #4E80CA;
+  --aether:      #AC7CD4;
+
+  --fire-dim:    #6B2A1E;
+  --earth-dim:   #62501A;
+  --air-dim:     #2F5A69;
+  --water-dim:   #263D63;
+  --aether-dim:  #503868;
+
+  --allow:       #6FBF9A;
+  --forbid:      #D8434F;
+
+  --accent:      var(--aether);
+  --paper-mix:   #000;
+
+  /* this page: the printed body and its bed */
+  --solid:       #CFC8B6;
+  --bed:         #3A4152;
+
+  --serif:  "Palatino Linotype", Palatino, "Iowan Old Style", "Book Antiqua",
+            "URW Palladio L", "Hoefler Text", Georgia, serif;
+  --label:  "Bahnschrift SemiCondensed", "Bahnschrift", "DIN Alternate",
+            "Franklin Gothic Medium", "Avenir Next Condensed",
+            "Roboto Condensed", Corbel, "Segoe UI", sans-serif;
+  --mono:   Consolas, "Cascadia Mono", "SF Mono", Menlo, "DejaVu Sans Mono", monospace;
+
+  --measure: 34.5rem;
+}
+
+@media (prefers-color-scheme: light){
+  :root{
+    --ground:    #E6E8E3; --ground-2:  #EFF0EC; --ground-3:  #F6F7F4;
+    --rule:      #BFC4BC; --rule-soft: #D5D9D1;
+    --ink:       #14181F; --ink-2:     #3A4048; --muted:     #5D6470; --faint:     #8B929C;
+    --fire:      #B33A22; --earth:     #8A6E0C; --air:       #2C7796; --water:     #27508F; --aether:    #6E3F9B;
+    --fire-dim:  #E9C4B9; --earth-dim: #DCD0A4; --air-dim:   #BCD8E2; --water-dim: #BBC8DE; --aether-dim:#D2C0E2;
+    --allow:     #2C7A56; --forbid:    #A81F2B; --paper-mix: #fff;
+    --solid:     #8B8FA0; --bed:       #AEB4C0;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B0D14; --ground-2:#12151F; --ground-3:#191D2A;
+  --rule:#2A3040; --rule-soft:#1E2331;
+  --ink:#E9E5DA; --ink-2:#B4B3AC; --muted:#868DA1; --faint:#5A6175;
+  --fire:#E2573B; --earth:#CBA52C; --air:#79C1DC; --water:#4E80CA; --aether:#AC7CD4;
+  --fire-dim:#6B2A1E; --earth-dim:#62501A; --air-dim:#2F5A69; --water-dim:#263D63; --aether-dim:#503868;
+  --allow:#6FBF9A; --forbid:#D8434F; --paper-mix:#000;
+  --solid:#CFC8B6; --bed:#3A4152;
+}
+:root[data-theme="light"]{
+  --ground:#E6E8E3; --ground-2:#EFF0EC; --ground-3:#F6F7F4;
+  --rule:#BFC4BC; --rule-soft:#D5D9D1;
+  --ink:#14181F; --ink-2:#3A4048; --muted:#5D6470; --faint:#8B929C;
+  --fire:#B33A22; --earth:#8A6E0C; --air:#2C7796; --water:#27508F; --aether:#6E3F9B;
+  --fire-dim:#E9C4B9; --earth-dim:#DCD0A4; --air-dim:#BCD8E2; --water-dim:#BBC8DE; --aether-dim:#D2C0E2;
+  --allow:#2C7A56; --forbid:#A81F2B; --paper-mix:#fff;
+  --solid:#8B8FA0; --bed:#AEB4C0;
+}
+
+/* ═══════════════════════════ BASE ═══════════════════════════ */
+*{ box-sizing:border-box; }
+.pg{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  padding-bottom:5rem; min-height:100vh;
+}
+.pg ::selection{ background:var(--aether); color:var(--ground); }
+.col{ max-width:var(--measure); margin:0 auto; padding:0 1.35rem; }
+.col--wide{ max-width:60rem; }
+
+/* ═══════════════════════════ TYPE ═══════════════════════════ */
+.eyebrow{
+  font-family:var(--label); text-transform:uppercase;
+  letter-spacing:0.2em; font-size:0.68rem; color:var(--muted); line-height:1.4;
+}
+.lede{ font-size:1.16rem; line-height:1.62; color:var(--ink-2); text-wrap:pretty; }
+.pg p{ text-wrap:pretty; margin:0; }
+.pg h1,.pg h2,.pg h3{ margin:0; text-wrap:balance; font-weight:400; }
+.h-act{ font-size:clamp(2rem,5.2vw,3.1rem); line-height:1.02; letter-spacing:-0.02em; }
+.h-sub{ font-size:clamp(1.3rem,2.6vw,1.62rem); line-height:1.2; letter-spacing:-0.012em; }
+.h-min{ font-family:var(--label); text-transform:uppercase; letter-spacing:0.15em; font-size:0.78rem; color:var(--ink); }
+.mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.pg em{ font-style:italic; }
+.pg strong{ font-weight:700; color:var(--ink); }
+.pg a{ color:var(--accent); text-decoration:none; border-bottom:1px solid var(--aether-dim); }
+.pg a:hover{ border-bottom-color:var(--accent); }
+.c-fire{ color:var(--fire); } .c-earth{ color:var(--earth); } .c-air{ color:var(--air); }
+.c-water{ color:var(--water); } .c-aether{ color:var(--aether); }
+.flow{ display:flex; flex-direction:column; gap:1.1rem; }
+.flow--tight{ gap:0.7rem; }
+.sect{ display:flex; flex-direction:column; gap:2.2rem; padding:4.5rem 0 0; }
+.pg ol{ margin:0; padding-left:1.3rem; display:flex; flex-direction:column; gap:0.6rem; }
+.pg ol li{ padding-left:0.2rem; }
+.pg ol li::marker{ font-family:var(--mono); color:var(--accent); font-size:0.8rem; }
+
+/* ═══════════════════════════ PLATE ═══════════════════════════ */
+.plate{
+  border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+  background:linear-gradient(to bottom, color-mix(in srgb, var(--ground-2) 92%, var(--paper-mix)), var(--ground));
+  display:flex; flex-direction:column; position:relative;
+}
+.plate.is-over::after{
+  content:"drop the sound file"; position:absolute; inset:0; z-index:5;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.2em; font-size:0.8rem;
+  color:var(--ink); background:color-mix(in srgb, var(--aether) 22%, transparent);
+  border:1px dashed var(--accent); pointer-events:none;
+}
+.plate__head{
+  display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap;
+  padding:0.7rem 1.1rem; border-bottom:1px solid var(--rule-soft);
+}
+.plate__no{ font-family:var(--mono); font-size:0.66rem; letter-spacing:0.12em; color:var(--accent); white-space:nowrap; }
+.plate__ttl{ font-family:var(--label); text-transform:uppercase; letter-spacing:0.17em; font-size:0.7rem; color:var(--ink-2); }
+.plate__note{ font-size:0.8rem; color:var(--faint); margin-left:auto; font-family:var(--mono); }
+.stage{ position:relative; width:100%; display:block; }
+.stage canvas{ display:block; width:100%; height:100%; touch-action:none; }
+.stage__hint{
+  position:absolute; right:0.7rem; top:0.55rem; pointer-events:none;
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.13em;
+  font-size:0.6rem; color:var(--faint); opacity:.75;
+}
+.stage__fail{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center;
+  padding:2rem; font-size:0.9rem; color:var(--muted); line-height:1.5;
+}
+.stage__fail[hidden]{ display:none; }
+.prog{ position:absolute; left:0; right:0; bottom:0; height:2px; background:transparent; pointer-events:none; }
+.prog i{ display:block; height:100%; width:0; background:var(--accent); transition:width .12s linear; }
+.prog.is-done i{ opacity:0; transition:opacity .6s ease .3s; }
+.cap{ padding:0.65rem 1.1rem 0.85rem; border-top:1px solid var(--rule-soft); font-size:0.87rem; line-height:1.55; color:var(--muted); }
+.cap b{ color:var(--ink-2); font-weight:400; font-family:var(--label); text-transform:uppercase; letter-spacing:0.12em; font-size:0.68rem; }
+
+/* ═══════════════════════ GONIOMETER BARS ═══════════════════════ */
+.gonio{
+  display:flex; flex-wrap:wrap; align-items:center; gap:0 1.25rem;
+  padding:0.45rem 1.1rem; border-top:1px solid var(--rule-soft);
+  background:color-mix(in srgb, var(--ground-3) 70%, transparent);
+}
+.gonio__grp{ display:flex; align-items:center; gap:0.5rem; min-height:2.1rem; }
+.gonio__grp[hidden], .gonio[hidden]{ display:none; }
+.gonio__lab{ font-family:var(--label); text-transform:uppercase; letter-spacing:0.15em; font-size:0.6rem; color:var(--faint); white-space:nowrap; }
+.gonio__row{ font-family:var(--mono); font-size:0.62rem; letter-spacing:0.14em; color:var(--accent); min-width:5.2rem; }
+.gonio__meta{ font-family:var(--mono); font-size:0.72rem; color:var(--muted); }
+.btn{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.11em;
+  font-size:0.66rem; padding:0.34rem 0.62rem; cursor:pointer;
+  background:transparent; color:var(--muted);
+  border:1px solid var(--rule); border-radius:0; line-height:1.2;
+  transition:color .18s, border-color .18s, background .18s;
+}
+.btn:hover{ color:var(--ink); border-color:var(--muted); }
+.btn.is-on{ color:var(--ground); background:var(--ink); border-color:var(--ink); }
+.btn:focus-visible{ outline:1px solid var(--accent); outline-offset:2px; }
+.btn--aether.is-on{ background:var(--aether); border-color:var(--aether); color:#0B0D14; }
+.btn--act{ color:var(--ink); border-color:var(--accent); }
+.btn--act:hover{ background:var(--aether-dim); }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; }
+.seg{ display:inline-flex; }
+.seg .btn + .btn{ margin-left:-1px; }
+.rng{ -webkit-appearance:none; appearance:none; background:transparent; width:clamp(5.5rem,11vw,8.5rem); height:1.4rem; cursor:pointer; }
+.rng::-webkit-slider-runnable-track{ height:1px; background:var(--rule); }
+.rng::-moz-range-track{ height:1px; background:var(--rule); }
+.rng::-webkit-slider-thumb{ -webkit-appearance:none; width:3px; height:0.95rem; margin-top:-0.47rem; background:var(--accent); border:0; border-radius:0; }
+.rng::-moz-range-thumb{ width:3px; height:0.95rem; background:var(--accent); border:0; border-radius:0; }
+.rng:focus-visible{ outline:1px solid var(--accent); outline-offset:3px; }
+.rdout{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:0.74rem; color:var(--ink); min-width:3.4rem; }
+input[type=file]{ position:absolute; width:1px; height:1px; opacity:0; overflow:hidden; }
+label.btn{ display:inline-block; }
+.est{ font-family:var(--mono); font-size:0.72rem; color:var(--muted); }
+.more{ border-top:1px solid var(--rule-soft); }
+.more > summary{
+  list-style:none; cursor:pointer; display:flex; align-items:baseline; gap:0.8rem; flex-wrap:wrap;
+  padding:0.55rem 1.1rem; font-family:var(--label); text-transform:uppercase; letter-spacing:0.15em;
+  font-size:0.62rem; color:var(--muted); background:color-mix(in srgb, var(--ground-3) 70%, transparent);
+}
+.more > summary::-webkit-details-marker{ display:none; }
+.more > summary::before{ content:"+"; font-family:var(--mono); color:var(--accent); width:0.7rem; }
+.more[open] > summary::before{ content:"\2212"; }
+.more > summary:hover{ color:var(--ink); }
+.more > summary:focus-visible{ outline:1px solid var(--accent); outline-offset:-2px; }
+.more__hint{ font-family:var(--mono); text-transform:none; letter-spacing:0.02em; font-size:0.68rem; color:var(--faint); }
+.est.is-warn{ color:var(--earth); } .est.is-bad{ color:var(--forbid); }
+
+/* ═══════════════════════ DATA CELLS ═══════════════════════ */
+.grid{ display:grid; gap:1px; background:var(--rule-soft); border-top:1px solid var(--rule-soft); }
+.grid--5{ grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr)); }
+.cell{ background:var(--ground); padding:0.7rem 0.95rem; display:flex; flex-direction:column; gap:0.2rem; }
+.cell__k{ font-family:var(--label); text-transform:uppercase; letter-spacing:0.14em; font-size:0.58rem; color:var(--faint); }
+.cell__v{ font-family:var(--mono); font-size:0.9rem; color:var(--ink); }
+.cell__n{ font-size:0.78rem; line-height:1.45; color:var(--muted); }
+.cell__v.is-ok{ color:var(--allow); } .cell__v.is-bad{ color:var(--forbid); } .cell__v.is-warn{ color:var(--earth); }
+
+/* marginalia, chips */
+.aside{ border-left:2px solid var(--rule); padding:0.1rem 0 0.1rem 1rem; font-size:0.92rem; line-height:1.62; color:var(--muted); display:flex; flex-direction:column; gap:0.55rem; }
+.aside--aether{ border-color:var(--aether); }
+.aside__tag{ font-family:var(--label); text-transform:uppercase; letter-spacing:0.16em; font-size:0.6rem; color:var(--ink-2); }
+.reg{ display:inline-flex; align-items:center; gap:0.35rem; font-family:var(--label); text-transform:uppercase; letter-spacing:0.13em; font-size:0.58rem; padding:0.14rem 0.42rem; border:1px solid; white-space:nowrap; vertical-align:middle; }
+.reg--proof{ color:var(--allow); border-color:var(--allow); }
+.reg--fact{  color:var(--air);   border-color:var(--air); }
+.reg--myth{  color:var(--aether);border-color:var(--aether); }
+.stars{ text-align:center; color:var(--faint); letter-spacing:1.2em; font-size:0.7rem; padding:0.4rem 0 0 1.2em; }
+.foot{ display:flex; flex-wrap:wrap; gap:0.5rem 1.5rem; align-items:baseline; padding-top:1.5rem; border-top:1px solid var(--rule-soft); font-size:0.86rem; }
+.foot .test{ font-family:var(--mono); font-size:0.7rem; color:var(--faint); margin-left:auto; }
+noscript .col{ padding-top:3rem; color:var(--forbid); }
+
+@media (max-width:760px){
+  .rng{ width:clamp(5rem,26vw,8rem); }
+  .plate__note{ margin-left:0; width:100%; }
+}
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="pg" id="pg">
+<noscript><div class="col"><p>This tool computes everything in your browser and needs JavaScript to decode the sound, analyse it and write the STL.</p></div></noscript>
+
+<!-- ══════════════════ PLATE 0 · THE SOLID ══════════════════ -->
+<header class="plate" id="p0" style="border-top:0">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;0</span>
+    <span class="plate__ttl" id="p0ttl">The sound as a solid · spectral cylinder</span>
+    <span class="plate__note" id="heroNote">100 Hz tone · 6.0 s</span>
+    <button class="btn" id="themeBtn" type="button" title="Cycle the colour theme">theme · auto</button>
+  </div>
+  <div class="stage" id="stg3d" style="height:min(64vh,560px)">
+    <canvas id="gl"></canvas>
+    <div class="stage__fail" id="fail" hidden>WebGL is not available here, so the 3D view is off. The unrolled surface below and the STL download still work.</div>
+    <span class="stage__hint">drag to orbit · wheel to zoom</span>
+    <div class="prog" id="prog"><i></i></div>
+  </div>
+
+  <div class="gonio">
+    <span class="gonio__row">SOUND</span>
+    <div class="gonio__grp">
+      <input type="file" id="file" accept="audio/*,.mp3,.wav,.ogg,.flac,.m4a">
+      <label class="btn btn--act" for="file">Upload mp3 / wav</label>
+      <button class="btn" id="demoBtn" type="button" title="a pure 100 Hz sine, six seconds long">100 Hz tone</button>
+    </div>
+    <div class="gonio__grp"><span class="gonio__meta" id="audioMeta">pure 100 Hz sine · 44.1 kHz · mono · 6.0 s</span></div>
+  </div>
+
+  <div class="gonio">
+    <span class="gonio__row">FORM</span>
+    <div class="gonio__grp">
+      <span class="gonio__lab">Form</span>
+      <span class="seg" id="formSeg"><button class="btn btn--aether" data-v="chart" type="button" title="the spectrogram stood up: time up the axis, pitch around it, loudness as relief">spectral cylinder</button><button class="btn btn--aether" data-v="cavity" type="button" title="the standing-wave pressure of the clip inside a rigid vessel, its loud lobes fused to the shell">cavity form</button></span>
+    </div>
+    <div class="gonio__grp" data-form="chart">
+      <span class="gonio__lab">Layout</span>
+      <span class="seg" id="layoutSeg"><button class="btn" data-v="mirror" type="button" title="frequency rises to the far side and falls back: no seam">mirror</button><button class="btn" data-v="plain" type="button" title="frequency once around: seam where high meets low">plain</button><button class="btn" data-v="transpose" type="button" title="time once around, frequency up the axis">time around</button></span>
+    </div>
+    <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Relief</span><input class="rng" id="depth" type="range" min="0" max="40" step="0.5" value="12" aria-label="Relief depth, mm"><span class="rdout" id="depthv">12 mm</span></div>
+    <div class="gonio__grp" data-form="chart">
+      <span class="gonio__lab">Body</span>
+      <span class="seg" id="hollowSeg"><button class="btn" data-v="0" type="button">solid</button><button class="btn" data-v="1" type="button">hollow</button></span>
+    </div>
+    <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Fill</span><input class="rng" id="cfill" type="range" min="1" max="50" step="1" value="15" aria-label="Share of the air made solid, percent"><span class="rdout" id="cfillv">15 %</span></div>
+    <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Tune</span><input class="rng" id="ctune" type="range" min="0" max="1000" step="1" value="198" aria-label="The frequency that lands on the first sideways mode"><span class="rdout" id="ctunev">60 Hz</span></div>
+    <div class="gonio__grp" data-form="cavity" hidden>
+      <span class="gonio__lab">Time</span>
+      <span class="seg" id="cmodeSeg"><button class="btn" data-v="clip" type="button" title="the whole clip, averaged over time">whole clip</button><button class="btn" data-v="moment" type="button" title="one moment of the clip: louder moments fill more">moment</button></span>
+    </div>
+    <div class="gonio__grp" id="ctGrp" hidden><span class="gonio__lab">at</span><input class="rng" id="ct" type="range" min="0" max="6" step="0.05" value="0" aria-label="Moment, seconds"><span class="rdout" id="ctv">0.00 s</span></div>
+    <div class="gonio__grp" data-form="cavity" hidden>
+      <span class="gonio__lab">Print as</span>
+      <span class="seg" id="chalfSeg"><button class="btn" data-v="0" type="button">whole</button><button class="btn" data-v="1" type="button" title="cut through the axis; both halves lie on their flat cut faces, the inside facing up">halves</button></span>
+    </div>
+  </div>
+
+  <div class="gonio">
+    <span class="gonio__row">EXPORT</span>
+    <div class="gonio__grp"><button class="btn btn--act" id="dlBtn" type="button">⬇ Download STL</button><span class="gonio__meta" id="dlName"></span></div>
+    <div class="gonio__grp"><span class="est" id="est">—</span></div>
+    <div class="gonio__grp" style="margin-left:auto">
+      <span class="gonio__lab">View</span>
+      <button class="btn" id="spinBtn" type="button">orbit</button>
+      <button class="btn" id="cutBtn" type="button" title="cut away the half facing you, to see inside">cut</button>
+      <button class="btn" id="resetBtn" type="button">reset</button>
+    </div>
+  </div>
+
+  <details class="more" id="moreCtl">
+    <summary>More controls <span class="more__hint" id="moreHint">trim · analysis · size · print</span></summary>
+    <div class="gonio">
+      <span class="gonio__row">TRIM</span>
+      <div class="gonio__grp">
+      <span class="gonio__lab">Trim from</span>
+      <input class="rng" id="t0" type="range" min="0" max="6" step="0.1" value="0" aria-label="Trim start, seconds">
+      <span class="rdout" id="t0v">0.0 s</span>
+    </div>
+      <div class="gonio__grp">
+      <span class="gonio__lab">to</span>
+      <input class="rng" id="t1" type="range" min="0" max="6" step="0.1" value="6" aria-label="Trim end, seconds">
+      <span class="rdout" id="t1v">end</span>
+      <button class="btn" id="wholeBtn" type="button">whole</button>
+    </div>
+    </div>
+    <div class="gonio">
+      <span class="gonio__row">ANALYSIS</span>
+      <div class="gonio__grp">
+      <span class="gonio__lab">Window</span>
+      <span class="seg" id="fftSeg"><button class="btn" data-v="1024" type="button">1024</button><button class="btn" data-v="2048" type="button">2048</button><button class="btn" data-v="4096" type="button">4096</button></span>
+    </div>
+      <div class="gonio__grp"><span class="gonio__lab">Time steps</span><input class="rng" id="nt" type="range" min="64" max="1024" step="32" value="256" aria-label="Time steps"><span class="rdout" id="ntv">256</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Bands</span><input class="rng" id="nf" type="range" min="32" max="512" step="16" value="96" aria-label="Frequency bands"><span class="rdout" id="nfv">96</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Low</span><input class="rng" id="fmin" type="range" min="0" max="1000" step="1" value="0" aria-label="Lowest frequency"><span class="rdout" id="fminv">40 Hz</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">High</span><input class="rng" id="fmax" type="range" min="0" max="1000" step="1" value="1000" aria-label="Highest frequency"><span class="rdout" id="fmaxv">12 kHz</span></div>
+      <div class="gonio__grp" data-form="chart">
+      <span class="gonio__lab">Scale</span>
+      <span class="seg" id="scaleSeg"><button class="btn" data-v="log" type="button">log</button><button class="btn" data-v="lin" type="button">linear</button></span>
+    </div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Floor</span><input class="rng" id="db" type="range" min="-90" max="-30" step="1" value="-60" aria-label="Dynamic floor, dB"><span class="rdout" id="dbv">−60 dB</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Gamma</span><input class="rng" id="gamma" type="range" min="0.3" max="3" step="0.05" value="1" aria-label="Gamma"><span class="rdout" id="gammav">1.00</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Contrast</span><input class="rng" id="contrast" type="range" min="0.5" max="3" step="0.05" value="1" aria-label="Contrast"><span class="rdout" id="contrastv">1.00</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Blur ↑</span><input class="rng" id="bz" type="range" min="0" max="8" step="1" value="1" aria-label="Blur along the axis"><span class="rdout" id="bzv">1</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Blur ↻</span><input class="rng" id="bt" type="range" min="0" max="8" step="1" value="1" aria-label="Blur around"><span class="rdout" id="btv">1</span></div>
+    </div>
+    <div class="gonio">
+      <span class="gonio__row">SIZE</span>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Radius</span><input class="rng" id="r0" type="range" min="15" max="120" step="1" value="45" aria-label="Base radius, mm"><span class="rdout" id="r0v">45 mm</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Height</span><input class="rng" id="h" type="range" min="40" max="300" step="1" value="160" aria-label="Height, mm"><span class="rdout" id="hv">160 mm</span></div>
+      <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Foot</span><input class="rng" id="foot" type="range" min="0" max="20" step="0.5" value="6" aria-label="Plain foot, mm"><span class="rdout" id="footv">6 mm</span></div>
+      <div class="gonio__grp" id="fadeGrp" data-form="chart" hidden><span class="gonio__lab">Seam fade</span><input class="rng" id="fade" type="range" min="0" max="0.1" step="0.005" value="0.02" aria-label="Seam fade"><span class="rdout" id="fadev">2%</span></div>
+      <div class="gonio__grp" id="wallGrp" data-form="chart"><span class="gonio__lab">Wall</span><input class="rng" id="wall" type="range" min="0.8" max="6" step="0.1" value="2" aria-label="Wall thickness, mm"><span class="rdout" id="wallv">2.0 mm</span></div>
+      <div class="gonio__grp" id="flrGrp" data-form="chart"><span class="gonio__lab">Floor</span><input class="rng" id="flr" type="range" min="1.2" max="10" step="0.1" value="3" aria-label="Floor thickness, mm"><span class="rdout" id="flrv">3.0 mm</span></div>
+      <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Base r</span><input class="rng" id="cr0" type="range" min="20" max="120" step="1" value="50" aria-label="Cavity radius at the floor, mm"><span class="rdout" id="cr0v">50 mm</span></div>
+      <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Top r</span><input class="rng" id="cr1" type="range" min="15" max="120" step="1" value="40" aria-label="Cavity radius at the top, mm"><span class="rdout" id="cr1v">40 mm</span></div>
+      <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Height</span><input class="rng" id="ch" type="range" min="40" max="260" step="1" value="120" aria-label="Cavity height, mm"><span class="rdout" id="chv">120 mm</span></div>
+      <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Wall</span><input class="rng" id="cwall" type="range" min="1" max="5" step="0.1" value="2" aria-label="Vessel wall, mm"><span class="rdout" id="cwallv">2.0 mm</span></div>
+      <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Floor</span><input class="rng" id="cflr" type="range" min="1.2" max="8" step="0.1" value="3" aria-label="Vessel floor, mm"><span class="rdout" id="cflrv">3.0 mm</span></div>
+      <div class="gonio__grp" data-form="cavity" hidden>
+      <span class="gonio__lab">Top</span>
+      <span class="seg" id="ctopSeg"><button class="btn" data-v="open" type="button" title="an open mouth: the pressure falls to zero there">open</button><button class="btn" data-v="closed" type="button" title="a rigid lid: the vessel is sealed, so print it as halves to see inside">closed</button></span>
+    </div>
+    </div>
+    <div class="gonio" data-form="cavity" hidden>
+      <span class="gonio__row">FIELD</span>
+      <div class="gonio__grp"><span class="gonio__lab">Q</span><input class="rng" id="cq" type="range" min="5" max="100" step="1" value="30" aria-label="Resonance quality"><span class="rdout" id="cqv">30</span></div>
+      <div class="gonio__grp"><span class="gonio__lab">Smooth</span><input class="rng" id="csmooth" type="range" min="0" max="4" step="0.1" value="1" aria-label="Smoothing, mm"><span class="rdout" id="csmoothv">1.0 mm</span></div>
+      <div class="gonio__grp"><span class="gonio__lab">Source</span><input class="rng" id="csrc" type="range" min="0.05" max="0.95" step="0.01" value="0.62" aria-label="Height of the speaker on the wall"><span class="rdout" id="csrcv">62 %</span></div>
+    </div>
+    <div class="gonio">
+      <span class="gonio__row">PRINT</span>
+      <div class="gonio__grp" data-form="chart">
+      <span class="gonio__lab">Overhang</span>
+      <span class="seg" id="slopeSeg"><button class="btn" data-v="0" type="button" title="the wall exactly as analysed">off</button><button class="btn" data-v="45" type="button" title="fill under every ledge so no face leans more than 45° from vertical: prints without supports">45°</button><button class="btn" data-v="55" type="button" title="no face past 55°">55°</button><button class="btn" data-v="65" type="button" title="no face past 65°">65°</button></span>
+    </div>
+      <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Voxel</span><input class="rng" id="cvox" type="range" min="0.6" max="3" step="0.1" value="1.2" aria-label="Voxel size, mm"><span class="rdout" id="cvoxv">1.2 mm</span></div>
+      <div class="gonio__grp">
+      <span class="gonio__lab">Fit bed</span>
+      <span class="seg" id="fitSeg"><button class="btn" data-v="1" type="button">on</button><button class="btn" data-v="0" type="button">off</button></span>
+      <input class="rng" id="bed" type="range" min="100" max="320" step="5" value="300" aria-label="Bed limit, mm"><span class="rdout" id="bedv">300 mm</span>
+    </div>
+      <div class="gonio__grp"><span class="gonio__lab">Show</span><button class="btn" id="gridBtn" type="button">bed grid</button></div>
+    </div>
+  </details>
+
+  <div class="grid grid--5" id="stats">
+    <div class="cell"><span class="cell__k">Triangles · STL</span><span class="cell__v" id="sTris">—</span><span class="cell__n" id="sTrisN">grid rows × columns</span></div>
+    <div class="cell"><span class="cell__k">Extents · mm</span><span class="cell__v" id="sExt">—</span><span class="cell__n" id="sExtN">x × y × z</span></div>
+    <div class="cell"><span class="cell__k">Bed 320 mm</span><span class="cell__v" id="sBed">—</span><span class="cell__n" id="sBedN">printer envelope</span></div>
+    <div class="cell"><span class="cell__k">Volume · PETG</span><span class="cell__v" id="sVol">—</span><span class="cell__n" id="sVolN">1.27 g/cm³, 100 % infill</span></div>
+    <div class="cell"><span class="cell__k">Manifold</span><span class="cell__v" id="sMan">—</span><span class="cell__n" id="sManN">edges · Euler · winding</span></div>
+    <div class="cell"><span class="cell__k">Analysis</span><span class="cell__v" id="sAna">—</span><span class="cell__n" id="sAnaN">window · hop · averaging</span></div>
+    <div class="cell"><span class="cell__k">Overhang</span><span class="cell__v" id="sOvr">—</span><span class="cell__n" id="sOvrN">steepest face leaning over the bed</span></div>
+  </div>
+
+  <div class="cap" id="cap0">
+    <b>Fig. 0</b> — Time climbs the axis; frequency wraps the circumference; loudness pushes the wall outward.
+    Every triangle is placed by rule on a closed grid, so the body is watertight by construction and the
+    manifold cell above is a check, not a repair. The file you download is binary STL in millimetres.
+  </div>
+</header>
+
+<!-- ══════════════════ PLATE I · THE UNROLLED SURFACE ══════════════════ -->
+<div class="plate" id="p1" style="border-top:0">
+  <div class="plate__head">
+    <span class="plate__no">PLATE&nbsp;I</span>
+    <span class="plate__ttl" id="p1ttl">The unrolled surface · what the wall is made of</span>
+    <span class="plate__note" id="specNote">mirror · 256 × 192</span>
+  </div>
+  <div class="stage" style="height:200px"><canvas id="spec"></canvas></div>
+  <div class="stage" style="height:56px; border-top:1px solid var(--rule-soft)"><canvas id="wave"></canvas></div>
+  <div class="cap" id="cap1">
+    <b>Fig. 1</b> — The cylinder wall, cut along one line and laid flat. Each row is one moment; each column
+    is one band; brightness is loudness above the floor. The strip beneath is the waveform, with the trimmed
+    region lit. Tune the floor, gamma and blur under <em>More controls</em> until the picture reads; then the solid will too.
+  </div>
+</div>
+
+<!-- ══════════════════ PROSE ══════════════════ -->
+<section class="col sect" style="padding-top:3.2rem">
+  <div class="flow">
+    <p class="eyebrow">A tool in two plates · acoustics &amp; the printable solid</p>
+    <h1 class="h-act">Volumetric<br>Sound Forms</h1>
+    <p class="lede">
+      Give the page a recording and it listens the way a spectrogram does: in short overlapping windows,
+      each sorted into bands from low to high. Then it stands that picture up. Time runs up a column,
+      pitch runs around it, and the loudness of every band raises a ridge on the wall. What comes out is a
+      solid you can hold, sized for a 320 mm printer, watertight by construction.
+    </p>
+    <p>
+      That is one reading of a sound: a chart made solid. The page offers a second, closer to what sound is. Inside a
+      vessel a frequency is not a stripe but a <em>standing wave</em>, pressure that swells in lobes and falls away at
+      nodal surfaces where the air hardly moves, its shape fixed by the frequency and the vessel. Choose
+      <em>cavity form</em> and the clip is played, in the arithmetic, by a small speaker in the wall of a cone-shaped
+      vessel; the loudest air becomes solid, fused to the vessel's shell.
+    </p>
+    <p>
+      Nothing is uploaded anywhere. The decoding, the transform, the mesh and the STL are all computed in this
+      tab, and the sound never leaves it. A six-second pure 100 Hz tone is loaded at the start so the plates have
+      something to show; replace it with your own file with the button above, or drop the file onto the plate.
+    </p>
+  </div>
+</section>
+
+<section class="col sect" id="s1">
+  <div class="flow">
+    <p class="eyebrow">How it is made</p>
+    <h2 class="h-sub">From pressure to polygon in six moves</h2>
+    <ol>
+      <li><span class="reg reg--fact">decoded</span> The browser's own codec turns the mp3 or wav into samples at 44.1 kHz; stereo is folded to mono.</li>
+      <li><span class="reg reg--fact">transformed</span> The trimmed clip is split into as many moments as the <em>time steps</em> control asks for. Each moment is a Hann-windowed frame of 1024–4096 samples, sent through a fast Fourier transform. When the moments are far apart, several frames are averaged per moment so nothing between them is skipped.</li>
+      <li><span class="reg reg--fact">banded</span> The bins are gathered into bands, spaced logarithmically (every octave the same width, as the ear hears) or linearly. Power in each band is summed, converted to decibels against the loudest band in the clip, and clipped at the <em>floor</em>. Gamma and contrast shape the curve; blur smooths along the axis and around the wall.</li>
+      <li><span class="reg reg--proof">laid out</span> The band table becomes the wall. <em>Mirror</em> runs the bands up one side and back down the other so the surface meets itself without a seam. <em>Plain</em> runs them once around and accepts a seam where the highest band meets the lowest. <em>Time around</em> turns the table: the whole clip wraps the circumference, low bands at the foot, high at the rim.</li>
+      <li><span class="reg reg--proof">raised</span> Each cell of the wall sits at radius <span class="mono">R₀ + relief × loudness</span>. Rows are joined to their neighbours by two triangles each, the ends are closed by fans from the axis, and because every edge is shared by exactly two triangles the body is closed and orientable before any check is run. Hollow bodies add an inner wall, offset inward by the wall thickness after a minimum filter so the shell never thins on a slope, closed by a floor and a flat rim.</li>
+      <li><span class="reg reg--fact">written</span> The triangles are streamed into binary STL, 50 bytes each, in millimetres, and the manifold cell reports the edge count, the Euler characteristic and the signed volume the slicer will see.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="col sect" id="s2">
+  <div class="flow">
+    <p class="eyebrow">The cavity form</p>
+    <h2 class="h-sub">The shape of the air in a ringing vessel</h2>
+    <p>
+      A rigid vessel has its own ways of ringing: its modes. Across any level slice each mode is a Bessel pattern,
+      <span class="mono">J<sub>m</sub>(κρ) cos mθ</span>, with <span class="mono">m</span> nodal lines through the
+      axis and rings of nodes around it, the pressure always at a maximum against the rigid wall. Up the height each
+      mode is a standing wave between the floor, which is rigid, and the top: rigid under a lid, and at an open mouth a
+      plane where the pressure falls to zero. For a cone the slice pattern is carried up the height by the
+      slowly-varying-duct equation <span class="mono">−(a²Z′)′ + κ²Z = k²a²Z</span> (Webster's horn equation when
+      <span class="mono">κ = 0</span>), solved in finite volumes for every mode with <span class="mono">k·a₀ ≤ 22</span>:
+      some seven hundred of them for the default vessel.
+    </p>
+    <p>
+      The clip drives them as a loudspeaker in the wall would. Each mode answers the sound's power near its own
+      frequency through a resonance of quality <em>Q</em>, in proportion to how strongly the speaker touches it; a mode's
+      answer to a given push weakens as the square of its frequency, so its share of the energy falls as the fourth
+      power, and the low modes lead. The time-averaged pressure adds
+      the modes' energies; the cross terms between modes are dropped, which is exact where their resonances do not
+      overlap and a fair average where they do.
+    </p>
+    <p>
+      <em>Tune</em> sets the scale. The frequency you choose lands on the first sideways mode of the widest cross-section,
+      and the vessel then holds the band from its lowest mode up to about twelve times that frequency, some three and a
+      half octaves; Plate I shows the band, with every mode ticked at its frequency. A real vessel 50 mm in radius rings
+      its first sideways mode near 2 kHz, so tuning is the plain admission that the print is a scale model of a vessel
+      large enough to sing your sound.
+    </p>
+    <p>
+      The air has no surface, so the page chooses one: <em>fill</em> makes the loudest share of the cavity's air solid,
+      15 % by default. In <em>moment</em> mode the fill follows how hard that instant sets the vessel ringing against the
+      clip's average, so a hush leaves the vessel nearly empty and a strike fills it. The lobes and a shell of the vessel
+      are one implicit function, the larger of the two at every voxel, meshed by marching tetrahedra: closed and
+      consistently wound by construction. A lobe that touches neither wall nor floor could not print; it is removed and
+      counted. A pocket of quiet air closed in by loud lobes is kept as a sealed void and reported. The manifold cell
+      gives the genus, and a lobe that bridges the cavity shows there as a handle.
+    </p>
+    <div class="aside aside--aether">
+      <span class="aside__tag">checked from outside</span>
+      <p>
+        The slowly-varying-duct equation is exact for a straight cylinder and an approximation for a cone. The repository
+        solves the same frustum again by finite elements, without the approximation: the two agree within
+        <span class="mono">0.8 %</span> in frequency for the default wall, which leans 4.8° from vertical, within
+        <span class="mono">1.2 %</span> at 9.5°, and within about <span class="mono">2 %</span> at 14°; the Analysis cell
+        flags anything steeper. A numpy re-implementation rebuilds the modes with LAPACK and the field with exact Bessel
+        functions, and VTK's marching cubes rebuilds the surface: they agree with this page to a part in a million in the
+        field and a fraction of a percent in volume.
+      </p>
+      <p>
+        <span class="reg reg--fact">physics</span> the modes, their shapes and frequencies, the resonance.
+        <span class="reg reg--myth">model</span> rigid walls, a point speaker, the dropped cross terms, the open mouth as a
+        plane of zero pressure. <span class="reg reg--proof">choice</span> the threshold that says where the print is loud.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="col sect">
+  <div class="flow">
+    <p class="eyebrow">Printing notes</p>
+    <h2 class="h-sub">What the printer will and will not forgive</h2>
+    <p>
+      A loud transient next to a quiet one is a step in the wall. If the relief is deep and the time steps are
+      many, that step can lean past 45° and the printer will droop into it. The cures are the ones on the plate:
+      lower the relief, or under <em>More controls</em> raise the blur along the axis, use fewer time steps, or set <em>Overhang</em> to 45°, which fills
+      a cone under every ledge so that no face leans further, at the cost of a little plastic; the Overhang cell reports
+      the steepest face either way. The plain foot gives the slicer a flat first layer to grip.
+    </p>
+    <p>
+      A solid body prints as a solid, or as a spiral vase if your slicer offers that mode: it keeps only the outer
+      wall and climbs it in one continuous line, which suits this shape well. Choose <em>hollow</em> instead when you
+      want a real vessel with a floor and a chosen wall, and keep the wall at or above two nozzle widths.
+    </p>
+    <p>
+      With <em>fit bed</em> on, a body that would overhang the limit is scaled down uniformly and the scale is
+      reported in the bed cell; wall and floor scale with it. Turn it off to print the numbers exactly as set and
+      read the extents yourself. Files above a million triangles are flagged and above two million are refused,
+      not because the geometry is wrong but because no slicer thanks you for a hundred-megabyte STL.
+    </p>
+    <p>
+      The cavity form is a vessel with lobes on its inner walls, and lobes are overhangs. Whole, it prints upright with
+      supports from the floor; tree supports reach inside. As <em>halves</em>, the vessel is cut through its axis and both
+      halves lie on their flat cut faces, which gives the first layer the whole cut to grip, with supports under the vault;
+      flip them in the slicer if you would rather print the inside facing up. A closed lid seals the cavity inside the
+      body, so print a closed vessel as halves to see anything. Finer voxels give smoother lobes and larger files; the wall
+      is never thinner than one and a half voxels, and the voxel size rises by itself past four million voxels.
+    </p>
+  </div>
+</section>
+
+<section class="col sect">
+  <div class="flow">
+    <p class="eyebrow">Where the seam falls</p>
+    <div class="aside aside--aether">
+      <span class="aside__tag">measured, then chosen</span>
+      <p>
+        The spectrogram is measurement: the same one an engineer would read, computed the same way.
+        The cylinder is a choice. Time need not climb; pitch need not turn; the mapping is a convention this page
+        adopts because it makes a vessel, and vessels are pleasant to print and hold. Nothing here claims that
+        <em>this</em> is the shape of the sound. It is one honest projection of it, and the plate says which.
+      </p>
+      <p>
+        <span class="reg reg--myth">tradition</span> The Hermetic reading arrives on its own: the column as time
+        rising, the round as the recurring, the loud moment cast permanently outward from the axis it came from.
+        Take it or leave it. The triangles are the same either way.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="col sect" style="padding-top:3rem">
+  <p class="stars">✧ ✧ ✧</p>
+  <div class="flow flow--tight">
+    <p class="eyebrow">Colophon</p>
+    <p style="font-size:0.86rem;color:var(--muted);line-height:1.6">
+      Zero dependencies, by house rule: the Fourier transform, the mesh builder, the manifold check, the STL writer,
+      the Bessel functions, the mode solver, marching tetrahedra and the 3D view are hand-written in this one file. A numpy re-implementation in the repository regenerates
+      the same demo and compares fields and vertices against this page's output; scipy, LAPACK, VTK and a scikit-fem
+      finite-element model check the cavity form from outside. Colour follows the mineral-lattices
+      plates, so a form you tune here sits beside them without argument.
+    </p>
+  </div>
+  <div class="foot">
+    <a href="index.html">← Promethean Theoria</a>
+    <span class="test" id="footTest"></span>
+  </div>
+</section>
+
+</div><!-- /pg -->
+
+<script>
+/* @pure-begin */
+/* ════════════════════════════════════════════════════════════════════
+   VSF — the DOM-free core. Everything between the @pure markers runs
+   identically in the page, in the inline worker and under node, so the
+   STL a visitor downloads is the STL the repository's tests validated.
+   No window, no document, no performance: plain typed arrays only.
+   ════════════════════════════════════════════════════════════════════ */
+const VSF = (() => {
+'use strict';
+const TAU = Math.PI * 2;
+const now = () => (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+
+function defaults(){
+  return {
+    layout: 'mirror', fft: 2048, nt: 256, nf: 96, fmin: 40, fmax: 12000, scale: 'log',
+    db: -60, gamma: 1, contrast: 1, bz: 1, bt: 1,
+    r0: 45, depth: 12, h: 160, foot: 6, fade: 0.02, hollow: 0, wall: 2, flr: 3,
+    fit: 1, bed: 300, t0: 0, t1: 0, slope: 0,
+    // the cavity form
+    form: 'chart', cr0: 50, cr1: 40, ch: 120, cwall: 2, cflr: 3, ctop: 'open', ctune: 60, cq: 30,
+    cfill: 15, csmooth: 1, cvox: 1.2, csrc: 0.62, cmode: 'clip', ct: 0, chalf: 0,
+  };
+}
+
+/* ─── radix-2 Cooley–Tukey, in place, complex input ─── */
+function fft(re, im){
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++){
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j |= bit;
+    if (i < j){ const tr = re[i]; re[i] = re[j]; re[j] = tr; const ti = im[i]; im[i] = im[j]; im[j] = ti; }
+  }
+  for (let len = 2; len <= n; len <<= 1){
+    const ang = -TAU / len, wr = Math.cos(ang), wi = Math.sin(ang);
+    for (let s = 0; s < n; s += len){
+      let cr = 1, ci = 0;
+      for (let k = 0; k < (len >> 1); k++){
+        const i = s + k, j = i + (len >> 1);
+        const tr = re[j] * cr - im[j] * ci, ti = re[j] * ci + im[j] * cr;
+        re[j] = re[i] - tr; im[j] = im[i] - ti; re[i] += tr; im[i] += ti;
+        const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t;
+      }
+    }
+  }
+}
+const HANN = new Map();
+function hann(N){
+  let w = HANN.get(N);
+  if (w) return w;
+  w = new Float32Array(N);
+  for (let n = 0; n < N; n++) w[n] = 0.5 - 0.5 * Math.cos(TAU * n / N);   // periodic Hann
+  HANN.set(N, w);
+  return w;
+}
+
+/* ─── RIFF/WAVE reader: PCM 8/16/24/32 and float 32/64, any channel count ─── */
+function parseWav(ab){
+  const dv = new DataView(ab);
+  const tag = o => String.fromCharCode(dv.getUint8(o), dv.getUint8(o + 1), dv.getUint8(o + 2), dv.getUint8(o + 3));
+  if (ab.byteLength < 12 || tag(0) !== 'RIFF' || tag(8) !== 'WAVE') throw new Error('not a RIFF/WAVE file');
+  let o = 12, fmt = null, data = null;
+  while (o + 8 <= ab.byteLength){
+    const id = tag(o), size = dv.getUint32(o + 4, true), body = o + 8;
+    if (id === 'fmt ' && body + 16 <= ab.byteLength){
+      let code = dv.getUint16(body, true);
+      const ch = dv.getUint16(body + 2, true), sr = dv.getUint32(body + 4, true), bits = dv.getUint16(body + 14, true);
+      if (code === 0xFFFE && size >= 26) code = dv.getUint16(body + 24, true);
+      fmt = { code, ch, sr, bits };
+    } else if (id === 'data'){
+      data = { off: body, size: Math.min(size, ab.byteLength - body) };
+    }
+    o = body + size + (size & 1);
+  }
+  if (!fmt || !data) throw new Error('WAV is missing its fmt or data chunk');
+  const { code, ch, sr, bits } = fmt;
+  if (!ch || !sr) throw new Error('WAV header is malformed');
+  const bps = bits >> 3, frames = Math.floor(data.size / (bps * ch));
+  const out = new Float32Array(frames), inv = 1 / ch;
+  let p = data.off;
+  for (let i = 0; i < frames; i++){
+    let acc = 0;
+    for (let c = 0; c < ch; c++){
+      let v;
+      if (code === 3) v = bits === 64 ? dv.getFloat64(p, true) : dv.getFloat32(p, true);
+      else if (bits === 8) v = (dv.getUint8(p) - 128) / 128;
+      else if (bits === 16) v = dv.getInt16(p, true) / 32768;
+      else if (bits === 24) v = (dv.getUint8(p) | (dv.getUint8(p + 1) << 8) | (dv.getInt8(p + 2) << 16)) / 8388608;
+      else if (bits === 32) v = dv.getInt32(p, true) / 2147483648;
+      else throw new Error('unsupported WAV bit depth ' + bits);
+      acc += v; p += bps;
+    }
+    out[i] = acc * inv;
+  }
+  return { sr, channels: ch, samples: out };
+}
+
+/* ─── the demo tone: a pure 100 Hz sine, with 20 ms raised-cosine fades so its ends do not click;
+   deterministic and reproducible in numpy ─── */
+const DEMO_HZ = 100;
+function synthDemo(sr, seconds){
+  const n = Math.floor(sr * seconds), out = new Float32Array(n), nf = Math.min(Math.floor(0.02 * sr), n >> 1);
+  for (let i = 0; i < n; i++){
+    let g = 0.5;
+    if (i < nf) g *= 0.5 - 0.5 * Math.cos(Math.PI * i / nf);
+    else if (i >= n - nf) g *= 0.5 - 0.5 * Math.cos(Math.PI * (n - 1 - i) / nf);
+    out[i] = g * Math.sin(TAU * DEMO_HZ * i / sr);
+  }
+  return out;
+}
+
+/* ─── waveform overview, RMS rows, trim span ─── */
+function peaks(samples, nB){
+  const out = new Float32Array(2 * nB), len = samples.length;
+  for (let b = 0; b < nB; b++){
+    const lo = Math.floor(b * len / nB), hi = Math.max(lo + 1, Math.floor((b + 1) * len / nB));
+    let mn = Infinity, mx = -Infinity;
+    for (let i = lo; i < hi && i < len; i++){ const v = samples[i]; if (v < mn) mn = v; if (v > mx) mx = v; }
+    out[2 * b] = mn === Infinity ? 0 : mn; out[2 * b + 1] = mx === -Infinity ? 0 : mx;
+  }
+  return out;
+}
+function span(len, sr, t0, t1){
+  let s0 = Math.floor(Math.max(0, t0 || 0) * sr);
+  let s1 = (t1 && t1 > 0) ? Math.floor(t1 * sr) : len;
+  s1 = Math.min(len, Math.max(s1, 0));
+  s0 = Math.min(s0, Math.max(0, s1 - 2));
+  if (s1 - s0 < 2){ s0 = 0; s1 = len; }
+  return { s0, s1 };
+}
+function effectiveRows(len, sr, P){
+  const { s0, s1 } = span(len, sr, P.t0, P.t1);
+  return Math.max(2, Math.min(P.nt | 0, Math.floor((s1 - s0) / 16)));
+}
+function rmsRows(samples, sr, t0, t1, nT){
+  const { s0, s1 } = span(samples.length, sr, t0, t1);
+  const hop = (s1 - s0) / nT, env = new Float32Array(nT);
+  let mx = 0;
+  for (let i = 0; i < nT; i++){
+    const a = Math.floor(s0 + i * hop), b = Math.max(a + 1, Math.floor(s0 + (i + 1) * hop));
+    let acc = 0;
+    for (let s = a; s < b; s++) acc += samples[s] * samples[s];
+    env[i] = Math.sqrt(acc / (b - a));
+    if (env[i] > mx) mx = env[i];
+  }
+  if (mx > 0) for (let i = 0; i < nT; i++) env[i] /= mx;
+  return env;
+}
+
+/* ─── STFT rows [r0, r1) into spec (nT × nBins, power) ─── */
+function stftRows(samples, sr, opts, r0, r1, spec){
+  const N = opts.N | 0, nT = opts.nT | 0, nBins = (N >> 1) + 1, len = samples.length;
+  const { s0, s1 } = span(len, sr, opts.t0, opts.t1);
+  const hop = (s1 - s0) / nT;
+  const K = hop <= N ? 1 : Math.min(8, Math.ceil(hop / N));
+  const w = hann(N), re = new Float64Array(N), im = new Float64Array(N), half = N >> 1, invK = 1 / K;
+  for (let i = r0; i < r1; i++){
+    const row = i * nBins;
+    for (let b = 0; b < nBins; b++) spec[row + b] = 0;
+    const c0 = s0 + (i + 0.5) * hop;
+    for (let k = 0; k < K; k++){
+      const c = c0 + (k - (K - 1) / 2) * hop / K, start = Math.floor(c - half + 0.5);
+      for (let n = 0; n < N; n++){ const s = start + n; re[n] = (s >= 0 && s < len) ? samples[s] * w[n] : 0; im[n] = 0; }
+      fft(re, im);
+      for (let b = 0; b < nBins; b++) spec[row + b] += (re[b] * re[b] + im[b] * im[b]) * invK;
+    }
+  }
+  return { hop, K, s0, s1 };
+}
+
+/* ─── band edges and the bin → band map (with gap interpolation) ─── */
+function bandEdges(fmin, fmax, nF, scale){
+  const e = new Float64Array(nF + 1);
+  for (let k = 0; k <= nF; k++) e[k] = scale === 'lin' ? fmin + (fmax - fmin) * k / nF : fmin * Math.pow(fmax / fmin, k / nF);
+  return e;
+}
+function bandMap(edges, sr, N){
+  const nBins = (N >> 1) + 1, nF = edges.length - 1;
+  const binToBand = new Int32Array(nBins).fill(-1), count = new Int32Array(nF);
+  let k = 0;
+  for (let b = 0; b < nBins; b++){
+    const f = b * sr / N;
+    if (f < edges[0]) continue;
+    while (k < nF && f >= edges[k + 1]) k++;
+    if (k >= nF) break;
+    binToBand[b] = k; count[k]++;
+  }
+  const lo = new Int32Array(nF), hi = new Int32Array(nF), w = new Float32Array(nF);
+  let prev = -1;
+  for (let i = 0; i < nF; i++){ if (count[i] > 0) prev = i; lo[i] = prev; }
+  let next = -1;
+  for (let i = nF - 1; i >= 0; i--){ if (count[i] > 0) next = i; hi[i] = next; }
+  for (let i = 0; i < nF; i++){
+    if (count[i] > 0){ lo[i] = hi[i] = i; w[i] = 0; continue; }
+    if (lo[i] < 0) lo[i] = hi[i];
+    if (hi[i] < 0) hi[i] = lo[i];
+    w[i] = hi[i] === lo[i] ? 0 : (i - lo[i]) / (hi[i] - lo[i]);
+  }
+  return { binToBand, count, lo, hi, w, nF, nBins, ok: lo.every(v => v >= 0) };
+}
+function binBands(spec, nT, nBins, map, out){
+  const nF = map.nF, power = (out && out.length === nT * nF) ? out : new Float32Array(nT * nF);
+  const b2b = map.binToBand;
+  for (let i = 0; i < nT; i++){
+    const row = i * nBins, prow = i * nF;
+    for (let k = 0; k < nF; k++) power[prow + k] = 0;
+    for (let b = 0; b < nBins; b++){ const k = b2b[b]; if (k >= 0) power[prow + k] += spec[row + b]; }
+    for (let k = 0; k < nF; k++){
+      if (map.count[k] > 0) continue;
+      const lo = map.lo[k], hi = map.hi[k];
+      if (lo < 0) continue;
+      power[prow + k] = power[prow + lo] * (1 - map.w[k]) + power[prow + hi] * map.w[k];
+    }
+  }
+  return power;
+}
+function toField(power, nT, nF, floorDb, gamma, contrast, out){
+  const n = nT * nF, field = (out && out.length === n) ? out : new Float32Array(n);
+  let pmax = 0;
+  for (let i = 0; i < n; i++) if (power[i] > pmax) pmax = power[i];
+  if (!(pmax > 0)){ field.fill(0); return field; }
+  const inv = 1 / (-floorDb), ipm = 1 / pmax;
+  for (let i = 0; i < n; i++){
+    const db = 10 * Math.log10((power[i] + 1e-20) * ipm);
+    let f = (db - floorDb) * inv;
+    f = f < 0 ? 0 : f > 1 ? 1 : f;
+    f = Math.pow(f, gamma);
+    f = 0.5 + (f - 0.5) * contrast;
+    field[i] = f < 0 ? 0 : f > 1 ? 1 : f;
+  }
+  return field;
+}
+
+/* ─── field (nT × nF) → wall surface S (nR × nC), θ along columns ─── */
+function layoutSurface(field, nT, nF, layout, fade){
+  let nR, nC, S;
+  if (layout === 'transpose'){
+    nR = nF; nC = nT; S = new Float32Array(nR * nC);
+    for (let i = 0; i < nF; i++) for (let j = 0; j < nT; j++) S[i * nC + j] = field[j * nF + i];
+    const nf = Math.floor((fade || 0) * nC + 0.5);
+    if (nf > 0) for (let j = 0; j < nf && j < nC - 1 - j; j++){
+      const g = 0.5 - 0.5 * Math.cos(Math.PI * (j + 0.5) / nf);
+      for (let i = 0; i < nR; i++){ S[i * nC + j] *= g; S[i * nC + (nC - 1 - j)] *= g; }
+    }
+  } else if (layout === 'plain'){
+    nR = nT; nC = nF; S = Float32Array.from(field);
+  } else {
+    nR = nT; nC = 2 * nF; S = new Float32Array(nR * nC);
+    for (let i = 0; i < nR; i++){
+      const frow = i * nF, srow = i * nC;
+      for (let j = 0; j < nC; j++) S[srow + j] = j < nF ? field[frow + j] : field[frow + (nC - 1 - j)];
+    }
+  }
+  return { S, nR, nC };
+}
+function blurSurface(S, nR, nC, rz, rt, passes){
+  rz = Math.max(0, Math.round(rz)); rt = Math.max(0, Math.min(Math.round(rt), (nC - 1) >> 1)); passes = passes || 2;
+  if (!rz && !rt) return S;
+  const tmp = new Float32Array(Math.max(nR, nC));
+  for (let p = 0; p < passes; p++){
+    if (rt > 0){
+      const inv = 1 / (2 * rt + 1);
+      for (let i = 0; i < nR; i++){
+        const row = i * nC;
+        for (let j = 0; j < nC; j++) tmp[j] = S[row + j];
+        for (let j = 0; j < nC; j++){
+          let acc = 0;
+          for (let d = -rt; d <= rt; d++){ let jj = (j + d) % nC; if (jj < 0) jj += nC; acc += tmp[jj]; }
+          S[row + j] = acc * inv;
+        }
+      }
+    }
+    if (rz > 0){
+      const inv = 1 / (2 * rz + 1);
+      for (let j = 0; j < nC; j++){
+        for (let i = 0; i < nR; i++) tmp[i] = S[i * nC + j];
+        for (let i = 0; i < nR; i++){
+          let acc = 0;
+          for (let d = -rz; d <= rz; d++){ let ii = i + d; if (ii < 0) ii = 0; else if (ii >= nR) ii = nR - 1; acc += tmp[ii]; }
+          S[i * nC + j] = acc * inv;
+        }
+      }
+    }
+  }
+  return S;
+}
+function erodeSurface(S, nR, nC, rz, rt){
+  // radii round UP: a window one cell short lets the inner wall creep closer than the wall thickness
+  rz = Math.max(0, Math.ceil(rz - 1e-9)); rt = Math.max(0, Math.min(Math.ceil(rt - 1e-9), (nC - 1) >> 1));
+  if (!rz && !rt) return S;
+  const tmp = new Float32Array(Math.max(nR, nC));
+  if (rt > 0) for (let i = 0; i < nR; i++){
+    const row = i * nC;
+    for (let j = 0; j < nC; j++) tmp[j] = S[row + j];
+    for (let j = 0; j < nC; j++){
+      let m = Infinity;
+      for (let d = -rt; d <= rt; d++){ let jj = (j + d) % nC; if (jj < 0) jj += nC; if (tmp[jj] < m) m = tmp[jj]; }
+      S[row + j] = m;
+    }
+  }
+  if (rz > 0) for (let j = 0; j < nC; j++){
+    for (let i = 0; i < nR; i++) tmp[i] = S[i * nC + j];
+    for (let i = 0; i < nR; i++){
+      let m = Infinity;
+      for (let d = -rz; d <= rz; d++){ let ii = i + d; if (ii < 0) ii = 0; else if (ii >= nR) ii = nR - 1; if (tmp[ii] < m) m = tmp[ii]; }
+      S[i * nC + j] = m;
+    }
+  }
+  return S;
+}
+function padFoot(S, nR, nC, nFoot){
+  if (nFoot <= 0) return { S, nR };
+  const out = new Float32Array((nR + nFoot) * nC);
+  out.set(S, nFoot * nC);
+  return { S: out, nR: nR + nFoot };
+}
+
+/* ─── the closed solid: sheets, fans and annuli on ring grids ───
+   v(i,j) = base + i·nC + j, θ_j = 2πj/nC, z rising with i.
+   Outward sheet: (a,b,c),(a,c,d) with a=v(i,j) b=v(i,j+1) c=v(i+1,j+1) d=v(i+1,j).
+   Fan up: (apex, r_j, r_j+1) → +z. Annulus up: (o_j, o_j+1, i_j+1),(o_j, i_j+1, i_j) → +z. */
+function sheet(tri, base, nRows, nC, flip){
+  for (let i = 0; i < nRows - 1; i++){
+    const r0 = base + i * nC, r1 = r0 + nC;
+    for (let j = 0; j < nC; j++){
+      const j1 = (j + 1) % nC, a = r0 + j, b = r0 + j1, c = r1 + j1, d = r1 + j;
+      if (!flip){ tri(a, b, c); tri(a, c, d); } else { tri(a, c, b); tri(a, d, c); }
+    }
+  }
+}
+function fan(tri, apex, ring, nC, up){
+  for (let j = 0; j < nC; j++){
+    const j1 = (j + 1) % nC;
+    if (up) tri(apex, ring + j, ring + j1); else tri(apex, ring + j1, ring + j);
+  }
+}
+function annulus(tri, outer, inner, nC, up){
+  for (let j = 0; j < nC; j++){
+    const j1 = (j + 1) % nC, a = outer + j, b = outer + j1, c = inner + j1, d = inner + j;
+    if (up){ tri(a, b, c); tri(a, c, d); } else { tri(a, c, b); tri(a, d, c); }
+  }
+}
+function meshCylinder(S, nR, nC, P, dz){
+  if (nC < 3 || nR < 2) throw new Error('grid too small');
+  const R0 = +P.r0, depth = Math.max(0, +P.depth), H = (nR - 1) * dz;
+  const hollow = !!(P.hollow | 0);
+  const rMin = Math.max(1, 0.05 * R0);
+  const Rout = new Float32Array(nR * nC);
+  for (let k = 0; k < Rout.length; k++) Rout[k] = Math.max(rMin, R0 + depth * S[k]);
+  const slope = Math.max(0, Math.min(80, +P.slope || 0)), tanS = slope > 0 ? Math.tan(slope * Math.PI / 180) : 0;
+  if (slope > 0){
+    // support-free outer wall: sweeping down, no row may sit further in than the row above minus dz·tan(slope),
+    // so every downward-facing face leans at most slope° from vertical (fills a cone under each ledge)
+    const lim = dz * tanS;
+    for (let i = nR - 2; i >= 0; i--) for (let j = 0; j < nC; j++){
+      const k = i * nC + j, up = Rout[k + nC] - lim;
+      if (Rout[k] < up) Rout[k] = up;
+    }
+  }
+  let nRi = 0, Rin = null, floorMm = 0, wall = 0;
+  if (hollow){
+    wall = Math.max(0.8, +P.wall);
+    floorMm = Math.min(Math.max(1.2, +P.flr), H * 0.5);
+    let k0 = Math.ceil(floorMm / dz - 1e-9);
+    if (k0 > nR - 2) k0 = nR - 2;
+    nRi = nR - k0;
+    const Rer = Float32Array.from(Rout);
+    erodeSurface(Rer, nR, nC, wall / dz, wall / (R0 * TAU / nC));
+    Rin = new Float32Array(nRi * nC);
+    const rInMin = Math.max(1, 0.3 * R0);
+    for (let k = 0; k < nRi; k++){
+      const z = floorMm + (H - floorMm) * k / (nRi - 1), fi = z / dz;
+      let i0 = Math.floor(fi); if (i0 > nR - 1) i0 = nR - 1;
+      const i1 = Math.min(i0 + 1, nR - 1), t = Math.min(1, Math.max(0, fi - i0));
+      for (let j = 0; j < nC; j++){
+        const r = Rer[i0 * nC + j] * (1 - t) + Rer[i1 * nC + j] * t;
+        Rin[k * nC + j] = Math.max(rInMin, r - wall);
+      }
+    }
+    if (slope > 0 && nRi > 1){
+      // the inner wall overhangs where it leans in going up; thicken downward instead (never thins the wall)
+      const limIn = (H - floorMm) / (nRi - 1) * tanS;
+      for (let k = nRi - 2; k >= 0; k--) for (let j = 0; j < nC; j++){
+        const q = k * nC + j, cap = Rin[q + nC] + limIn;
+        if (Rin[q] > cap) Rin[q] = cap;
+      }
+    }
+  }
+  const nV = nR * nC + nRi * nC + 2;
+  const F = hollow ? 2 * nC * (nR + nRi) : 2 * nR * nC;
+  const pos = new Float32Array(3 * nV), idx = new Uint32Array(3 * F);
+  const cs = new Float64Array(nC), sn = new Float64Array(nC);
+  for (let j = 0; j < nC; j++){ const th = TAU * j / nC; cs[j] = Math.cos(th); sn[j] = Math.sin(th); }
+  for (let i = 0; i < nR; i++) for (let j = 0; j < nC; j++){
+    const p = 3 * (i * nC + j), r = Rout[i * nC + j];
+    pos[p] = r * cs[j]; pos[p + 1] = r * sn[j]; pos[p + 2] = i * dz;
+  }
+  const innerBase = nR * nC;
+  if (hollow) for (let k = 0; k < nRi; k++){
+    const z = floorMm + (H - floorMm) * k / (nRi - 1);
+    for (let j = 0; j < nC; j++){
+      const p = 3 * (innerBase + k * nC + j), r = Rin[k * nC + j];
+      pos[p] = r * cs[j]; pos[p + 1] = r * sn[j]; pos[p + 2] = z;
+    }
+  }
+  const B = innerBase + nRi * nC, T = B + 1;
+  pos[3 * B] = 0; pos[3 * B + 1] = 0; pos[3 * B + 2] = 0;
+  pos[3 * T] = 0; pos[3 * T + 1] = 0; pos[3 * T + 2] = hollow ? floorMm : H;
+  let n = 0;
+  const tri = (a, b, c) => { idx[n++] = a; idx[n++] = b; idx[n++] = c; };
+  sheet(tri, 0, nR, nC, false);
+  fan(tri, B, 0, nC, false);
+  if (!hollow){
+    fan(tri, T, (nR - 1) * nC, nC, true);
+  } else {
+    sheet(tri, innerBase, nRi, nC, true);
+    fan(tri, T, innerBase, nC, true);
+    annulus(tri, (nR - 1) * nC, innerBase + (nRi - 1) * nC, nC, true);
+  }
+  if (n !== 3 * F) throw new Error('triangle count mismatch ' + n + ' vs ' + 3 * F);
+  return { pos, idx, nV, nF: F, nR, nC, nRi, dz, hollow, meta: { R0, depth, H, wall, floorMm } };
+}
+function extents(pos){
+  const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+  for (let i = 0; i < pos.length; i += 3) for (let a = 0; a < 3; a++){ const v = pos[i + a]; if (v < mn[a]) mn[a] = v; if (v > mx[a]) mx[a] = v; }
+  return { min: mn, max: mx, size: [mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]] };
+}
+/* ─── overhang: the steepest downward-facing face, as degrees from vertical (90 = a flat ceiling),
+   and the share of the surface beyond 45°. Faces lying on the bed plane are the first layer, not overhang. ─── */
+function overhang(pos, idx, zBed){
+  let maxDeg = 0, aAll = 0, aOver = 0;
+  const s45 = Math.SQRT1_2, RAD = 180 / Math.PI;
+  for (let t = 0; t < idx.length; t += 3){
+    const a = 3 * idx[t], b = 3 * idx[t + 1], c = 3 * idx[t + 2];
+    const e1x = pos[b] - pos[a], e1y = pos[b + 1] - pos[a + 1], e1z = pos[b + 2] - pos[a + 2];
+    const e2x = pos[c] - pos[a], e2y = pos[c + 1] - pos[a + 1], e2z = pos[c + 2] - pos[a + 2];
+    const nx = e1y * e2z - e1z * e2y, ny = e1z * e2x - e1x * e2z, nz = e1x * e2y - e1y * e2x;
+    const L = Math.hypot(nx, ny, nz);
+    aAll += L / 2;
+    if (!(L > 0) || nz >= 0) continue;
+    if (pos[a + 2] <= zBed && pos[b + 2] <= zBed && pos[c + 2] <= zBed) continue;
+    const down = -nz / L;
+    const deg = Math.asin(Math.min(1, down)) * RAD;
+    if (deg > maxDeg) maxDeg = deg;
+    if (down > s45 + 1e-12) aOver += L / 2;
+  }
+  return { maxDeg, frac: aAll > 0 ? aOver / aAll : 0 };
+}
+function fitToBed(mesh, bedMax){
+  const e = extents(mesh.pos), big = Math.max(e.size[0], e.size[1], e.size[2]);
+  const s = big > bedMax ? bedMax / big : 1;
+  if (s < 1) for (let i = 0; i < mesh.pos.length; i++) mesh.pos[i] *= s;
+  return s;
+}
+function vertexNormals(pos, idx, nV){
+  const nrm = new Float32Array(3 * nV);
+  for (let t = 0; t < idx.length; t += 3){
+    const a = 3 * idx[t], b = 3 * idx[t + 1], c = 3 * idx[t + 2];
+    const e1x = pos[b] - pos[a], e1y = pos[b + 1] - pos[a + 1], e1z = pos[b + 2] - pos[a + 2];
+    const e2x = pos[c] - pos[a], e2y = pos[c + 1] - pos[a + 1], e2z = pos[c + 2] - pos[a + 2];
+    const nx = e1y * e2z - e1z * e2y, ny = e1z * e2x - e1x * e2z, nz = e1x * e2y - e1y * e2x;
+    nrm[a] += nx; nrm[a + 1] += ny; nrm[a + 2] += nz;
+    nrm[b] += nx; nrm[b + 1] += ny; nrm[b + 2] += nz;
+    nrm[c] += nx; nrm[c + 1] += ny; nrm[c + 2] += nz;
+  }
+  for (let i = 0; i < nrm.length; i += 3){
+    const L = Math.hypot(nrm[i], nrm[i + 1], nrm[i + 2]);
+    if (L > 1e-12){ nrm[i] /= L; nrm[i + 1] /= L; nrm[i + 2] /= L; } else { nrm[i] = 0; nrm[i + 1] = 0; nrm[i + 2] = 1; }
+  }
+  return nrm;
+}
+/* ─── manifold check: every undirected edge twice, every directed edge once ─── */
+function solidCheck(pos, idx, nV){
+  const F = (idx.length / 3) | 0;
+  const keys = new Float64Array(3 * F), dkeys = new Float64Array(3 * F);
+  let vol = 0;
+  for (let t = 0; t < F; t++){
+    const a = idx[3 * t], b = idx[3 * t + 1], c = idx[3 * t + 2];
+    keys[3 * t] = a < b ? a * nV + b : b * nV + a;
+    keys[3 * t + 1] = b < c ? b * nV + c : c * nV + b;
+    keys[3 * t + 2] = c < a ? c * nV + a : a * nV + c;
+    dkeys[3 * t] = a * nV + b; dkeys[3 * t + 1] = b * nV + c; dkeys[3 * t + 2] = c * nV + a;
+    const ax = pos[3 * a], ay = pos[3 * a + 1], az = pos[3 * a + 2];
+    const bx = pos[3 * b], by = pos[3 * b + 1], bz = pos[3 * b + 2];
+    const cx = pos[3 * c], cy = pos[3 * c + 1], cz = pos[3 * c + 2];
+    vol += (ax * (by * cz - bz * cy) + ay * (bz * cx - bx * cz) + az * (bx * cy - by * cx)) / 6;
+  }
+  keys.sort();
+  let E = 0, bad = 0;
+  for (let i = 0; i < keys.length;){
+    let j = i + 1;
+    while (j < keys.length && keys[j] === keys[i]) j++;
+    E++; if (j - i !== 2) bad++;
+    i = j;
+  }
+  dkeys.sort();
+  let badDir = 0;
+  for (let i = 1; i < dkeys.length; i++) if (dkeys[i] === dkeys[i - 1]) badDir++;
+  return { V: nV, E, F, euler: nV - E + F, vol, badEdges: bad, badDir };
+}
+/* ─── binary STL, little-endian, 50 bytes a triangle ─── */
+function writeSTL(pos, idx, headerText){
+  const F = (idx.length / 3) | 0;
+  const buf = new ArrayBuffer(84 + 50 * F), dv = new DataView(buf), u8 = new Uint8Array(buf, 0, 80);
+  let h = headerText || 'Promethean Theoria - volumetric sound form';
+  if (/^solid/i.test(h)) h = 'PT ' + h;
+  for (let i = 0; i < 80 && i < h.length; i++){ const c = h.charCodeAt(i); u8[i] = c < 128 ? c : 63; }
+  dv.setUint32(80, F, true);
+  let o = 84;
+  for (let t = 0; t < F; t++){
+    const a = 3 * idx[3 * t], b = 3 * idx[3 * t + 1], c = 3 * idx[3 * t + 2];
+    const ax = pos[a], ay = pos[a + 1], az = pos[a + 2];
+    const bx = pos[b], by = pos[b + 1], bz = pos[b + 2];
+    const cx = pos[c], cy = pos[c + 1], cz = pos[c + 2];
+    const e1x = bx - ax, e1y = by - ay, e1z = bz - az, e2x = cx - ax, e2y = cy - ay, e2z = cz - az;
+    let nx = e1y * e2z - e1z * e2y, ny = e1z * e2x - e1x * e2z, nz = e1x * e2y - e1y * e2x;
+    const L = Math.hypot(nx, ny, nz);
+    if (L > 0){ nx /= L; ny /= L; nz /= L; } else { nx = 0; ny = 0; nz = 0; }
+    dv.setFloat32(o, nx, true); dv.setFloat32(o + 4, ny, true); dv.setFloat32(o + 8, nz, true);
+    dv.setFloat32(o + 12, ax, true); dv.setFloat32(o + 16, ay, true); dv.setFloat32(o + 20, az, true);
+    dv.setFloat32(o + 24, bx, true); dv.setFloat32(o + 28, by, true); dv.setFloat32(o + 32, bz, true);
+    dv.setFloat32(o + 36, cx, true); dv.setFloat32(o + 40, cy, true); dv.setFloat32(o + 44, cz, true);
+    dv.setUint16(o + 48, 0, true);
+    o += 50;
+  }
+  return buf;
+}
+
+/* ─── grid bookkeeping shared by the estimate and the build ─── */
+function gridSpec(P, nT){
+  const nF = P.nf | 0, layout = P.layout;
+  const nR0 = layout === 'transpose' ? nF : nT;
+  const nC = layout === 'mirror' ? 2 * nF : layout === 'plain' ? nF : nT;
+  const dz = P.h / (nR0 - 1);
+  const nFoot = Math.max(0, Math.floor(P.foot / dz + 0.5));
+  const nR = nR0 + nFoot;
+  let nRi = 0;
+  if (P.hollow | 0){
+    const H = (nR - 1) * dz, floorMm = Math.min(Math.max(1.2, +P.flr), H * 0.5);
+    let k0 = Math.ceil(floorMm / dz - 1e-9); if (k0 > nR - 2) k0 = nR - 2;
+    nRi = nR - k0;
+  }
+  const F = (P.hollow | 0) ? 2 * nC * (nR + nRi) : 2 * nR * nC;
+  return { nR0, nR, nC, nRi, nFoot, dz, F, bytes: 84 + 50 * F };
+}
+function triangleEstimate(P, nT){ return gridSpec(P, nT === undefined ? (P.nt | 0) : nT); }
+
+/* ─── stage 1: samples → spec + env ─── */
+function analyse(samples, sr, P){
+  const N = P.fft | 0, nT = effectiveRows(samples.length, sr, P), nBins = (N >> 1) + 1;
+  const spec = new Float32Array(nT * nBins);
+  const t = now();
+  const info = stftRows(samples, sr, { N, nT, t0: P.t0, t1: P.t1 }, 0, nT, spec);
+  const env = rmsRows(samples, sr, P.t0, P.t1, nT);
+  return { spec, env, nT, nBins, N, hop: info.hop, K: info.K, s0: info.s0, s1: info.s1, ms: now() - t };
+}
+/* ─── stage 2: spec → field → surface → solid → checks ─── */
+function shape(an, sr, P, cache){
+  const t = now();
+  const nF = P.nf | 0, key = [P.fmin, P.fmax, nF, P.scale, an.N, sr].join('|');
+  let map = cache && cache.key === key ? cache.map : null;
+  if (!map){ map = bandMap(bandEdges(P.fmin, P.fmax, nF, P.scale), sr, an.N); if (cache){ cache.key = key; cache.map = map; } }
+  const power = binBands(an.spec, an.nT, an.nBins, map);
+  const field = toField(power, an.nT, nF, P.db, P.gamma, P.contrast);
+  const lay = layoutSurface(field, an.nT, nF, P.layout, P.fade);
+  blurSurface(lay.S, lay.nR, lay.nC, P.bz, P.bt, 2);
+  const g = gridSpec(P, an.nT);
+  const padded = padFoot(lay.S, lay.nR, lay.nC, g.nFoot);
+  padded.nC = lay.nC;
+  const mesh = meshCylinder(padded.S, padded.nR, padded.nC, P, g.dz);
+  const scale = (P.fit | 0) ? fitToBed(mesh, +P.bed) : 1;
+  const normals = vertexNormals(mesh.pos, mesh.idx, mesh.nV);
+  const ext = extents(mesh.pos);
+  const sc = solidCheck(mesh.pos, mesh.idx, mesh.nV);
+  const ov = overhang(mesh.pos, mesh.idx, ext.min[2] + 1e-4);
+  const stats = {
+    V: sc.V, E: sc.E, F: sc.F, euler: sc.euler, vol: sc.vol, badEdges: sc.badEdges, badDir: sc.badDir,
+    over: ov.maxDeg, overFrac: ov.frac, form: 'chart',
+    bytes: 84 + 50 * sc.F, size: ext.size, min: ext.min, max: ext.max,
+    fits: ext.size.every(v => v <= 320 + 1e-6), scale, massG: sc.vol / 1000 * 1.27,
+    nR: padded.nR, nC: padded.nC, nRi: mesh.nRi, nFoot: g.nFoot, dz: g.dz, ms: now() - t, mapOk: map.ok,
+  };
+  return { power, field, S: padded.S, nR: padded.nR, nC: padded.nC, nT: an.nT, nF, env: an.env, mesh, normals, stats, map };
+}
+function pipeline(samples, sr, P){
+  const an = analyse(samples, sr, P);
+  const sh = shape(an, sr, P, null);
+  sh.spec = an.spec; sh.nBins = an.nBins; sh.N = an.N; sh.hop = an.hop; sh.K = an.K; sh.analyseMs = an.ms;
+  return sh;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   THE CAVITY FORM. In a closed space a frequency is not a stripe on a
+   chart: it is a standing wave, a three-dimensional field of pressure with
+   nodal surfaces and loud lobes fixed by the frequency and the vessel. The
+   clip drives the acoustic modes of a rigid cone frustum; the time-averaged
+   pressure is sampled on voxels; its lobes are fused to a thin shell of the
+   vessel; the union is meshed by marching tetrahedra into one closed solid.
+   ════════════════════════════════════════════════════════════════════ */
+const KMAX = 22;                          // modal truncation: k·a0 ≤ KMAX
+const K11 = 1.8411837813406593;           // first zero of J1′: the first azimuthal mode of a disc
+const NRHO = 1024;                        // radial table samples over ρ = r/a ∈ [0, 1]
+const VOX_MAX = 4000000;                  // voxel budget; the grid coarsens past it
+const T_MIN = 0.002;                      // edge-parameter clamp, so no two surface vertices coincide
+const HBINS = 4096;                       // histogram of p²/max inside the cavity, for the fill threshold
+
+/* ─── Bessel J_0 … J_mMax at x: Miller's downward recurrence, normalised by J0 + 2ΣJ2k = 1 ─── */
+function besselJ(mMax, x, out){
+  out = out && out.length > mMax ? out : new Float64Array(mMax + 1);
+  for (let i = 0; i <= mMax; i++) out[i] = 0;
+  if (x === 0){ out[0] = 1; return out; }
+  const neg = x < 0; if (neg) x = -x;
+  const big = Math.max(mMax, x);
+  const N = 2 * Math.ceil((big + 16 + Math.sqrt(60 * Math.max(big, 1))) / 2);
+  let jp = 0, j = 1e-30, sum = 2 * j;
+  for (let k = N; k > 0; k--){
+    const jm = (2 * k / x) * j - jp;
+    jp = j; j = jm;
+    const n = k - 1;
+    if (n <= mMax) out[n] = j;
+    if (n > 0 && (n & 1) === 0) sum += 2 * j;
+    if (Math.abs(j) > 1e200){ j *= 1e-200; jp *= 1e-200; sum *= 1e-200; for (let i = n; i <= mMax; i++) out[i] *= 1e-200; }
+  }
+  sum += j;
+  const inv = 1 / sum;
+  for (let i = 0; i <= mMax; i++) out[i] *= inv;
+  if (neg) for (let i = 1; i <= mMax; i += 2) out[i] = -out[i];
+  return out;
+}
+function besselJp(m, x, buf){
+  const J = besselJ(m + 1, x, buf);
+  return m === 0 ? -J[1] : 0.5 * (J[m - 1] - J[m + 1]);
+}
+/* zeros of J_m′ up to kmax (rigid-wall cross-section modes); m = 0 includes the uniform κ = 0 */
+function besselZerosPrime(m, kmax){
+  const out = m === 0 ? [0] : [], buf = new Float64Array(m + 2), step = 0.05;
+  let x0 = step, f0 = besselJp(m, x0, buf);
+  for (let i = 2; i * step <= kmax + 2 * step; i++){
+    const x1 = i * step, f1 = besselJp(m, x1, buf);
+    if (f0 !== 0 && (f0 < 0) !== (f1 < 0)){
+      let lo = x0, hi = x1, flo = f0;
+      for (let it = 0; it < 100 && hi - lo > 1e-15 * hi; it++){
+        const mid = 0.5 * (lo + hi), fm = besselJp(m, mid, buf);
+        if (fm === 0){ lo = hi = mid; break; }
+        if ((fm < 0) === (flo < 0)){ lo = mid; flo = fm; } else hi = mid;
+      }
+      const z = 0.5 * (lo + hi);
+      if (z <= kmax) out.push(z);
+    }
+    x0 = x1; f0 = f1;
+  }
+  return out;
+}
+
+/* ─── symmetric tridiagonal eigenpairs: Sturm-sequence bisection, inverse iteration ─── */
+function sturmCount(d, e2, x){
+  const n = d.length;
+  let c = 0, q = d[0] - x;
+  if (q === 0) q = -1e-300;
+  if (q < 0) c++;
+  for (let i = 1; i < n; i++){
+    q = d[i] - x - e2[i - 1] / q;
+    if (q === 0) q = -1e-300;
+    if (q < 0) c++;
+  }
+  return c;
+}
+/* Gaussian elimination with partial pivoting on a tridiagonal system (LAPACK dgtsv); overwrites all four arrays */
+function solveTridiag(dl, dd, du, b){
+  const n = dd.length;
+  let piv = 1;
+  for (let i = 0; i < n; i++) if (Math.abs(dd[i]) > piv) piv = Math.abs(dd[i]);
+  piv *= 1e-15;
+  for (let i = 0; i < n - 1; i++){
+    if (Math.abs(dd[i]) >= Math.abs(dl[i])){
+      if (dd[i] === 0) dd[i] = piv;
+      const f = dl[i] / dd[i];
+      dd[i + 1] -= f * du[i];
+      b[i + 1] -= f * b[i];
+      dl[i] = 0;
+    } else {
+      const f = dd[i] / dl[i];
+      dd[i] = dl[i];
+      const tmp = dd[i + 1];
+      dd[i + 1] = du[i] - f * tmp;
+      if (i < n - 2){ dl[i] = du[i + 1]; du[i + 1] = -f * dl[i]; } else dl[i] = 0;
+      du[i] = tmp;
+      const tb = b[i]; b[i] = b[i + 1]; b[i + 1] = tb - f * b[i + 1];
+    }
+  }
+  if (Math.abs(dd[n - 1]) < piv) dd[n - 1] = dd[n - 1] < 0 ? -piv : piv;
+  b[n - 1] /= dd[n - 1];
+  if (n > 1) b[n - 2] = (b[n - 2] - du[n - 2] * b[n - 1]) / dd[n - 2];
+  for (let i = n - 3; i >= 0; i--) b[i] = (b[i] - du[i] * b[i + 1] - dl[i] * b[i + 2]) / dd[i];
+  return b;
+}
+function eigvecInverse(d, e, lam){
+  const n = d.length, dl = new Float64Array(n), dd = new Float64Array(n), du = new Float64Array(n), x = new Float64Array(n);
+  for (let i = 0; i < n; i++) x[i] = 1 + 0.37 * Math.sin(1.9 * i + 0.4);
+  for (let it = 0; it < 3; it++){
+    for (let i = 0; i < n; i++){ dd[i] = d[i] - lam; if (i < n - 1){ dl[i] = e[i]; du[i] = e[i]; } }
+    solveTridiag(dl, dd, du, x);
+    let s = 0;
+    for (let i = 0; i < n; i++) s += x[i] * x[i];
+    s = 1 / Math.sqrt(s);
+    for (let i = 0; i < n; i++) x[i] *= s;
+  }
+  return x;
+}
+function tridiagEig(d, e, lo, hi, wantVec){
+  const n = d.length, e2 = new Float64Array(Math.max(1, n - 1));
+  let gl = Infinity, gu = -Infinity;
+  for (let i = 0; i < n; i++){
+    const r = (i > 0 ? Math.abs(e[i - 1]) : 0) + (i < n - 1 ? Math.abs(e[i]) : 0);
+    if (d[i] - r < gl) gl = d[i] - r;
+    if (d[i] + r > gu) gu = d[i] + r;
+    if (i < n - 1) e2[i] = e[i] * e[i];
+  }
+  // an eigenvalue can sit exactly on a Gershgorin bound (the l = 0 mode of a straight duct): widen them
+  const pad = 1e-10 * Math.max(Math.abs(gl), Math.abs(gu), 1);
+  gl -= pad; gu += pad;
+  const vals = [], vecs = [], a = Math.max(lo, gl), b = Math.min(hi, gu);
+  if (!(b > a)) return { vals, vecs };
+  const c0 = sturmCount(d, e2, a), c1 = sturmCount(d, e2, b);
+  const tol = 2e-16 * Math.max(Math.abs(gl), Math.abs(gu), 1);
+  let L = a;
+  for (let q = c0; q < c1; q++){
+    let l = L, u = b;
+    for (let it = 0; it < 200 && u - l > tol; it++){
+      const mid = 0.5 * (l + u);
+      if (sturmCount(d, e2, mid) > q) u = mid; else l = mid;
+    }
+    const lam = 0.5 * (l + u);
+    vals.push(lam);
+    if (wantVec) vecs.push(eigvecInverse(d, e, lam));
+    L = l;
+  }
+  return { vals, vecs };
+}
+
+/* ─── the modes of the frustum ───
+   Radius a(z) = cr0 + (cr1 − cr0) z/ch, lengths in units of a0 = max(cr0, cr1), so a ≤ 1.
+   p = J_m(κ_mn ρ) cos(mθ) Z(z), ρ = r/a(z), κ_mn a zero of J_m′ (rigid wall). Projecting the Helmholtz
+   equation on each cross-section mode gives the slowly-varying-duct equation
+       −(a² Z′)′ + κ² Z = k² a² Z,   Z′ = 0 at the rigid floor; at the top Z′ = 0 under a lid,
+   Z = 0 at an open mouth (pressure release, no end correction),
+   which is Webster's horn equation when κ = 0. Finite volumes on nz cells, symmetrised by B^−½. */
+function cavityGeom(P){
+  const cr0 = Math.max(1, +P.cr0), cr1 = Math.max(1, +P.cr1), ch = Math.max(1, +P.ch);
+  const a0 = Math.max(cr0, cr1), open = P.ctop !== 'closed';
+  return { cr0, cr1, ch, a0, Hn: ch / a0, open, key: cr0 + '|' + cr1 + '|' + ch + '|' + (open ? 'open' : 'closed') };
+}
+const MODE_CACHE = [];
+function cavityModes(P){
+  const G = cavityGeom(P);
+  for (let i = 0; i < MODE_CACHE.length; i++) if (MODE_CACHE[i].key === G.key) return MODE_CACHE[i];
+  const t = now(), { cr0, cr1, a0, Hn } = G;
+  const nz = Math.min(1600, Math.max(240, Math.ceil(4 * KMAX * Hn))), h = Hn / nz, ih2 = 1 / (h * h);
+  const aC = new Float64Array(nz), aF2 = new Float64Array(nz + 1);
+  for (let i = 0; i < nz; i++) aC[i] = (cr0 + (cr1 - cr0) * (i + 0.5) / nz) / a0;
+  for (let i = 0; i <= nz; i++){ const a = (cr0 + (cr1 - cr0) * i / nz) / a0; aF2[i] = a * a; }
+  const d = new Float64Array(nz), e = new Float64Array(nz - 1);
+  const groups = [], mArr = [], gArr = [], kArr = [], NArr = [], Z = [];
+  let mMax = 0;
+  for (let m = 0; m < 200; m++){
+    const zs = besselZerosPrime(m, KMAX);
+    if (!zs.length) break;
+    const buf = new Float64Array(m + 1);
+    for (let n = 0; n < zs.length; n++){
+      const kap = zs[n], k2 = kap * kap;
+      for (let i = 0; i < nz; i++){
+        const cl = i > 0 ? aF2[i] : 0, cr = i < nz - 1 ? aF2[i + 1] : 0;
+        d[i] = ((cl + cr) * ih2 + k2) / (aC[i] * aC[i]);
+        if (i < nz - 1) e[i] = -aF2[i + 1] * ih2 / (aC[i] * aC[i + 1]);
+      }
+      if (G.open) d[nz - 1] += 2 * aF2[nz] * ih2 / (aC[nz - 1] * aC[nz - 1]);   // Z = 0 half a cell above the last centre
+      const r = tridiagEig(d, e, 1e-6, KMAX * KMAX, true);
+      if (!r.vals.length) continue;
+      const Jw = kap === 0 ? 1 : besselJ(m, kap, buf)[m];
+      // ∫∫ J_m(κρ)² cos²(mθ) ρ dρ dθ over the unit disc, in closed form at a zero of J_m′
+      const C = kap === 0 ? Math.PI : (m ? Math.PI : 2 * Math.PI) * 0.5 * (1 - (m * m) / k2) * Jw * Jw;
+      const gi = groups.length, list = [];
+      for (let q = 0; q < r.vals.length; q++){
+        const Y = r.vecs[q], z = new Float32Array(nz);
+        for (let i = 0; i < nz; i++) z[i] = Y[i] / aC[i];
+        list.push(kArr.length);
+        mArr.push(m); gArr.push(gi); kArr.push(Math.sqrt(r.vals[q])); NArr.push(C * h); Z.push(z);
+      }
+      groups.push({ m, n, kappa: kap, C, Jw, modes: list });
+      if (m > mMax) mMax = m;
+    }
+  }
+  const tabs = [];
+  for (const g of groups){
+    const tab = new Float32Array(NRHO + 1), buf = new Float64Array(g.m + 1);
+    for (let q = 0; q < NRHO; q++){ const J = g.kappa === 0 ? 1 : besselJ(g.m, g.kappa * q / (NRHO - 1), buf)[g.m]; tab[q] = J * J; }
+    tab[NRHO] = tab[NRHO - 1];
+    tabs.push(tab);
+  }
+  const res = { key: G.key, G, a0, Hn, nz, h, aC, groups, tabs, mMax, count: kArr.length,
+    m: Int32Array.from(mArr), g: Int32Array.from(gArr), k: Float64Array.from(kArr), N: Float64Array.from(NArr), Z, ms: now() - t };
+  MODE_CACHE.unshift(res);
+  if (MODE_CACHE.length > 2) MODE_CACHE.pop();
+  return res;
+}
+
+/* ─── the drive ───
+   A small loudspeaker in the wall at θ = 0, height csrc·ch, playing the clip: its volume acceleration
+   follows the recorded pressure. Mode j then answers with amplitude φ_j(source)/N_j · p(ω)/(ω_j² − ω² + iωω_j/Q),
+   so its share of the time-averaged p² is φ_j(source)²/(N_j² ω_j⁴) · Σ_bins P(f) L(f/f_j), with
+   L(r) = 1 / ((1 − r²)² + (r/Q)²) integrated exactly over each FFT bin (the peak is far narrower than a
+   bin at low frequency): G below is the antiderivative of L. Cross terms between modes are dropped. */
+function resonanceG(Q){
+  const al = Math.sqrt(Math.max(1e-9, 4 - 1 / (Q * Q))), ha = al / 2, be = 1 / (2 * Q), be2 = be * be;
+  const c1 = 1 / (4 * al), c2 = 1 / (4 * be);
+  return r => c1 * Math.log(((r + ha) * (r + ha) + be2) / ((r - ha) * (r - ha) + be2)) + c2 * (Math.atan((r + ha) / be) + Math.atan((r - ha) / be));
+}
+function cavityDrive(an, modes, P, sr){
+  const s = K11 / Math.max(1, +P.ctune), Q = Math.max(1, +P.cq);
+  const N = an.N, nT = an.nT, nB = an.nBins, df = sr / N, spec = an.spec, fTop = KMAX / s;
+  const bmax = Math.max(1, Math.min(nB - 1, Math.floor(1.6 * fTop / df)));
+  const E = new Float64Array(nT);
+  let Emax = 0;
+  for (let t = 0; t < nT; t++){
+    let acc = 0; const o = t * nB;
+    for (let b = 1; b <= bmax; b++) acc += spec[o + b];
+    E[t] = acc; if (acc > Emax) Emax = acc;
+  }
+  const Pb = new Float64Array(bmax + 1), Pm = new Float64Array(bmax + 1);
+  for (let t = 0; t < nT; t++){ const o = t * nB; for (let b = 1; b <= bmax; b++) Pm[b] += spec[o + b]; }
+  for (let b = 1; b <= bmax; b++) Pm[b] /= nT;
+  let row = -1;
+  if (P.cmode === 'moment'){
+    row = Math.round(((+P.ct || 0) * sr - an.s0) / an.hop - 0.5);
+    row = Math.max(0, Math.min(nT - 1, row));
+    const o = row * nB;
+    for (let b = 1; b <= bmax; b++) Pb[b] = spec[o + b];
+  } else Pb.set(Pm);
+  const G = resonanceG(Q), nM = modes.count, nz = modes.nz;
+  const f = new Float64Array(nM), D = new Float64Array(nM), phis2 = new Float64Array(nM), w = new Float64Array(nM);
+  const u = Math.max(0, Math.min(1, +P.csrc)) * modes.Hn / modes.h - 0.5;
+  let i0 = Math.floor(u), tt = u - i0;
+  if (i0 < 0){ i0 = 0; tt = 0; } else if (i0 > nz - 2){ i0 = nz - 2; tt = 1; }
+  // ub[b]: how strongly a unit of power in bin b sets the whole vessel ringing, summed over modes
+  let fLo = Infinity;
+  const ub = new Float64Array(bmax + 1);
+  for (let j = 0; j < nM; j++){
+    const fj = modes.k[j] / s;
+    f[j] = fj; if (fj < fLo) fLo = fj;
+    const Zj = modes.Z[j], zs = Zj[i0] + (Zj[i0 + 1] - Zj[i0]) * tt, Jw = modes.groups[modes.g[j]].Jw;
+    phis2[j] = Jw * Jw * zs * zs;
+    const k2 = modes.k[j] * modes.k[j], cj = phis2[j] / (modes.N[j] * modes.N[j] * k2 * k2), sc = fj / df;
+    let acc = 0, g0 = G(0.5 * df / fj);
+    for (let b = 1; b <= bmax; b++){ const g1 = G((b + 0.5) * df / fj), wb = (g1 - g0) * sc; acc += Pb[b] * wb; ub[b] += wb * cj; g0 = g1; }
+    D[j] = acc;
+    w[j] = acc * cj;
+  }
+  // the ringing energy of every row, and of the clip on average: a moment's fill scales with its ratio
+  const ring = new Float64Array(nT);
+  let ringMean = 0;
+  for (let t = 0; t < nT; t++){ let acc = 0; const o = t * nB; for (let b = 1; b <= bmax; b++) acc += spec[o + b] * ub[b]; ring[t] = acc; ringMean += acc / nT; }
+  const gain = row >= 0 ? (ringMean > 0 ? ring[row] / ringMean : 0) : 1;
+  const key = [modes.key, s, Q, +P.csrc, P.cmode === 'moment' ? 'm' + row : 'clip', an.N, an.nT, an.s0, an.s1].join('|');
+  return { s, Q, f, D, phis2, w, E, Emax, ring, ringMean, row, gain, bmax, df, window: [fLo, fTop], key };
+}
+
+/* ─── the voxel grid: x, y through the axis (odd counts, a point on y = 0 for the halves cut), z layers
+   on the floor's and the lid's mid-planes so both are resolved at any voxel size ─── */
+function cavityGrid(P){
+  const G = cavityGeom(P), { cr0, cr1, ch } = G;
+  const flr = Math.max(0.6, +P.cflr), closed = P.ctop === 'closed';
+  const cosA = ch / Math.hypot(ch, cr1 - cr0), aMax = Math.max(cr0, cr1);
+  const zRim = flr + ch, zTop = zRim + (closed ? flr : 0), vReq = Math.max(0.3, +P.cvox);
+  let v = vReq, out = null;
+  for (let it = 0; it < 12; it++){
+    const tw = Math.max(Math.max(0.4, +P.cwall) / cosA, 1.5 * v);
+    const c = Math.ceil((aMax + tw) / v) + 1, nx = 2 * c + 1;
+    const nzc = Math.max(2, Math.round((ch + flr) / v)), vz = (ch + flr) / nzc;
+    const below = Math.ceil(flr / 2 / vz) + 1, above = Math.ceil((zTop - flr / 2) / vz) + 1, nz = below + above + 1;
+    out = { nx, ny: nx, nz, c, below, vx: v, vz, x0: -c * v, y0: -c * v, z0: flr / 2 - below * vz,
+            cr0, cr1, ch, flr, zRim, zTop, closed, tw, cosA, aMax, vReq, coarsened: v > vReq * 1.0001, nvox: nx * nx * nz };
+    if (out.nvox <= VOX_MAX) break;
+    v *= Math.cbrt(out.nvox / VOX_MAX) * 1.005;
+  }
+  return out;
+}
+/* separable Gaussian blur, σ per axis in voxels, kernel truncated at 3σ, clamped edges (scipy's
+   gaussian_filter1d with mode 'nearest'), in place */
+function gaussKernel(sig){
+  const R = Math.floor(3 * sig + 0.5);
+  if (!(sig > 0) || R < 1) return null;
+  const k = new Float64Array(2 * R + 1);
+  let s = 0;
+  for (let i = -R; i <= R; i++){ k[i + R] = Math.exp(-0.5 * i * i / (sig * sig)); s += k[i + R]; }
+  for (let i = 0; i < k.length; i++) k[i] /= s;
+  return k;
+}
+function gaussBlur3(A, nx, ny, nz, sx, sy, sz){
+  const kx = gaussKernel(sx), ky = gaussKernel(sy), kz = gaussKernel(sz), sxy = nx * ny;
+  const buf = new Float64Array(Math.max(nx, ny, nz));
+  const line = (k, base, stride, cnt) => {
+    const R = (k.length - 1) >> 1;
+    for (let q = 0; q < cnt; q++) buf[q] = A[base + q * stride];
+    for (let q = 0; q < cnt; q++){
+      let acc = 0;
+      for (let d = -R; d <= R; d++){ let qq = q + d; if (qq < 0) qq = 0; else if (qq >= cnt) qq = cnt - 1; acc += k[d + R] * buf[qq]; }
+      A[base + q * stride] = acc;
+    }
+  };
+  if (kx) for (let k = 0; k < nz; k++) for (let j = 0; j < ny; j++) line(kx, (k * ny + j) * nx, 1, nx);
+  if (ky) for (let k = 0; k < nz; k++) for (let i = 0; i < nx; i++) line(ky, k * sxy + i, nx, ny);
+  if (kz) for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) line(kz, j * nx + i, sxy, nz);
+  return A;
+}
+/* ─── the time-averaged pressure field p² on the voxels, normalised to the loudest point in the cavity.
+   Per layer: each group's axial weight Σ w_j Z_j(z)², then one radial profile per m; per voxel one
+   table lookup per m. Outside the cavity the field is continued at the wall value (ρ clamped to 1). ─── */
+function cavityField(modes, drive, grid, P, progress){
+  const t = now();
+  const { nx, ny, nz, vx, vz, x0, y0, z0, flr, ch, cr0, cr1, tw } = grid;
+  const a0 = modes.a0, mMax = modes.mMax, groups = modes.groups, tabs = modes.tabs, nG = groups.length, M1 = mMax + 1, RS = NRHO + 1;
+  const nCol = nx * ny, rCol = new Float32Array(nCol), cos2 = new Float32Array(nCol * M1);
+  for (let j = 0; j < ny; j++){
+    const y = y0 + j * vx;
+    for (let i = 0; i < nx; i++){
+      const x = x0 + i * vx, col = j * nx + i, th = Math.atan2(y, x);
+      rCol[col] = Math.hypot(x, y);
+      for (let m = 0; m <= mMax; m++){ const c = Math.cos(m * th); cos2[col * M1 + m] = c * c; }
+    }
+  }
+  const cs = Math.max(0, +P.csmooth || 0), margin = tw + 3 * cs + 2 * vx;          // smoothing σ in mm
+  const p2 = new Float32Array(nCol * nz), zp = new Float64Array(nG), Rm = new Float64Array(M1 * RS);
+  const w = drive.w, K = modes.count, nzM = modes.nz, hM = modes.h, gOf = modes.g, Zs = modes.Z;
+  for (let k = 0; k < nz; k++){
+    let zz = z0 + k * vz - flr;
+    zz = zz < 0 ? 0 : zz > ch ? ch : zz;
+    const a = cr0 + (cr1 - cr0) * zz / ch, u = zz / a0 / hM - 0.5;
+    let i0 = Math.floor(u), tz = u - i0;
+    if (i0 < 0){ i0 = 0; tz = 0; } else if (i0 > nzM - 2){ i0 = nzM - 2; tz = 1; }
+    zp.fill(0);
+    for (let j = 0; j < K; j++){ const Z = Zs[j], zv = Z[i0] + (Z[i0 + 1] - Z[i0]) * tz; zp[gOf[j]] += w[j] * zv * zv; }
+    Rm.fill(0);
+    for (let g = 0; g < nG; g++){
+      const c = zp[g];
+      if (c === 0) continue;
+      const tab = tabs[g], base = groups[g].m * RS;
+      for (let q = 0; q < RS; q++) Rm[base + q] += c * tab[q];
+    }
+    const lim = a + margin, sc = (NRHO - 1) / a, off = k * nCol;
+    for (let col = 0; col < nCol; col++){
+      const r = rCol[col];
+      if (r > lim) continue;
+      let fi = r * sc; if (fi > NRHO - 1) fi = NRHO - 1;
+      const q0 = fi | 0, tq = fi - q0, cb = col * M1;
+      let acc = 0;
+      for (let m = 0, base = q0; m <= mMax; m++, base += RS){ const v0 = Rm[base]; acc += cos2[cb + m] * (v0 + (Rm[base + 1] - v0) * tq); }
+      p2[off + col] = acc;
+    }
+    if (progress && (k & 7) === 7) progress('field', (k + 1) / nz);
+  }
+  if (cs > 0) gaussBlur3(p2, nx, ny, nz, cs / vx, cs / vx, cs / vz);
+  let mx = 0;
+  for (let k = 0; k < nz; k++){
+    const zz = z0 + k * vz - flr;
+    if (zz < 0 || zz > ch) continue;
+    const a = cr0 + (cr1 - cr0) * zz / ch, off = k * nCol;
+    for (let col = 0; col < nCol; col++) if (rCol[col] <= a && p2[off + col] > mx) mx = p2[off + col];
+  }
+  const sN = mx > 0 ? 1 / mx : 0, hist = new Float64Array(HBINS);
+  for (let i = 0; i < p2.length; i++) p2[i] *= sN;
+  let nCav = 0;
+  for (let k = 0; k < nz; k++){
+    const zz = z0 + k * vz - flr;
+    if (zz < 0 || zz > ch) continue;
+    const a = cr0 + (cr1 - cr0) * zz / ch, off = k * nCol;
+    for (let col = 0; col < nCol; col++) if (rCol[col] <= a){ let b = (p2[off + col] * HBINS) | 0; if (b >= HBINS) b = HBINS - 1; hist[b]++; nCav++; }
+  }
+  return { grid, p2, rCol, max: mx, hist, nCav, gain: drive.gain, smooth: cs, ms: now() - t };
+}
+/* the threshold on p²/max above which the loudest fraction `fill` of the cavity's air lies (histogram, interpolated) */
+function fillThreshold(fld, fill){
+  if (!(fill > 0) || !fld.nCav) return 1.01;
+  const want = Math.min(1, fill) * fld.nCav, h = fld.hist;
+  let acc = 0;
+  for (let b = HBINS - 1; b >= 0; b--){
+    if (acc + h[b] >= want) return (b + 1 - (want - acc) / h[b]) / HBINS;
+    acc += h[b];
+  }
+  return 0;
+}
+
+/* ─── the implicit solid: F > 0 is material. F = max(lobes, shell), in millimetres.
+   shell: the conical tube (radial thickness tw), the floor disc and, closed, the lid.
+   lobes: (p²/level − 1)·wall, clipped to the vessel's outer envelope so no lobe leaves it; level is the
+   threshold that turns the loudest `fill` of the cavity's air solid (a moment's fill scales with its ringing).
+   Halves: min(F, y) on the rows y ≥ 0; the y = 0 row is then outside everywhere, which puts the
+   cut face on one flat plane. ─── */
+function cavityImplicit(fld, P, half){
+  const g = fld.grid, { nx, ny, nz, vx, vz, x0, y0, z0, flr, ch, cr0, cr1, tw, zRim, zTop, closed, c } = g;
+  const fill = Math.max(0, Math.min(0.6, (+P.cfill || 0) / 100 * fld.gain));
+  const level = Math.max(1e-6, fillThreshold(fld, fill)), Ls = Math.max(0.5, +P.cwall || 2);
+  const j0 = half ? c : 0, nyH = ny - j0, nCol = nx * ny, p2 = fld.p2, rCol = fld.rCol;
+  const F = new Float32Array(nx * nyH * nz), aOut0 = cr0 + tw, aOutT = cr1 + tw;
+  for (let k = 0; k < nz; k++){
+    const z = z0 + k * vz, zz = z - flr, zc = zz < 0 ? 0 : zz > ch ? ch : zz;
+    const a = cr0 + (cr1 - cr0) * zc / ch, aO = a + tw;
+    const zA = Math.min(z, zTop - z), fl = Math.min(z, flr - z), lidZ = closed ? Math.min(z - zRim, zTop - z) : -Infinity;
+    for (let jj = 0; jj < nyH; jj++){
+      const j = j0 + jj, y = y0 + j * vx;
+      for (let i = 0; i < nx; i++){
+        const col = j * nx + i, r = rCol[col];
+        let sh = Math.min(r - a, aO - r, zA);
+        const fv = Math.min(fl, aOut0 - r);
+        if (fv > sh) sh = fv;
+        if (closed){ const lv = Math.min(lidZ, aOutT - r); if (lv > sh) sh = lv; }
+        let lobe = (p2[k * nCol + col] / level - 1) * Ls;
+        const env = Math.min(aO - r, zA);
+        if (lobe > env) lobe = env;
+        let f = lobe > sh ? lobe : sh;
+        if (half && y < f) f = y;
+        F[(k * nyH + jj) * nx + i] = f;
+      }
+    }
+  }
+  const seed = (g.below * nyH + (half ? 1 : c)) * nx + c;
+  return { F, nx, ny: nyH, nz, y0: y0 + j0 * vx, seed, level, fill, half };
+}
+/* ─── islands and sealed pockets: 6-connected components. The solid keeps the component holding the
+   floor; other material is removed. Empty space not reachable from the grid's faces is a sealed pocket
+   of quiet air closed in by loud lobes (or, closed and whole, the cavity itself): kept as a void and
+   counted, or filled when keepVoids is false. ─── */
+function cleanComponents(F, nx, ny, nz, seed, keepVoids, fillV, killV){
+  const n = F.length, mark = new Uint8Array(n), queue = new Int32Array(n), sxy = nx * ny;
+  const flood = (start, pos, tag) => {
+    let h = 0, t = 0;
+    queue[t++] = start; mark[start] = tag;
+    while (h < t){
+      const p = queue[h++];
+      const k = (p / sxy) | 0, rem = p - k * sxy, j = (rem / nx) | 0, i = rem - j * nx;
+      let q;
+      if (i > 0 && !mark[q = p - 1] && (F[q] > 0) === pos){ mark[q] = tag; queue[t++] = q; }
+      if (i < nx - 1 && !mark[q = p + 1] && (F[q] > 0) === pos){ mark[q] = tag; queue[t++] = q; }
+      if (j > 0 && !mark[q = p - nx] && (F[q] > 0) === pos){ mark[q] = tag; queue[t++] = q; }
+      if (j < ny - 1 && !mark[q = p + nx] && (F[q] > 0) === pos){ mark[q] = tag; queue[t++] = q; }
+      if (k > 0 && !mark[q = p - sxy] && (F[q] > 0) === pos){ mark[q] = tag; queue[t++] = q; }
+      if (k < nz - 1 && !mark[q = p + sxy] && (F[q] > 0) === pos){ mark[q] = tag; queue[t++] = q; }
+    }
+    return t;
+  };
+  const out = { solidVox: 0, islands: 0, islandVox: 0, voids: 0, voidVox: 0, keptVoids: 0, keptVox: 0 };
+  if (F[seed] > 0) out.solidVox = flood(seed, true, 1);
+  for (let k = 0; k < nz; k++) for (let j = 0; j < ny; j++){
+    const edge = k === 0 || k === nz - 1 || j === 0 || j === ny - 1;
+    for (let i = 0; i < nx; i++){
+      if (!edge && i !== 0 && i !== nx - 1) continue;
+      const p = (k * ny + j) * nx + i;
+      if (!mark[p] && !(F[p] > 0)) flood(p, false, 2);
+    }
+  }
+  for (let p = 0; p < n; p++){
+    if (mark[p]) continue;
+    if (F[p] > 0){ out.islands++; out.islandVox += flood(p, true, 3); }
+    else if (keepVoids){ out.keptVoids++; out.keptVox += flood(p, false, 5); }
+    else { out.voids++; out.voidVox += flood(p, false, 4); }
+  }
+  if (out.islands || out.voids) for (let p = 0; p < n; p++){ if (mark[p] === 3) F[p] = killV; else if (mark[p] === 4) F[p] = fillV; }
+  return out;
+}
+/* ─── marching tetrahedra: six Kuhn tetrahedra per cube around the 0–7 diagonal (face diagonals agree
+   between neighbours), each listed with positive orientation. Surface vertices sit on grid edges and are
+   shared through a per-layer table, so every edge of the output is used by exactly two triangles. ─── */
+const TETS = [0, 1, 3, 7, 0, 1, 7, 5, 0, 2, 7, 3, 0, 2, 6, 7, 0, 4, 5, 7, 0, 4, 7, 6];
+const TET_CASES = (() => {
+  const P1 = [[0, 1, 2, 3], [1, 0, 3, 2], [2, 0, 1, 3], [3, 0, 2, 1]];              // even permutations, v first
+  const P2 = { 3: [0, 1, 2, 3], 5: [0, 2, 3, 1], 9: [0, 3, 1, 2], 6: [1, 2, 0, 3], 10: [1, 3, 2, 0], 12: [2, 3, 0, 1] };
+  const cases = [];
+  for (let mask = 0; mask < 16; mask++){
+    const inside = [0, 1, 2, 3].filter(i => (mask >> i) & 1);
+    let t = [];
+    if (inside.length === 1){ const p = P1[inside[0]]; t = [p[0], p[1], p[0], p[2], p[0], p[3]]; }
+    else if (inside.length === 3){ const p = P1[[0, 1, 2, 3].find(i => !((mask >> i) & 1))]; t = [p[0], p[1], p[0], p[3], p[0], p[2]]; }
+    else if (inside.length === 2){ const p = P2[mask]; t = [p[0], p[2], p[0], p[3], p[1], p[3], p[0], p[2], p[1], p[3], p[1], p[2]]; }
+    cases.push(Int8Array.from(t));
+  }
+  return cases;
+})();
+function marchingTets(F, g, progress){
+  const nx = g.nx, ny = g.ny, nz = g.nz, vx = g.vx, vy = g.vy === undefined ? g.vx : g.vy, vz = g.vz, x0 = g.x0, y0 = g.y0, z0 = g.z0;
+  const sxy = nx * ny, T = sxy * 7;
+  let tabA = new Int32Array(T).fill(-1), tabB = new Int32Array(T).fill(-1);
+  let pos = new Float32Array(1 << 16), nV = 0, idx = new Uint32Array(1 << 17), nI = 0;
+  const cF = new Float64Array(8), lv = new Int32Array(4);
+  let ci = 0, cj = 0, ck = 0;
+  const edgeVert = (lo, hi) => {
+    const m = lo ^ hi, bi = ci + (lo & 1), bj = cj + ((lo >> 1) & 1), up = (lo >> 2) & 1;
+    const tab = up ? tabB : tabA, slot = (bj * nx + bi) * 7 + m - 1;
+    const v = tab[slot];
+    if (v >= 0) return v;
+    const f0 = cF[lo], f1 = cF[hi];
+    let t = f0 / (f0 - f1);
+    if (!(t > T_MIN)) t = T_MIN; else if (t > 1 - T_MIN) t = 1 - T_MIN;
+    if (3 * nV + 3 > pos.length){ const np = new Float32Array(pos.length * 2); np.set(pos); pos = np; }
+    const o = 3 * nV;
+    pos[o] = x0 + bi * vx + ((m & 1) ? t * vx : 0);
+    pos[o + 1] = y0 + bj * vy + ((m & 2) ? t * vy : 0);
+    pos[o + 2] = z0 + (ck + up) * vz + ((m & 4) ? t * vz : 0);
+    tab[slot] = nV;
+    return nV++;
+  };
+  for (let k = 0; k < nz - 1; k++){
+    ck = k;
+    for (let j = 0; j < ny - 1; j++){
+      cj = j;
+      for (let i = 0; i < nx - 1; i++){
+        const p0 = (k * ny + j) * nx + i;
+        let m8 = 0;
+        for (let c = 0; c < 8; c++){
+          const f = F[p0 + (c & 1) + ((c >> 1) & 1) * nx + ((c >> 2) & 1) * sxy];
+          cF[c] = f; if (f > 0) m8 |= 1 << c;
+        }
+        if (m8 === 0 || m8 === 255) continue;
+        ci = i;
+        for (let tt = 0; tt < 24; tt += 4){
+          const a = TETS[tt], b = TETS[tt + 1], c = TETS[tt + 2], d = TETS[tt + 3];
+          const tm = ((m8 >> a) & 1) | (((m8 >> b) & 1) << 1) | (((m8 >> c) & 1) << 2) | (((m8 >> d) & 1) << 3);
+          if (tm === 0 || tm === 15) continue;
+          const cs = TET_CASES[tm];
+          lv[0] = a; lv[1] = b; lv[2] = c; lv[3] = d;
+          if (nI + cs.length / 2 > idx.length){ const ni = new Uint32Array(idx.length * 2); ni.set(idx); idx = ni; }
+          for (let q = 0; q < cs.length; q += 2){
+            const ca = lv[cs[q]], cb = lv[cs[q + 1]];
+            idx[nI++] = (ca & cb) === ca ? edgeVert(ca, cb) : edgeVert(cb, ca);
+          }
+        }
+      }
+    }
+    const tmp = tabA; tabA = tabB; tabB = tmp; tabB.fill(-1);
+    if (progress && (k & 7) === 7) progress('mesh', (k + 1) / (nz - 1));
+  }
+  return { pos: pos.slice(0, 3 * nV), idx: idx.slice(0, nI), nV, nF: nI / 3 };
+}
+/* surface components (shells), by union-find over shared vertices */
+function meshComponents(idx, nV){
+  const par = new Int32Array(nV);
+  for (let i = 0; i < nV; i++) par[i] = i;
+  const find = x => { while (par[x] !== x){ par[x] = par[par[x]]; x = par[x]; } return x; };
+  const unite = (a, b) => { a = find(a); b = find(b); if (a !== b) par[a] = b; };
+  for (let t = 0; t < idx.length; t += 3){ unite(idx[t], idx[t + 1]); unite(idx[t + 1], idx[t + 2]); }
+  const used = new Uint8Array(nV);
+  for (let t = 0; t < idx.length; t++) used[idx[t]] = 1;
+  let c = 0;
+  for (let v = 0; v < nV; v++) if (used[v] && find(v) === v) c++;
+  return c;
+}
+/* ─── field → solid: implicit union, components, marching tetrahedra; halves laid on their cut faces ─── */
+function cavityMesh(fld, P, progress){
+  const t = now(), g = fld.grid, half = !!(+P.chalf | 0), keepVoids = true;
+  const imp = cavityImplicit(fld, P, half);
+  const acc = { solidVox: 0, islands: 0, islandVox: 0, voids: 0, voidVox: 0, keptVoids: 0, keptVox: 0 };
+  for (let pass = 0; pass < 4; pass++){
+    const cl = cleanComponents(imp.F, imp.nx, imp.ny, imp.nz, imp.seed, keepVoids, 0.5 * g.vx, -0.5 * g.vx);
+    acc.islands += cl.islands; acc.islandVox += cl.islandVox; acc.voids += cl.voids; acc.voidVox += cl.voidVox;
+    acc.keptVoids = cl.keptVoids; acc.keptVox = cl.keptVox; acc.solidVox = cl.solidVox;
+    if (!cl.islands && !cl.voids) break;
+  }
+  if (!acc.solidVox) throw new Error('the shell fell between the voxels');
+  const mt = marchingTets(imp.F, { nx: imp.nx, ny: imp.ny, nz: imp.nz, x0: g.x0, y0: imp.y0, z0: g.z0, vx: g.vx, vy: g.vx, vz: g.vz }, progress);
+  let pos = mt.pos, idx = mt.idx, nV = mt.nV;
+  if (half){
+    const gap = 8, lift = Math.fround(T_MIN * g.vx), n = nV, m = idx.length;
+    const P2 = new Float32Array(6 * n), I2 = new Uint32Array(2 * m);
+    for (let v = 0; v < n; v++){
+      const x = pos[3 * v], y = pos[3 * v + 1] - lift, z = pos[3 * v + 2], o = 3 * (n + v);
+      P2[3 * v] = x; P2[3 * v + 1] = -z - gap / 2; P2[3 * v + 2] = y;      // rotate +90° about x: cut face down
+      P2[o] = x; P2[o + 1] = z + gap / 2; P2[o + 2] = y;                   // and its mirror image beside it
+    }
+    for (let q = 0; q < m; q += 3){
+      I2[q] = idx[q]; I2[q + 1] = idx[q + 1]; I2[q + 2] = idx[q + 2];
+      I2[m + q] = idx[q] + n; I2[m + q + 1] = idx[q + 2] + n; I2[m + q + 2] = idx[q + 1] + n;
+    }
+    pos = P2; idx = I2; nV = 2 * n;
+  }
+  const mesh = { pos, idx, nV, nF: idx.length / 3 };
+  const scale = (+P.fit | 0) ? fitToBed(mesh, +P.bed) : 1;
+  const normals = vertexNormals(pos, idx, nV);
+  const ext = extents(pos), sc = solidCheck(pos, idx, nV), ov = overhang(pos, idx, ext.min[2] + 1e-4);
+  const shells = meshComponents(idx, nV), cell = g.vx * g.vx * g.vz;
+  const stats = {
+    form: 'cavity', V: sc.V, E: sc.E, F: sc.F, euler: sc.euler, vol: sc.vol, badEdges: sc.badEdges, badDir: sc.badDir,
+    bytes: 84 + 50 * sc.F, size: ext.size, min: ext.min, max: ext.max, fits: ext.size.every(v => v <= 320 + 1e-6), scale,
+    massG: sc.vol / 1000 * 1.27, over: ov.maxDeg, overFrac: ov.frac, shells, genus: (2 * shells - sc.euler) / 2,
+    nx: g.nx, ny: g.ny, nz: g.nz, nvox: g.nvox, vox: g.vx, voxZ: g.vz, voxReq: g.vReq, coarsened: g.coarsened, wall: g.tw * g.cosA,
+    islands: acc.islands, islandFrac: acc.islandVox / Math.max(1, acc.solidVox + acc.islandVox), voidsFilled: acc.voids,
+    sealed: acc.keptVoids * (half ? 2 : 1), sealedVol: acc.keptVox * cell * (half ? 2 : 1) * scale * scale * scale, solidVox: acc.solidVox,
+    voxVol: acc.solidVox * cell * (half ? 2 : 1) * scale * scale * scale,
+    half, closed: g.closed, level: imp.level, fill: imp.fill, msMesh: now() - t,
+  };
+  return { mesh, normals, stats };
+}
+function cavityPipeline(an, sr, P, progress){
+  const t0 = now(), modes = cavityModes(P), t1 = now();
+  const drive = cavityDrive(an, modes, P, sr), grid = cavityGrid(P);
+  const fld = cavityField(modes, drive, grid, P, progress), t2 = now();
+  const r = cavityMesh(fld, P, progress);
+  Object.assign(r.stats, { modes: modes.count, groups: modes.groups.length, window: drive.window, gain: drive.gain, row: drive.row,
+    msModes: t1 - t0, msField: t2 - t1, ms: now() - t0 });
+  r.modes = modes; r.drive = drive; r.field = fld;
+  return r;
+}
+
+/* ─── the DOM-free half of the load-time self-test ─── */
+function selfTestPure(){
+  let asserts = 0, failures = 0;
+  const ok = (c, m) => { asserts++; if (!c){ failures++; if (typeof console !== 'undefined') console.assert(false, 'self-test: ' + m); } };
+  // FFT: a cosine at bin 37 of N=1024 peaks there, Parseval holds
+  {
+    const N = 1024, re = new Float64Array(N), im = new Float64Array(N);
+    let sx = 0;
+    for (let n = 0; n < N; n++){ re[n] = Math.cos(TAU * 37 * n / N); sx += re[n] * re[n]; }
+    fft(re, im);
+    let best = 0, sX = 0;
+    for (let b = 0; b <= N / 2; b++){ const p = re[b] * re[b] + im[b] * im[b]; if (p > re[best] * re[best] + im[best] * im[best]) best = b; }
+    for (let b = 0; b < N; b++) sX += re[b] * re[b] + im[b] * im[b];
+    ok(best === 37, 'FFT peak bin ' + best + ' != 37');
+    ok(Math.abs(sX / N - sx) < 1e-6 * N, 'Parseval');
+    let sw = 0; const w = hann(N); for (let n = 0; n < N; n++) sw += w[n];
+    ok(Math.abs(sw - N / 2) < 1e-3, 'Hann sum ' + sw);
+  }
+  // band map covers every band after interpolation
+  {
+    const P = defaults(), map = bandMap(bandEdges(P.fmin, P.fmax, P.nf, P.scale), 44100, P.fft);
+    ok(map.ok, 'band map has an unsourced band');
+    ok(map.binToBand[0] === -1, 'DC bin must not land in a band');
+  }
+  // the demo through the pipeline, solid and hollow
+  {
+    const sr = 44100, x = synthDemo(sr, 3);
+    const P = defaults(); P.nt = 64; P.nf = 48;
+    const solid = pipeline(x, sr, P);
+    const s = solid.stats, m = solid.mesh;
+    ok(s.badEdges === 0, 'solid badEdges ' + s.badEdges);
+    ok(s.badDir === 0, 'solid badDir ' + s.badDir);
+    ok(s.euler === 2, 'solid Euler ' + s.euler);
+    ok(s.vol > 0, 'solid volume ' + s.vol);
+    ok(s.F === 2 * m.nR * m.nC, 'solid F ' + s.F);
+    ok(s.fits, 'solid fits bed');
+    let fanB = 0; const B = m.nR * m.nC;
+    for (let i = 0; i < m.idx.length; i++) if (m.idx[i] === B) fanB++;
+    ok(fanB === m.nC, 'bottom fan count ' + fanB + ' != ' + m.nC);
+    const stl = writeSTL(m.pos, m.idx);
+    ok(stl.byteLength === 84 + 50 * s.F, 'STL byte length');
+    const head = String.fromCharCode.apply(null, new Uint8Array(stl, 0, 5));
+    ok(head !== 'solid', 'STL header must not start with solid');
+    ok(new DataView(stl).getUint32(80, true) === s.F, 'STL triangle count');
+    // mirror seam continuity
+    const S = solid.S, nC = solid.nC, nF = solid.nF, row = s.nFoot + 5;
+    ok(S[row * nC] === S[row * nC + nC - 1] && S[row * nC + nF - 1] === S[row * nC + nF], 'mirror seams');
+    P.hollow = 1;
+    const hollow = pipeline(x, sr, P);
+    const hs = hollow.stats, hm = hollow.mesh;
+    ok(hs.badEdges === 0 && hs.badDir === 0, 'hollow edges ' + hs.badEdges + '/' + hs.badDir);
+    ok(hs.euler === 2, 'hollow Euler ' + hs.euler);
+    ok(hs.vol > 0 && hs.vol < s.vol, 'hollow volume ' + hs.vol + ' vs solid ' + s.vol);
+    ok(hs.F === 2 * hm.nC * (hm.nR + hm.nRi), 'hollow F');
+    ok(s.over > 60, 'the plain foot is a ledge without the slope limit (' + s.over.toFixed(1) + ' deg)');
+    P.slope = 45;
+    const sl = pipeline(x, sr, P), ss = sl.stats;
+    ok(ss.badEdges === 0 && ss.badDir === 0 && ss.euler === 2 && ss.vol >= hs.vol, 'slope-limited hollow closed and no lighter');
+    ok(ss.over <= 45 + 1e-3, 'slope limit 45 deg holds: ' + ss.over.toFixed(3));
+    P.slope = 0;
+    // the other layouts close too
+    for (const layout of ['plain', 'transpose']){
+      const Q = defaults(); Q.nt = 48; Q.nf = 40; Q.layout = layout; Q.hollow = layout === 'plain' ? 1 : 0;
+      const r = pipeline(x, sr, Q);
+      ok(r.stats.badEdges === 0 && r.stats.badDir === 0 && r.stats.euler === 2 && r.stats.vol > 0, layout + ' closed');
+    }
+    // fit-to-bed scales an oversized body inside the limit
+    const big = defaults(); big.nt = 48; big.nf = 40; big.r0 = 120; big.depth = 40; big.h = 300; big.bed = 200;
+    const rb = pipeline(x, sr, big);
+    ok(rb.stats.scale < 1 && Math.max(...rb.stats.size) <= 200 + 1e-3, 'fit to bed ' + rb.stats.scale);
+    // a WAV round trip through the reader
+    const n = 64, wav = new ArrayBuffer(44 + n * 4), dv = new DataView(wav);
+    const put = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+    put(0, 'RIFF'); dv.setUint32(4, 36 + n * 4, true); put(8, 'WAVE'); put(12, 'fmt '); dv.setUint32(16, 16, true);
+    dv.setUint16(20, 1, true); dv.setUint16(22, 2, true); dv.setUint32(24, 8000, true); dv.setUint32(28, 32000, true);
+    dv.setUint16(32, 4, true); dv.setUint16(34, 16, true); put(36, 'data'); dv.setUint32(40, n * 4, true);
+    for (let i = 0; i < n; i++){ dv.setInt16(44 + i * 4, 16384, true); dv.setInt16(46 + i * 4, -16384, true); }
+    const pw = parseWav(wav);
+    ok(pw.sr === 8000 && pw.channels === 2 && pw.samples.length === n && Math.abs(pw.samples[3]) < 1e-9, 'WAV reader');
+  }
+  // ── the cavity core ──
+  {
+    const J = besselJ(3, 1), J2 = besselJ(2, 2.5), J3 = besselJ(20, 15);
+    ok(Math.abs(J[0] - 0.7651976865579666) < 1e-12, 'J0(1) ' + J[0]);
+    ok(Math.abs(J2[1] - 0.4970941024642741) < 1e-12, 'J1(2.5) ' + J2[1]);
+    ok(Math.abs(J3[20] - 0.007360234079223488) < 1e-12, 'J20(15) ' + J3[20]);
+    const z0 = besselZerosPrime(0, 8), z1 = besselZerosPrime(1, 8), z2 = besselZerosPrime(2, 8);
+    ok(z0[0] === 0 && Math.abs(z0[1] - 3.8317059702075125) < 1e-9 && Math.abs(z0[2] - 7.0155866698156190) < 1e-9, 'zeros of J0′ ' + z0);
+    ok(Math.abs(z1[0] - K11) < 1e-9 && Math.abs(z1[1] - 5.3314427735250325) < 1e-9, 'zeros of J1′ ' + z1);
+    ok(Math.abs(z2[0] - 3.0542369282271404) < 1e-9, 'first zero of J2′ ' + z2[0]);
+    const G = resonanceG(30), L1 = (G(1.0005) - G(0.9995)) / 0.001, r = 0.6, Lr = 1 / ((1 - r * r) * (1 - r * r) + (r / 30) * (r / 30));
+    ok(Math.abs(L1 / 900 - 1) < 1e-3 && Math.abs((G(r + 1e-5) - G(r - 1e-5)) / 2e-5 / Lr - 1) < 1e-6, 'resonance antiderivative');
+    // marching tetrahedra on a sphere: closed, genus 0, volume within 3 %
+    const n = 25, R = 8, Fs = new Float32Array(n * n * n), Fh = new Float32Array(n * n * n);
+    for (let k = 0; k < n; k++) for (let j = 0; j < n; j++) for (let i = 0; i < n; i++){
+      const x = i - 12, y = j - 12, z = k - 12, f = R - Math.hypot(x, y, z), p = (k * n + j) * n + i;
+      Fs[p] = f; Fh[p] = Math.min(f, y);
+    }
+    const gs = { nx: n, ny: n, nz: n, x0: -12, y0: -12, z0: -12, vx: 1, vy: 1, vz: 1 };
+    const ms = marchingTets(Fs, gs), sc = solidCheck(ms.pos, ms.idx, ms.nV), V0 = 4 / 3 * Math.PI * R * R * R;
+    ok(sc.badEdges === 0 && sc.badDir === 0 && sc.euler === 2 && meshComponents(ms.idx, ms.nV) === 1, 'tets sphere closed: ' + JSON.stringify(sc));
+    ok(Math.abs(sc.vol / V0 - 1) < 0.03, 'tets sphere volume ' + (sc.vol / V0).toFixed(4));
+    const mh = marchingTets(Fh, gs), sh = solidCheck(mh.pos, mh.idx, mh.nV);
+    ok(sh.badEdges === 0 && sh.badDir === 0 && sh.euler === 2 && Math.abs(sh.vol / (V0 / 2) - 1) < 0.04, 'tets hemisphere ' + (sh.vol / V0 * 2).toFixed(4));
+    let flat = 0;
+    for (let v = 0; v < mh.nV; v++) if (Math.abs(mh.pos[3 * v + 1] - T_MIN) < 1e-6) flat++;
+    ok(flat > 100, 'hemisphere cut face on one plane (' + flat + ' vertices)');
+  }
+  return { asserts, failures };
+}
+/* ─── the heavier cavity checks: the mode solver against the straight duct's closed form, and the demo
+   through the whole cavity pipeline four ways. The page runs these in its worker, after first paint. ─── */
+function selfTestCavity(){
+  let asserts = 0, failures = 0;
+  const ok = (c, m) => { asserts++; if (!c){ failures++; if (typeof console !== 'undefined') console.assert(false, 'self-test: ' + m); } };
+  {
+    // a straight cylinder has k² = κ² + (lπ/H)² exactly; the finite volumes must land within 0.3 %
+    // rigid lid: kz = lπ/H; open mouth (p = 0): kz = (l + ½)π/H
+    for (const top of ['closed', 'open']){
+      const Pc = defaults(); Pc.cr0 = 50; Pc.cr1 = 50; Pc.ch = 100; Pc.ctop = top;
+      const md = cavityModes(Pc);
+      let worst = 0, counted = 0;
+      for (const g of md.groups) for (let q = 0; q < g.modes.length; q++){
+        const l = top === 'open' ? q + 0.5 : g.kappa === 0 ? q + 1 : q, kz = l * Math.PI / md.Hn;
+        worst = Math.max(worst, Math.abs(md.k[g.modes[q]] / Math.hypot(g.kappa, kz) - 1)); counted++;
+      }
+      ok(counted > 300 && worst < 3e-3, 'straight cylinder, ' + top + ' top: ' + counted + ' modes, worst ' + worst);
+    }
+    // the demo in a cavity, coarse: one closed body; halves: two
+    const sr = 44100, x = synthDemo(sr, 3), Pd = defaults();
+    Pd.form = 'cavity'; Pd.nt = 64; Pd.cvox = 3;
+    const an = analyse(x, sr, Pd), cv = cavityPipeline(an, sr, Pd), cs = cv.stats;
+    ok(cs.badEdges === 0 && cs.badDir === 0 && cs.vol > 0 && cs.shells >= 1 && cs.shells <= 1 + cs.sealed && (cs.euler & 1) === 0 && cs.euler <= 2 * cs.shells, 'demo cavity closed: ' + [cs.badEdges, cs.badDir, cs.euler, cs.shells, cs.sealed].join('/'));
+    ok(cs.fits && Math.abs(cs.voxVol / cs.vol - 1) < 0.1, 'demo cavity volume vs voxels ' + (cs.voxVol / cs.vol).toFixed(3));
+    ok(cv.drive.window[1] > 12 * Pd.ctune * 0.99 && cs.modes > 100, 'demo cavity window ' + cv.drive.window.map(v => v.toFixed(0)) + ' · ' + cs.modes + ' modes');
+    Pd.chalf = 1;
+    const hs = cavityPipeline(an, sr, Pd).stats;
+    ok(hs.badEdges === 0 && hs.badDir === 0 && hs.vol > 0 && hs.shells >= 2 && hs.shells <= 2 + hs.sealed && hs.min[2] >= 0 && hs.min[2] < 1e-3, 'demo cavity halves: ' + [hs.shells, hs.euler, hs.min[2]].join('/'));
+    Pd.chalf = 0; Pd.ctop = 'closed';
+    const cl = cavityPipeline(an, sr, Pd).stats;
+    ok(cl.badEdges === 0 && cl.badDir === 0 && cl.vol > 0 && cl.sealed >= 1 && cl.shells >= 2 && cl.shells <= 1 + cl.sealed, 'demo cavity sealed: ' + [cl.shells, cl.sealed].join('/'));
+    Pd.ctop = 'open'; Pd.cmode = 'moment'; Pd.ct = 3.2;
+    const mo = cavityPipeline(an, sr, Pd);
+    ok(mo.drive.row >= 0 && mo.drive.gain > 0 && mo.stats.badEdges === 0 && Math.abs(mo.stats.fill - Math.min(0.6, Pd.cfill / 100 * mo.drive.gain)) < 1e-12, 'demo cavity moment row ' + mo.drive.row + ' gain ' + mo.drive.gain.toFixed(3));
+    const fl = cv.field, th = fillThreshold(fl, 0.2);
+    let above = 0;
+    for (let k = 0; k < fl.grid.nz; k++){
+      const zz = fl.grid.z0 + k * fl.grid.vz - fl.grid.flr;
+      if (zz < 0 || zz > fl.grid.ch) continue;
+      const a = fl.grid.cr0 + (fl.grid.cr1 - fl.grid.cr0) * zz / fl.grid.ch;
+      for (let col = 0; col < fl.rCol.length; col++) if (fl.rCol[col] <= a && fl.p2[k * fl.rCol.length + col] > th) above++;
+    }
+    ok(Math.abs(above / fl.nCav - 0.2) < 0.01, 'fill threshold: ' + (above / fl.nCav).toFixed(4) + ' of the cavity above it');
+  }
+  return { asserts, failures };
+}
+
+return {
+  TAU, now, defaults, fft, hann, parseWav, DEMO_HZ, synthDemo, peaks, span, effectiveRows, rmsRows, stftRows,
+  bandEdges, bandMap, binBands, toField, layoutSurface, blurSurface, erodeSurface, padFoot,
+  meshCylinder, extents, overhang, fitToBed, vertexNormals, solidCheck, writeSTL, gridSpec, triangleEstimate,
+  analyse, shape, pipeline, selfTestPure,
+  KMAX, K11, NRHO, VOX_MAX, T_MIN, besselJ, besselZerosPrime, sturmCount, solveTridiag, tridiagEig, cavityGeom, cavityModes,
+  HBINS, resonanceG, cavityDrive, cavityGrid, gaussKernel, gaussBlur3, cavityField, fillThreshold, cavityImplicit, cleanComponents, marchingTets, meshComponents,
+  cavityMesh, cavityPipeline, selfTestCavity,
+};
+})();
+if (typeof globalThis !== 'undefined') globalThis.VSF = VSF;
+/* @pure-end */
+
+/* ════════════════════════════════════════════════════════════════════
+   THE PAGE — controls, decoding, the inline worker, the two plates.
+   ════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pureSrc = (() => {
+  const s = document.currentScript ? document.currentScript.textContent : '';
+  const a = s.indexOf('/* @pure-begin */'), b = s.indexOf('/* @pure-end */');
+  return (a >= 0 && b > a) ? s.slice(a, b) : '';
+})();
+
+/* ─── colour, read from the CSS tokens so canvases follow the theme ─── */
+let C = {};
+function hx(h){
+  h = ('' + h).trim();
+  if (h.charAt(0) === 'r'){ const m = h.match(/[\d.]+/g) || [0, 0, 0]; return [+m[0] || 0, +m[1] || 0, +m[2] || 0]; }
+  h = h.replace('#', '');
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  return [parseInt(h.slice(0, 2), 16) || 0, parseInt(h.slice(2, 4), 16) || 0, parseInt(h.slice(4, 6), 16) || 0];
+}
+function readTheme(){
+  const cs = getComputedStyle($('pg')), g = n => cs.getPropertyValue(n).trim();
+  C = { ground: g('--ground'), ground2: g('--ground-2'), ground3: g('--ground-3'), rule: g('--rule'), ruleSoft: g('--rule-soft'),
+        ink: g('--ink'), ink2: g('--ink-2'), muted: g('--muted'), faint: g('--faint'),
+        fire: g('--fire'), earth: g('--earth'), air: g('--air'), water: g('--water'), aether: g('--aether'),
+        allow: g('--allow'), forbid: g('--forbid'), solid: g('--solid'), bed: g('--bed') };
+  C.lut = buildLut([C.ground2, C.water, C.aether, C.fire, C.earth, C.ink]);
+}
+function buildLut(stops){
+  const rgb = stops.map(hx), lut = new Uint8ClampedArray(256 * 3);
+  for (let i = 0; i < 256; i++){
+    const x = i / 255 * (rgb.length - 1), k = Math.min(rgb.length - 2, Math.floor(x)), t = x - k;
+    for (let a = 0; a < 3; a++) lut[3 * i + a] = rgb[k][a] + (rgb[k + 1][a] - rgb[k][a]) * t;
+  }
+  return lut;
+}
+function rgb01(h){ const c = hx(h); return [c[0] / 255, c[1] / 255, c[2] / 255]; }
+
+/* ─── state ─── */
+const P = VSF.defaults();
+let spin = !RM, showGrid = true, cutView = false;
+const AUDIO = { name: '100 Hz tone', base: '100-Hz-tone', sr: 44100, duration: 6, channels: 1, len: 0, peaks: null, samples: null, synthetic: true };
+const A = { an: null, anGen: 0, sh: null, cav: null, gen: 0, busy: false, job: '', err: '' };
+const dirty = { stft: false, shape: false, draw: false };
+const mapCache = { key: null, map: null };
+const idle = [];
+const LIVE_MAX = 300000, WARN_F = 1000000, MAX_F = 2000000;
+
+/* ─── the inline worker: the pure block plus this message loop, stringified. It must not touch the page's
+   closure: only self and VSF exist in there. The last cavity field is cached, so fill and halves re-mesh only. ─── */
+function workerMain(){
+  let S = null, SR = 44100, fieldKey = null, fld = null;
+  self.onmessage = function(e){
+    const m = e.data;
+    if (m.type === 'load'){ S = m.samples; SR = m.sr; self.postMessage({ type: 'loaded' }); return; }
+    if (m.type === 'selftest'){
+      let r;
+      try { r = VSF.selfTestCavity(); } catch (err){ r = { asserts: 1, failures: 1, error: String(err && err.message || err) }; }
+      self.postMessage({ type: 'selftest', r });
+      return;
+    }
+    if (m.type === 'analyse'){
+      if (!S) return;
+      const P = m.P, N = P.fft | 0, nT = VSF.effectiveRows(S.length, SR, P), nBins = (N >> 1) + 1, spec = new Float32Array(nT * nBins);
+      let info = null;
+      const t = VSF.now();
+      for (let r = 0; r < nT; r += 24){ const r1 = Math.min(nT, r + 24); info = VSF.stftRows(S, SR, { N, nT, t0: P.t0, t1: P.t1 }, r, r1, spec); self.postMessage({ type: 'progress', gen: m.gen, done: r1, total: nT }); }
+      const env = VSF.rmsRows(S, SR, P.t0, P.t1, nT);
+      self.postMessage({ type: 'spec', gen: m.gen, an: { spec, env, nT, nBins, N, hop: info.hop, K: info.K, s0: info.s0, s1: info.s1, ms: VSF.now() - t } }, [spec.buffer, env.buffer]);
+      return;
+    }
+    if (m.type === 'cavity'){
+      try {
+        const P = m.P, t0 = VSF.now();
+        const prog = base => (stage, f) => self.postMessage({ type: 'progress', gen: m.gen, done: base + 0.5 * f, total: 1 });
+        if (fieldKey !== m.fieldKey || !fld){
+          fld = null; fieldKey = null;
+          fld = VSF.cavityField(VSF.cavityModes(P), { w: m.w, gain: m.gain }, VSF.cavityGrid(P), P, prog(0));
+          fieldKey = m.fieldKey;
+        }
+        fld.gain = m.gain;
+        const t1 = VSF.now(), r = VSF.cavityMesh(fld, P, prog(0.5));
+        r.stats.msField = t1 - t0;
+        self.postMessage({ type: 'cavity', gen: m.gen, mesh: r.mesh, normals: r.normals, stats: r.stats }, [r.mesh.pos.buffer, r.mesh.idx.buffer, r.normals.buffer]);
+      } catch (err){ self.postMessage({ type: 'cavityError', gen: m.gen, message: String(err && err.message || err) }); }
+    }
+  };
+}
+let worker = null, workerOk = false;
+function makeWorker(){
+  if (!pureSrc || typeof Worker === 'undefined' || typeof Blob === 'undefined') return null;
+  try {
+    const url = URL.createObjectURL(new Blob([pureSrc, '\n(' + workerMain.toString() + ')();'], { type: 'text/javascript' }));
+    const w = new Worker(url);
+    w.onmessage = onWorkerMsg;
+    w.onerror = e => {
+      console.warn('worker failed, falling back to the main thread:', e.message);
+      workerOk = false;
+      if (A.busy){ A.busy = false; schedule(A.job === 'stft' ? 'stft' : 'shape'); }
+    };
+    workerOk = true;
+    return w;
+  } catch (e){ console.warn('inline worker unavailable:', e.message); return null; }
+}
+function onWorkerMsg(e){
+  const m = e.data;
+  if (m.type === 'loaded') return;
+  if (m.type === 'selftest'){ onCavitySelfTest(m.r, 'worker'); return; }
+  if (m.gen !== A.gen) return;
+  if (m.type === 'progress') setProgress(m.done / m.total);
+  else if (m.type === 'spec') acceptAnalysis(m.an);
+  else if (m.type === 'cavity') acceptCavity(m);
+  else if (m.type === 'cavityError'){ A.busy = false; A.err = m.message; setProgress(1); console.error('cavity:', m.message); schedule('draw'); }
+}
+function workerLoad(samples){
+  if (!worker || !workerOk) return;
+  const copy = samples.slice();
+  worker.postMessage({ type: 'load', samples: copy, sr: AUDIO.sr }, [copy.buffer]);
+}
+
+/* ─── the three-stage dirty pipeline ─── */
+let queued = false;
+function schedule(stage){
+  if (stage) dirty[stage] = true;
+  if (!queued){ queued = true; setTimeout(run, 0); }
+}
+function run(){
+  queued = false;
+  if (dirty.stft){ dirty.stft = false; dirty.shape = false; requestAnalysis(); return; }
+  if (A.busy && A.job === 'stft') return;
+  if (dirty.shape){ dirty.shape = false; runShape(); dirty.draw = true; }
+  if (dirty.draw){ dirty.draw = false; drawAll(); }
+  if (!A.busy && !dirty.stft && !dirty.shape){ const w = idle.splice(0); w.forEach(f => f()); }
+}
+function whenIdle(){ return new Promise(res => { if (!A.busy && !dirty.stft && !dirty.shape && !queued) res(); else idle.push(res); }); }
+function requestAnalysis(){
+  const gen = ++A.gen;
+  A.busy = true; A.job = 'stft'; setProgress(0);
+  if (worker && workerOk) worker.postMessage({ type: 'analyse', gen, P: { fft: P.fft, nt: P.nt, t0: P.t0, t1: P.t1 } });
+  else runStftChunked(gen);
+}
+function runStftChunked(gen){
+  const samples = AUDIO.samples, sr = AUDIO.sr;
+  const N = P.fft | 0, nT = VSF.effectiveRows(samples.length, sr, P), nBins = (N >> 1) + 1;
+  const spec = new Float32Array(nT * nBins), opts = { N, nT, t0: P.t0, t1: P.t1 }, t = VSF.now();
+  let r = 0, info = null;
+  const step = () => {
+    if (gen !== A.gen) return;
+    const r1 = Math.min(nT, r + 16);
+    info = VSF.stftRows(samples, sr, opts, r, r1, spec); r = r1;
+    setProgress(r / nT);
+    if (r < nT) setTimeout(step, 0);
+    else acceptAnalysis({ spec, env: VSF.rmsRows(samples, sr, P.t0, P.t1, nT), nT, nBins, N, hop: info.hop, K: info.K, s0: info.s0, s1: info.s1, ms: VSF.now() - t });
+  };
+  setTimeout(step, 0);
+}
+function acceptAnalysis(an){
+  A.an = an; A.anGen++; A.busy = false; setProgress(1);
+  schedule('shape');
+}
+function runShape(){
+  if (!A.an) return;
+  if (P.form === 'cavity'){ runCavity(); return; }
+  const g = VSF.gridSpec(P, A.an.nT);
+  if (g.F > MAX_F){ A.err = 'too many triangles'; updateStats(); return; }
+  A.err = '';
+  try { A.sh = VSF.shape(A.an, AUDIO.sr, P, mapCache); }
+  catch (e){ console.error(e); A.err = e.message; updateStats(); return; }
+  uploadMesh(); fitCamera(false);
+  window.__derived = { P, A, AUDIO, VSF };
+}
+/* ─── the cavity form: modes and drive on the main thread (cached, a few ms), field and mesh in the worker ─── */
+let mainField = { key: null, fld: null };
+function cavityInputs(){
+  const t = VSF.now(), modes = VSF.cavityModes(P), drive = VSF.cavityDrive(A.an, modes, P, AUDIO.sr), grid = VSF.cavityGrid(P);
+  const fieldKey = [drive.key, A.anGen, grid.nx, grid.nz, grid.vx, grid.vz, grid.tw, grid.zTop, +P.csmooth].join('|');
+  return { modes, drive, grid, fieldKey, msModes: VSF.now() - t };
+}
+function cavityMain(ci, Pp){
+  const t0 = VSF.now();
+  if (mainField.key !== ci.fieldKey) mainField = { key: ci.fieldKey, fld: VSF.cavityField(ci.modes, ci.drive, ci.grid, Pp) };
+  mainField.fld.gain = ci.drive.gain;
+  const t1 = VSF.now(), r = VSF.cavityMesh(mainField.fld, Pp);
+  r.stats.msField = t1 - t0;
+  return r;
+}
+function runCavity(){
+  const ci = cavityInputs(), Pp = Object.assign({}, P);
+  A.cav = ci;
+  const gen = ++A.gen;
+  A.busy = true; A.job = 'cavity'; setProgress(0);
+  if (worker && workerOk) worker.postMessage({ type: 'cavity', gen, P: Pp, w: ci.drive.w, gain: ci.drive.gain, fieldKey: ci.fieldKey });
+  else setTimeout(() => {
+    if (gen !== A.gen) return;
+    try { acceptCavity(cavityMain(ci, Pp)); }
+    catch (e){ console.error(e); A.busy = false; A.err = e.message; setProgress(1); schedule('draw'); }
+  }, 0);
+}
+function acceptCavity(m){
+  const ci = A.cav, s = m.stats;
+  Object.assign(s, { modes: ci.modes.count, groups: ci.modes.groups.length, window: ci.drive.window, gain: ci.drive.gain, row: ci.drive.row, msModes: ci.msModes });
+  A.sh = { form: 'cavity', mesh: m.mesh, normals: m.normals, stats: s, cav: ci };
+  A.busy = false;
+  A.err = s.F >= MAX_F ? 'too many triangles: raise the voxel size' : '';
+  setProgress(1);
+  uploadMesh(); fitCamera(false);
+  window.__derived = { P, A, AUDIO, VSF };
+  schedule('draw');
+}
+function setProgress(f){
+  const el = $('prog');
+  el.classList.toggle('is-done', f >= 1);
+  el.firstElementChild.style.width = (Math.max(0, Math.min(1, f)) * 100).toFixed(1) + '%';
+}
+
+/* ─── decoding ─── */
+function decodeAudio(ab){
+  const Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if (!Ctx) return Promise.reject(new Error('Web Audio is unavailable in this browser'));
+  const ctx = new Ctx(1, 1, 44100);
+  return new Promise((res, rej) => {
+    let p = null;
+    try { p = ctx.decodeAudioData(ab, res, rej); } catch (e){ rej(e); return; }
+    if (p && typeof p.then === 'function') p.then(res, rej);
+  });
+}
+async function loadArrayBuffer(ab, name){
+  let sr = 44100, channels = 1, samples = null;
+  try {
+    const buf = await decodeAudio(ab.slice(0));
+    sr = buf.sampleRate; channels = buf.numberOfChannels;
+    const n = buf.length, inv = 1 / channels;
+    samples = new Float32Array(n);
+    for (let c = 0; c < channels; c++){ const d = buf.getChannelData(c); for (let i = 0; i < n; i++) samples[i] += d[i] * inv; }
+  } catch (e1){
+    try { const w = VSF.parseWav(ab); sr = w.sr; channels = w.channels; samples = w.samples; }
+    catch (e2){ throw new Error('could not decode "' + name + '": ' + (e1 && e1.message ? e1.message : e1) + ' · ' + e2.message); }
+  }
+  if (!samples || samples.length < 64) throw new Error('"' + name + '" decoded to almost nothing');
+  setAudio(samples, sr, channels, name, false);
+  schedule('stft');
+  await whenIdle();
+  return A.sh ? A.sh.stats : null;
+}
+function setAudio(samples, sr, channels, name, synthetic){
+  AUDIO.samples = samples; AUDIO.sr = sr; AUDIO.channels = channels; AUDIO.name = name;
+  AUDIO.base = (name || 'sound').replace(/\.[^.]+$/, '').replace(/[^\w\-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'sound';
+  AUDIO.len = samples.length; AUDIO.duration = samples.length / sr; AUDIO.synthetic = synthetic;
+  AUDIO.peaks = VSF.peaks(samples, 600);
+  P.t0 = 0; P.t1 = 0;
+  const d = Math.max(0.2, Math.round(AUDIO.duration * 10) / 10);
+  $('t0').max = d; $('t1').max = d; $('t0').value = 0; $('t1').value = d; $('ct').max = d;
+  if (P.ct > d) P.ct = 0;
+  applyRange('ct', P.ct);
+  $('t0v').textContent = '0.0 s'; $('t1v').textContent = 'end';
+  $('audioMeta').textContent = (synthetic ? 'pure ' + VSF.DEMO_HZ + ' Hz sine' : name) + ' · ' + (sr / 1000).toFixed(1) + ' kHz · ' + (channels === 1 ? 'mono' : channels === 2 ? 'stereo' : channels + ' ch') + ' · ' + fmtSec(AUDIO.duration);
+  workerLoad(samples);
+  syncHash();
+}
+function loadDemo(sync){
+  const sr = 44100, samples = VSF.synthDemo(sr, 6);
+  setAudio(samples, sr, 1, VSF.DEMO_HZ + ' Hz tone', true);
+  if (sync){
+    const r = VSF.pipeline(samples, sr, P);
+    A.an = { spec: r.spec, env: r.env, nT: r.nT, nBins: r.nBins, N: r.N, hop: r.hop, K: r.K, s0: 0, s1: samples.length, ms: r.analyseMs };
+    A.anGen++;
+    A.sh = r; A.busy = false; setProgress(1);
+    if (P.form === 'cavity'){ const ci = cavityInputs(); A.cav = ci; acceptCavity(cavityMain(ci, P)); }
+    uploadMesh(); fitCamera(true); drawAll();
+    window.__derived = { P, A, AUDIO, VSF };
+  } else schedule('stft');
+}
+async function loadFile(file){
+  if (!file) return;
+  $('audioMeta').textContent = 'decoding ' + file.name + ' …';
+  try { await loadArrayBuffer(await file.arrayBuffer(), file.name); }
+  catch (e){ console.error(e); $('audioMeta').textContent = e.message; }
+}
+
+/* ─── WebGL: the solid and the bed ─── */
+const GL = { gl: null, prog: null, gl2: false, bufs: null, nIdx: 0, gridN: 0, lost: false, failed: false,
+             cam: { az: 0.6, el: 0.42, zoom: 1, base: 300, target: [0, 0, 80], fov: 0.62 } };
+const VS = 'attribute vec3 aPos; attribute vec3 aNormal; uniform mat4 uView, uProj; varying vec3 vN, vP;' +
+  ' void main(){ vN = aNormal; vP = aPos; gl_Position = uProj * uView * vec4(aPos, 1.0); }';
+const FS = 'precision mediump float; varying vec3 vN, vP; uniform vec3 uCam, uColor, uLkey, uLfill; uniform float uFlat, uAlpha; uniform vec4 uCut;' +
+  ' void main(){ if (uFlat > 0.5){ gl_FragColor = vec4(uColor, uAlpha); return; }' +
+  ' if (uCut.w > 0.5 && dot(vP.xy, uCut.xy) > uCut.z) discard;' +
+  ' vec3 N = normalize(vN); if (!gl_FrontFacing) N = -N; vec3 V = normalize(uCam - vP);' +
+  ' float diff = max(dot(N, uLkey), 0.0) * 0.72 + max(dot(N, uLfill), 0.0) * 0.28;' +
+  ' vec3 H = normalize(uLkey + V); float spec = pow(max(dot(N, H), 0.0), 34.0);' +
+  ' float rim = pow(1.0 - max(dot(N, V), 0.0), 2.6);' +
+  ' vec3 c = uColor * (0.2 + 0.8 * diff) + vec3(1.0) * spec * 0.28 + uColor * rim * 0.3;' +
+  ' gl_FragColor = vec4(c, uAlpha); }';
+function compileShader(gl, type, src){
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)){ const log = gl.getShaderInfoLog(s); gl.deleteShader(s); throw new Error(log); }
+  return s;
+}
+function buildProgram(gl, vsSrc, fsSrc){
+  const vs = compileShader(gl, gl.VERTEX_SHADER, vsSrc), fs = compileShader(gl, gl.FRAGMENT_SHADER, fsSrc);
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)){ const log = gl.getProgramInfoLog(prog); gl.deleteProgram(prog); throw new Error(log); }
+  const attribs = {}, uniforms = {};
+  const na = gl.getProgramParameter(prog, gl.ACTIVE_ATTRIBUTES);
+  for (let i = 0; i < na; i++){ const info = gl.getActiveAttrib(prog, i); attribs[info.name] = gl.getAttribLocation(prog, info.name); }
+  const nu = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < nu; i++){ const info = gl.getActiveUniform(prog, i); uniforms[info.name] = gl.getUniformLocation(prog, info.name); }
+  return { prog, attribs, uniforms };
+}
+function mat4Perspective(fovy, aspect, near, far){
+  const f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far);
+  return new Float32Array([f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2 * far * near * nf, 0]);
+}
+function mat4LookAt(eye, center, up){
+  let zx = eye[0] - center[0], zy = eye[1] - center[1], zz = eye[2] - center[2];
+  const zl = Math.hypot(zx, zy, zz) || 1; zx /= zl; zy /= zl; zz /= zl;
+  let xx = up[1] * zz - up[2] * zy, xy = up[2] * zx - up[0] * zz, xz = up[0] * zy - up[1] * zx;
+  const xl = Math.hypot(xx, xy, xz) || 1; xx /= xl; xy /= xl; xz /= xl;
+  const yx = zy * xz - zz * xy, yy = zz * xx - zx * xz, yz = zx * xy - zy * xx;
+  return new Float32Array([xx, yx, zx, 0, xy, yy, zy, 0, xz, yz, zz, 0,
+    -(xx * eye[0] + xy * eye[1] + xz * eye[2]), -(yx * eye[0] + yy * eye[1] + yz * eye[2]), -(zx * eye[0] + zy * eye[1] + zz * eye[2]), 1]);
+}
+function initGL(){
+  const cv = $('gl');
+  const opts = { alpha: true, antialias: true, premultipliedAlpha: false };
+  let gl = null;
+  try {
+    gl = cv.getContext('webgl2', opts);
+    if (gl) GL.gl2 = true;
+    else { gl = cv.getContext('webgl', opts) || cv.getContext('experimental-webgl', opts); if (gl && !gl.getExtension('OES_element_index_uint')) gl = null; }
+  } catch (e){ gl = null; }
+  if (!gl){ GL.failed = true; $('fail').hidden = false; return null; }
+  GL.gl = gl;
+  try { initGLObjects(); } catch (e){ GL.failed = true; GL.gl = null; $('fail').hidden = false; console.error('shader build failed:', e.message); return null; }
+  cv.addEventListener('webglcontextlost', e => { e.preventDefault(); GL.lost = true; });
+  cv.addEventListener('webglcontextrestored', () => { GL.lost = false; try { initGLObjects(); uploadMesh(); render(); } catch (e){ console.error(e); } });
+  return gl;
+}
+function initGLObjects(){
+  const gl = GL.gl;
+  GL.prog = buildProgram(gl, VS, FS);
+  gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  GL.bufs = { pos: gl.createBuffer(), nrm: gl.createBuffer(), idx: gl.createBuffer(), grid: gl.createBuffer(), rim: gl.createBuffer() };
+  const L = 160, step = 20, g = [];
+  for (let v = -L; v <= L; v += step){ g.push(-L, v, -0.05, L, v, -0.05, v, -L, -0.05, v, L, -0.05); }
+  gl.bindBuffer(gl.ARRAY_BUFFER, GL.bufs.grid); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(g), gl.STATIC_DRAW);
+  GL.gridN = g.length / 3;
+  gl.bindBuffer(gl.ARRAY_BUFFER, GL.bufs.rim); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-L, -L, 0, L, -L, 0, L, L, 0, -L, L, 0]), gl.STATIC_DRAW);
+  GL.nIdx = 0;
+}
+function uploadMesh(){
+  const gl = GL.gl;
+  if (!gl || GL.lost || !A.sh) return;
+  const m = A.sh.mesh;
+  gl.bindBuffer(gl.ARRAY_BUFFER, GL.bufs.pos); gl.bufferData(gl.ARRAY_BUFFER, m.pos, gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, GL.bufs.nrm); gl.bufferData(gl.ARRAY_BUFFER, A.sh.normals, gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.bufs.idx); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, m.idx, gl.STATIC_DRAW);
+  GL.nIdx = m.idx.length;
+}
+function fitCamera(reset){
+  if (!A.sh) return;
+  const s = A.sh.stats, cam = GL.cam;
+  cam.target = [0, 0, (s.min[2] + s.max[2]) / 2];
+  cam.base = Math.max(s.size[0], s.size[1], s.size[2]) * 1.15 / Math.tan(cam.fov / 2) * 0.62;
+  if (reset){ cam.az = 0.6; cam.el = 0.42; cam.zoom = 1; }
+}
+function resizeGL(){
+  const cv = $('gl'), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, Math.round(cv.clientWidth * dpr)), h = Math.max(1, Math.round(cv.clientHeight * dpr));
+  if (cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+  return { w, h };
+}
+function render(){
+  const gl = GL.gl;
+  if (!gl || GL.lost) return;
+  const { w, h } = resizeGL();
+  gl.viewport(0, 0, w, h);
+  gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  if (!A.sh) return;
+  const cam = GL.cam, dist = cam.base * cam.zoom;
+  const ce = Math.cos(cam.el);
+  const eye = [cam.target[0] + dist * ce * Math.cos(cam.az), cam.target[1] + dist * ce * Math.sin(cam.az), cam.target[2] + dist * Math.sin(cam.el)];
+  const view = mat4LookAt(eye, cam.target, [0, 0, 1]);
+  const proj = mat4Perspective(cam.fov, w / h, Math.max(1, dist * 0.02), dist * 6 + 1000);
+  // camera basis for the lights: key above-left of the eye, fill from the right
+  let zx = eye[0] - cam.target[0], zy = eye[1] - cam.target[1], zz = eye[2] - cam.target[2];
+  const zl = Math.hypot(zx, zy, zz) || 1; zx /= zl; zy /= zl; zz /= zl;
+  let xx = -zy, xy = zx, xz = 0; const xl = Math.hypot(xx, xy) || 1; xx /= xl; xy /= xl;
+  const yx = zy * xz - zz * xy, yy = zz * xx - zx * xz, yz = zx * xy - zy * xx;
+  const nrm = v => { const L = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / L, v[1] / L, v[2] / L]; };
+  const key = nrm([-0.45 * xx + 0.7 * yx + 0.55 * zx, -0.45 * xy + 0.7 * yy + 0.55 * zy, -0.45 * xz + 0.7 * yz + 0.55 * zz]);
+  const fill = nrm([0.7 * xx - 0.15 * yx + 0.3 * zx, 0.7 * xy - 0.15 * yy + 0.3 * zy, 0.7 * xz - 0.15 * yz + 0.3 * zz]);
+  const { prog, attribs, uniforms } = GL.prog;
+  gl.useProgram(prog);
+  gl.uniformMatrix4fv(uniforms.uView, false, view);
+  gl.uniformMatrix4fv(uniforms.uProj, false, proj);
+  gl.uniform3fv(uniforms.uCam, eye);
+  gl.uniform3fv(uniforms.uLkey, key);
+  gl.uniform3fv(uniforms.uLfill, fill);
+  {
+    const cx = eye[0] - cam.target[0], cy = eye[1] - cam.target[1], cl = Math.hypot(cx, cy) || 1;
+    gl.uniform4f(uniforms.uCut, cx / cl, cy / cl, 0, cutView ? 1 : 0);
+  }
+  if (showGrid){
+    gl.disableVertexAttribArray(attribs.aNormal); gl.vertexAttrib3f(attribs.aNormal, 0, 0, 1);
+    gl.uniform1f(uniforms.uFlat, 1);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.bufs.grid); gl.enableVertexAttribArray(attribs.aPos); gl.vertexAttribPointer(attribs.aPos, 3, gl.FLOAT, false, 0, 0);
+    gl.uniform3fv(uniforms.uColor, rgb01(C.bed)); gl.uniform1f(uniforms.uAlpha, 0.55);
+    gl.drawArrays(gl.LINES, 0, GL.gridN);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.bufs.rim); gl.vertexAttribPointer(attribs.aPos, 3, gl.FLOAT, false, 0, 0);
+    gl.uniform3fv(uniforms.uColor, rgb01(C.aether)); gl.uniform1f(uniforms.uAlpha, 0.8);
+    gl.drawArrays(gl.LINE_LOOP, 0, 4);
+  }
+  if (GL.nIdx){
+    gl.uniform1f(uniforms.uFlat, 0);
+    gl.uniform3fv(uniforms.uColor, rgb01(C.solid)); gl.uniform1f(uniforms.uAlpha, 1);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.bufs.pos); gl.enableVertexAttribArray(attribs.aPos); gl.vertexAttribPointer(attribs.aPos, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.bufs.nrm); gl.enableVertexAttribArray(attribs.aNormal); gl.vertexAttribPointer(attribs.aNormal, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.bufs.idx);
+    gl.drawElements(gl.TRIANGLES, GL.nIdx, gl.UNSIGNED_INT, 0);
+  }
+}
+function bindOrbit(){
+  const cv = $('gl');
+  let dragging = false, lx = 0, ly = 0;
+  cv.style.cursor = 'grab';
+  cv.addEventListener('pointerdown', e => { dragging = true; lx = e.clientX; ly = e.clientY; cv.setPointerCapture(e.pointerId); cv.style.cursor = 'grabbing'; });
+  cv.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
+    GL.cam.az -= dx * 0.008; GL.cam.el = Math.max(-1.4, Math.min(1.4, GL.cam.el + dy * 0.008));
+    if (!spin) render();
+  });
+  const up = () => { if (dragging){ dragging = false; cv.style.cursor = 'grab'; } };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  cv.addEventListener('wheel', e => { e.preventDefault(); GL.cam.zoom = Math.max(0.3, Math.min(4, GL.cam.zoom * Math.exp(e.deltaY * 0.0012))); if (!spin) render(); }, { passive: false });
+}
+let rafId = null, lastTs = null;
+function loop(ts){
+  if (!spin || document.hidden){ rafId = null; lastTs = null; return; }
+  if (lastTs == null) lastTs = ts;
+  const dt = Math.min(0.05, (ts - lastTs) / 1000); lastTs = ts;
+  GL.cam.az += dt * 0.22;
+  render();
+  rafId = requestAnimationFrame(loop);
+}
+function startLoop(){ if (spin && rafId == null && GL.gl) rafId = requestAnimationFrame(loop); }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) startLoop(); });
+
+/* ─── Plate I: the unrolled surface and the waveform ─── */
+const offCv = document.createElement('canvas');
+function sizeCanvas(cv){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, Math.round(cv.clientWidth * dpr)), h = Math.max(1, Math.round(cv.clientHeight * dpr));
+  if (cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: w / dpr, h: h / dpr };
+}
+function drawSpec(){
+  if (P.form === 'cavity') return drawSpecCavity();
+  const { ctx, w, h } = sizeCanvas($('spec'));
+  ctx.clearRect(0, 0, w, h);
+  if (!A.sh || A.sh.form === 'cavity') return;
+  const { S, nR, nC } = A.sh, lut = C.lut;
+  offCv.width = nC; offCv.height = nR;
+  const octx = offCv.getContext('2d'), img = octx.createImageData(nC, nR), d = img.data;
+  for (let i = 0; i < nR; i++){
+    const y = nR - 1 - i, row = i * nC;
+    for (let j = 0; j < nC; j++){
+      const v = Math.max(0, Math.min(255, Math.round(S[row + j] * 255))), o = 4 * (y * nC + j);
+      d[o] = lut[3 * v]; d[o + 1] = lut[3 * v + 1]; d[o + 2] = lut[3 * v + 2]; d[o + 3] = 255;
+    }
+  }
+  octx.putImageData(img, 0, 0);
+  const L = 46, Bm = 18, pw = w - L - 8, ph = h - Bm - 8;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(offCv, L, 8, pw, ph);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1; ctx.strokeRect(L + 0.5, 8.5, pw - 1, ph - 1);
+  const tr = P.layout === 'transpose';
+  const s0 = A.an ? A.an.s0 / AUDIO.sr : 0, s1 = A.an ? A.an.s1 / AUDIO.sr : AUDIO.duration;
+  ctx.fillStyle = C.faint; ctx.font = '10px ' + C_MONO(); ctx.textBaseline = 'middle';
+  ctx.textAlign = 'right';
+  const yLab = tr ? [fmtHz(P.fmax), fmtHz(P.fmin)] : [fmtSec(s1), fmtSec(s0)];
+  ctx.fillText(yLab[0], L - 5, 14); ctx.fillText(yLab[1], L - 5, 8 + ph - 6);
+  ctx.save(); ctx.translate(12, 8 + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center';
+  ctx.fillText(tr ? 'FREQUENCY ↑' : 'TIME ↑', 0, 0); ctx.restore();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  const xy = h - 5;
+  if (tr){ ctx.fillText(fmtSec(s0), L, xy); ctx.textAlign = 'right'; ctx.fillText(fmtSec(s1), L + pw, xy); ctx.textAlign = 'center'; ctx.fillText('TIME AROUND →', L + pw / 2, xy); }
+  else if (P.layout === 'mirror'){ ctx.fillText(fmtHz(P.fmin), L, xy); ctx.textAlign = 'center'; ctx.fillText(fmtHz(P.fmax) + ' · mirrored', L + pw / 2, xy); ctx.textAlign = 'right'; ctx.fillText(fmtHz(P.fmin), L + pw, xy); }
+  else { ctx.fillText(fmtHz(P.fmin), L, xy); ctx.textAlign = 'center'; ctx.fillText('FREQUENCY AROUND →', L + pw / 2, xy); ctx.textAlign = 'right'; ctx.fillText(fmtHz(P.fmax), L + pw, xy); }
+  $('specNote').textContent = P.layout + ' · ' + nR + ' × ' + nC + (A.sh.stats.nFoot ? ' · foot ' + A.sh.stats.nFoot : '');
+}
+function drawSpecCavity(){
+  const { ctx, w, h } = sizeCanvas($('spec'));
+  ctx.clearRect(0, 0, w, h);
+  const an = A.an, ci = A.cav;
+  if (!an || !ci) return;
+  const d = ci.drive, nT = an.nT, nB = an.nBins, bmax = d.bmax, spec = an.spec, lut = C.lut;
+  let mx = 0;
+  for (let t = 0; t < nT; t++) for (let b = 1; b <= bmax; b++) if (spec[t * nB + b] > mx) mx = spec[t * nB + b];
+  offCv.width = bmax; offCv.height = nT;
+  const octx = offCv.getContext('2d'), img = octx.createImageData(bmax, nT), px = img.data, im = mx > 0 ? 1 / mx : 0;
+  for (let t = 0; t < nT; t++){
+    const y = nT - 1 - t;
+    for (let b = 1; b <= bmax; b++){
+      const db = 10 * Math.log10(spec[t * nB + b] * im + 1e-20), v = Math.max(0, Math.min(255, Math.round((db + 60) / 60 * 255))), o = 4 * (y * bmax + b - 1);
+      px[o] = lut[3 * v]; px[o + 1] = lut[3 * v + 1]; px[o + 2] = lut[3 * v + 2]; px[o + 3] = 255;
+    }
+  }
+  octx.putImageData(img, 0, 0);
+  const L = 46, Bm = 18, T0 = 14, pw = w - L - 8, ph = h - Bm - T0;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(offCv, L, T0, pw, ph);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1; ctx.strokeRect(L + 0.5, T0 + 0.5, pw - 1, ph - 1);
+  const fMax = (bmax + 0.5) * d.df, X = f => L + pw * Math.max(0, f - 0.5 * d.df) / (fMax - 0.5 * d.df);
+  // the vessel's window: below the lowest mode nothing resonates; above k·a0 = 22 the modes are cut off
+  ctx.fillStyle = C.ground; ctx.globalAlpha = 0.55;
+  ctx.fillRect(L, T0, Math.max(0, X(d.window[0] / 1.15) - L), ph);
+  ctx.fillRect(X(d.window[1]), T0, L + pw - X(d.window[1]), ph);
+  ctx.globalAlpha = 1;
+  // every mode, ticked at its frequency; brighter = more strongly driven
+  let wmax = 0;
+  for (let j = 0; j < d.w.length; j++) if (d.w[j] > wmax) wmax = d.w[j];
+  ctx.strokeStyle = C.aether;
+  for (let j = 0; j < d.f.length; j++){
+    const x = Math.round(X(d.f[j])) + 0.5;
+    ctx.globalAlpha = 0.15 + 0.85 * Math.sqrt(wmax > 0 ? d.w[j] / wmax : 0);
+    ctx.beginPath(); ctx.moveTo(x, 2); ctx.lineTo(x, T0 - 2); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  if (P.cmode === 'moment' && d.row >= 0){
+    const y = Math.round(T0 + ph * (1 - (d.row + 0.5) / nT)) + 0.5;
+    ctx.strokeStyle = C.fire; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(L + pw, y); ctx.stroke(); ctx.lineWidth = 1;
+  }
+  const s0 = an.s0 / AUDIO.sr, s1 = an.s1 / AUDIO.sr;
+  ctx.fillStyle = C.faint; ctx.font = '10px ' + C_MONO(); ctx.textBaseline = 'middle'; ctx.textAlign = 'right';
+  ctx.fillText(fmtSec(s1), L - 5, T0 + 6); ctx.fillText(fmtSec(s0), L - 5, T0 + ph - 6);
+  ctx.save(); ctx.translate(12, T0 + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillText('TIME ↑', 0, 0); ctx.restore();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  const xy = h - 5;
+  ctx.fillText('0 Hz', L, xy); ctx.textAlign = 'center'; ctx.fillText('FREQUENCY → · the vessel\u2019s modes ticked above', L + pw / 2, xy);
+  ctx.textAlign = 'right'; ctx.fillText(fmtHz(fMax), L + pw, xy);
+  $('specNote').textContent = 'cavity · ' + ci.modes.count + ' modes · ' + fmtHz(d.window[0]) + ' – ' + fmtHz(d.window[1]);
+}
+function drawWave(){
+  const { ctx, w, h } = sizeCanvas($('wave'));
+  ctx.clearRect(0, 0, w, h);
+  const pk = AUDIO.peaks; if (!pk) return;
+  const n = pk.length / 2, mid = h / 2, L = 46, pw = w - L - 8;
+  const s0 = A.an ? A.an.s0 / AUDIO.len : 0, s1 = A.an ? A.an.s1 / AUDIO.len : 1;
+  ctx.fillStyle = C.ground3; ctx.fillRect(L, 0, pw, h);
+  ctx.fillStyle = C.aether; ctx.globalAlpha = 0.12; ctx.fillRect(L + pw * s0, 0, pw * (s1 - s0), h); ctx.globalAlpha = 1;
+  for (let b = 0; b < n; b++){
+    const x = L + (b + 0.5) / n * pw, lit = b / n >= s0 && b / n < s1;
+    ctx.strokeStyle = lit ? C.air : C.faint; ctx.globalAlpha = lit ? 0.9 : 0.5;
+    ctx.beginPath(); ctx.moveTo(x, mid - pk[2 * b + 1] * (mid - 3)); ctx.lineTo(x, mid - pk[2 * b] * (mid - 3)); ctx.stroke();
+  }
+  if (P.form === 'cavity' && P.cmode === 'moment'){
+    const x = Math.round(L + pw * Math.min(1, Math.max(0, P.ct / AUDIO.duration))) + 0.5;
+    ctx.globalAlpha = 1; ctx.strokeStyle = C.fire; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); ctx.lineWidth = 1;
+  }
+  ctx.globalAlpha = 1; ctx.fillStyle = C.faint; ctx.font = '10px ' + C_MONO(); ctx.textBaseline = 'middle'; ctx.textAlign = 'right';
+  ctx.fillText('0 s', L - 5, mid);
+  ctx.textAlign = 'left'; ctx.fillText(fmtSec(AUDIO.duration), L + pw + 3, mid);
+}
+function C_MONO(){ return getComputedStyle($('pg')).getPropertyValue('--mono') || 'monospace'; }
+function fmtSec(s){ return s >= 100 ? Math.round(s) + ' s' : s.toFixed(1) + ' s'; }
+function fmtHz(f){ return f >= 1000 ? (f / 1000).toFixed(f >= 10000 ? 1 : 2).replace(/\.?0+$/, '') + ' kHz' : Math.round(f) + ' Hz'; }
+function fmtMB(b){ return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : (b / 1024).toFixed(0) + ' kB'; }
+
+/* ─── the readout cells ─── */
+function fmtOver(s, chart){
+  const v = $('sOvr');
+  if (s.over <= 45.05){ v.textContent = 'max ' + s.over.toFixed(0) + '° · support-free'; v.className = 'cell__v is-ok'; }
+  else { v.textContent = 'max ' + s.over.toFixed(0) + '°'; v.className = 'cell__v ' + (s.overFrac > 0.02 ? 'is-warn' : ''); }
+  $('sOvrN').textContent = (s.overFrac * 100).toFixed(1) + ' % of the surface leans past 45°' +
+    (chart ? ((P.slope | 0) ? ' · limit ' + (P.slope | 0) + '°' : ' · limit off') : (P.chalf | 0 ? ' · cut face on the bed, the vault over the lobes needs support' : ' · the lobes hang inside: support them from the floor'));
+}
+function fmtBed(s){
+  const bedV = $('sBed');
+  if (s.scale < 1){ bedV.textContent = 'scaled × ' + s.scale.toFixed(3); bedV.className = 'cell__v is-warn'; $('sBedN').textContent = 'shrunk to the ' + P.bed + ' mm limit'; }
+  else if (s.fits){ bedV.textContent = 'fits'; bedV.className = 'cell__v is-ok'; $('sBedN').textContent = 'largest side ' + Math.max(...s.size).toFixed(1) + ' mm'; }
+  else { bedV.textContent = 'too big'; bedV.className = 'cell__v is-bad'; $('sBedN').textContent = 'largest side ' + Math.max(...s.size).toFixed(1) + ' mm'; }
+  $('sExt').textContent = s.size.map(v => v.toFixed(1)).join(' × ');
+  $('sExtN').textContent = 'z from ' + s.min[2].toFixed(1) + ' to ' + s.max[2].toFixed(1) + ' mm';
+}
+function taperDeg(){ return Math.atan(Math.abs(P.cr1 - P.cr0) / P.ch) * 180 / Math.PI; }
+function updateStatsCavity(){
+  const g = VSF.cavityGrid(P), est = $('est'), sh = A.sh && A.sh.form === 'cavity' ? A.sh : null, F = sh ? sh.stats.F : 0;
+  est.textContent = g.nx + ' × ' + g.ny + ' × ' + g.nz + ' voxels at ' + g.vx.toFixed(2) + ' mm' +
+    (g.coarsened ? ' (raised from ' + g.vReq.toFixed(1) + ' mm: 4 M voxel budget)' : '') +
+    (sh ? ' → ' + F.toLocaleString() + ' triangles · ' + fmtMB(84 + 50 * F) : '') + (A.busy ? ' · building…' : '');
+  est.classList.toggle('is-warn', F >= WARN_F && F < MAX_F); est.classList.toggle('is-bad', F >= MAX_F);
+  $('dlBtn').disabled = !sh || A.busy || F >= MAX_F;
+  $('dlName').textContent = stlName();
+  $('heroNote').textContent = (AUDIO.synthetic ? VSF.DEMO_HZ + ' Hz tone' : AUDIO.name) + ' · ' + fmtSec(AUDIO.duration) + ' · cavity · ' + P.ctop +
+    ((P.chalf | 0) ? ' · halves' : '') + (P.cmode === 'moment' ? ' · at ' + P.ct.toFixed(2) + ' s' : '');
+  if (A.err){ $('sMan').textContent = A.err; $('sMan').className = 'cell__v is-bad'; }
+  if (!sh) return;
+  const s = sh.stats;
+  $('sTris').textContent = s.F.toLocaleString() + ' · ' + fmtMB(s.bytes);
+  $('sTrisN').textContent = s.nx + ' × ' + s.ny + ' × ' + s.nz + ' voxels at ' + s.vox.toFixed(2) + ' mm · V ' + s.V.toLocaleString();
+  fmtBed(s);
+  $('sVol').textContent = (s.vol / 1000).toFixed(1) + ' cm³ · ' + s.massG.toFixed(0) + ' g';
+  $('sVolN').textContent = '1.27 g/cm³, 100 % infill' + (s.sealed ? ' · ' + (s.sealedVol / 1000).toFixed(1) + ' cm³ of sealed air inside' : '');
+  if (!A.err){
+    const man = $('sMan'), good = s.badEdges === 0 && s.badDir === 0 && s.vol > 0 && (s.euler & 1) === 0;
+    man.textContent = good ? 'closed · ' + (s.shells > 1 ? s.shells + ' shells · ' : '') + 'genus ' + s.genus : 'FAULT';
+    man.className = 'cell__v ' + (good ? 'is-ok' : 'is-bad');
+  }
+  $('sManN').textContent = 'E ' + s.E.toLocaleString() + ' · odd edges ' + s.badEdges + ' · reversed ' + s.badDir + ' · ' +
+    (s.islands ? s.islands + ' floating lobe' + (s.islands > 1 ? 's' : '') + ' removed (' + (s.islandFrac * 100).toFixed(1) + ' %)' : 'no floating lobes') +
+    (s.sealed ? ' · ' + s.sealed + ' sealed pocket' + (s.sealed > 1 ? 's' : '') : '');
+  $('sAna').textContent = s.modes + ' modes · ' + fmtHz(s.window[0]) + ' – ' + fmtHz(s.window[1]);
+  const tp = taperDeg();
+  $('sAnaN').textContent = 'Q ' + P.cq + ' · fill ' + (s.fill * 100).toFixed(1) + ' %' + (P.cmode === 'moment' ? ' (ringing × ' + s.gain.toFixed(2) + ')' : '') +
+    ' · wall ' + tp.toFixed(1) + '°' + (tp > 14 ? ' (steep: modes approximate)' : '') + ' · ' +
+    s.msModes.toFixed(0) + ' + ' + s.msField.toFixed(0) + ' + ' + s.msMesh.toFixed(0) + ' ms';
+  fmtOver(s, false);
+}
+function updateStats(){
+  if (P.form === 'cavity') return updateStatsCavity();
+  const g = VSF.gridSpec(P, A.an ? A.an.nT : (P.nt | 0));
+  const est = $('est');
+  est.textContent = g.nR + ' × ' + g.nC + (g.nRi ? ' + ' + g.nRi + ' inner' : '') + ' → ' + g.F.toLocaleString() + ' triangles · ' + fmtMB(g.bytes);
+  est.classList.toggle('is-warn', g.F >= WARN_F && g.F < MAX_F); est.classList.toggle('is-bad', g.F >= MAX_F);
+  $('dlBtn').disabled = g.F >= MAX_F || !A.sh || A.sh.form === 'cavity';
+  $('dlName').textContent = stlName();
+  if (A.err){ $('sMan').textContent = A.err; $('sMan').className = 'cell__v is-bad'; return; }
+  if (!A.sh || A.sh.form === 'cavity') return;
+  const s = A.sh.stats;
+  $('sTris').textContent = s.F.toLocaleString() + ' · ' + fmtMB(s.bytes);
+  $('sTrisN').textContent = s.nR + ' rows × ' + s.nC + ' around' + (s.nRi ? ' · ' + s.nRi + ' inner rows' : '') + ' · V ' + s.V.toLocaleString();
+  fmtBed(s);
+  $('sVol').textContent = (s.vol / 1000).toFixed(1) + ' cm³ · ' + s.massG.toFixed(0) + ' g';
+  $('sVolN').textContent = '1.27 g/cm³, 100 % infill';
+  const man = $('sMan');
+  const good = s.badEdges === 0 && s.badDir === 0 && s.euler === 2 && s.vol > 0;
+  man.textContent = good ? 'closed · Euler 2' : 'FAULT';
+  man.className = 'cell__v ' + (good ? 'is-ok' : 'is-bad');
+  $('sManN').textContent = 'E ' + s.E.toLocaleString() + ' · odd edges ' + s.badEdges + ' · reversed ' + s.badDir + ' · ' + (s.vol > 0 ? 'volume +' : 'volume −');
+  if (A.an){
+    $('sAna').textContent = A.an.N + ' · ' + A.an.nT + ' × ' + A.sh.nF;
+    $('sAnaN').textContent = 'hop ' + (A.an.hop / AUDIO.sr * 1000).toFixed(0) + ' ms · ' + A.an.K + ' frame' + (A.an.K > 1 ? 's' : '') + ' per step · ' + A.an.ms.toFixed(0) + ' + ' + s.ms.toFixed(0) + ' ms';
+  }
+  fmtOver(s, true);
+  $('heroNote').textContent = (AUDIO.synthetic ? VSF.DEMO_HZ + ' Hz tone' : AUDIO.name) + ' · ' + fmtSec(AUDIO.duration) + ' · ' + P.layout + (P.hollow | 0 ? ' · hollow' : '');
+}
+function stlName(){
+  const d = new Date(), p = n => (n < 10 ? '0' : '') + n, stamp = d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+  if (P.form === 'cavity') return AUDIO.base + '-cavity-' + P.ctop + ((P.chalf | 0) ? '-halves' : '') + (P.cmode === 'moment' ? '-at-' + P.ct.toFixed(2).replace('.', 's') : '') + '-' + stamp + '.stl';
+  return AUDIO.base + '-cylinder-' + P.layout + ((P.hollow | 0) ? '-hollow' : '') + '-' + stamp + '.stl';
+}
+function exportSTL(){
+  if (!A.sh) return null;
+  const what = A.sh.form === 'cavity' ? 'cavity ' + P.ctop + ((P.chalf | 0) ? ' halves' : '') : P.layout + ((P.hollow | 0) ? ' hollow' : '');
+  return VSF.writeSTL(A.sh.mesh.pos, A.sh.mesh.idx, 'Promethean Theoria - volumetric sound form - ' + AUDIO.base + ' - ' + what);
+}
+function download(){
+  const buf = exportSTL(); if (!buf) return;
+  const blob = new Blob([buf], { type: 'model/stl' }), url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = stlName();
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function drawAll(){ updateStats(); drawSpec(); drawWave(); render(); }
+
+/* ─── controls ─── */
+const EXP_BASE = 20, EXP_SPAN = 1000;   // slider 0..1000 ↔ 20 Hz .. 20 kHz
+const hzToSlider = f => Math.round(1000 * Math.log(f / EXP_BASE) / Math.log(EXP_SPAN));
+const sliderToHz = v => EXP_BASE * Math.pow(EXP_SPAN, v / 1000);
+const RANGES = {
+  nt: { stage: 'stft', fmt: v => '' + v, int: true },
+  nf: { stage: 'shape', fmt: v => '' + v, int: true },
+  fmin: { stage: 'shape', hz: true, fmt: fmtHz },
+  fmax: { stage: 'shape', hz: true, fmt: fmtHz },
+  db: { stage: 'shape', fmt: v => (v < 0 ? '−' : '') + Math.abs(v) + ' dB', int: true },
+  gamma: { stage: 'shape', fmt: v => v.toFixed(2) },
+  contrast: { stage: 'shape', fmt: v => v.toFixed(2) },
+  bz: { stage: 'shape', fmt: v => '' + v, int: true },
+  bt: { stage: 'shape', fmt: v => '' + v, int: true },
+  r0: { stage: 'shape', fmt: v => v + ' mm' },
+  depth: { stage: 'shape', fmt: v => v + ' mm' },
+  h: { stage: 'shape', fmt: v => v + ' mm' },
+  foot: { stage: 'shape', fmt: v => v + ' mm' },
+  fade: { stage: 'shape', fmt: v => Math.round(v * 100) + '%' },
+  wall: { stage: 'shape', fmt: v => v.toFixed(1) + ' mm' },
+  flr: { stage: 'shape', fmt: v => v.toFixed(1) + ' mm' },
+  bed: { stage: 'shape', fmt: v => v + ' mm' },
+  t0: { stage: 'stft', fmt: v => v.toFixed(1) + ' s' },
+  t1: { stage: 'stft', fmt: v => v.toFixed(1) + ' s' },
+  // the cavity form rebuilds in about a second, so it follows a slider when it is let go, not while dragged
+  cr0: { stage: 'shape', cav: true, fmt: v => v + ' mm' },
+  cr1: { stage: 'shape', cav: true, fmt: v => v + ' mm' },
+  ch: { stage: 'shape', cav: true, fmt: v => v + ' mm' },
+  cwall: { stage: 'shape', cav: true, fmt: v => v.toFixed(1) + ' mm' },
+  cflr: { stage: 'shape', cav: true, fmt: v => v.toFixed(1) + ' mm' },
+  cvox: { stage: 'shape', cav: true, fmt: v => v.toFixed(1) + ' mm' },
+  ctune: { stage: 'shape', cav: true, exp: [30, 1000], fmt: fmtHz },
+  cq: { stage: 'shape', cav: true, fmt: v => '' + v, int: true },
+  cfill: { stage: 'shape', cav: true, fmt: v => v + ' %', int: true },
+  csmooth: { stage: 'shape', cav: true, fmt: v => v.toFixed(1) + ' mm' },
+  csrc: { stage: 'shape', cav: true, fmt: v => Math.round(v * 100) + ' %' },
+  ct: { stage: 'shape', cav: true, fmt: v => v.toFixed(2) + ' s' },
+};
+const SEGS = { fftSeg: { key: 'fft', stage: 'stft', num: true }, scaleSeg: { key: 'scale', stage: 'shape' }, layoutSeg: { key: 'layout', stage: 'shape' },
+               hollowSeg: { key: 'hollow', stage: 'shape', num: true }, fitSeg: { key: 'fit', stage: 'shape', num: true },
+               formSeg: { key: 'form', stage: 'shape' }, slopeSeg: { key: 'slope', stage: 'shape', num: true },
+               ctopSeg: { key: 'ctop', stage: 'shape' }, chalfSeg: { key: 'chalf', stage: 'shape', num: true },
+               cmodeSeg: { key: 'cmode', stage: 'shape' } };
+function readRange(key){
+  const el = $(key), r = RANGES[key];
+  let v = +el.value;
+  if (r.hz) v = sliderToHz(v);
+  if (r.exp) v = Math.round(r.exp[0] * Math.pow(r.exp[1] / r.exp[0], v / 1000));
+  if (r.int) v = Math.round(v);
+  return v;
+}
+function applyRange(key, v){
+  const el = $(key), r = RANGES[key];
+  if (r.hz){ el.value = hzToSlider(v); }
+  else if (r.exp) el.value = Math.round(1000 * Math.log(v / r.exp[0]) / Math.log(r.exp[1] / r.exp[0]));
+  else el.value = v;
+  const out = $(key + 'v');
+  if (key === 't1') out.textContent = (v <= 0 || v >= +el.max) ? 'end' : r.fmt(v);
+  else out.textContent = r.fmt(v);
+}
+function onRange(key, final){
+  const r = RANGES[key];
+  let v = readRange(key);
+  if (key === 'fmin' && v >= P.fmax) v = P.fmax / 1.05;
+  if (key === 'fmax' && v <= P.fmin) v = P.fmin * 1.05;
+  if (key === 'fmax') v = Math.min(v, AUDIO.sr / 2);
+  if (key === 't1' && v >= +$('t1').max) v = 0;
+  if (key === 't0' && P.t1 > 0 && v >= P.t1) v = Math.max(0, P.t1 - 0.2);
+  P[key] = v;
+  applyRange(key, v);
+  syncHash();
+  const live = r.stage !== 'stft' && !r.cav && P.form !== 'cavity' && VSF.gridSpec(P, A.an ? A.an.nT : P.nt).F <= LIVE_MAX;
+  if (final || live) schedule(r.stage);
+  else updateStats();
+}
+function bindControls(){
+  for (const key of Object.keys(RANGES)){
+    const el = $(key);
+    el.addEventListener('input', () => onRange(key, false));
+    el.addEventListener('change', () => onRange(key, true));
+  }
+  for (const id of Object.keys(SEGS)){
+    const s = SEGS[id];
+    $(id).querySelectorAll('.btn').forEach(b => b.addEventListener('click', () => {
+      P[s.key] = s.num ? +b.dataset.v : b.dataset.v;
+      syncSegs(); syncHash(); schedule(s.stage);
+    }));
+  }
+  $('demoBtn').addEventListener('click', () => loadDemo(false));
+  $('wholeBtn').addEventListener('click', () => { P.t0 = 0; P.t1 = 0; applyRange('t0', 0); applyRange('t1', +$('t1').max); syncHash(); schedule('stft'); });
+  $('file').addEventListener('change', e => { loadFile(e.target.files[0]); e.target.value = ''; });
+  const plate = $('p0');
+  plate.addEventListener('dragover', e => { e.preventDefault(); plate.classList.add('is-over'); });
+  plate.addEventListener('dragleave', () => plate.classList.remove('is-over'));
+  plate.addEventListener('drop', e => { e.preventDefault(); plate.classList.remove('is-over'); const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) loadFile(f); });
+  $('dlBtn').addEventListener('click', download);
+  $('spinBtn').addEventListener('click', () => { spin = !spin; $('spinBtn').classList.toggle('is-on', spin); if (spin) startLoop(); else render(); });
+  $('gridBtn').addEventListener('click', () => { showGrid = !showGrid; $('gridBtn').classList.toggle('is-on', showGrid); render(); });
+  $('resetBtn').addEventListener('click', () => { fitCamera(true); render(); });
+  $('moreCtl').addEventListener('toggle', syncHash);
+  $('cutBtn').addEventListener('click', () => { cutView = !cutView; $('cutBtn').classList.toggle('is-on', cutView); syncHash(); render(); });
+  $('themeBtn').addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme || 'auto';
+    const next = cur === 'auto' ? 'dark' : cur === 'dark' ? 'light' : 'auto';
+    if (next === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = next;
+    onTheme(); syncHash();
+  });
+  window.addEventListener('resize', () => { drawSpec(); drawWave(); render(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', onTheme);
+}
+function onTheme(){
+  readTheme();
+  $('themeBtn').textContent = 'theme · ' + (document.documentElement.dataset.theme || 'auto');
+  drawSpec(); drawWave(); render();
+}
+function syncSegs(){
+  for (const id of Object.keys(SEGS)){
+    const s = SEGS[id];
+    $(id).querySelectorAll('.btn').forEach(b => b.classList.toggle('is-on', '' + P[s.key] === b.dataset.v));
+  }
+  const chart = P.form !== 'cavity';
+  document.querySelectorAll('[data-form]').forEach(el => { el.hidden = el.dataset.form !== (chart ? 'chart' : 'cavity'); });
+  $('fadeGrp').hidden = !chart || P.layout !== 'transpose';
+  $('wallGrp').hidden = !chart || !(P.hollow | 0); $('flrGrp').hidden = !chart || !(P.hollow | 0);
+  $('ctGrp').hidden = chart || P.cmode !== 'moment';
+  $('spinBtn').classList.toggle('is-on', spin); $('gridBtn').classList.toggle('is-on', showGrid); $('cutBtn').classList.toggle('is-on', cutView);
+  $('p0ttl').textContent = 'The sound as a solid · ' + (chart ? 'spectral cylinder' : 'cavity form');
+  $('moreHint').textContent = chart ? 'trim · analysis · size · print' : 'trim · analysis · vessel · field · print';
+  $('p1ttl').textContent = chart ? 'The unrolled surface · what the wall is made of' : 'The driving band · what sets the air ringing';
+  $('cap0').innerHTML = chart ? CAP0_CHART : CAP0_CAVITY;
+  $('cap1').innerHTML = chart ? CAP1_CHART : CAP1_CAVITY;
+}
+const CAP0_CHART = document.getElementById('cap0').innerHTML, CAP1_CHART = document.getElementById('cap1').innerHTML;
+const CAP0_CAVITY = '<b>Fig. 0</b> — The air inside a vessel, played the clip by a small speaker in its wall. Where the standing ' +
+  'waves are loudest, the air is made solid; the quiet air between the lobes, where the nodal surfaces run, stays empty. The lobes ' +
+  'are fused to a thin shell of the vessel, so the whole is one closed solid, meshed from voxels by marching tetrahedra. Press ' +
+  '<em>cut</em> to look inside.';
+const CAP1_CAVITY = '<b>Fig. 1</b> — The part of the spectrogram that drives the vessel, time up, frequency across. The ticks along the ' +
+  'top are the vessel\u2019s own modes, brighter where the clip drives them harder; the shaded ends lie outside what this vessel can ' +
+  'hold. In <em>moment</em> mode the red line is the instant the form shows, and on the waveform beneath.';
+function syncControls(){
+  for (const key of Object.keys(RANGES)) applyRange(key, P[key]);
+  if (P.t1 <= 0) $('t1v').textContent = 'end';
+  syncSegs();
+}
+
+/* ─── URL hash: parameters only, never the audio ─── */
+const HASH_KEYS = ['form', 'layout', 'fft', 'nt', 'nf', 'fmin', 'fmax', 'scale', 'db', 'gamma', 'contrast', 'bz', 'bt', 'r0', 'depth', 'h', 'foot', 'fade', 'hollow', 'wall', 'flr', 'slope', 'fit', 'bed',
+                   'cr0', 'cr1', 'ch', 'cwall', 'cflr', 'ctop', 'cvox', 'chalf', 'ctune', 'cq', 'cfill', 'csmooth', 'csrc', 'cmode', 'ct'];
+function syncHash(){
+  const q = new URLSearchParams(), D = VSF.defaults();
+  for (const k of HASH_KEYS) if ('' + P[k] !== '' + D[k]) q.set(k, typeof P[k] === 'number' ? +P[k].toFixed(3) : P[k]);
+  const th = document.documentElement.dataset.theme; if (th) q.set('theme', th);
+  if (cutView) q.set('cut', 1);
+  if ($('moreCtl').open) q.set('more', 1);
+  const s = q.toString();
+  history.replaceState(null, '', s ? '#' + s : location.pathname + location.search);
+}
+function applyHash(){
+  const h = location.hash.replace(/^#/, ''); if (!h) return;
+  const q = new URLSearchParams(h);
+  const num = (k, lo, hi) => { if (!q.has(k)) return; const v = +q.get(k); if (Number.isFinite(v)) P[k] = Math.max(lo, Math.min(hi, v)); };
+  if (['mirror', 'plain', 'transpose'].includes(q.get('layout'))) P.layout = q.get('layout');
+  if (['1024', '2048', '4096'].includes(q.get('fft'))) P.fft = +q.get('fft');
+  if (['log', 'lin'].includes(q.get('scale'))) P.scale = q.get('scale');
+  num('nt', 64, 1024); num('nf', 32, 512); num('fmin', 20, 19000); num('fmax', 25, 20000); num('db', -90, -30);
+  num('gamma', 0.3, 3); num('contrast', 0.5, 3); num('bz', 0, 8); num('bt', 0, 8);
+  num('r0', 15, 120); num('depth', 0, 40); num('h', 40, 300); num('foot', 0, 20); num('fade', 0, 0.1);
+  num('hollow', 0, 1); num('wall', 0.8, 6); num('flr', 1.2, 10); num('fit', 0, 1); num('bed', 100, 320);
+  P.nt = Math.round(P.nt / 32) * 32; P.nf = Math.round(P.nf / 16) * 16; P.hollow = P.hollow ? 1 : 0; P.fit = P.fit ? 1 : 0;
+  if (['chart', 'cavity'].includes(q.get('form'))) P.form = q.get('form');
+  if (['0', '45', '55', '65'].includes(q.get('slope'))) P.slope = +q.get('slope');
+  if (['open', 'closed'].includes(q.get('ctop'))) P.ctop = q.get('ctop');
+  if (['clip', 'moment'].includes(q.get('cmode'))) P.cmode = q.get('cmode');
+  num('cr0', 20, 120); num('cr1', 15, 120); num('ch', 40, 260); num('cwall', 1, 5); num('cflr', 1.2, 8); num('cvox', 0.6, 3);
+  num('chalf', 0, 1); num('ctune', 30, 1000); num('cq', 5, 100); num('cfill', 1, 50); num('csmooth', 0, 4); num('csrc', 0.05, 0.95); num('ct', 0, 3600);
+  P.chalf = P.chalf ? 1 : 0;
+  cutView = q.get('cut') === '1';
+  $('moreCtl').open = q.get('more') === '1';
+  if (P.fmin >= P.fmax) { P.fmin = 40; P.fmax = 12000; }
+  const th = q.get('theme'); if (th === 'light' || th === 'dark') document.documentElement.dataset.theme = th;
+}
+
+/* ─── test hooks ─── */
+window.__selfTest = function(){
+  const st = VSF.selfTestPure();
+  let n = st.asserts, f = st.failures;
+  const ok = (c, m) => { n++; if (!c){ f++; console.assert(false, 'self-test: ' + m); } };
+  ok(!!A.sh, 'a form exists at load');
+  if (A.sh){
+    const s = A.sh.stats;
+    ok(s.badEdges === 0 && s.badDir === 0, 'page mesh edges');
+    ok(A.sh.form === 'cavity' ? (s.euler & 1) === 0 && s.shells >= 1 : s.euler === 2, 'page mesh Euler ' + s.euler);
+    ok(s.vol > 0, 'page mesh volume');
+    ok(!(P.fit | 0) || Math.max(...s.size) <= P.bed + 1e-3, 'page mesh inside the bed limit');
+    if (s.F < 400000){ const b = exportSTL(); ok(b.byteLength === 84 + 50 * s.F, 'page STL bytes'); }
+  }
+  ok(GL.failed || !!GL.gl, 'WebGL state is consistent');
+  ok(pureSrc.length > 1000, 'pure block sliced for the worker');
+  return { asserts: n, failures: f };
+};
+let cavityTest = null;
+function footer(){
+  const st = window.__selfTest();
+  let t = 'Self-test at load: ' + st.asserts + ' asserts, ' + st.failures + ' failures.';
+  if (cavityTest) t += ' Cavity checks (' + cavityTest.where + '): ' + cavityTest.asserts + ' asserts, ' + cavityTest.failures + ' failures.';
+  else t += ' Cavity checks running…';
+  $('footTest').textContent = t;
+  return st;
+}
+function onCavitySelfTest(r, where){
+  cavityTest = { asserts: r.asserts, failures: r.failures, where };
+  if (r.failures) console.warn('cavity self-test:', r);
+  console.info('Volumetric Sound Forms — cavity self-test (' + where + '): ' + r.asserts + ' asserts, ' + r.failures + ' failures.');
+  footer();
+}
+window.__cavitySelfTest = () => VSF.selfTestCavity();
+window.__cavityTestResult = () => cavityTest;
+window.__loadArrayBuffer = loadArrayBuffer;
+window.__exportSTL = exportSTL;
+window.__runDemo = () => loadDemo(false);
+window.__whenIdle = whenIdle;
+
+/* ─── boot: everything the headless screenshot needs happens synchronously ─── */
+readTheme();
+applyHash();
+bindControls();
+syncControls();
+$('themeBtn').textContent = 'theme · ' + (document.documentElement.dataset.theme || 'auto');
+initGL();
+bindOrbit();
+worker = makeWorker();
+loadDemo(true);
+const st = footer();
+console.info('Volumetric Sound Forms — self-test: ' + st.asserts + ' asserts, ' + st.failures + ' failures. Inspect window.__derived · run __selfTest()');
+// the heavier cavity checks run in the worker after first paint, or on the main thread a moment later
+if (worker && workerOk) worker.postMessage({ type: 'selftest' });
+else setTimeout(() => onCavitySelfTest(VSF.selfTestCavity(), 'main thread'), 1500);
+startLoop();
+})();
+</script>
+</body>
+</html>
