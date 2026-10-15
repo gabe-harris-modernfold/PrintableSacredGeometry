@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-300.0 -328.0 600 560" width="600" height="560">
+<title>Kanizsa triangle</title>
+<rect x="-300.0" y="-328.0" width="600" height="560" fill="#ffffff"/>
+<polygon points="-0.00,161.95 140.25,-80.97 -140.25,-80.97" fill="none" stroke="#111111" stroke-width="7" stroke-linejoin="miter"/>
+<circle cx="0.00" cy="-190.53" r="72.60" fill="#111111"/><circle cx="-165.00" cy="95.26" r="72.60" fill="#111111"/><circle cx="165.00" cy="95.26" r="72.60" fill="#111111"/>
+<polygon points="0.00,-190.53 -165.00,95.26 165.00,95.26" fill="#ffffff"/>
+</svg>

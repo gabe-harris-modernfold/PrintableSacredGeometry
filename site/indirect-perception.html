@@ -1,0 +1,2009 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Indirect perception and the occulted gestalt: how the visual system builds edges, surfaces and solids that are not in the light, how artists summon shape with it, how it is exploited — and four printable ribbon sculptures whose solids exist only in the viewer.">
+<title>The Occulted Gestalt — indirect perception and the summoning of shape</title>
+<link rel="canonical" href="https://promethean-theoria.netlify.app/indirect-perception.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="The Occulted Gestalt — indirect perception and the summoning of shape">
+<meta property="og:description" content="Edges no one drew, solids no one printed: a live Kanizsa engine, a kinetic-depth demo, and four printable ribbon sculptures whose solids exist only in the viewer.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/indirect-perception.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/indirect-perception.html">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{
+  --ground:#F6F5F1; --panel:#EFEEE8; --panel-2:#E7E6DE; --rule:#D3D2C9; --rule-soft:#E2E1D9;
+  --ink:#1C2028; --ink-2:#454B57; --muted:#656B79; --faint:#8B909C;
+  --gold:#8F6F24; --gold-soft:rgba(143,111,36,.10); --gold-line:rgba(143,111,36,.35);
+  --ghost:#2F7FA8; --ok:#2C7A4E; --warn:#A8452B;
+  --stage:#13161D;
+  --serif: Charter,'Sitka Text',Cambria,Georgia,serif;
+  --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code',Consolas,'SF Mono','Roboto Mono',monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ground:#10131A; --panel:#171B25; --panel-2:#1D2230; --rule:#2A3040; --rule-soft:#1F2431;
+    --ink:#E9E6DD; --ink-2:#B0AFA8; --muted:#868DA0; --faint:#5C6377;
+    --gold:#C9B070; --gold-soft:rgba(201,176,112,.10); --gold-line:rgba(201,176,112,.35);
+    --ghost:#8FC8E8; --ok:#4FA872; --warn:#E07A5A;
+    --stage:#0B0D12;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.65 var(--sans)}
+main{max-width:980px;margin:0 auto;padding:28px 16px 60px}
+a{color:var(--gold)}
+header.masthead{text-align:center;padding:26px 8px 6px}
+.eyebrow{font:600 12px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--faint)}
+.eyebrow a{color:inherit;text-decoration:none}
+h1{font:400 40px/1.15 var(--serif);margin:14px 0 4px;letter-spacing:.01em}
+@media (max-width:600px){h1{font-size:31px}}
+.sub{color:var(--muted);font-style:italic;font-family:var(--serif);font-size:18px}
+.epigraph{max-width:620px;margin:22px auto 0;padding:14px 22px;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line);
+  font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink-2)}
+.epigraph .src{display:block;margin-top:6px;font-style:normal;font-size:12.5px;color:var(--faint);letter-spacing:.06em}
+h2{font:400 26px/1.25 var(--serif);margin:52px 0 6px;color:var(--ink)}
+h2 .rl{font:600 11px/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;vertical-align:middle;margin-left:10px;padding:4px 8px;border-radius:3px;white-space:nowrap;display:inline-block}
+h3{font:500 20px/1.3 var(--serif);margin:30px 0 6px}
+h4{font:600 12.5px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:20px 0 4px}
+.rl-m{color:var(--ok);border:1px solid var(--ok)}
+.rl-h{color:var(--gold);border:1px solid var(--gold)}
+.rl-c{color:var(--warn);border:1px solid var(--warn)}
+p.lede{color:var(--ink-2)}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;margin:16px 0}
+@media (max-width:600px){.panel{padding:14px 12px}}
+.src-chip{font:600 10.5px/1 var(--sans);letter-spacing:.06em;text-transform:lowercase;text-decoration:none;
+  border:1px solid var(--gold-line);border-radius:3px;padding:2px 5px;margin-left:3px;vertical-align:2px;white-space:nowrap}
+.src-chip:hover{background:var(--gold-soft)}
+
+/* hero */
+figure{margin:0}
+figure.hero{margin:30px auto 8px;max-width:900px}
+figure.hero img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--rule)}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;line-height:1.55}
+figcaption b{color:var(--ink-2)}
+
+/* phenomena gallery */
+.kz-feature{display:grid;grid-template-columns:minmax(260px,400px) 1fr;gap:24px;align-items:center;margin:18px 0}
+@media (max-width:760px){.kz-feature{grid-template-columns:1fr}}
+.plate{background:#fff;border:1px solid var(--rule);border-radius:10px;overflow:hidden;position:relative}
+.plate img{width:100%;height:auto;display:block}
+.phen{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:18px 0}
+.phen .card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:12px 12px 14px}
+.phen h3{font-size:17.5px;margin:12px 2px 4px}
+.phen p{font-size:14px;color:var(--ink-2);margin:4px 2px}
+.op{font:600 10.5px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ghost)}
+.reveal img{aspect-ratio:600/560;object-fit:cover}
+.reveal img.top{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.reveal.on img.top{opacity:1}
+button.small{font:600 12.5px var(--sans);padding:6px 12px;border:1px solid var(--gold);border-radius:6px;background:transparent;color:var(--gold);cursor:pointer;margin:8px 2px 0}
+button.small:hover{background:var(--gold-soft)}
+.bs{background:#fff;color:#111;border:1px solid var(--rule);border-radius:10px;padding:26px 18px;margin:16px 0}
+.bs{--d:min(380px,58vw);--x:min(110px,8vw);overflow:hidden}
+.bsrow{position:relative;height:34px;margin:18px 0}
+.bsrow .cross{position:absolute;left:0;top:0;font:400 30px/34px var(--sans);width:30px;text-align:center}
+.bsrow .dot{position:absolute;left:calc(30px + var(--d));top:7px;width:20px;height:20px;border-radius:50%;background:#111}
+.bsrow .bar{position:absolute;top:13px;height:8px;left:calc(30px + var(--d) / 2);width:calc(var(--d) / 2 + 20px + var(--x));
+  background:linear-gradient(90deg,#111 0 calc(var(--d) / 2 + 2px),transparent calc(var(--d) / 2 + 2px) calc(var(--d) / 2 + 18px),#111 calc(var(--d) / 2 + 18px))}
+
+/* tables */
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+th{font:600 12px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+td code{font:13px var(--mono);color:var(--gold)}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tscroll table{min-width:620px}
+td.k{font-family:var(--serif);font-size:15.5px;color:var(--ink)}
+
+/* demos */
+.simwrap{display:grid;grid-template-columns:minmax(280px,500px) 1fr;gap:20px;align-items:start}
+@media (max-width:820px){.simwrap{grid-template-columns:1fr}}
+canvas.demo{width:100%;height:auto;display:block;border:1px solid var(--rule);border-radius:8px;touch-action:manipulation}
+canvas#kz{background:#fff}
+canvas#kd{background:var(--panel-2)}
+.ctl{margin:10px 0;font-size:14.5px;color:var(--ink-2)}
+.ctl label{display:block;font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.ctl .hint{font-size:13px;color:var(--faint);margin-top:4px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.seg button{font:600 13.5px var(--sans);padding:8px 14px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--gold-soft);color:var(--gold)}
+button.act{font:600 14px var(--sans);padding:9px 18px;border:1px solid var(--gold);border-radius:7px;background:transparent;color:var(--gold);cursor:pointer}
+button.act.on{background:var(--gold-soft)}
+button.act:active{transform:scale(.97)}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.chk{display:flex;gap:8px;align-items:center;font-size:14.5px;color:var(--ink-2);cursor:pointer}
+.chk input{accent-color:var(--gold);width:16px;height:16px}
+.reads{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-top:14px}
+.read{background:var(--panel-2);border:1px solid var(--rule-soft);border-radius:8px;padding:10px 12px}
+.read .k{font:600 11px/1.3 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.read .v{font:500 20px/1.3 var(--mono);color:var(--ink);margin-top:2px}
+.read .u{font-size:12px;color:var(--muted)}
+
+/* viewer */
+.viewer{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px;margin:18px 0}
+.vstage{position:relative;height:540px;border-radius:9px;overflow:hidden;
+  background:radial-gradient(ellipse 70% 60% at 50% 45%,#1F2430 0%,var(--stage) 75%);touch-action:none}
+@media (max-width:700px){.vstage{height:420px}}
+.vstage canvas{display:block;width:100%;height:100%}
+.vmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9AA1AC;font:14px var(--sans);text-align:center;padding:20px;pointer-events:none}
+.vbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:12px 2px 2px}
+.vtoggles{display:flex;flex-wrap:wrap;gap:8px}
+.vhint{position:absolute;left:12px;bottom:10px;font:12px var(--sans);color:#7A8190;pointer-events:none}
+.vlegend{position:absolute;right:12px;top:10px;font:600 11px/1.5 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:#8FC8E8;opacity:0;transition:opacity .4s;pointer-events:none}
+.vlegend.on{opacity:.9}
+.spec{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+@media (max-width:760px){.spec{grid-template-columns:1fr}}
+.spec h3{margin:2px 0 6px}
+.spec .clause{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:15px}
+.spec dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;font-size:14px}
+.spec dt{font:600 11px/1.9 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.spec dd{margin:0;color:var(--ink-2)}
+.meter{height:14px;border-radius:7px;background:var(--panel-2);border:1px solid var(--rule);overflow:hidden;display:flex;margin:8px 0 4px}
+.meter i{display:block;height:100%;background:var(--gold)}
+.meter b{display:block;height:100%;background:repeating-linear-gradient(135deg,transparent 0 5px,var(--gold-line) 5px 7px);flex:1}
+.dl a{text-decoration:none;border:1px solid var(--gold-line);border-radius:6px;padding:6px 11px;display:inline-block;margin:6px 6px 0 0;font:600 13px var(--sans)}
+.dl a:hover{background:var(--gold-soft)}
+.dl a span{font-weight:400;color:var(--muted);margin-left:6px}
+figure.render img{width:100%;height:auto;display:block;border-radius:8px;border:1px solid var(--rule);background:var(--stage)}
+
+/* registers */
+.herm{border:1px solid var(--gold-line);background:var(--gold-soft);border-radius:10px;padding:18px 22px;margin:16px 0;font-family:var(--serif)}
+@media (max-width:600px){.herm{padding:14px 14px}}
+.herm p{color:var(--ink-2);font-size:16px}
+.herm .ax{font-style:italic;text-align:center;font-size:17.5px;color:var(--ink);margin:14px 0 2px}
+.herm .axsrc{text-align:center;font-size:12.5px;color:var(--faint);font-family:var(--sans);letter-spacing:.05em;margin-bottom:14px}
+.herm h3{font:500 19px/1.3 var(--serif);margin:4px 0 10px;color:var(--ink)}
+.herm ul,.herm ol{color:var(--ink-2);font-size:15.5px;padding-left:24px}
+.herm li{margin:8px 0}
+.herm li b{color:var(--ink)}
+.note{border-left:3px solid var(--gold);padding:10px 16px;background:var(--panel);border-radius:0 8px 8px 0;margin:16px 0;color:var(--ink-2);font-size:15px}
+.note.warn{border-left-color:var(--warn)}
+.case{border:1px solid var(--rule);border-radius:10px;padding:14px 18px;margin:14px 0;background:var(--panel)}
+.case h4{margin-top:2px}
+.case p{margin:8px 0;color:var(--ink-2)}
+.pull{font-family:var(--serif);font-size:18px;color:var(--ink);text-align:center;margin:18px auto;max-width:640px}
+ol.refs{font-size:13.5px;color:var(--muted);padding-left:22px}
+ol.refs li{margin:5px 0}
+/* prior-knowledge diagram */
+.prior{display:grid;grid-template-columns:118px 30px 1fr 30px 118px;gap:12px 6px;align-items:center;margin:16px 0 8px}
+@media (max-width:640px){.prior{grid-template-columns:70px 18px 1fr 18px 70px}}
+.prior .thumb{position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--rule);background:#fff;aspect-ratio:1}
+.prior .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.prior .thumb .q{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 34px var(--serif);color:#c33;background:rgba(255,255,255,.45)}
+.prior .pbox{border:1px solid var(--rule);border-radius:8px;padding:8px 12px;background:var(--panel-2);font-size:13.5px;color:var(--ink-2)}
+.prior .pbox b{color:var(--ink)}
+.prior .out{font:600 11px/1.3 var(--sans);letter-spacing:.06em;text-align:center;color:var(--faint);grid-column:5}
+.prior .lane{font:600 10.5px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);grid-column:1/6;margin-top:6px}
+.arr{height:2px;background:var(--faint);position:relative;margin-right:6px}
+.arr::after{content:"";position:absolute;right:-7px;top:-5px;border-left:9px solid var(--faint);border-top:6px solid transparent;border-bottom:6px solid transparent}
+.uparr{width:2px;height:22px;background:var(--gold);margin:0 auto;position:relative}
+.uparr::before{content:"";position:absolute;left:-5px;top:-8px;border-bottom:9px solid var(--gold);border-left:6px solid transparent;border-right:6px solid transparent}
+.prior .pk{grid-column:3;border:1px solid var(--gold);background:var(--gold-soft);border-radius:8px;padding:8px 12px;font-size:13.5px;color:var(--ink-2);text-align:center}
+/* spell breaker */
+.spell-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:14px}
+@media (max-width:760px){.spell-grid{grid-template-columns:1fr}}
+.exhibit{border:1px solid var(--rule);border-radius:10px;background:#fff;color:#222;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;position:relative;font-family:var(--sans)}
+.exhibit .mock{position:absolute;top:8px;right:10px;font:600 10px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#999}
+.layer{border:1px solid var(--rule);border-radius:8px;padding:8px 12px;background:var(--panel-2);font-size:14.5px;color:var(--ink-2)}
+.layer.want{border-color:var(--warn)}
+.lk{font:600 10.5px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
+.layer.want .lk{color:var(--warn)}
+.dn{width:2px;height:14px;background:var(--faint);margin:3px auto 8px;position:relative}
+.dn::after{content:"";position:absolute;left:-5px;bottom:-7px;border-top:8px solid var(--faint);border-left:6px solid transparent;border-right:6px solid transparent}
+.breaker{margin-top:12px;border:1px dashed var(--gold);border-radius:8px;padding:9px 12px;background:var(--gold-soft);font-family:var(--serif);font-size:15.5px;color:var(--ink)}
+.breaker .lk{color:var(--gold)}
+.reveal-line{margin-top:8px;font-family:var(--sans);font-size:14px;color:var(--ok);display:none}
+.broken .reveal-line{display:block}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);color:var(--faint);font-size:13.5px;text-align:center}
+</style>
+</head>
+<body>
+<main>
+
+<header class="masthead">
+  <div class="eyebrow"><a href="./">Promethean Theoria</a> · Printable Sacred Geometry</div>
+  <h1>The Occulted Gestalt</h1>
+  <div class="sub">indirect perception, and the art of summoning shape</div>
+  <div class="epigraph">
+    “Clay is fashioned into vessels; but it is on their empty hollowness, that their use depends.”
+    <span class="src">— LAO TZU, TAO TE CHING, CH. 11 (TR. JAMES LEGGE, 1891)</span>
+  </div>
+</header>
+
+<figure class="hero">
+  <img src="assets/negative-space/indirect-perception.webp" width="1200" height="896"
+       alt="A man in a striped shirt stands in a furnished room, seen through a round window in the forehead of a translucent anatomical head. Around the head the same room is drawn only as glassy outlines, and a skeletal hand reaches in from the left.">
+  <figcaption><b>Indirect perception in one picture.</b> Outside the skull, the room exists only as faint
+  outlines, edges and surfaces with nothing filled in. Inside, it is solid, lit and furnished, with a person
+  standing in it, pointing at the head that contains him. The full room is the one you live in, and it is
+  built on the inside.</figcaption>
+</figure>
+
+<p class="lede" style="max-width:780px;margin:26px auto">
+  <i>Occult</i> once meant simply <i>hidden</i> (Latin <i>occultus</i>, “covered over”), and astronomers still
+  say the Moon <i>occults</i> a star. <i>Gestalt</i> is German for <i>form</i>. The occulted gestalt is the
+  form that is fully present in your experience and absent from the light that reaches you: the edge no one
+  drew, the surface behind the occluder, the solid nobody printed. This page looks at the machinery that makes
+  such forms. It sets out the operations perception scientists can tell apart, lets you run two of them live,
+  surveys how artists and swindlers have used them, and ends with four printable sculptures, ribbons wound
+  around solids that exist only in the person looking at them. As on every page of this site, the measured
+  and the interpreted are labeled and kept apart.
+</p>
+
+<!-- ============================================================ -->
+<h2>Seeing is indirect <span class="rl rl-m">measured — perception science</span></h2>
+<p class="lede">The retina receives a flat, upside-down, moving, blurred, gappy pattern of light, and every
+such pattern is consistent with infinitely many three-dimensional scenes. This is the <b>inverse problem</b>
+of vision. Berkeley noted in 1709 that distance is not given to sight at all. Helmholtz (1867) called the
+solution <i>unconscious inference</i>: the brain settles on the scene that best explains the pattern, using
+what it already expects. The Gestalt psychologists (Wertheimer, 1923; Koffka, 1935) described the
+expectations themselves. The visual system prefers the simplest, most regular, most symmetric organisation
+(the law of <i>Prägnanz</i>), and the whole it builds is “something else than the sum of its parts”
+(Koffka). Modern accounts make this quantitative:</p>
+<ul class="lede">
+  <li>the <b>minimum principle</b> (Hochberg &amp; McAlister, 1953): pick the interpretation with the shortest description;</li>
+  <li>the <b>symmetry prior</b> for recovering 3-D shape (Pizlo et&nbsp;al., 2014);</li>
+  <li><b>predictive coding</b>, in which the cortex sends predictions down and only the errors climb back up (Rao &amp; Ballard, 1999).</li>
+</ul>
+<p class="lede">The dissent is worth keeping in view. Gibson (1979) argued that perception is <i>direct</i>:
+the light reaching a <i>moving</i> observer is rich enough to specify the world without inference. Both camps
+agree on the phenomena below. They disagree on what to call the work.</p>
+
+<!-- ============================================================ -->
+<h2>Six constructions, one fixed stimulus <span class="rl rl-m">measured — perception science</span></h2>
+
+<div class="kz-feature">
+  <div class="plate"><img src="assets/negative-space/kanizsa-triangle.svg" width="600" height="560"
+     alt="Kanizsa triangle: three black discs, each missing a sixty-degree wedge, and three black V-shaped angles; together they imply a bright white triangle pointing up over an outlined triangle pointing down"></div>
+  <div>
+    <div class="op">Boundary completion · occlusion</div>
+    <h3 style="margin-top:6px">The Kanizsa triangle</h3>
+    <p>Three black discs with a slice missing, and three black angles. That is all the ink on this plate,
+    generated here from exact geometry. Most people see more. They see a <b>white triangle</b>, point up,
+    lying on top of everything else. Its edges look crisp, and its surface often looks <i>whiter</i> than
+    the page around it. But no edge is drawn: along each side the triangle's boundary is physically present
+    only where it bites a disc, 44% of its length. Its white is the same white as the page.</p>
+    <p>Gaetano Kanizsa published figures like this in 1955. They are not a curiosity of the eye's surface.
+    Neurons in visual area V2 of the monkey fire to such contours as they do to real ones (von der Heydt,
+    Peterhans &amp; Baumgartner, 1984). The figure is also two illusions at once. The <i>edges</i> are
+    supplied, and so is a second, outlined triangle, pointing down and read as running on <i>behind</i> the
+    white one. You complete its hidden sides too. Rotate the discs a little and the triangle dissolves; the
+    live version further down lets you do exactly that.</p>
+  </div>
+</div>
+
+<div class="phen">
+  <div class="card">
+    <div class="plate"><img src="assets/negative-space/rubin-vase.svg" width="600" height="560" loading="lazy"
+       alt="Rubin's vase: a black vase whose two sides are the profiles of two white faces looking at each other"></div>
+    <div class="op" style="margin-top:10px">Border assignment</div>
+    <h3>Rubin's vase</h3>
+    <p>One outline, two owners. Either the black vase owns the contour and the white is background, or the
+    two white faces own it and the black falls away. You cannot hold both at once (Rubin, 1915).</p>
+  </div>
+  <div class="card">
+    <div class="plate"><img src="assets/negative-space/necker-cube.svg" width="600" height="560" loading="lazy"
+       alt="Necker cube: a wireframe cube with all twelve edges drawn and no hidden lines"></div>
+    <div class="op" style="margin-top:10px">Competing interpretation</div>
+    <h3>Necker's cube</h3>
+    <p>Twelve lines, no depth cues. The lower-left square is in front; then, without the drawing changing,
+    the upper-right square is. Necker reported the flip in a crystal drawing in 1832.</p>
+  </div>
+  <div class="card">
+    <div class="plate reveal" id="mooney">
+      <img src="assets/negative-space/two-tone.png" width="840" height="840" loading="lazy"
+         alt="A two-tone image of black and white patches that, once recognised, shows a man pointing at his head inside a round window">
+      <img class="top" src="assets/negative-space/two-tone-reveal.webp" width="840" height="840" loading="lazy" alt="">
+    </div>
+    <div class="op" style="margin-top:10px">Knowledge-guided grouping</div>
+    <h3>A Dalmatian-style two-tone</h3>
+    <p>Generated from the round window of the picture above: blurred, then cut to black and white. If you
+    had not just seen the original, would you find the man pointing at his own head? Once found, try to
+    un-see him. The classic is R.&nbsp;C. James's <a href="https://michaelbach.de/ot/cog-Dalmatian/" rel="noopener">Dalmatian photograph</a>, which is not reproduced here.</p>
+    <button class="small" id="mooneyBtn" aria-pressed="false">show the source</button>
+  </div>
+</div>
+
+<div class="bs" role="img" aria-label="Blind spot test: a cross on the left and a black dot on the right; below, a cross and a bar with a small gap">
+  <div style="font:600 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#666">Missing-input completion · find your blind spot</div>
+  <div class="bsrow"><span class="cross">+</span><span class="dot"></span></div>
+  <div class="bsrow"><span class="cross">+</span><span class="bar"></span></div>
+  <div style="font-size:14px;color:#444;max-width:640px">Close your <b>left</b> eye and fix your right
+  eye on a cross. Move slowly toward or away from the screen, usually somewhere between 30 and 50&nbsp;cm.
+  At one distance the dot vanishes and the white closes over it. On the second row, the gap in the bar
+  disappears and the bar runs on unbroken. You see no hole and no black: the page is filled in from around
+  the spot.</div>
+</div>
+
+<p class="lede">The phenomena above expose several different operations:</p>
+<div class="tscroll">
+<table>
+  <tr><th>Operation</th><th>Visual example</th><th>What gets constructed</th></tr>
+  <tr><td class="k">Boundary completion</td><td>Kanizsa triangle</td><td>An edge without a corresponding local brightness boundary</td></tr>
+  <tr><td class="k">Occlusion interpretation</td><td>Shapes continuing behind the triangle</td><td>Hidden portions of objects</td></tr>
+  <tr><td class="k">Border assignment</td><td>Rubin's vase</td><td>Which region owns a shared outline</td></tr>
+  <tr><td class="k">Competing interpretation</td><td>Necker cube or ambiguous figures</td><td>One dominant reading among alternatives</td></tr>
+  <tr><td class="k">Knowledge-guided grouping</td><td>Dalmatian image</td><td>A recognizable whole from disconnected patches</td></tr>
+  <tr><td class="k">Missing-input completion</td><td>Retinal blind spot</td><td>Continuity where the eye supplies no visual input</td></tr>
+</table>
+</div>
+<p class="lede">These operations are supported by different experimental traditions; they should not all be
+reduced to one generic “brain fills gaps” explanation.</p>
+<p class="lede">The blind spot provides the most literal missing-data case. There are no photoreceptors where
+the optic nerve exits the retina, yet we generally do not experience a corresponding hole—even with one eye
+viewing. Surrounding visual information contributes to a continuous percept.</p>
+<p class="lede">And here is an especially unsettling experimental result: a
+<a href="https://doi.org/10.7554/eLife.21761" rel="noopener">2017 study</a> found that, in its particular
+comparison task, participants preferred a partially filled-in stimulus over a directly seen one, even though
+the filled-in region could conceal an interruption. The inferred continuity was treated as more reliable than
+it objectively was. That does not mean imagination always overrides sight; it means constructed content can
+arrive without a felt warning label.</p>
+<p class="pull">The deepest distinction is this: being aware of an interpretation is not the same as seeing
+the underlying construction happen.</p>
+<p class="lede">You can know the Kanizsa edges are absent, know both faces and vase are encoded, and still
+experience a crisp triangle or one dominant object. These images let you watch perception change its answer
+while the visual evidence stays fixed.</p>
+
+<!-- ============================================================ -->
+<h2>Summoning I — the edge that isn't drawn <span class="rl rl-m">measured — computed live</span></h2>
+<p class="lede">A Kanizsa engine. Change how much of the boundary is inked (the <b>support ratio</b>), open or
+close the discs' mouths so the summoned edges must <b>bend</b>, or <b>twist</b> the discs out of alignment.
+The readouts apply Kellman &amp; Shipley's (1991) <i>relatability</i> rule, which predicts when two edge
+fragments will be joined. Their extensions must meet in front of both fragments, bending by no more than
+90°, or line up within a small tolerance. Shipley &amp; Kellman (1992) found that the clarity of the joined
+edge rises with the support ratio. The dashed overlay shows where the rule predicts your contour. It is off
+by default, because the point is that you draw it yourself.</p>
+
+<div class="panel">
+  <div class="simwrap">
+    <canvas id="kz" class="demo" width="500" height="440" aria-label="Interactive Kanizsa figure"></canvas>
+    <div>
+      <div class="ctl">
+        <label>Figure</label>
+        <div class="seg" id="kzShape"><button data-n="3" class="on">triangle</button><button data-n="4">square</button></div>
+      </div>
+      <div class="ctl">
+        <label>Support ratio — <span id="kzSv">0.44</span></label>
+        <input type="range" id="kzS" min="0.12" max="0.8" step="0.01" value="0.44">
+      </div>
+      <div class="ctl">
+        <label>Mouth bend — <span id="kzBv">0</span>°</label>
+        <input type="range" id="kzB" min="-30" max="30" step="1" value="0">
+        <div class="hint">negative pinches the summoned edges inward, positive bows them out</div>
+      </div>
+      <div class="ctl">
+        <label>Twist — <span id="kzTv">0</span>°</label>
+        <input type="range" id="kzT" min="0" max="90" step="0.5" value="0">
+        <div class="hint">every disc turns the same way; watch how little it takes</div>
+      </div>
+      <label class="chk"><input type="checkbox" id="kzShow"> show where the rule predicts your edge</label>
+      <div class="reads">
+        <div class="read"><div class="k">Ink on the contour</div><div class="v" id="kzInk">44%</div><div class="u">physically specified</div></div>
+        <div class="read"><div class="k">Bend per gap</div><div class="v" id="kzBend">0°</div><div class="u">turn between fragments</div></div>
+        <div class="read"><div class="k">Relatable sides</div><div class="v" id="kzRel">3 / 3</div><div class="u">Kellman–Shipley</div></div>
+        <div class="read"><div class="k">Prediction</div><div class="v" id="kzVerdict" style="font-size:15px">closed figure</div><div class="u" id="kzVerdictU">contour on every side</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>Summoning II — the solid that only motion draws <span class="rl rl-m">measured — computed live</span></h2>
+<p class="lede">Each dot below lies on the surface of a hidden solid: the same four solids the sculptures at
+the bottom of this page wrap. All dots are the same size and shade, and the projection is orthographic, so
+<b>a still frame says nothing about which dots are near and which are far</b>. You can see the cloud's outline,
+but inside it is flat speckle. Press <i>turn</i>. Wallach &amp;
+O'Connell (1953) named what happens the <i>kinetic depth effect</i>, and Ullman (1979) proved that three
+distinct views of four non-coplanar points already fix a rigid shape. Then shorten the dots' lives. When no
+dot survives long enough to be followed, the surface still stands (Treue, Husain &amp; Andersen, 1991).
+Because orthographic motion carries no sign of depth, the solid may suddenly reverse its spin. That flip is
+your visual system choosing between two equally good answers.</p>
+
+<div class="panel">
+  <div class="simwrap">
+    <canvas id="kd" class="demo" width="500" height="440" aria-label="Kinetic depth effect: dots on a hidden solid"></canvas>
+    <div>
+      <div class="ctl">
+        <label>Hidden solid</label>
+        <div class="seg" id="kdShape">
+          <button data-s="sphere" class="on">sphere</button><button data-s="ico">icosahedron</button><button data-s="pyramid">pyramid</button><button data-s="cube">tilted cube</button>
+        </div>
+      </div>
+      <div class="ctl"><button class="act" id="kdPlay" aria-pressed="false">turn</button></div>
+      <div class="ctl">
+        <label>Dots — <span id="kdNv">500</span></label>
+        <input type="range" id="kdN" min="40" max="2000" step="10" value="500">
+      </div>
+      <div class="ctl">
+        <label>Dot lifetime</label>
+        <div class="seg" id="kdLife"><button data-l="0" class="on">forever</button><button data-l="12">200 ms</button><button data-l="5">80 ms</button></div>
+      </div>
+      <div class="reads">
+        <div class="read"><div class="k">Near/far cues per frame</div><div class="v">0</div><div class="u">equal dots, parallel projection</div></div>
+        <div class="read"><div class="k">Turned so far</div><div class="v" id="kdAng">0°</div><div class="u">about the vertical</div></div>
+        <div class="read"><div class="k">Dots replaced</div><div class="v" id="kdRep">0</div><div class="u">per second</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>Why vision completes <span class="rl rl-m">measured — comparative evidence</span></h2>
+<p class="lede">An edge that isn't there sounds like a fault. The comparative evidence suggests these
+constructions are the working parts of a system built to find objects in cluttered, half-hidden scenes.
+They are shaped by learning as well as by evolution, and they are not the same in every species.</p>
+<p class="lede">Human perception also depends on learning. The Dalmatian illusion shows how acquiring an
+interpretation can reorganize previously meaningless patches into a recognizable object.</p>
+<p class="pull">Prior knowledge changes what becomes perceptually available.</p>
+<div class="panel">
+  <div style="font:600 12px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);text-align:center">Same input · different prior · different percept</div>
+  <div class="prior">
+    <div class="lane">Without the prior</div>
+    <div class="thumb"><img src="assets/negative-space/two-tone.png" alt="the two-tone patches" loading="lazy"></div>
+    <div class="arr"></div>
+    <div class="pbox"><b>Bottom-up grouping only.</b> Contrast, edges and proximity join the marks into 13 dark
+    patches covering 38% of the image. Nothing matches anything the system knows, so no object is
+    assembled.</div>
+    <div class="arr"></div>
+    <div class="thumb"><img src="assets/negative-space/two-tone.png" alt="" loading="lazy"><div class="q">?</div></div>
+    <div></div><div></div><div></div><div></div><div class="out">patches</div>
+
+    <div class="lane">With the prior</div>
+    <div class="thumb"><img src="assets/negative-space/two-tone.png" alt="the same two-tone patches" loading="lazy"></div>
+    <div class="arr"></div>
+    <div class="pbox"><b>The same grouping, plus a top-down guess.</b> A remembered figure is tried
+    against the patches. Some marks are bound into one body, and others are pushed to the background as
+    shadow.</div>
+    <div class="arr"></div>
+    <div class="thumb"><img src="assets/negative-space/two-tone.png" alt="" loading="lazy"><img src="assets/negative-space/two-tone-reveal.webp" alt="the patches organised into a man pointing at his head" loading="lazy" style="opacity:.42"></div>
+    <div></div><div></div><div><div class="uparr"></div></div><div></div><div class="out">a man pointing at his head</div>
+    <div></div><div></div>
+    <div class="pk"><b>Prior knowledge.</b> You saw the picture at the top of this page. Once acquired, it
+    stays: insight into a two-tone image can still be recalled a week later (Ludmer, Dudai &amp; Rubin, 2011).</div>
+    <div></div><div></div>
+  </div>
+  <div class="hint" style="font-size:12.5px;color:var(--faint);text-align:center">The input is the same in both
+  rows, pixel for pixel. Only the prior differs, and the prior decides what you can see. That is why a
+  seller who hands you the interpretation first is handing you the percept.</div>
+</div>
+<p class="lede">That helps explain why a particular ambiguous image can exploit both broadly shared visual
+organization and familiar human meanings. The boundary-assignment problem is basic; identifying a particular
+configuration as a vase, a letter, or a familiar animal also depends on recognition and experience.</p>
+<p class="lede">Humans are not the endpoint of a universally superior visual system. For example, many birds
+have four cone types and sensitivity extending into ultraviolet, whereas our color vision has a different
+sampling system. Their perceptual world—and the camouflage effective against them—differs from ours.</p>
+
+<h3>What we can actually conclude</h3>
+<p class="lede">One entry below is not demonstrated above. In <b>binocular rivalry</b>, each eye is shown a
+different image. Perception does not blend the two: it alternates between them, and the stimulus never
+changes (Wheatstone, 1838). For the phenomena on this page, the evolutionary interpretation is strongest when
+stated this way:</p>
+<div class="tscroll">
+<table>
+  <tr><th>Phenomenon</th><th>Likely useful underlying function</th><th>Important limitation</th></tr>
+  <tr><td class="k">Missing-line completion</td><td>Recovering object boundaries from incomplete evidence</td><td>An illusory edge is not proof of the exact ancestral mechanism</td></tr>
+  <tr><td class="k">Objects continuing behind obstacles</td><td>Recognizing partly occluded objects</td><td>Animal performance does not reveal subjective experience directly</td></tr>
+  <tr><td class="k">Figure–ground assignment</td><td>Separating objects and overlapping surfaces</td><td>Rubin's vase is an artificial ambiguity, not the original ecological problem</td></tr>
+  <tr><td class="k">Binocular rivalry</td><td>Resolving incompatible input within binocular vision</td><td>Rivalry itself need not be an adaptation</td></tr>
+  <tr><td class="k">Knowledge-guided recognition</td><td>Using experience to organize ambiguous visual input</td><td>The contribution of learning varies across tasks and species</td></tr>
+</table>
+</div>
+<p class="lede">These interpretations are grounded in comparative completion studies, border-ownership
+research, binocular-vision research, and studies of prior knowledge. Some representative examples:</p>
+<ul class="lede">
+  <li>newly hatched chicks complete partly hidden objects (Regolin &amp; Vallortigara, 1995);</li>
+  <li>barn owls see illusory contours (Nieder &amp; Wagner, 1999);</li>
+  <li>single cells in monkey visual cortex signal which side of an edge owns it (Zhou, Friedman &amp; von der Heydt, 2000);</li>
+  <li>rivalry has been studied for nearly two centuries (Blake &amp; Logothetis, 2002);</li>
+  <li>one moment of insight into a two-tone image can still be recalled a week later (Ludmer, Dudai &amp; Rubin, 2011).</li>
+</ul>
+<div class="note"><b>For a sculptor this is a design constraint.</b> A summoned shape exists only for a viewer
+whose visual system shares the priors it relies on. The Negative Space solids are aimed at the most widely
+shared priors there are: simplicity, symmetry and continuity. That is why a sphere or a cube can be summoned
+from a quarter of its surface, and a particular human face could not.</div>
+
+<!-- ============================================================ -->
+<h2>The window — where the eye cuts the spectrum <span class="rl rl-m">measured — computed live</span></h2>
+<p class="lede">Everything above happens inside a narrower limit still. The electromagnetic spectrum runs
+continuously from radio waves to gamma rays. “Visible light” is not a kind of light: it is the band that one
+particular instrument, the human eye, happens to admit. The conventional limits of about 380 and 780&nbsp;nm
+span almost exactly one octave of frequency. The two edges are made by different machinery, and neither
+one is a wall.</p>
+
+<div class="panel">
+  <canvas id="win" class="demo" style="background:var(--panel-2)" aria-label="Spectral sensitivity of the three cone types and the transmission of the lens and macular pigment, 300 to 1100 nanometres, on a logarithmic scale"></canvas>
+  <div class="ctl" style="margin-top:12px">
+    <label>Wavelength — <span id="winLv">555</span> nm · drag across the chart or use the slider</label>
+    <input type="range" id="winL" min="300" max="1100" step="5" value="555">
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
+    <div class="ctl"><label>Crystalline lens</label>
+      <div class="seg" id="winLens"><button data-v="1" class="on">in place (age 32 standard)</button><button data-v="0">removed (aphakic)</button></div></div>
+    <div class="ctl"><label>Retinal location</label>
+      <div class="seg" id="winMac"><button data-v="1" class="on">fovea (macular pigment)</button><button data-v="0">periphery</button></div></div>
+  </div>
+  <div class="reads">
+    <div class="read"><div class="k">Photon energy</div><div class="v" id="wE">2.23</div><div class="u">electronvolts</div></div>
+    <div class="read"><div class="k">Lens passes</div><div class="v" id="wT">82%</div><div class="u">of the light reaching it</div></div>
+    <div class="read"><div class="k">Best cone</div><div class="v" id="wC">L</div><div class="u" id="wCu">relative sensitivity</div></div>
+    <div class="read"><div class="k">Photons needed</div><div class="v" id="wN">×1</div><div class="u">vs that cone's best wavelength</div></div>
+    <div class="read"><div class="k">Cone mix</div><div class="v" id="wMix" style="font-size:16px">L 50 · M 46 · S 4</div><div class="u">% of the signal, each cone scaled to its peak</div></div>
+    <div class="read"><div class="k">1% edges</div><div class="v" id="wEdge" style="font-size:16px">395–685</div><div class="u">nm, best cone ≥ 1% of peak</div></div>
+  </div>
+  <div class="hint" style="font-size:12.5px;color:var(--faint);margin-top:10px">Solid curves, 390–830&nbsp;nm: measured
+  lens and macular densities, and cone photopigments fitted to the Stockman &amp; Sharpe (2000) cone
+  fundamentals; the fit is within 0.06–0.09 log units RMS. Dashed: the same Govardovskii (2000) pigment
+  template carried beyond the data. Grey: the measured CIE 2008 luminosity function, with lens and fovea.
+  The lens-removed curves take out only the lens; the cornea and humours also absorb increasingly below
+  about 320&nbsp;nm, so those curves overstate sensitivity at the far left. Data from cvrl.org.</div>
+</div>
+
+<h3>The violet edge is the lens</h3>
+<p class="lede">The cornea absorbs nearly all ultraviolet below about 295&nbsp;nm. The crystalline lens takes
+most of the rest, with yellow UV filters derived from kynurenine. In the standard 32-year-old eye it passes
+55% of the light at 450&nbsp;nm, 19% at 420, 1.7% at 400 and 0.3% at 390. Lens density keeps rising
+through life (Pokorny, Smith &amp; Lutze, 1987), so an older eye sees a dimmer, yellower violet. Press
+<i>removed</i>. Without a lens, as after cataract surgery before UV-blocking implants, the cones answer well
+into the ultraviolet (Wald, 1952). There, all three pigments respond through their secondary
+<i>β</i>-band, so ultraviolet is reported as a whitish violet.</p>
+<p class="lede">The filter has plausible reasons. Ultraviolet is photochemically harmful to the retina, and it
+would blur the image: the eye's focus already shifts by about 2 dioptres across the visible band (Thibos
+et&nbsp;al., 1992). Over the fovea a second, local filter sits on top of the lens. The macular pigment
+(lutein and zeaxanthin) passes only 44% near 460&nbsp;nm, where it absorbs most. Switch to <i>periphery</i>
+to remove it. You can even see this filter: Maxwell's spot is its shadow.</p>
+
+<h3>The red edge is the pigment</h3>
+<p class="lede">Nothing in the eye's optics stops near 700&nbsp;nm. The cornea, lens and humours stay clear far
+into the near-infrared, which is why laser-safety standards define a <b>retinal hazard region of
+400–1400&nbsp;nm</b>: an infrared beam can burn a retina without ever being seen. On this side the limit is
+the photopigment. The energy of a photon falls as wavelength rises, and sensitivity drops about tenfold
+every 30&nbsp;nm. In the measured luminosity function it is 1% of peak at 685&nbsp;nm, 0.01% at 747, and
+0.001% at 780, which is where the conventional limit sits. With enough light the edge moves. People detect
+infrared to beyond 1000&nbsp;nm (Griffin, Hubbard &amp; Wald, 1947), and short infrared pulses near
+1000&nbsp;nm are seen <i>as a visible colour</i>. Two photons are absorbed at once, adding up to the energy
+of one photon at half the wavelength (Palczewska et&nbsp;al., 2014). Drag the cursor to 1000&nbsp;nm and read
+the price.</p>
+<p class="lede">Why the pigments stop where they do is an evolutionary reading, plausible rather than proven.
+A pigment tuned further into the red needs less energy to trigger, so it also triggers more often from heat
+alone, and fires in the dark (Barlow, 1957). A warm body glows most strongly near 9&nbsp;µm, so an eye
+sensitive far into the infrared would see its own warmth. Vision also began in water, which is transparent
+only in a narrow band that is clearest in the blue (Pope &amp; Fry, 1997).</p>
+
+<div class="panel">
+  <div style="font:600 12px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);text-align:center;margin-bottom:6px">Why the window sits where it does</div>
+  <canvas id="why" class="demo" style="background:var(--panel-2)" aria-label="Sunlight, the glow of a warm body, light surviving water, and the eye's sensitivity, on one wavelength axis from 200 nanometres to 30 micrometres"></canvas>
+  <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;margin-top:12px">
+    <div class="ctl"><label>Depth of water the light has crossed</label>
+      <div class="seg" id="whyD"><button data-d="0.001">1 mm</button><button data-d="1" class="on">1 m</button><button data-d="10">10 m</button><button data-d="100">100 m</button></div></div>
+    <div class="ctl" style="flex:1;min-width:220px"><label>Body temperature — <span id="whyTv">37</span> °C</label>
+      <input type="range" id="whyT" min="0" max="45" step="1" value="37"></div>
+  </div>
+  <div class="reads">
+    <div class="read"><div class="k">Sunlight peaks at</div><div class="v" id="wySun">502 nm</div><div class="u">5,772 K surface, Wien's law</div></div>
+    <div class="read"><div class="k">Your glow peaks at</div><div class="v" id="wyBody">9.35 µm</div><div class="u" id="wyBodyU">2,898 µm·K ÷ 310 K</div></div>
+    <div class="read"><div class="k">Water's window</div><div class="v" id="wyWin" style="font-size:16px">—</div><div class="u" id="wyWinU">within half of the best transmission</div></div>
+    <div class="read"><div class="k">Clearest water</div><div class="v" id="wyClear">478 nm</div><div class="u">lowest absorption, this dataset</div></div>
+    <div class="read"><div class="k">Your glow in water</div><div class="v" id="wyGlow">17 µm</div><div class="u">depth that removes 63%</div></div>
+  </div>
+  <div class="hint" style="font-size:12.5px;color:var(--faint);margin-top:10px">Each curve is scaled to its own
+  peak; the wavelength axis is logarithmic. Sunlight and body glow are Planck blackbody curves (the real solar
+  spectrum at the ground is notched by atmospheric absorption). Water: Segelstein's (1981) compilation for
+  liquid water at 25&nbsp;°C. Pope &amp; Fry (1997) later measured even less absorption in the violet-blue,
+  with a minimum near 418&nbsp;nm. The eye: the cone curves of the chart above, with lens and fovea.</div>
+</div>
+
+<h3>Inside the window, three samples</h3>
+<p class="lede">Within the band the eye does not measure a spectrum. Three cone types report one number
+each, and any two lights that produce the same three numbers look identical. These are <i>metamers</i>:
+physically different light, perceptually the same colour. Colour is therefore a construction from three
+samples. It holds the purest occulted gestalt of all, <b>purple</b>. No single wavelength produces it.
+It is what the visual system makes of long and short wavelengths together with no middle, and it closes the
+hue circle over a gap in the spectrum where there is no light to see.</p>
+
+<div class="panel">
+  <canvas id="meta" class="demo" style="background:var(--panel-2)" aria-label="Two different light spectra that produce the same three cone signals and the same colour"></canvas>
+  <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;margin-top:12px">
+    <div class="ctl"><label>Light A</label>
+      <div class="seg" id="metaKind"><button data-k="mono" class="on">a single wavelength</button><button data-k="flat">flat white light</button></div></div>
+    <div class="ctl" id="metaLrow" style="flex:1;min-width:220px"><label>Wavelength of A — <span id="metaLv">580</span> nm</label>
+      <input type="range" id="metaL" min="450" max="650" step="5" value="580"></div>
+  </div>
+  <div class="reads">
+    <div class="read"><div class="k">Light A → cones</div><div class="v" id="mA" style="font-size:15px">—</div><div class="u">L · M · S</div></div>
+    <div class="read"><div class="k">Light B → cones</div><div class="v" id="mB" style="font-size:15px">—</div><div class="u">L · M · S</div></div>
+    <div class="read"><div class="k">Light B recipe</div><div class="v" id="mW" style="font-size:15px">—</div><div class="u">630 · 532 · 467 nm, relative energy</div></div>
+    <div class="read"><div class="k">Verdict</div><div class="v" id="mV" style="font-size:15px">—</div><div class="u" id="mVu">&nbsp;</div></div>
+  </div>
+  <div class="hint" style="font-size:12.5px;color:var(--faint);margin-top:10px">Light B is three laser lines,
+  the primaries of the Rec.&nbsp;2020 display standard. Their strengths are solved so that B gives exactly the
+  same three cone signals as A, using the measured Stockman &amp; Sharpe cones. The two spectra share almost
+  nothing, and the cones cannot tell them apart. Every pure wavelength except the three primaries themselves
+  needs a little <i>negative</i> light, because it lies just outside the triangle that any three real lights
+  can mix. That is why no screen can show a true spectral yellow. It is also why the 1931 colour-matching
+  experiments moved one primary over to the target's side. The swatch colours are a display approximation.</div>
+</div>
+
+<h3>Colours that are not in the light</h3>
+<p class="lede">Purple is made from light that exists. Some colours are made from no light at all, or from a
+signal that no light can produce.</p>
+<div class="note"><b>Olo, the colour no light can deliver.</b> Every wavelength that excites the M cone also
+excites L or S, because their sensitivities overlap. Scale each cone to its own peak and a single wavelength
+can drive L to 94% of the total signal (at 703&nbsp;nm) and S to 93% (at 417&nbsp;nm). M never gets past 55%
+(at 518&nbsp;nm, where L still takes over 40%). Watch the <i>cone mix</i> readout on the chart above. A pure-M
+signal never arrives from the world. In 2025 a Berkeley team produced one anyway. Their “Oz” system tracks
+the retina and fires laser microdoses into individually mapped M cones, and no others. Participants saw a
+blue-green of unprecedented saturation, which the team named <b>olo</b>. To match it with any real light,
+they had to <i>desaturate the olo</i> by adding white (Fong et&nbsp;al., 2025).</div>
+<div class="note"><b>Chimerical colours, made by fatigue.</b> Stare at a colour and the cones that report it
+tire. Look away, and the opponent stages that compare the cones report the complement: an afterimage.
+Choose the staring colour and the field you look at next with care, and the afterimage lands where no
+physical colour can:
+<ul style="margin:6px 0 4px">
+  <li><b>stygian blue</b>, a blue as dark as black;</li>
+  <li><b>self-luminous red</b>, a red brighter than the white it sits on;</li>
+  <li><b>hyperbolic orange</b>, an orange more saturated than any orange in the spectrum.</li>
+</ul>
+Churchland (2005) predicted all three from the opponent-process model. Summon one below.</div>
+<div class="note"><b>Forbidden colours.</b> Opponent coding should make reddish-green and yellowish-blue
+impossible, since each pair shares one channel. Crane &amp; Piantanida (1983) reported seeing them anyway, by
+stabilising a red–green border on the retina until it filled in. A study at equal brightness replicated
+them (Billock, Gleason &amp; Tsou, 2001); another argued that observers saw ordinary in-between mixtures
+(Hsieh &amp; Tse, 2006). The question is still open.</div>
+<div class="note"><b>Imaginary colours.</b> The CIE's XYZ primaries, which sit underneath nearly every colour
+standard in use, are colours no light can produce. They are mathematical lights outside the spectrum,
+chosen so that every real colour has positive coordinates. Even the official definition of colour is built
+on made-up ones.</div>
+
+<div class="panel">
+  <div class="simwrap">
+    <div id="chim" style="position:relative;aspect-ratio:500/440;border-radius:8px;border:1px solid var(--rule);overflow:hidden;background:#000">
+      <svg viewBox="0 0 500 440" style="position:absolute;inset:0;width:100%;height:100%" aria-label="Afterimage field">
+        <polygon id="chimTri" points="250,70 395,320 105,320" fill="#000"/>
+        <g id="chimFix" stroke="#888" stroke-width="3"><line x1="240" y1="237" x2="260" y2="237"/><line x1="250" y1="227" x2="250" y2="247"/></g>
+      </svg>
+      <div id="chimMsg" style="position:absolute;left:0;right:0;bottom:10px;text-align:center;font:600 13px var(--sans);color:#999;pointer-events:none">choose a colour and press start</div>
+    </div>
+    <div>
+      <div class="ctl">
+        <label>Chimerical colour</label>
+        <div class="seg" id="chimKind">
+          <button data-k="stygian" class="on">stygian blue</button><button data-k="luminous">self-luminous red</button><button data-k="hyper">hyperbolic orange</button>
+        </div>
+        <div class="hint" id="chimRecipe">stare at yellow, then look at black</div>
+      </div>
+      <div class="ctl">
+        <label>Stare for — <span id="chimTv">25</span> s</label>
+        <input type="range" id="chimT" min="10" max="45" step="1" value="25">
+      </div>
+      <div class="ctl"><button class="act" id="chimGo">start</button></div>
+      <div class="hint" style="font-size:13px;color:var(--faint)">Keep your eyes on the cross the whole time,
+      and don't let them wander. When the field switches, the triangle you see is drawn in a colour your
+      screen is not emitting. A blink can briefly bring a fading afterimage back.</div>
+      <div class="reads">
+        <div class="read"><div class="k">Phase</div><div class="v" id="chimPh" style="font-size:16px">ready</div><div class="u" id="chimPhU">&nbsp;</div></div>
+        <div class="read"><div class="k">Triangle pixels</div><div class="v" id="chimIn" style="font-size:16px">#000000</div><div class="u">what the screen sends</div></div>
+        <div class="read"><div class="k">Field pixels</div><div class="v" id="chimOut" style="font-size:16px">#000000</div><div class="u">identical, during the test</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>Exploitations for artistic shape summoning <span class="rl rl-m">measured — precedents</span></h2>
+<p class="lede">Every operation above is a lever an artist can pull. The craft is in withholding: give the
+visual system exactly the evidence that makes one construction irresistible, and leave out everything that
+construction will supply. The catalogue below pairs each lever with the capacity it borrows, what the artist
+leaves out, and the precedents. The last column notes where the Negative Space series uses it. Art and fraud
+pull the same levers; the difference, as the case files further down show, is disclosure.</p>
+<div class="tscroll">
+<table>
+  <tr><th>Lever</th><th>Capacity borrowed</th><th>What is withheld</th><th>Precedent</th><th>In this series</th></tr>
+  <tr><td class="k">The implied edge</td><td>Boundary completion</td><td>The edge itself: only aligned terminators remain</td><td>Kanizsa's figures (1955)</td><td>Pyramid and cube edges are inked only where the band creases across them</td></tr>
+  <tr><td class="k">The implied surface</td><td>Occlusion interpretation; <i>Prägnanz</i></td><td>The surface between samples</td><td>Calder's wire figures (from 1926); Naum Gabo's string constructions (1940s)</td><td>Every piece: 66–75% of each hidden surface is never printed</td></tr>
+  <tr><td class="k">Form from motion</td><td>Kinetic depth; Musatti's stereokinetic effect (1924)</td><td>Every static depth cue</td><td>Duchamp's <i>Rotoreliefs</i> (1935)</td><td>The hanging pieces turn in room air; a walking viewer does the rest</td></tr>
+  <tr><td class="k">The one true vantage</td><td>The inverse problem, resolved from one point only</td><td>Every other viewpoint</td><td>Holbein's anamorphic skull in <i>The Ambassadors</i> (1533); Felice Varini's architectural paintings</td><td>Straight down its vertical diagonal, the tilted cube's outline is a regular hexagon</td></tr>
+  <tr><td class="k">Figure–ground reversal</td><td>Border assignment</td><td>Which side owns the contour</td><td>Rubin (1915); Escher's tessellations</td><td>Is the ribbon the figure, or the gap between its turns?</td></tr>
+  <tr><td class="k">The bistable solid</td><td>Competing interpretation</td><td>Depth order</td><td>Necker (1832); Josef Albers' <i>Structural Constellations</i> (1950s)</td><td>A hexagon with a Y inside is a cube seen from above, or from below</td></tr>
+  <tr><td class="k">Prior over evidence</td><td>Knowledge outvotes stereo</td><td>The true sign of depth</td><td>Gregory's hollow face (1970); Patrick Hughes's reverspectives</td><td>—</td></tr>
+  <tr><td class="k">Patches, not outlines</td><td>Knowledge-guided grouping</td><td>Every contour</td><td>R. C. James's Dalmatian; Mooney's two-tone faces (1957)</td><td>—</td></tr>
+  <tr><td class="k">The shadow is the work</td><td>Projection read as object</td><td>A legible object</td><td>Shigeo Fukuda's <i>Lunch with a Helmet On</i> (1987); Tim Noble &amp; Sue Webster</td><td>Proposed: a lamp on the axis to throw the year onto the walls</td></tr>
+  <tr><td class="k">Beyond the window</td><td>The lens's ultraviolet edge; paint's transparency in the infrared</td><td>The image itself, kept in light the eye cannot use</td><td>Day-Glo fluorescent paints (the Switzer brothers, 1930s); infrared reflectography of underdrawings (van Asperen de Boer, 1968)</td><td>Proposed: a fluorescent ribbon under a 365&nbsp;nm lamp in a dark room, glowing with no visible means of support</td></tr>
+  <tr><td class="k">The isoluminant edge</td><td>Colour and brightness travel partly separate paths</td><td>Luminance contrast; only hue differs</td><td>Monet's <i>Impression, Sunrise</i> (1872), whose sun matches the sky's luminance (Livingstone, 2002)</td><td>—</td></tr>
+  <tr><td class="k">The afterimage</td><td>Opponent colour coding, fatigued</td><td>The colour itself: it is never on the canvas</td><td>Jasper Johns, <i>Flag</i> (1965); Josef Albers, <i>Interaction of Color</i> (1963)</td><td>—</td></tr>
+  <tr><td class="k">The metamer</td><td>Colour from three samples</td><td>The spectral difference</td><td>Metameric security inks that match under one light and part under another</td><td>—</td></tr>
+  <tr><td class="k">The cast void</td><td>Absence made present</td><td>The object; only its hollow remains</td><td>Rachel Whiteread's <i>House</i> (1993)</td><td>The inverse strategy: Whiteread casts the absence; these pieces outline it</td></tr>
+</table>
+</div>
+
+<!-- ============================================================ -->
+<h2>The Negative Space series — four occulted solids <span class="rl rl-m">measured — as built</span></h2>
+<p class="lede">One year, wound as a spiral ribbon around a solid that is never printed. The year starts at
+the top on January&nbsp;1 and descends. The band is 6&nbsp;mm PETG throughout. A rod with a hanging eye passes through the two
+caps. Each ribbon is a single watertight body of genus&nbsp;2, the rod's bore through both caps, and fits a
+320&nbsp;mm bed. Drag to orbit, scroll or pinch to zoom, and press <b>summon</b> to see what you were already
+seeing.</p>
+
+<div class="viewer">
+  <div class="seg" id="vTabs" role="tablist">
+    <button data-m="sphere" class="on">I · Sphere</button><button data-m="icosahedron">II · Icosahedron</button><button data-m="pyramid">III · Great Pyramid</button><button data-m="cube">IV · Tilted Cube</button>
+  </div>
+  <div class="vstage" id="vStage" style="margin-top:12px">
+    <div class="vmsg" id="vMsg">loading the 3D preview…</div>
+    <div class="vlegend" id="vLegend">the solid you supplied · not printed</div>
+    <div class="vhint">drag to orbit · scroll to zoom</div>
+  </div>
+  <div class="vbar">
+    <div class="vtoggles">
+      <button class="act" id="vSummon" aria-pressed="false">summon the hidden solid</button>
+      <button class="act on" id="vTurn" aria-pressed="true">turn</button>
+      <button class="act on" id="vRod" aria-pressed="true">rod</button>
+    </div>
+    <div style="font-size:12.5px;color:var(--faint)" id="vTris"></div>
+  </div>
+  <div class="spec">
+    <div>
+      <div class="clause" id="sClause"></div>
+      <h3 id="sTitle"></h3>
+      <dl id="sList"></dl>
+    </div>
+    <div>
+      <div style="font:600 11px/1.3 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)">Printed vs supplied</div>
+      <div class="meter" aria-hidden="true"><i id="sMeter"></i><b></b></div>
+      <div style="font-size:14px;color:var(--ink-2)" id="sCover"></div>
+      <div style="font:600 11px/1.3 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:16px">Download — printable STL</div>
+      <div class="dl" id="sDl"></div>
+      <div style="font-size:12.5px;color:var(--faint);margin-top:8px">Full-resolution files, exactly as generated. The preview above is a lighter copy. Ribbons print upright with tree supports; rods print lying flat and are glued through both caps.</div>
+    </div>
+  </div>
+</div>
+
+<figure class="render">
+  <img id="sRender" src="assets/negative-space/render-desk.webp" width="1800" height="733" loading="lazy" alt="Studio render of the sphere ribbon">
+  <figcaption id="sRenderCap">Studio renders from the generator script: the assembly inside the 320&nbsp;mm build volume, a second view, and a close-up of a cap.</figcaption>
+</figure>
+
+<!-- ============================================================ -->
+<h2>Studio findings — where summoning holds and where it breaks <span class="rl rl-m">measured — from the build</span></h2>
+<p class="lede">Building these pieces turned out to be a series of small perception experiments. Four results:</p>
+<div class="note"><b>Straightness summons flatness.</b> The first way to lay the year onto a flat-faced solid
+was to project the sphere's path radially from the centre. Every turn then sagged into a swag across the
+middle of each face, and a curving band implies a curving surface beneath it: the visual system reads lines
+drawn on a surface as evidence of its shape (Stevens, 1981). The pyramid and the cube instead carry each turn
+along a <i>level line</i>, straight across every face, and the faces read flat.</div>
+<div class="note"><b>Draw the edge once; the viewer draws it everywhere.</b> No edge of the pyramid or the cube
+is printed whole. An edge exists in plastic only where the band crosses it and is forced to crease. That fold
+is a few centimetres of evidence, and boundary completion extends it into a full edge running from corner to
+corner through empty air.</div>
+<div class="note"><b>The less there is to supply, the less you need to show.</b> The ribbons ink 25% of the
+sphere, 29% of the icosahedron, 30% of the pyramid and 34% of the cube. The viewer supplies the rest, and the
+simpler the form, the less the plastic needs to say. A fifth form, a life-size human head drawn in eight
+turns of the same ribbon, was built and abandoned. It read in profile and became a coil with bumps from the
+front. The minimum principle predicts the failure. A sphere or a Platonic solid has a very short
+description, so a hint is enough and the prior does the rest. A face has a long one, and eight samples
+cannot carry a nose, a mouth and two eye sockets.</div>
+<div class="note"><b>Physics caps the hint.</b> Denser contours would have helped the head, but sag under
+self-weight grows roughly with the square of the number of turns. A 12-turn trial of the head drooped 33–78&nbsp;mm. A
+ribbon that hangs from its own two caps can only whisper, so it can only summon what the mind is already
+ready to supply.</div>
+
+<!-- ============================================================ -->
+<h2>The same tendencies, exploited <span class="rl rl-c">documented cases</span></h2>
+<p class="lede">People exploit these tendencies mainly by <b>controlling what becomes noticeable, what gets
+treated as background, and what you infer from incomplete evidence</b>. The strongest documented examples
+are deceptive interface design and manufactured visual “proof”—not hidden images that reliably take control
+of someone's mind. <a class="src-chip" href="https://www.ftc.gov/system/files/documents/public_statements/1579927/172_3086_abcmouse_-_rchopra_statement.pdf" rel="noopener">ftc</a></p>
+<p class="lede">One important distinction: a Kanizsa triangle demonstrates visual completion, but it does not
+establish that someone can use missing lines to implant beliefs. Commercial exploitation more often combines
+visual attention, familiar appearances, and misleading context. <a class="src-chip" href="https://www.ftc.gov/system/files/documents/public_statements/1579927/172_3086_abcmouse_-_rchopra_statement.pdf" rel="noopener">ftc</a></p>
+
+<h3>1. Making the costly choice foreground</h3>
+<p class="lede">A website can make its profitable option look like the obvious next action while making
+alternatives look like unimportant background: a prominent subscription button, a subdued opt-out, or a
+cancellation link buried among dense text. This is called a <b>dark pattern</b> when the design steers people
+against their intentions. <a class="src-chip" href="https://www.ftc.gov/system/files/documents/public_statements/1579927/172_3086_abcmouse_-_rchopra_statement.pdf" rel="noopener">ftc</a></p>
+<p class="lede">The connection to the figure–ground examples above is useful but not exact: Rubin's vase
+changes which region you perceive as an object; a deceptive interface changes which information receives your
+attention and seems actionable. It is not necessarily inducing the same perceptual reversal. <a class="src-chip" href="https://www.ftc.gov/system/files/documents/public_statements/1579927/172_3086_abcmouse_-_rchopra_statement.pdf" rel="noopener">ftc</a></p>
+<div class="case">
+  <h4>Real case: ABCmouse, 2020</h4>
+  <p>The FTC alleged that ABCmouse concealed automatic renewal information in linked terms and made
+  cancellation difficult to find and complete. Commissioner <b>Rohit Chopra</b> specifically described visual
+  misdirection, hidden alternatives, and confusing language as forms of “online sleight of hand.” His
+  statement noted that in <b>2017</b>, ABCmouse made an already-buried cancellation-policy link less
+  prominent. <a class="src-chip" href="https://www.ftc.gov/system/files/documents/public_statements/1579927/172_3086_abcmouse_-_rchopra_statement.pdf" rel="noopener">ftc</a></p>
+  <p>The company reached a <b>$10 million settlement in 2020</b>. The gain was continued subscription revenue,
+  including charges to consumers who had attempted to cancel—not merely increased brand recognition. <a class="src-chip" href="https://www.olshanlaw.com/Advertising-Law-Blog/dark-patterns-ftc-reaches-10-million-settlement" rel="noopener">olshanlaw</a></p>
+  <p>The exploit is: <b>“It was technically on the page” does not mean it was meaningfully presented.</b></p>
+</div>
+
+<h3>2. Letting appearance supply missing meaning</h3>
+<p class="lede">Another tactic is to make something resemble a familiar category while withholding
+information that would change your interpretation.</p>
+<p class="lede">The FTC's discussion of dark patterns includes <b>disguised advertisements</b>, similarly
+styled buttons with different meanings, and confusing checkbox language. A viewer may recognize the familiar
+presentation and act before carefully resolving what it actually does. <a class="src-chip" href="https://www.olshanlaw.com/Advertising-Law-Blog/dark-patterns-ftc-reaches-10-million-settlement" rel="noopener">olshanlaw</a></p>
+<p class="lede">For example, when an advertisement is presented as ordinary content, the important missing
+distinction is not a line segment. It is the commercial relationship: <i>someone paid for you to see
+this</i>. The surrounding presentation encourages the viewer to supply the interpretation “normal content”
+rather than “sales message.” Disguised advertising is among the practices identified in the FTC discussion. <a class="src-chip" href="https://www.olshanlaw.com/Advertising-Law-Blog/dark-patterns-ftc-reaches-10-million-settlement" rel="noopener">olshanlaw</a></p>
+<p class="lede">This is the practical version of the worry that the mind's eye runs an exploitable algorithm: <b>a recognizable surface
+can encourage an interpretation that the underlying facts do not justify</b>.</p>
+
+<h3>3. Selling ambiguous images as proof</h3>
+<p class="lede">Here the connection becomes more directly visual: an image contains something faint,
+incomplete, or difficult to identify, and a seller supplies the interpretation.</p>
+<div class="case">
+  <h4>Real case: William H. Mumler</h4>
+  <p>In the nineteenth century, photographer <b>William H. Mumler</b> sold photographs that he claimed included
+  spirits of the dead. He faced fraud charges in <b>New York in 1869</b>. The prosecution showed that the same
+  supposed spirit appeared in photographs taken in different cities—and that the “spirit” was a living person.
+  The judge nevertheless dropped the charges for lack of sufficient evidence. <a class="src-chip" href="https://photographymuseum.com/mumler/" rel="noopener">photographymuseum</a></p>
+  <p>Double exposure can produce a faint, semitransparent human image that appears otherworldly. Historical
+  accounts connect this photographic effect with the emergence of spirit photography. <a class="src-chip" href="https://about.jstor.org/blog/but-it-looks-so-real-the-parallel-rise-of-photography-and-spiritualism/" rel="noopener">jstor</a></p>
+  <p>There are two layers of deception here:</p>
+  <ul style="color:var(--ink-2)">
+    <li><b>Manufactured evidence:</b> An extra image is physically present in the photograph.</li>
+    <li><b>Supplied meaning:</b> The seller identifies that image as a deceased person or supernatural presence.</li>
+  </ul>
+  <p>That is not the eye literally inventing the entire figure. It is an optical artifact plus an
+  interpretation sold as fact. Mumler's customers were paying for photographs purported to demonstrate contact
+  with spirits. <a class="src-chip" href="https://photographymuseum.com/mumler/" rel="noopener">photographymuseum</a></p>
+</div>
+<div class="panel">
+  <div class="simwrap">
+    <figure style="margin:0">
+      <canvas id="sp" class="demo" style="aspect-ratio:3/4;background:#e8dcc0" aria-label="A procedurally drawn spirit photograph: a seated sitter with a faint, blurred second exposure of a draped figure"></canvas>
+      <figcaption id="spCap" style="font-family:var(--serif);font-style:italic;text-align:center;font-size:15px;color:var(--ink-2);min-height:3em;margin-top:8px"></figcaption>
+    </figure>
+    <div>
+      <div class="ctl"><label>View</label>
+        <div class="seg" id="spView"><button data-v="print" class="on">the print</button><button data-v="plates">the two exposures</button></div></div>
+      <div class="ctl"><label>Second exposure — <span id="spEv">42</span>% of full</label>
+        <input type="range" id="spE" min="0" max="60" step="1" value="42"></div>
+      <div class="ctl"><label>Blur of the second exposure — <span id="spBv">4</span> px</label>
+        <input type="range" id="spB" min="0" max="16" step="1" value="4">
+        <div class="hint">the less detail the figure keeps, the more a caption can tell you it is</div></div>
+      <div class="ctl"><label>Caption</label>
+        <div class="seg" id="spCapSel"><button data-c="none">none</button><button data-c="seller" class="on">the seller's</button><button data-c="plain">a plain description</button></div></div>
+      <div class="reads">
+        <div class="read"><div class="k">Second image physically present?</div><div class="v" id="spQ1" style="font-size:15px">yes</div><div class="u">manufactured evidence</div></div>
+        <div class="read"><div class="k">Does the plate say who it is?</div><div class="v" id="spQ2" style="font-size:15px">no</div><div class="u" id="spQ2u">supplied meaning</div></div>
+      </div>
+      <div class="hint" style="font-size:12.5px;color:var(--faint);margin-top:10px">Drawn here, procedurally: no
+      historical plate and no real person is shown. The seller's caption is invented, in period style.
+      Mumler's best-known plate shows Mary Todd Lincoln with the “spirit” of Abraham Lincoln resting its
+      hands on her shoulders, a composition this reconstruction echoes.</div>
+    </div>
+  </div>
+</div>
+<p class="lede">The relevant perceptual parallel is the Dalmatian image: once an interpretation organizes
+ambiguous visual material, it can become compelling. But recognizing a meaningful shape does not
+independently verify the claimed identity or cause of that shape. <a class="src-chip" href="https://michaelbach.de/ot/cog-Dalmatian/" rel="noopener">michaelbach</a></p>
+
+<h3>4. Selling fear of hidden messages</h3>
+<p class="lede">Sometimes the profitable deception is the claim that perception can be manipulated—not a
+successful manipulation technique.</p>
+<div class="case">
+  <h4>Real case: James Vicary, 1957</h4>
+  <p>American market researcher <b>James Vicary</b> claimed in <b>1957</b> that briefly flashing “Eat Popcorn”
+  and “Drink Coca-Cola” during a film produced dramatic sales increases. The supposed demonstration became
+  foundational to popular fears about subliminal advertising. <a class="src-chip" href="https://www.bbc.com/news/magazine-30878843" rel="noopener">bbc</a></p>
+  <p>The results were not substantiated. A historical account in <i>Scientific American</i> states that he
+  admitted five years later that he had faked the study. <a class="src-chip" href="https://www.scientificamerican.com/article/a-short-history-of-the-rise-fall-and-rise-of-subliminal-messaging/" rel="noopener">scientificamerican</a></p>
+</div>
+<p class="lede">This matters for negative-space images and alleged hidden symbols: <b>finding an embedded image
+does not prove that it changes purchasing behavior, sexual desire, or political beliefs</b>. A review of the
+history distinguishes evidence that people can respond to some stimuli outside awareness from evidence that
+subliminal advertising delivers the sweeping effects claimed for it. <a class="src-chip" href="https://muse.jhu.edu/article/497057" rel="noopener">muse.jhu</a></p>
+<p class="lede">So there are two separate questions:</p>
+<ul class="lede">
+  <li>Is another image or message actually present?</li>
+  <li>Is there credible evidence that its presence causes the claimed behavior?</li>
+</ul>
+<p class="lede">The first can be demonstrated visually. It does not answer the second. <a class="src-chip" href="https://muse.jhu.edu/article/497057" rel="noopener">muse.jhu</a></p>
+
+<h3>5. How to recognize the exploit</h3>
+<p class="lede">The most useful defensive move is to separate <b>what is visible</b>, <b>what you
+inferred</b>, and <b>what someone wants that inference to make you do</b>.</p>
+<div class="tscroll">
+<table>
+  <tr><th>Situation</th><th>Question that breaks the spell</th></tr>
+  <tr><td>A bright purchase button and a faint alternative</td><td>What are all the available choices, including the visually quiet ones?</td></tr>
+  <tr><td>A subscription presented as a limited membership</td><td>What is the renewal schedule, total cost, and cancellation process?</td></tr>
+  <tr><td>A faint face, apparition, or hidden symbol</td><td>What is physically in the image, and what identity or explanation was suggested to me?</td></tr>
+  <tr><td>A claim about subliminal influence</td><td>Where is the evidence of a behavioral effect—not merely evidence of a hidden picture?</td></tr>
+  <tr><td>A convincing interpretation of ambiguous patches</td><td>Can I describe the marks without naming the object I was told to see?</td></tr>
+</table>
+</div>
+<div class="panel" id="spell">
+  <div class="seg" id="sbTabs" role="tablist">
+    <button data-i="0" class="on">bright button</button><button data-i="1">“membership”</button><button data-i="2">faint face</button><button data-i="3">hidden message</button><button data-i="4">patches</button>
+  </div>
+  <div class="spell-grid">
+    <div class="exhibit" id="sbEx"></div>
+    <div>
+      <div class="layer"><div class="lk">1 · What is visible</div><div id="sbV"></div></div>
+      <div class="dn"></div>
+      <div class="layer"><div class="lk">2 · What you inferred</div><div id="sbI"></div></div>
+      <div class="dn"></div>
+      <div class="layer want"><div class="lk">3 · What someone wants it to make you do</div><div id="sbW"></div></div>
+      <div class="breaker"><div class="lk">The question that breaks the spell</div><div id="sbQ"></div>
+        <div class="reveal-line" id="sbR"></div></div>
+      <div style="margin-top:12px"><button class="act" id="sbBtn" aria-pressed="false">break the spell</button></div>
+    </div>
+  </div>
+  <div class="hint" style="font-size:12.5px;color:var(--faint);margin-top:10px">Every exhibit is an invented,
+  generic mock-up: no real company, product or person. The price figures are examples.</div>
+</div>
+<p class="lede">These checks target the documented problems of hidden alternatives, obscured renewal terms,
+manufactured photographic evidence, and unsupported subliminal claims. <a class="src-chip" href="https://www.ftc.gov/system/files/documents/public_statements/1579927/172_3086_abcmouse_-_rchopra_statement.pdf" rel="noopener">ftc</a></p>
+<p class="lede">The central vulnerability is not that people are foolish. It is that <b>perceptual fluency can
+feel like certainty</b>: once something looks like the obvious button, a recognizable face, or meaningful
+evidence, checking the alternative explanation takes additional effort. The clearest financial exploitation
+occurs when someone deliberately structures the presentation so that your easiest interpretation is also
+their most profitable one. <a class="src-chip" href="https://www.ftc.gov/system/files/documents/public_statements/1579927/172_3086_abcmouse_-_rchopra_statement.pdf" rel="noopener">ftc</a></p>
+
+<!-- ============================================================ -->
+<h2>The hermetic reading <span class="rl rl-h">interpretation — not physics</span></h2>
+<p class="lede">The second voice makes no claim on the first. Perception science does not need the
+tradition's blessing, and the tradition does not need a laboratory's proof. They are two lanterns held up to
+one empty space.</p>
+<div class="herm">
+  <div class="ax">“The All is Mind; the Universe is Mental.”</div>
+  <div class="axsrc">— THE KYBALION (1908), THE PRINCIPLE OF MENTALISM</div>
+  <p>Read through the first Hermetic principle, the picture at the top of this page is a diagram of
+  Mentalism. The world outside the skull is all outline. The world anyone has ever lived in is the furnished
+  room within. The sculptures make the principle something you can hold. Their solid is a mental object: real
+  in experience, absent in matter, and identical for everyone who looks, because everyone carries the same
+  priors. In the tradition's own word, the form is <i>occult</i>. It is not secret. It is covered, and the
+  viewer's own seeing is what uncovers it.</p>
+  <p>Plato gives the same thought a geometry. No one has ever seen a perfect sphere. Every sphere you have
+  met was summoned from a lumpy, partial, shadowed approximation, and the <i>Meno</i> calls the faculty that
+  completes it <i>anamnesis</i>, the soul recollecting a Form it never saw with the eyes. The
+  <i>Timaeus</i> gives the world itself the shape of a sphere, the figure most like itself. It assigns the
+  cube to earth and the icosahedron to water. So the series wraps one year around the cosmos, around water,
+  around earth stood on its point, and around the pyramid whose faces hold the golden ratio.</p>
+  <p>Plato's cave runs the other way. Its prisoners mistake shadows for things. Here the thing is withheld
+  on purpose and only its trace is offered, and the Form the viewer completes is truer than any plastic
+  could be. The <i>Tao Te Ching</i> puts it most plainly: the use of the vessel is its emptiness. The year is
+  real. What holds it together is a shape that exists only in whoever is looking.</p>
+  <p>The Kybalion's Principle of Vibration, “Nothing rests; everything moves; everything vibrates,” reads the
+  spectral window the same way. One octave of a continuous vibration is given to us as light and colour. The
+  rest of the keyboard, from radio to gamma, passes through and around us unseen: occulted in the oldest
+  sense, covered rather than absent.</p>
+</div>
+<div class="herm">
+  <h3>A contemplative use</h3>
+  <ol>
+    <li>Stand where the piece reads as a tangle of strips. Notice that this is a true description of the plastic.</li>
+    <li>Walk slowly around it until the solid arrives, and note the moment. Nothing in the object changed.</li>
+    <li>Try to un-see it. Notice how little control you have over a construction you know to be yours.</li>
+    <li>Turn the same attention outward. In the room around you, which edges, surfaces and meanings are you completing right now?</li>
+    <li>Then ask the question from the case files: <i>who benefits from what I complete?</i> In art the answer is the viewer, and the trick is shown. That is the line between summoning and sleight of hand.</li>
+  </ol>
+</div>
+<div class="note">
+  <b>The important distinction.</b> Completion is a measured, repeatable property of human vision, and the
+  coverage figures above are computed from the meshes. Reading the summoned solid as a Platonic Form or a
+  proof of Mentalism is a <b>symbolic framework</b>. It is meaningful and old, but it is not established by
+  perception science, and nothing here suggests the sculptures act on a viewer beyond ordinary seeing. The
+  value is that a real, demonstrable construction becomes a disciplined image for something the traditions
+  have long tried to point at.
+</div>
+
+<!-- ============================================================ -->
+<h2>Sources <span class="rl rl-m">measured</span></h2>
+<ol class="refs">
+  <li>Berkeley, G. (1709). <i>An Essay Towards a New Theory of Vision.</i></li>
+  <li>von Helmholtz, H. (1867). <i>Handbuch der physiologischen Optik</i>, vol. 3.</li>
+  <li>Wertheimer, M. (1923). Untersuchungen zur Lehre von der Gestalt II. <i>Psychologische Forschung</i> 4. · Koffka, K. (1935). <i>Principles of Gestalt Psychology.</i></li>
+  <li>Hochberg, J. &amp; McAlister, E. (1953). A quantitative approach to figural “goodness”. <i>J. Exp. Psychol.</i> 46.</li>
+  <li>Pizlo, Z., Li, Y., Sawada, T. &amp; Steinman, R. M. (2014). <i>Making a Machine That Sees Like Us.</i> Oxford UP.</li>
+  <li>Rao, R. P. N. &amp; Ballard, D. H. (1999). Predictive coding in the visual cortex. <i>Nature Neuroscience</i> 2.</li>
+  <li>Gibson, J. J. (1979). <i>The Ecological Approach to Visual Perception.</i></li>
+  <li>Kanizsa, G. (1955). Margini quasi-percettivi in campi con stimolazione omogenea. <i>Rivista di Psicologia</i> 49.</li>
+  <li>von der Heydt, R., Peterhans, E. &amp; Baumgartner, G. (1984). Illusory contours and cortical neuron responses. <i>Science</i> 224.</li>
+  <li>Kellman, P. J. &amp; Shipley, T. F. (1991). A theory of visual interpolation in object perception. <i>Cognitive Psychology</i> 23. · Shipley, T. F. &amp; Kellman, P. J. (1992). Strength of visual interpolation depends on the ratio of physically specified to total edge length. <i>Perception &amp; Psychophysics</i> 52.</li>
+  <li>Michotte, A., Thinès, G. &amp; Crabbé, G. (1964). <i>Les compléments amodaux des structures perceptives.</i></li>
+  <li>Rubin, E. (1915). <i>Synsoplevede Figurer.</i> · Necker, L. A. (1832). <i>London and Edinburgh Philosophical Magazine</i> 1.</li>
+  <li>Mooney, C. M. (1957). Age in the development of closure ability in children. <i>Canadian J. Psychol.</i> 11.</li>
+  <li>Ehinger, B. V., Häusser, K., Ossandón, J. P. &amp; König, P. (2017). Humans treat unreliable filled-in percepts as more real than veridical ones. <a href="https://doi.org/10.7554/eLife.21761" rel="noopener"><i>eLife</i> 6:e21761</a>.</li>
+  <li>Wallach, H. &amp; O'Connell, D. N. (1953). The kinetic depth effect. <i>J. Exp. Psychol.</i> 45. · Ullman, S. (1979). <i>The Interpretation of Visual Motion.</i> MIT Press. · Treue, S., Husain, M. &amp; Andersen, R. A. (1991). Human perception of structure from motion. <i>Vision Research</i> 31.</li>
+  <li>Comparative and evolutionary: Regolin, L. &amp; Vallortigara, G. (1995). Perception of partly occluded objects by young chicks. <i>Perception &amp; Psychophysics</i> 57. · Nieder, A. &amp; Wagner, H. (1999). Perception and neuronal coding of subjective contours in the owl. <i>Nature Neuroscience</i> 2. · Zhou, H., Friedman, H. S. &amp; von der Heydt, R. (2000). Coding of border ownership in monkey visual cortex. <i>J. Neurosci.</i> 20. · Wheatstone, C. (1838). On some remarkable, and hitherto unobserved, phenomena of binocular vision. <i>Phil. Trans. R. Soc.</i> 128. · Blake, R. &amp; Logothetis, N. K. (2002). Visual competition. <i>Nature Reviews Neuroscience</i> 3. · Ludmer, R., Dudai, Y. &amp; Rubin, N. (2011). Uncovering camouflage: amygdala activation predicts long-term memory of induced perceptual insight. <i>Neuron</i> 69. · Cuthill, I. C. et&nbsp;al. (2000). Ultraviolet vision in birds. <i>Advances in the Study of Behavior</i> 29.</li>
+  <li>Gregory, R. L. (1970). <i>The Intelligent Eye.</i> · Stevens, K. A. (1981). The visual interpretation of surface contours. <i>Artificial Intelligence</i> 17.</li>
+  <li>Spectral window: Stockman, A. &amp; Sharpe, L. T. (2000). The spectral sensitivities of the middle- and long-wavelength-sensitive cones derived from measurements in observers of known genotype. <i>Vision Research</i> 40 — with their lens and macular density spectra and the CIE 2008 luminosity function, from the <a href="http://www.cvrl.org/" rel="noopener">CVRL database</a>. · Govardovskii, V. I. et&nbsp;al. (2000). In search of the visual pigment template. <i>Visual Neuroscience</i> 17. · Wyszecki, G. &amp; Stiles, W. S. (1982). <i>Color Science</i>, 2nd ed. · Pokorny, J., Smith, V. C. &amp; Lutze, M. (1987). Aging of the human lens. <i>Applied Optics</i> 26. · Wald, G. (1952). Alleged effects of the near ultraviolet on human vision. <i>JOSA</i> 42. · Griffin, D. R., Hubbard, R. &amp; Wald, G. (1947). The sensitivity of the human eye to infra-red radiation. <i>JOSA</i> 37. · Palczewska, G. et&nbsp;al. (2014). Human infrared vision is triggered by two-photon chromophore isomerization. <i>PNAS</i> 111. · Barlow, H. B. (1957). Purkinje shift and retinal noise. <i>Nature</i> 179. · Pope, R. M. &amp; Fry, E. S. (1997). Absorption spectrum (380–700 nm) of pure water. <i>Applied Optics</i> 36. · Thibos, L. N. et&nbsp;al. (1992). The chromatic eye. <i>Applied Optics</i> 31. · Segelstein, D. J. (1981). <i>The complex refractive index of water</i>, MSc thesis, University of Missouri–Kansas City, via the CC0 <a href="https://refractiveindex.info/?shelf=main&amp;book=H2O&amp;page=Segelstein" rel="noopener">refractiveindex.info</a> database.</li>
+  <li>Colours not in the light: Fong, J. et&nbsp;al. (2025). Novel color via stimulation of individual photoreceptors at population scale. <i>Science Advances</i> 11. · Churchland, P. M. (2005). Chimerical colors: some phenomenological predictions from cognitive neuroscience. <i>Philosophical Psychology</i> 18. · Crane, H. D. &amp; Piantanida, T. P. (1983). On seeing reddish green and yellowish blue. <i>Science</i> 221. · Billock, V. A., Gleason, G. A. &amp; Tsou, B. H. (2001). Perception of forbidden colors in retinally stabilized equiluminant images. <i>JOSA A</i> 18. · Hsieh, P.-J. &amp; Tse, P. U. (2006). Illusory color mixing upon perceptual fading and filling-in does not result in “forbidden colors”. <i>Vision Research</i> 46. · Metamers: ITU-R BT.2020 primaries; CIE 2012 2° XYZ from the CIE 2006 cone fundamentals (cvrl.org).</li>
+  <li>Art and light: Livingstone, M. (2002). <i>Vision and Art: The Biology of Seeing.</i> · van Asperen de Boer, J. R. J. (1968). Infrared reflectography. <i>Applied Optics</i> 7.</li>
+  <li>Case files: FTC statement of Commissioner Chopra on ABCmouse; Olshan Frome Wolosky, <i>Dark patterns</i>; Photography Museum, Mumler; JSTOR Daily; BBC; <i>Scientific American</i>; Project MUSE — linked inline.</li>
+  <li>Spectral chart: <code>projects/indirect-perception/spectral_window.py</code> fits the pigment template to the measured cones and writes the data inlined in this page.</li>
+  <li>Sculptures: generators in <code>projects/negative-space/</code> (manifold3d, trimesh); coverage = ribbon area lying on the hidden surface ÷ that surface's area, measured from the printed STLs.</li>
+</ol>
+
+<footer>
+  Where perception genuinely constructs, it is measured. Where the traditions only rhyme with it, that is marked too.
+  <div style="margin-top:8px"><a href="./">← all studies</a></div>
+</footer>
+</main>
+
+<script>
+/* ---------- two-tone reveal ---------- */
+(function(){
+  const box=document.getElementById('mooney'), btn=document.getElementById('mooneyBtn');
+  btn.addEventListener('click',()=>{
+    const on=box.classList.toggle('on');
+    btn.textContent=on?'back to the patches':'show the source';
+    btn.setAttribute('aria-pressed',on);
+  });
+})();
+
+/* ---------- Summoning I: Kanizsa engine ---------- */
+(function(){
+  const cv=document.getElementById('kz'), ctx=cv.getContext('2d');
+  const W=500,H=440, S={n:3,s:0.44,bend:0,twist:0,show:false};
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1]], add=(a,b)=>[a[0]+b[0],a[1]+b[1]], mul=(a,k)=>[a[0]*k,a[1]*k];
+  const dot=(a,b)=>a[0]*b[0]+a[1]*b[1], cross=(a,b)=>a[0]*b[1]-a[1]*b[0];
+  const unit=a=>{const l=Math.hypot(a[0],a[1]);return [a[0]/l,a[1]/l]};
+  const rot=(a,t)=>[a[0]*Math.cos(t)-a[1]*Math.sin(t),a[0]*Math.sin(t)+a[1]*Math.cos(t)];
+  function verts(){
+    const n=S.n, c=[W/2,H/2+(n===3?22:0)], R=n===3?158:150, a0=n===3?-Math.PI/2:-Math.PI/4;
+    return Array.from({length:n},(_,i)=>[c[0]+R*Math.cos(a0+2*Math.PI*i/n),c[1]+R*Math.sin(a0+2*Math.PI*i/n)]);
+  }
+  function geometry(){
+    const P=verts(), n=P.length, L=Math.hypot(...sub(P[1],P[0]));
+    const cen=P.reduce((a,p)=>add(a,mul(p,1/n)),[0,0]);
+    const r=S.s*L/2, d=S.bend*Math.PI/180, tw=S.twist*Math.PI/180;
+    // edge directions at each vertex: toward next and toward previous, bent outward then twisted
+    const ed=P.map((p,i)=>{
+      const nx=P[(i+1)%n], pv=P[(i+n-1)%n];
+      const dn=unit(sub(nx,p)), dp=unit(sub(pv,p));
+      const outN=(()=>{let o=[-dn[1],dn[0]];const m=mul(add(p,nx),.5);return dot(o,sub(m,cen))<0?mul(o,-1):o})();
+      const outP=(()=>{let o=[-dp[1],dp[0]];const m=mul(add(p,pv),.5);return dot(o,sub(m,cen))<0?mul(o,-1):o})();
+      const uN=rot(add(mul(dn,Math.cos(d)),mul(outN,Math.sin(d))),tw);
+      const uP=rot(add(mul(dp,Math.cos(d)),mul(outP,Math.sin(d))),tw);
+      return {p,uN,uP};
+    });
+    const sides=[];
+    for(let i=0;i<n;i++){
+      const A=ed[i], B=ed[(i+1)%n], uA=A.uN, uB=B.uP;
+      const EA=add(A.p,mul(uA,r)), EB=add(B.p,mul(uB,r)), w=sub(EB,EA), den=cross(uA,uB);
+      let rel=false, X=null, bend=Math.acos(Math.max(-1,Math.min(1,dot(uA,mul(uB,-1)))))*180/Math.PI;
+      if(Math.abs(den)<1e-9){
+        rel=Math.abs(cross(uA,w))<0.02*L && dot(uA,w)>0; bend=0;
+      }else{
+        const t=cross(w,uB)/den, s=cross(w,uA)/den;
+        if(t>0&&s>0&&bend<=90){rel=true;X=add(EA,mul(uA,t));}
+      }
+      // contour length: straight gap or quadratic bezier through X
+      let gap=Math.hypot(...w);
+      if(rel&&X){let len=0,prev=EA;for(let k=1;k<=40;k++){const q=k/40,a=mul(EA,(1-q)*(1-q)),b=mul(X,2*q*(1-q)),c=mul(EB,q*q);const pt=add(add(a,b),c);len+=Math.hypot(...sub(pt,prev));prev=pt;}gap=len;}
+      sides.push({EA,EB,X,rel,bend,ink:2*r/(2*r+gap)});
+    }
+    return {P,ed,r,sides,L};
+  }
+  function draw(){
+    const g=geometry();
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+    if(S.show){
+      ctx.save(); ctx.setLineDash([7,6]); ctx.lineWidth=2; ctx.strokeStyle='#2F7FA8';
+      for(const sd of g.sides){ if(!sd.rel) continue; ctx.beginPath(); ctx.moveTo(...sd.EA);
+        if(sd.X) ctx.quadraticCurveTo(sd.X[0],sd.X[1],sd.EB[0],sd.EB[1]); else ctx.lineTo(...sd.EB); ctx.stroke(); }
+      ctx.restore();
+    }
+    ctx.fillStyle='#111';
+    for(const e of g.ed){
+      const aN=Math.atan2(e.uN[1],e.uN[0]), aP=Math.atan2(e.uP[1],e.uP[0]);
+      // mouth spans from aN to aP through the inside (the bisector of uN,uP)
+      const bis=unit(add(e.uN,e.uP)), aB=Math.atan2(bis[1],bis[0]);
+      const md=x=>((x%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+      const cwContains=md(aB-aN)<md(aP-aN);       // sweeping aN -> aP clockwise passes the mouth
+      ctx.beginPath(); ctx.moveTo(...e.p);
+      ctx.arc(e.p[0],e.p[1],g.r,aN,aP,cwContains); ctx.closePath(); ctx.fill();
+    }
+    const k=g.sides.filter(s=>s.rel).length, n=g.sides.length;
+    const relS=g.sides.filter(s=>s.rel);
+    document.getElementById('kzInk').textContent=relS.length?Math.round(100*relS.reduce((a,s)=>a+s.ink,0)/relS.length)+'%':'—';
+    const bends=g.sides.map(s=>s.bend);
+    document.getElementById('kzBend').textContent=Math.round(Math.max(...bends))+'°';
+    document.getElementById('kzRel').textContent=k+' / '+n;
+    const v=document.getElementById('kzVerdict'), vu=document.getElementById('kzVerdictU');
+    if(k===n){v.textContent=S.bend===0?'closed figure':(S.bend>0?'bowed figure':'pinched figure');vu.textContent='contour on every side';}
+    else if(k>0){v.textContent='fragments';vu.textContent='contour on '+k+' side'+(k>1?'s':'')+' only';}
+    else{v.textContent='no figure';vu.textContent='just discs with notches';}
+  }
+  const bind=(id,key,lab,fmt)=>{const el=document.getElementById(id);el.addEventListener('input',()=>{S[key]=parseFloat(el.value);document.getElementById(lab).textContent=fmt(S[key]);draw();});};
+  bind('kzS','s','kzSv',x=>x.toFixed(2));
+  bind('kzB','bend','kzBv',x=>(x>0?'+':'')+x);
+  bind('kzT','twist','kzTv',x=>x.toFixed(1).replace(/\.0$/,''));
+  document.getElementById('kzShow').addEventListener('change',e=>{S.show=e.target.checked;draw();});
+  document.querySelectorAll('#kzShape button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#kzShape button').forEach(x=>x.classList.toggle('on',x===b));
+    S.n=+b.dataset.n; draw();
+  }));
+  draw();
+})();
+
+/* ---------- Summoning II: kinetic depth ---------- */
+(function(){
+  const cv=document.getElementById('kd'), ctx=cv.getContext('2d');
+  const W=500,H=440, dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
+  const PHI=(1+Math.sqrt(5))/2;
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const norm=a=>Math.hypot(a[0],a[1],a[2]);
+  function solidVerts(name){
+    if(name==='ico'){const v=[];for(const a of[-1,1])for(const b of[-PHI,PHI]){v.push([0,a,b],[a,b,0],[b,0,a]);}
+      // a vertex at each pole, like the sculpture
+      const top=unit([0,1,PHI]); return rotateTo(v,top);}
+    if(name==='pyramid'){const h=Math.sqrt(PHI);return [[-1,-1,0],[1,-1,0],[1,1,0],[-1,1,0],[0,0,h]].map(p=>[p[0],p[1],p[2]-h*0.4]);}
+    if(name==='cube'){const v=[];for(const x of[-1,1])for(const y of[-1,1])for(const z of[-1,1])v.push([x,y,z]);return rotateTo(v,unit([1,1,1]));}
+    return null;
+  }
+  function unit(a){const l=norm(a);return a.map(x=>x/l)}
+  function rotateTo(V,dir){ // rotate so that dir -> +z
+    const z=[0,0,1], ax=cross(dir,z), s=norm(ax), c=dot(dir,z);
+    if(s<1e-9) return V; const k=ax.map(x=>x/s), t=Math.atan2(s,c);
+    return V.map(v=>{const kv=cross(k,v), kd=dot(k,v);
+      return [0,1,2].map(i=>v[i]*Math.cos(t)+kv[i]*Math.sin(t)+k[i]*kd*(1-Math.cos(t)));});
+  }
+  function hullTris(V){ // faces of a convex hull, coplanar points fan-triangulated once
+    const planes=new Map(), n=V.length;
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)for(let k=j+1;k<n;k++){
+      let nn=cross(sub(V[j],V[i]),sub(V[k],V[i])); const l=norm(nn); if(l<1e-9) continue;
+      nn=nn.map(x=>x/l); let d=dot(nn,V[i]), pos=0, neg=0;
+      for(let m=0;m<n;m++){const e=dot(nn,V[m])-d; if(e>1e-6)pos++; else if(e<-1e-6)neg++;}
+      if(pos&&neg) continue; if(pos){nn=nn.map(x=>-x);d=-d;}
+      planes.set(nn.map(x=>x.toFixed(4)).join()+'|'+d.toFixed(4),{nn,d});
+    }
+    const tris=[];
+    for(const {nn,d} of planes.values()){
+      const on=V.filter(v=>Math.abs(dot(nn,v)-d)<1e-6), c=on.reduce((a,v)=>a.map((x,i)=>x+v[i]/on.length),[0,0,0]);
+      const e1=unit(sub(on[0],c)), e2=cross(nn,e1);
+      on.sort((a,b)=>Math.atan2(dot(sub(a,c),e2),dot(sub(a,c),e1))-Math.atan2(dot(sub(b,c),e2),dot(sub(b,c),e1)));
+      for(let q=1;q+1<on.length;q++) tris.push([on[0],on[q],on[q+1]]);
+    }
+    return tris;
+  }
+  const solids={};
+  function sampler(name){
+    if(solids[name]) return solids[name];
+    if(name==='sphere'){ return solids[name]=()=>{let g=[0,0,0].map(()=>{let u=0,v=0;while(!u)u=Math.random();v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)});return unit(g);}; }
+    let V=solidVerts(name); const R=Math.max(...V.map(norm)); V=V.map(v=>v.map(x=>x/R));
+    const T=hullTris(V), A=T.map(t=>norm(cross(sub(t[1],t[0]),sub(t[2],t[0])))/2), tot=A.reduce((a,b)=>a+b,0);
+    const cum=[];A.reduce((a,b,i)=>(cum[i]=a+b),0);
+    return solids[name]=()=>{const r=Math.random()*tot;let i=cum.findIndex(c=>c>=r);if(i<0)i=T.length-1;
+      let u=Math.random(),v=Math.random(); if(u+v>1){u=1-u;v=1-v;} const t=T[i];
+      return [0,1,2].map(k=>t[0][k]+u*(t[1][k]-t[0][k])+v*(t[2][k]-t[0][k]));};
+  }
+  const S={shape:'sphere',n:500,life:0,play:false,ang:0,rep:0,repT:0,repShown:0};
+  let pts=[];
+  function reseed(){const f=sampler(S.shape);pts=Array.from({length:S.n},()=>({p:f(),age:Math.floor(Math.random()*100)}));}
+  const tilt=12*Math.PI/180;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const ink=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#1C2028';
+    ctx.fillStyle=ink;
+    const ca=Math.cos(S.ang), sa=Math.sin(S.ang), ct=Math.cos(tilt), st=Math.sin(tilt), sc=168;
+    for(const d of pts){
+      const [x,y,z]=d.p; // model z is up
+      const xr=x*ca-y*sa, yr=x*sa+y*ca;          // spin about vertical
+      const sy=z*ct-yr*st;                       // fixed tilt toward the viewer
+      ctx.fillRect(W/2+xr*sc-1.6,H/2-sy*sc-1.6,3.2,3.2);
+    }
+  }
+  let last=performance.now();
+  function frame(now){
+    const dt=Math.min(0.05,(now-last)/1000); last=now;
+    if(S.play){S.ang+=dt*0.9;}
+    if(S.life>0){const f=sampler(S.shape);for(const d of pts){d.age++; if(d.age>=S.life){d.p=f();d.age=0;S.rep++;}}}
+    S.repT+=dt; if(S.repT>=0.5){S.repShown=S.rep/S.repT;S.rep=0;S.repT=0;document.getElementById('kdRep').textContent=Math.round(S.repShown).toLocaleString();}
+    document.getElementById('kdAng').textContent=Math.round(S.ang*180/Math.PI).toLocaleString()+'°';
+    draw(); requestAnimationFrame(frame);
+  }
+  const play=document.getElementById('kdPlay');
+  play.addEventListener('click',()=>{S.play=!S.play;play.classList.toggle('on',S.play);play.textContent=S.play?'freeze':'turn';play.setAttribute('aria-pressed',S.play);});
+  const nEl=document.getElementById('kdN');
+  nEl.addEventListener('input',()=>{S.n=+nEl.value;document.getElementById('kdNv').textContent=S.n;reseed();});
+  document.querySelectorAll('#kdShape button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#kdShape button').forEach(x=>x.classList.toggle('on',x===b));S.shape=b.dataset.s;reseed();}));
+  document.querySelectorAll('#kdLife button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#kdLife button').forEach(x=>x.classList.toggle('on',x===b));S.life=+b.dataset.l;
+    pts.forEach(d=>d.age=S.life?Math.floor(Math.random()*S.life):0);}));
+  reseed(); requestAnimationFrame(frame);
+})();
+
+/* ---------- the window: lens, macular pigment, cones ---------- */
+/* EYE_WINDOW:BEGIN */
+window.EYE_WINDOW = {"lam0":300,"step":5,"lens":[null,null,null,null,null,null,null,null,null,null,null,null,4.949,4.517,4.086,3.67,3.254,2.883,2.512,2.131,1.765,1.426,1.137,0.9063,0.724,0.5957,0.4876,0.4081,0.3413,0.3,0.2629,0.2438,0.2279,0.2131,0.2046,0.1929,0.1834,0.1749,0.1675,0.1601,0.1537,0.1463,0.1378,0.1293,0.123,0.1166,0.1102,0.1049,0.09858,0.09222,0.08586,0.0795,0.0742,0.06784,0.06148,0.05512,0.04876,0.04346,0.03812,0.03286,0.02968,0.02544,0.02226,0.01908,0.01696,0.01484,0.01166,0.00848,0.0053,0.00424,0.00318,0.00106,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"mac":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.04533,0.06489,0.0868,0.112,0.1365,0.1631,0.1981,0.2345,0.2618,0.2772,0.2884,0.308,0.3332,0.3486,0.35,0.3269,0.2996,0.2842,0.2786,0.2772,0.2688,0.2485,0.2093,0.1652,0.1211,0.0812,0.0525,0.0329,0.0175,0.00929,0.00459,0.00166,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"V":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0005903,0.00149,0.003404,0.006817,0.0123,0.01913,0.0268,0.03413,0.04286,0.05308,0.06353,0.07167,0.07987,0.08834,0.1028,0.1266,0.1535,0.1795,0.2069,0.2364,0.2696,0.3198,0.3869,0.4704,0.5667,0.6692,0.7668,0.8405,0.8985,0.9416,0.9815,1.0,0.9986,1.0,0.9884,0.9733,0.9482,0.9102,0.8582,0.8151,0.7639,0.7041,0.6403,0.5755,0.5083,0.4421,0.3788,0.3207,0.2627,0.2114,0.1686,0.1332,0.1019,0.07613,0.05613,0.04091,0.02951,0.02101,0.01476,0.01023,0.00697,0.004816,0.003329,0.002293,0.001561,0.001062,0.0007286,0.0005007,0.0003466,0.0002402,0.0001664,0.0001167,8.173e-05,5.757e-05,4.076e-05,2.89e-05,2.063e-05,1.47e-05,1.059e-05,7.64e-06,5.528e-06,4.007e-06,2.923e-06,2.143e-06,1.568e-06,1.154e-06,8.55e-07,6.342e-07,4.719e-07,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"wl0":0.2,"wl1":30.0,"wa":[0.8394,0.6899,0.5236,0.3366,0.1226,-0.04418,-0.1525,-0.1889,-0.2122,-0.2316,-0.2476,-0.2641,-0.2916,-0.3206,-0.3535,-0.389,-0.4251,-0.4616,-0.5018,-0.5427,-0.5827,-0.6176,-0.6748,-0.7181,-0.7539,-0.7959,-0.8377,-0.8747,-0.9013,-0.9243,-0.9463,-0.9726,-1.0,-1.029,-1.061,-1.091,-1.121,-1.152,-1.183,-1.22,-1.252,-1.29,-1.333,-1.367,-1.413,-1.465,-1.516,-1.572,-1.627,-1.666,-1.688,-1.711,-1.731,-1.731,-1.706,-1.598,-1.497,-1.422,-1.386,-1.328,-1.269,-1.213,-1.155,-1.081,-0.9531,-0.8061,-0.6394,-0.5684,-0.5293,-0.5129,-0.5026,-0.452,-0.4085,-0.3754,-0.3071,-0.168,0.0271,0.2462,0.391,0.418,0.4125,0.3677,0.3103,0.2958,0.3701,0.4982,0.6012,0.6915,0.7449,0.7922,0.847,1.034,1.362,1.586,1.654,1.633,1.579,1.487,1.363,1.225,1.171,1.227,1.334,1.538,1.861,2.069,2.092,2.098,2.082,2.056,2.032,2.061,2.178,2.315,2.584,2.767,3.1,3.459,3.5,3.46,3.316,3.164,3.056,2.958,2.871,2.804,2.758,2.749,2.77,2.827,2.89,2.975,2.988,3.257,3.797,4.081,4.062,3.92,3.734,3.604,3.469,3.379,3.317,3.286,3.296,3.357,3.423,3.531,3.652,3.766,3.901,3.99,4.026,4.083,4.335,4.777,5.259,5.616,5.834,6.003,6.071,6.07,6.03,5.946,5.809,5.636,5.449,5.23,5.024,4.858,4.675,4.49,4.322,4.193,4.095,4.056,4.055,4.08,4.118,4.173,4.223,4.278,4.334,4.392,4.447,4.504,4.551,4.598,4.622,4.614,4.582,4.541,4.498,4.451,4.407,4.375,4.366,4.391,4.439,4.524,4.664,4.879,5.128,5.357,5.422,5.225,5.035,4.931,4.865,4.819,4.789,4.773,4.761,4.753,4.748,4.742,4.738,4.734,4.732,4.732,4.731,4.731,4.731,4.732,4.734,4.737,4.741,4.745,4.751,4.758,4.765,4.774,4.785,4.798,4.817,4.841,4.884,4.931,4.986,5.04,5.093,5.148,5.199,5.251,5.305,5.347,5.388,5.421,5.446,5.469,5.486,5.5,5.51,5.518,5.523,5.525,5.528,5.528,5.528,5.526,5.525,5.522,5.519,5.514,5.509,5.502,5.496,5.487,5.478,5.469,5.459,5.447,5.434,5.421,5.407,5.391,5.379,5.367,5.355,5.344,5.333,5.322,5.31,5.299,5.285,5.271,5.256,5.243,5.229,5.214,5.2,5.185,5.17,5.155,5.141,5.126,5.111,5.097,5.084,5.072],"f0":390,"fL":[0.000415,0.001052,0.002408,0.004833,0.008721,0.01338,0.01845,0.02293,0.02819,0.03411,0.04026,0.04494,0.04986,0.05534,0.06472,0.08069,0.09948,0.1188,0.1401,0.164,0.1916,0.2329,0.289,0.3597,0.4437,0.5365,0.6286,0.7047,0.7706,0.8257,0.881,0.9191,0.9402,0.9657,0.9815,0.9945,1.0,0.9923,0.9694,0.9556,0.9277,0.886,0.834,0.7751,0.7057,0.6308,0.5542,0.4799,0.4007,0.3279,0.2658,0.2133,0.1651,0.1247,0.09301,0.06851,0.04987,0.03582,0.02538,0.01772,0.01217,0.008472,0.005898,0.004091,0.002804,0.001921,0.001327,0.0009178,0.0006394,0.000446,0.0003109,0.0002193,0.0001546,0.0001095,7.799e-05,5.563e-05,3.993e-05,2.862e-05,2.073e-05,1.504e-05,1.094e-05,7.978e-06,5.851e-06,4.311e-06,3.17e-06,2.345e-06,1.747e-06,1.302e-06,9.743e-07],"fM":[0.0003694,0.0009614,0.002276,0.004713,0.008818,0.01457,0.02173,0.02965,0.03957,0.05197,0.06496,0.07609,0.0873,0.09847,0.1166,0.1449,0.1764,0.206,0.2364,0.2688,0.3045,0.3581,0.429,0.517,0.6173,0.7212,0.8189,0.888,0.9383,0.9716,0.998,1.0,0.9799,0.9593,0.9203,0.8757,0.8158,0.7424,0.6551,0.5742,0.494,0.4124,0.3354,0.2656,0.2059,0.1567,0.117,0.08583,0.06229,0.04461,0.03152,0.02187,0.01549,0.01074,0.007323,0.004986,0.003446,0.002383,0.001642,0.001124,0.0007632,0.0005269,0.0003663,0.0002541,0.0001749,0.0001209,8.441e-05,5.91e-05,4.172e-05,2.952e-05,2.094e-05,1.509e-05,1.085e-05,7.845e-06,5.707e-06,4.152e-06,3.035e-06,2.217e-06,1.639e-06,1.214e-06,9.017e-07,6.715e-07,5.046e-07,3.811e-07,2.871e-07,2.175e-07,1.656e-07,1.259e-07,9.561e-08],"fS":[0.009629,0.02403,0.05713,0.1235,0.235,0.3846,0.5483,0.6802,0.8094,0.9113,0.9995,1.0,0.9636,0.8676,0.7934,0.7446,0.6519,0.5208,0.3937,0.2928,0.2137,0.1619,0.1239,0.08966,0.06134,0.04318,0.02945,0.01956,0.01271,0.008164,0.005133,0.003196,0.001976,0.001213,0.0007465,0.0004599,0.0002842,0.0001765,0.0001104,6.959e-05,4.428e-05,2.846e-05,1.85e-05,1.217e-05,8.104e-06,5.465e-06,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"L":[0.1693,0.1918,0.215,0.2383,0.2612,0.2834,0.3042,0.3232,0.3401,0.3543,0.3657,0.3739,0.3789,0.3805,0.3789,0.3741,0.3663,0.356,0.3434,0.3293,0.3141,0.2986,0.2836,0.2698,0.2583,0.2498,0.2451,0.2451,0.2503,0.2613,0.2784,0.3017,0.3311,0.3662,0.4065,0.451,0.4989,0.5489,0.5999,0.6508,0.7005,0.748,0.7927,0.8338,0.8709,0.9037,0.9321,0.9557,0.9746,0.9884,0.9969,1.0,0.9972,0.9881,0.9722,0.949,0.9183,0.8798,0.8335,0.7801,0.7202,0.6553,0.587,0.517,0.4472,0.3795,0.3155,0.2568,0.2044,0.1591,0.1211,0.09025,0.066,0.04746,0.03366,0.02361,0.01642,0.01135,0.007823,0.005379,0.003698,0.002544,0.001753,0.001211,0.0008389,0.0005832,0.0004068,0.0002849,0.0002003,0.0001414,0.0001003,7.137e-05,5.102e-05,3.662e-05,2.639e-05,1.91e-05,1.388e-05,1.012e-05,7.412e-06,5.449e-06,4.02e-06,2.978e-06,2.214e-06,1.652e-06,1.237e-06,9.291e-07,7.004e-07,5.299e-07,4.021e-07,3.062e-07,2.339e-07,1.792e-07,1.378e-07,1.062e-07,8.214e-08,6.371e-08,4.955e-08,3.865e-08,3.023e-08,2.371e-08,1.865e-08,1.471e-08,1.163e-08,9.217e-09,7.324e-09,5.835e-09,4.66e-09,3.73e-09,2.993e-09,2.407e-09,1.94e-09,1.568e-09,1.27e-09,1.03e-09,8.378e-10,6.828e-10,5.577e-10,4.564e-10,3.742e-10,3.075e-10,2.532e-10,2.088e-10,1.726e-10,1.429e-10,1.185e-10,9.851e-11,8.201e-11,6.84e-11,5.715e-11,4.783e-11,4.01e-11,3.367e-11,2.832e-11,2.386e-11,2.013e-11,1.702e-11,1.44e-11,1.221e-11,1.037e-11,8.817e-12,7.509e-12],"M":[0.1885,0.2138,0.2393,0.2644,0.2884,0.3108,0.3309,0.3483,0.3624,0.3729,0.3797,0.3827,0.3818,0.3774,0.3697,0.3592,0.3467,0.3328,0.3186,0.305,0.2932,0.2843,0.2794,0.2796,0.2857,0.2984,0.318,0.3447,0.3782,0.4179,0.4627,0.5116,0.5631,0.6158,0.6684,0.7195,0.7682,0.8134,0.8545,0.8911,0.9227,0.9493,0.9705,0.9862,0.9962,1.0,0.9973,0.9876,0.9703,0.9448,0.9109,0.8681,0.8169,0.7579,0.6922,0.6215,0.5479,0.4736,0.4008,0.3316,0.2678,0.211,0.1621,0.1214,0.08887,0.06367,0.04478,0.03103,0.02126,0.01444,0.009753,0.006567,0.004417,0.002971,0.002002,0.001352,0.0009164,0.0006233,0.0004256,0.0002919,0.000201,0.0001391,9.671e-05,6.755e-05,4.739e-05,3.341e-05,2.366e-05,1.683e-05,1.202e-05,8.63e-06,6.221e-06,4.503e-06,3.273e-06,2.389e-06,1.751e-06,1.289e-06,9.518e-07,7.058e-07,5.254e-07,3.925e-07,2.943e-07,2.215e-07,1.672e-07,1.267e-07,9.635e-08,7.35e-08,5.625e-08,4.319e-08,3.326e-08,2.57e-08,1.992e-08,1.548e-08,1.207e-08,9.433e-09,7.395e-09,5.814e-09,4.583e-09,3.623e-09,2.871e-09,2.281e-09,1.817e-09,1.451e-09,1.162e-09,9.326e-10,7.502e-10,6.05e-10,4.89e-10,3.961e-10,3.216e-10,2.617e-10,2.134e-10,1.744e-10,1.428e-10,1.172e-10,9.636e-11,7.939e-11,6.555e-11,5.422e-11,4.493e-11,3.731e-11,3.104e-11,2.587e-11,2.16e-11,1.806e-11,1.513e-11,1.27e-11,1.068e-11,8.994e-12,7.586e-12,6.41e-12,5.424e-12,4.598e-12,3.903e-12,3.319e-12,2.826e-12,2.41e-12,2.058e-12,1.761e-12,1.508e-12,1.293e-12,1.111e-12],"S":[0.2846,0.3187,0.3489,0.3741,0.3938,0.4083,0.4184,0.4256,0.4319,0.4399,0.4519,0.4702,0.4964,0.5309,0.5734,0.6224,0.6757,0.7309,0.7853,0.8368,0.8834,0.9237,0.9565,0.9808,0.9956,1.0,0.9928,0.9728,0.9389,0.8902,0.8265,0.7487,0.6589,0.5607,0.4591,0.3599,0.2692,0.1919,0.1307,0.0854,0.05401,0.03332,0.02022,0.01215,0.007268,0.004346,0.002604,0.001568,0.0009489,0.0005782,0.0003548,0.0002194,0.0001367,8.579e-05,5.427e-05,3.459e-05,2.221e-05,1.437e-05,9.365e-06,6.146e-06,4.061e-06,2.702e-06,1.81e-06,1.22e-06,8.276e-07,5.649e-07,3.879e-07,2.68e-07,1.862e-07,1.301e-07,9.14e-08,6.457e-08,4.585e-08,3.273e-08,2.348e-08,1.692e-08,1.226e-08,8.923e-09,6.524e-09,4.791e-09,3.535e-09,2.619e-09,1.948e-09,1.456e-09,1.092e-09,8.224e-10,6.218e-10,4.719e-10,3.595e-10,2.748e-10,2.109e-10,1.624e-10,1.255e-10,9.727e-11,7.566e-11,5.904e-11,4.622e-11,3.629e-11,2.859e-11,2.259e-11,1.79e-11,1.422e-11,1.133e-11,9.058e-12,7.259e-12,5.832e-12,4.699e-12,3.795e-12,3.073e-12,2.495e-12,2.03e-12,1.656e-12,1.354e-12,1.11e-12,9.118e-13,7.507e-13,6.193e-13,5.122e-13,4.245e-13,3.524e-13,2.932e-13,2.446e-13,2.044e-13,1.71e-13,1.434e-13,1.205e-13,1.016e-13,8.571e-14,7.244e-14,6.119e-14,5.198e-14,4.405e-14,3.76e-14,3.207e-14,2.728e-14,2.341e-14,2.009e-14,1.714e-14,1.475e-14,1.272e-14,1.087e-14,9.4e-15,8.11e-15,7.004e-15,6.082e-15,5.345e-15,4.608e-15,4.055e-15,3.502e-15,3.133e-15,2.58e-15,2.396e-15,2.027e-15,1.843e-15,1.659e-15,1.475e-15,1.29e-15,1.106e-15,9.216e-16,9.216e-16,7.373e-16],"lmax":{"L":555.2,"M":525.5,"S":424.7},"fit":{"L":0.074,"M":0.094,"S":0.057}};
+/* EYE_WINDOW:END */
+(function(){
+  const D=window.EYE_WINDOW; if(!D) return;
+  const cv=document.getElementById('win'), ctx=cv.getContext('2d');
+  const n=D.L.length, lamAt=i=>D.lam0+i*D.step, idx=l=>Math.round((l-D.lam0)/D.step);
+  const S={lens:true,mac:true,cur:555};
+  const Y0=-12, Y1=0, X0=300, X1=1100;
+  let W=800,H=400,pad={l:54,r:14,t:26,b:52};
+  const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const macD=i=>{let v=D.mac[i]; if(v==null){ // below 390 nm: hold the first measured value
+      for(let k=0;k<n;k++){if(D.mac[k]!=null){v=D.mac[k];break;}}} return v||0;};
+  function trans(i){
+    let t=1;
+    if(S.lens){const d=D.lens[i]; t*= d==null?0:Math.pow(10,-d);}
+    if(S.mac) t*=Math.pow(10,-macD(i));
+    return t;
+  }
+  function cones(){
+    const out={};
+    for(const c of 'LMS'){const a=new Float64Array(n);let mx=0;for(let i=0;i<n;i++){a[i]=D[c][i]*trans(i);if(a[i]>mx)mx=a[i];}
+      for(let i=0;i<n;i++)a[i]/=mx; out[c]=a;}
+    return out;
+  }
+  window.wl2rgb=wl2rgb;
+  function wl2rgb(l){ // approximate display colour for a wavelength (cosmetic)
+    let r=0,g=0,b=0;
+    if(l>=380&&l<440){r=-(l-440)/60;b=1}else if(l<490){g=(l-440)/50;b=1}else if(l<510){g=1;b=-(l-510)/20}
+    else if(l<580){r=(l-510)/70;g=1}else if(l<645){r=1;g=-(l-645)/65}else if(l<=780){r=1}
+    let f=l<420?0.3+0.7*(l-380)/40:l>700?0.3+0.7*(780-l)/80:1; if(l<380||l>780)f=0;
+    return `rgb(${Math.round(255*Math.pow(r*f,0.8))},${Math.round(255*Math.pow(g*f,0.8))},${Math.round(255*Math.pow(b*f,0.8))})`;
+  }
+  const X=l=>pad.l+(l-X0)/(X1-X0)*(W-pad.l-pad.r);
+  const Yv=v=>{const y=v<=0?Y0:Math.max(Y0,Math.log10(v));return pad.t+(Y1-y)/(Y1-Y0)*(H-pad.t-pad.b);};
+  function line(arr,color,{dash=null,width=2,from=X0,to=X1,model=null}={}){
+    // model: [lo,hi] range drawn solid; outside dashed
+    const seg=(lo,hi,d)=>{ctx.beginPath();ctx.setLineDash(d||[]);let on=false;
+      for(let i=0;i<n;i++){const l=lamAt(i);if(l<lo||l>hi||l<from||l>to)continue;const v=arr[i];
+        if(v==null||!(v>=Math.pow(10,Y0))){on=false;continue;}const x=X(l),y=Yv(v);on?ctx.lineTo(x,y):ctx.moveTo(x,y);on=true;}
+      ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();ctx.setLineDash([]);};
+    if(model){seg(X0,model[0],[6,5]);seg(model[0],model[1],dash);seg(model[1],X1,[6,5]);}else seg(X0,X1,dash);
+  }
+  function draw(){
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cv.clientWidth; H=Math.round(Math.max(300,Math.min(470,W*0.52)));
+    pad={l:W<520?40:54,r:12,t:26,b:52};
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const ink=css('--ink-2')||'#454B57', faint=css('--faint')||'#8B909C', rule=css('--rule')||'#ccc', gold=css('--gold')||'#8F6F24';
+    ctx.clearRect(0,0,W,H);
+    const fs=W<520?10:11.5; ctx.font=`${fs}px Segoe UI, system-ui, sans-serif`;
+    // bands
+    const bands=[[300,315,'UV-B'],[315,400,'UV-A'],[400,700,'visible'],[700,1100,'near-infrared']];
+    ctx.textAlign='center';
+    for(const [a,b,t] of bands){ctx.fillStyle=faint;ctx.fillText(t,(X(a)+X(b))/2,pad.t-10);
+      ctx.strokeStyle=rule;ctx.beginPath();ctx.moveTo(X(a),pad.t-4);ctx.lineTo(X(a),H-pad.b);ctx.stroke();}
+    // lens-opaque hatch where there is no lens data
+    if(S.lens){ctx.save();ctx.beginPath();ctx.rect(X(300),pad.t,X(360)-X(300),H-pad.t-pad.b);ctx.clip();
+      ctx.strokeStyle=rule;for(let x=X(300)-H;x<X(360);x+=7){ctx.beginPath();ctx.moveTo(x,H-pad.b);ctx.lineTo(x+H,pad.t-H+H);ctx.stroke();}
+      ctx.restore();ctx.fillStyle=faint;ctx.save();ctx.translate(X(330),pad.t+70);ctx.rotate(-Math.PI/2);ctx.textAlign='center';
+      ctx.fillText('lens opaque',0,0);ctx.restore();}
+    // grid + y labels
+    ctx.textAlign='right';
+    for(let e=Y0;e<=Y1;e+=2){const y=Yv(Math.pow(10,e));ctx.strokeStyle=rule;ctx.globalAlpha=.6;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.globalAlpha=1;
+      ctx.fillStyle=faint;ctx.fillText(e===0?'1':'10'+String(e).replace('-','⁻').replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]),pad.l-6,y+4);}
+    // spectrum strip
+    for(let l=380;l<780;l+=2){ctx.fillStyle=wl2rgb(l);ctx.fillRect(X(l),H-pad.b+4,X(l+2)-X(l)+0.6,9);}
+    ctx.textAlign='center';ctx.fillStyle=faint;
+    for(let l=300;l<=1100;l+=100) ctx.fillText(l,X(l),H-pad.b+28);
+    ctx.fillText('wavelength, nm',(pad.l+W-pad.r)/2,H-6);
+    // markers
+    ctx.fillStyle=gold;ctx.textAlign='left';
+    ctx.fillText('retinal hazard region 400–1400 nm →',X(760),pad.t+14);
+    ctx.strokeStyle=gold;ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(X(1000),pad.t+40);ctx.lineTo(X(1000),H-pad.b);ctx.stroke();ctx.setLineDash([]);
+    ctx.textAlign='right';ctx.fillText('pulsed IR seen by two-photon absorption',X(1000)-6,pad.t+52);
+    // filters
+    const lensT=Array.from({length:n},(_,i)=>D.lens[i]==null?null:Math.pow(10,-D.lens[i]));
+    const macT=Array.from({length:n},(_,i)=>D.mac[i]==null?null:Math.pow(10,-D.mac[i]));
+    if(S.lens) line(lensT,gold,{dash:[2,3],width:1.6,to:830});
+    if(S.mac) line(macT,'#C98A2E',{dash:[1,3],width:1.6,from:390,to:600});
+    // V(lambda) measured
+    line(D.V,faint,{width:5,dash:null});
+    // cones
+    const C=cones(), col={L:'#D0453A',M:'#3E9B5A',S:'#5A62D6'};
+    for(const c of 'SML') line(C[c],col[c],{width:2.2,model:[390,830]});
+    // legend
+    const lg=[['L cone',col.L],['M cone',col.M],['S cone',col.S],['luminosity (measured)',faint]];
+    if(S.lens)lg.push(['lens transmits',gold]); if(S.mac)lg.push(['macular pigment',"#C98A2E"]);
+    ctx.textAlign='left'; let lx=pad.l+10, ly=Yv(Math.pow(10,-11.2));
+    for(const [t,c] of lg){ctx.fillStyle=c;ctx.fillRect(lx,ly-4,14,3);ctx.fillStyle=ink;ctx.fillText(t,lx+18,ly);lx+=ctx.measureText(t).width+34;
+      if(lx>W-150){lx=pad.l+10;ly+=15;}}
+    // cursor
+    const x=X(S.cur);ctx.strokeStyle=ink;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);ctx.stroke();ctx.setLineDash([]);
+    readouts(C);
+  }
+  function readouts(C){
+    const i=Math.max(0,Math.min(n-1,idx(S.cur))), l=lamAt(i);
+    document.getElementById('winLv').textContent=l;
+    document.getElementById('wE').textContent=(1239.84/l).toFixed(2);
+    const d=D.lens[i];
+    document.getElementById('wT').textContent=!S.lens?'—':(d==null?'≈ 0%':(()=>{const t=100*Math.pow(10,-d);return t>=10?t.toFixed(0)+'%':t>=0.1?t.toFixed(1)+'%':t.toExponential(0)+'%';})());
+    let best='L',bv=0; for(const c of 'LMS') if(C[c][i]>bv){bv=C[c][i];best=c;}
+    if(S.lens&&d==null){document.getElementById('wC').textContent='—';document.getElementById('wCu').textContent='below the lens data: effectively opaque';
+      document.getElementById('wN').textContent='—';}else{
+    document.getElementById('wC').textContent=bv>0?best:'—';
+    document.getElementById('wCu').textContent=bv>0?('relative sensitivity '+(bv>=0.01?(bv*100).toFixed(bv>=0.1?0:1)+'%':bv.toExponential(1))):'nothing absorbed';
+    const need=bv>0?1/bv:Infinity;
+    document.getElementById('wN').textContent=!isFinite(need)?'∞':need<1000?'×'+need.toFixed(need<10?1:0):'×10'+Math.round(Math.log10(need)).toString().replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);}
+    const tot=C.L[i]+C.M[i]+C.S[i];
+    document.getElementById('wMix').textContent=tot>0?('L '+Math.round(100*C.L[i]/tot)+' · M '+Math.round(100*C.M[i]/tot)+' · S '+Math.round(100*C.S[i]/tot)):'—';
+    let lo=null,hi=null; for(let k=0;k<n;k++){const v=Math.max(C.L[k],C.M[k],C.S[k]); if(v>=0.01){if(lo==null)lo=lamAt(k);hi=lamAt(k);}}
+    document.getElementById('wEdge').textContent=(lo<=300?'≤300':lo)+'–'+hi;
+  }
+  function setFromEvent(e){const r=cv.getBoundingClientRect();const px=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+    let l=X0+(px-pad.l)/(W-pad.l-pad.r)*(X1-X0);l=Math.round(Math.max(X0,Math.min(X1,l))/5)*5;S.cur=l;document.getElementById('winL').value=l;draw();}
+  let drag=false;
+  cv.addEventListener('pointerdown',e=>{drag=true;setFromEvent(e);});
+  window.addEventListener('pointerup',()=>drag=false);
+  cv.addEventListener('pointermove',e=>{if(drag||e.pointerType==='mouse')setFromEvent(e);});
+  document.getElementById('winL').addEventListener('input',e=>{S.cur=+e.target.value;draw();});
+  for(const [id,key] of [['winLens','lens'],['winMac','mac']])
+    document.querySelectorAll('#'+id+' button').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.toggle('on',x===b));S[key]=b.dataset.v==='1';draw();}));
+  new ResizeObserver(()=>draw()).observe(cv);
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',draw);
+  draw();
+})();
+
+/* ---------- why the window sits where it does: sun, body glow, water, eye ---------- */
+(function(){
+  const D=window.EYE_WINDOW, cv=document.getElementById('why'); if(!D||!D.wa||!cv) return;
+  const ctx=cv.getContext('2d'), $=id=>document.getElementById(id);
+  const S={d:1,T:37};
+  const L0=Math.log10(0.2), L1=Math.log10(30), nW=D.wa.length;
+  const alphaAt=um=>{const f=(Math.log10(um)-Math.log10(D.wl0))/(Math.log10(D.wl1)-Math.log10(D.wl0))*(nW-1);
+    const i=Math.max(0,Math.min(nW-2,Math.floor(f))), t=f-i; return Math.pow(10,D.wa[i]*(1-t)+D.wa[i+1]*t);};
+  const planck=(um,T)=>{const l=um*1e-6, c1=1.191042e-16, c2=1.438777e-2; return c1/Math.pow(l,5)/(Math.exp(c2/(l*T))-1);};
+  // the eye: best cone, lens + fovea, from the chart above (300-1100 nm)
+  const eyeAt=(()=>{const n=D.L.length, arr=new Float64Array(n);
+    for(let i=0;i<n;i++){const d=D.lens[i], m=D.mac[i]; const t=(d==null?0:Math.pow(10,-d))*Math.pow(10,-(m==null?0.045:m));
+      arr[i]=Math.max(D.L[i],D.M[i],D.S[i])*t;}
+    const mx=Math.max(...arr); for(let i=0;i<n;i++)arr[i]/=mx;
+    return um=>{const nm=um*1000; if(nm<300||nm>1100) return 0; const f=(nm-300)/5, i=Math.min(n-2,Math.floor(f)), t=f-i; return arr[i]*(1-t)+arr[i+1]*t;};})();
+  const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  function draw(){
+    const dpr=Math.min(window.devicePixelRatio||1,2), W=cv.clientWidth, H=Math.round(Math.max(280,Math.min(420,W*0.46)));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const pad={l:14,r:14,t:30,b:46}, ink=css('--ink-2')||'#454B57', faint=css('--faint')||'#8B909C', rule=css('--rule')||'#ccc';
+    const X=um=>pad.l+(Math.log10(um)-L0)/(L1-L0)*(W-pad.l-pad.r), Y=v=>pad.t+(1-v)*(H-pad.t-pad.b);
+    ctx.clearRect(0,0,W,H); const fs=W<560?10:11.5; ctx.font=`${fs}px Segoe UI, system-ui, sans-serif`;
+    // axis
+    ctx.strokeStyle=rule; ctx.beginPath(); ctx.moveTo(pad.l,Y(0)); ctx.lineTo(W-pad.r,Y(0)); ctx.stroke();
+    ctx.fillStyle=faint; ctx.textAlign='center';
+    for(const [um,lab] of [[0.2,'200 nm'],[0.5,'500 nm'],[1,'1 µm'],[2,'2 µm'],[5,'5 µm'],[10,'10 µm'],[30,'30 µm']]){
+      ctx.textAlign=um===0.2?'left':um===30?'right':'center'; ctx.fillText(lab,X(um),H-pad.b+30); ctx.beginPath(); ctx.moveTo(X(um),Y(0)); ctx.lineTo(X(um),Y(0)+5); ctx.stroke();}
+    for(let nm=380;nm<780;nm+=4){ctx.fillStyle=window.wl2rgb?window.wl2rgb(nm):'#999';ctx.fillRect(X(nm/1000),Y(0)+7,X((nm+4)/1000)-X(nm/1000)+.5,8);}
+    // curves
+    const N=500, ums=Array.from({length:N},(_,i)=>Math.pow(10,L0+(L1-L0)*i/(N-1)));
+    const sunMax=planck(2.8978e3/5772,5772), Tk=S.T+273.15, bodyMax=planck(2897.77/Tk,Tk);
+    const curve=(f,stroke,fill,width=2)=>{ctx.beginPath();ctx.moveTo(X(ums[0]),Y(0));ums.forEach(u=>ctx.lineTo(X(u),Y(Math.max(0,Math.min(1,f(u))))));
+      ctx.lineTo(X(ums[N-1]),Y(0));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}
+      ctx.beginPath();ums.forEach((u,i)=>{const y=Y(Math.max(0,Math.min(1,f(u))));i?ctx.lineTo(X(u),y):ctx.moveTo(X(u),y);});ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();};
+    curve(u=>planck(u,5772)/sunMax,'#C9A227','rgba(201,162,39,.16)');
+    curve(u=>Math.exp(-alphaAt(u)*S.d),'#3C8DD8','rgba(60,141,216,.16)');
+    curve(u=>planck(u,Tk)/bodyMax,'#D0453A','rgba(208,69,58,.14)');
+    curve(eyeAt,ink,'rgba(120,120,130,.18)',2.4);
+    // labels
+    const lab=(t,x,y,c,al='center')=>{ctx.fillStyle=c;ctx.textAlign=al;ctx.fillText(t,x,y);};
+    const sunPk=2.8978e3/5772, bodyPk=2897.77/Tk;
+    lab('sunlight',X(sunPk)+40,Y(0.98),'#C9A227','left');
+    lab('the eye',X(0.555),Y(0.1),ink);
+    lab('your own glow, '+S.T+' °C',X(bodyPk),Y(1)-10,'#D0453A');
+    const dl=S.d<0.01?'1 mm':S.d+' m';
+    let tb=0,tu=0.48; for(const u of ums){const t=Math.exp(-alphaAt(u)*S.d); if(t>tb){tb=t;tu=u;}}
+    lab('after '+dl+' of water',X(Math.min(tu,0.42))-14,Y(Math.max(0.06,tb*0.55)),'#3C8DD8','right');
+    ctx.setLineDash([3,4]); ctx.strokeStyle='#D0453A'; ctx.beginPath(); ctx.moveTo(X(bodyPk),Y(1)); ctx.lineTo(X(bodyPk),Y(0)); ctx.stroke(); ctx.setLineDash([]);
+    // readouts
+    $('wySun').textContent=Math.round(sunPk*1000)+' nm';
+    $('wyBody').textContent=bodyPk.toFixed(2)+' µm'; $('wyBodyU').textContent='2,898 µm·K ÷ '+Math.round(Tk)+' K';
+    let best=0,bu=0; for(const u of ums){const t=Math.exp(-alphaAt(u)*S.d); if(t>best){best=t;bu=u;}}
+    let lo=null,hi=null; for(const u of ums){if(Math.exp(-alphaAt(u)*S.d)>=0.5*best){if(lo==null)lo=u;hi=u;}}
+    const f=u=>u<1?Math.round(u*1000)+' nm':u.toFixed(u<10?2:1)+' µm';
+    $('wyWin').textContent=(lo<=0.2001?'< 200 nm':f(lo))+' – '+f(hi);
+    $('wyWinU').textContent='within half of the best: '+(best>=0.995?'~100':(100*best).toFixed(best<0.1?1:0))+'% at '+Math.round(bu*1000)+' nm, after '+dl;
+    const g=1/alphaAt(bodyPk); $('wyGlow').textContent=g<1e-3?(g*1e6).toFixed(0)+' µm':(g*1000).toFixed(1)+' mm';
+  }
+  document.querySelectorAll('#whyD button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#whyD button').forEach(x=>x.classList.toggle('on',x===b)); S.d=+b.dataset.d; draw();}));
+  $('whyT').addEventListener('input',e=>{S.T=+e.target.value;$('whyTv').textContent=S.T;draw();});
+  new ResizeObserver(()=>draw()).observe(cv);
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',draw);
+  draw();
+})();
+
+/* ---------- metamers: two spectra, three numbers, one colour ---------- */
+(function(){
+  const D=window.EYE_WINDOW; if(!D||!D.fL) return;
+  const cv=document.getElementById('meta'), ctx=cv.getContext('2d'), $=id=>document.getElementById(id);
+  const nF=D.fL.length, fi=l=>Math.round((l-D.f0)/5), lamF=i=>D.f0+5*i;
+  const lms=i=>[D.fL[i]||0,D.fM[i]||0,D.fS[i]||0];
+  const PR=[630,532,467], PC=PR.map(p=>lms(fi(p)));
+  const det3=m=>m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+  function solve(t){ // weights w with sum_j w_j * PC[j] = t (Cramer)
+    const m=[0,1,2].map(r=>[PC[0][r],PC[1][r],PC[2][r]]), d=det3(m);
+    return [0,1,2].map(c=>det3(m.map((row,r)=>row.map((v,k)=>k===c?t[r]:v)))/d);
+  }
+  const M=[[1.94735469,-1.41445123,0.36476327],[0.68990272,0.34832189,0],[0,0,1.93485343]];
+  const X2S=[[3.2406,-1.5372,-0.4986],[-0.9689,1.8758,0.0415],[0.0557,-0.2040,1.0570]];
+  const mul=(A,v)=>A.map(r=>r[0]*v[0]+r[1]*v[1]+r[2]*v[2]);
+  function css(l){let rgb=mul(X2S,mul(M,l));const mx=Math.max(...rgb,1e-9);
+    rgb=rgb.map(c=>Math.round(255*Math.pow(Math.max(0,Math.min(1,c/mx)),1/2.2)));return `rgb(${rgb.join(',')})`;}
+  const S={kind:'mono',lam:580};
+  function target(){
+    if(S.kind==='mono') return lms(fi(S.lam));
+    const t=[0,0,0]; for(let i=0;i<nF;i++){if(lamF(i)>780)break;const c=lms(i);t[0]+=c[0];t[1]+=c[1];t[2]+=c[2];}
+    return t;
+  }
+  function draw(){
+    const t=target(), w=solve(t), b=[0,0,0];
+    PC.forEach((c,j)=>{b[0]+=w[j]*c[0];b[1]+=w[j]*c[1];b[2]+=w[j]*c[2];});
+    const sc=Math.max(...t), tn=t.map(v=>v/sc), bn=b.map(v=>v/sc), wn=w.map(v=>v/Math.max(...w.map(Math.abs)));
+    const dpr=Math.min(window.devicePixelRatio||1,2), Wd=cv.clientWidth, narrow=Wd<600;
+    const Hd=narrow?440:290; cv.width=Wd*dpr; cv.height=Hd*dpr; cv.style.height=Hd+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const ink=getComputedStyle(document.documentElement).getPropertyValue('--ink-2').trim()||'#454B57';
+    const faint=getComputedStyle(document.documentElement).getPropertyValue('--faint').trim()||'#8B909C';
+    const rule=getComputedStyle(document.documentElement).getPropertyValue('--rule').trim()||'#ccc';
+    ctx.clearRect(0,0,Wd,Hd); ctx.font='12px Segoe UI, system-ui, sans-serif';
+    const plotW=narrow?Wd-24:Wd*0.58, px0=12, rowH=narrow?120:(Hd-30)/2;
+    const X=l=>px0+(l-390)/(720-390)*(plotW-px0);
+    const rows=[{y:8,label:S.kind==='mono'?'A · one wavelength, '+S.lam+' nm':'A · equal energy at every wavelength'},
+                {y:8+rowH+10,label:'B · three laser lines'}];
+    rows.forEach((r,k)=>{
+      const base=r.y+rowH-22, top=r.y+18;
+      ctx.strokeStyle=rule;ctx.beginPath();ctx.moveTo(X(390),base);ctx.lineTo(X(720),base);ctx.stroke();
+      ctx.fillStyle=ink;ctx.textAlign='left';ctx.fillText(r.label,px0,r.y+11);
+      for(let l=390;l<720;l+=2){ctx.fillStyle=window.wl2rgb(l);ctx.fillRect(X(l),base+3,X(l+2)-X(l)+.6,5);}
+      ctx.fillStyle=faint;ctx.textAlign='center';for(const l of [400,500,600,700])ctx.fillText(l,X(l),base+20);
+      const hgt=base-top;
+      if(k===0){
+        if(S.kind==='mono'){ctx.fillStyle=css(lms(fi(S.lam)));ctx.fillRect(X(S.lam)-3,top,6,hgt);}
+        else{for(let l=390;l<720;l+=2){ctx.globalAlpha=.85;ctx.fillStyle=window.wl2rgb(l);ctx.fillRect(X(l),top+hgt*0.45,X(l+2)-X(l)+.6,hgt*0.55);}ctx.globalAlpha=1;}
+      }else{
+        PR.forEach((p,j)=>{const h=Math.abs(wn[j])*hgt;
+          if(wn[j]>=0){ctx.fillStyle=css(PC[j]);ctx.fillRect(X(p)-3,base-h,6,h);}
+          else{ctx.strokeStyle='#D0453A';ctx.setLineDash([3,2]);ctx.strokeRect(X(p)-3,base-Math.max(h,3),6,Math.max(h,3));ctx.setLineDash([]);
+            ctx.fillStyle='#D0453A';ctx.textAlign='center';ctx.fillText('negative',X(p),base-Math.max(h,3)-5);}
+        });
+      }
+    });
+    // swatches + cone bars
+    const sx=narrow?12:Wd*0.62, sy=narrow?8+2*(rowH+10):14, sw=narrow?(Wd-48)/2:(Wd-sx-30)/2, sh=narrow?60:96;
+    const col=css(t);
+    [['A',tn],['B',bn]].forEach(([lab,v],k)=>{
+      const x=sx+k*(sw+16);
+      ctx.fillStyle=col;ctx.fillRect(x,sy,sw,sh);ctx.strokeStyle=rule;ctx.strokeRect(x,sy,sw,sh);
+      ctx.fillStyle=ink;ctx.textAlign='left';ctx.fillText('light '+lab,x,sy+sh+16);
+      const bw=(sw-16)/3, bh=narrow?70:110, by=sy+sh+26+bh;
+      ['L','M','S'].forEach((c,j)=>{const h=Math.max(0,v[j])*bh;ctx.fillStyle=['#D0453A','#3E9B5A','#5A62D6'][j];
+        ctx.fillRect(x+j*(bw+8),by-h,bw,h);ctx.fillStyle=faint;ctx.textAlign='center';ctx.fillText(c,x+j*(bw+8)+bw/2,by+14);});
+    });
+    ctx.fillStyle=ink;ctx.textAlign='center';
+    if(!narrow) ctx.fillText('same three cone signals → the same colour',sx+sw+8,Hd-6);
+    const f=v=>v.map(x=>x.toFixed(2)).join(' · ');
+    $('mA').textContent=f(tn); $('mB').textContent=f(bn); $('mW').textContent=wn.map(x=>(x>=0?'':'−')+Math.abs(x).toFixed(Math.abs(x)<0.01&&x!==0?3:2)).join(' · ');
+    const diff=Math.max(...tn.map((x,j)=>Math.abs(x-bn[j])));
+    const neg=wn.map((x,j)=>x<-0.0005?['red','green','blue'][j]:null).filter(Boolean);
+    $('mV').textContent=diff<1e-6?'identical':'differ by '+diff.toExponential(1);
+    $('mVu').textContent=neg.length?'needs negative '+neg.join(' and ')+' light':'a real three-line mix';
+  }
+  $('metaL').addEventListener('input',e=>{S.lam=+e.target.value;$('metaLv').textContent=S.lam;draw();});
+  document.querySelectorAll('#metaKind button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#metaKind button').forEach(x=>x.classList.toggle('on',x===b));
+    S.kind=b.dataset.k;$('metaLrow').style.opacity=S.kind==='mono'?1:.35;$('metaL').disabled=S.kind!=='mono';draw();}));
+  new ResizeObserver(()=>draw()).observe(cv);
+  draw();
+})();
+
+/* ---------- chimerical colours: adapt, then test ---------- */
+(function(){
+  const K={stygian:{adapt:'#FFE600',test:'#000000',recipe:'stare at yellow, then look at black',fix:'#888'},
+           luminous:{adapt:'#00C060',test:'#FFFFFF',recipe:'stare at green, then look at white',fix:'#666'},
+           hyper:{adapt:'#00C8FF',test:'#FF8C00',recipe:'stare at cyan, then look at orange',fix:'#7a3a00'}};
+  const $=id=>document.getElementById(id), box=$('chim'), tri=$('chimTri'), fix=$('chimFix');
+  let kind='stygian', timer=null, phase='ready';
+  function paint(triCol,fieldCol){tri.setAttribute('fill',triCol);box.style.background=fieldCol;
+    $('chimIn').textContent=triCol.toUpperCase();$('chimOut').textContent=fieldCol.toUpperCase();}
+  function reset(){clearInterval(timer);clearTimeout(timer);timer=null;phase='ready';const k=K[kind];
+    paint(k.test,k.test);tri.setAttribute('stroke','#777');tri.setAttribute('stroke-dasharray','6 6');tri.setAttribute('stroke-width','2');
+    fix.setAttribute('stroke',k.fix);$('chimPh').textContent='ready';$('chimPhU').innerHTML='&nbsp;';
+    $('chimMsg').textContent='press start, then fix your eyes on the cross';$('chimGo').textContent='start';}
+  function start(){const k=K[kind];let t=+$('chimT').value;phase='adapt';tri.removeAttribute('stroke');paint(k.adapt,k.test);
+    $('chimGo').textContent='stop';$('chimMsg').textContent='';
+    const tick=()=>{$('chimPh').textContent='stare: '+t+' s';$('chimPhU').textContent='eyes on the cross';
+      if(t--<=0){clearInterval(timer);phase='test';paint(k.test,k.test);
+        $('chimPh').textContent='look now';$('chimPhU').textContent='the triangle is in your eye, not on the screen';
+        timer=setTimeout(()=>{if(phase==='test')reset();},20000);}};
+    tick();timer=setInterval(tick,1000);}
+  $('chimGo').addEventListener('click',()=>{phase==='ready'?start():reset();});
+  $('chimT').addEventListener('input',e=>{$('chimTv').textContent=e.target.value;});
+  document.querySelectorAll('#chimKind button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#chimKind button').forEach(x=>x.classList.toggle('on',x===b));
+    kind=b.dataset.k;$('chimRecipe').textContent=K[kind].recipe;reset();}));
+  reset();
+})();
+
+/* ---------- spirit photograph: two exposures, one caption ---------- */
+(function(){
+  const cv=document.getElementById('sp'); if(!cv) return;
+  const $=id=>document.getElementById(id);
+  const LW=420, LH=560, S={view:'print',exp:.42,blur:4,cap:'seller'};
+  const mk=()=>{const c=document.createElement('canvas');c.width=LW;c.height=LH;return c;};
+  let seed=7; const rnd=()=>((seed=(seed*1103515245+12345)&0x7fffffff)/0x7fffffff);
+  const lin=(g,x0,y0,x1,y1,stops)=>{const gr=g.createLinearGradient(x0,y0,x1,y1);stops.forEach(([o,c])=>gr.addColorStop(o,c));return gr;};
+  const rad=(g,x,y,r0,r1,stops)=>{const gr=g.createRadialGradient(x,y,r0,x,y,r1);stops.forEach(([o,c])=>gr.addColorStop(o,c));return gr;};
+  const path=(g,pts,close=true)=>{g.beginPath();g.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++){const p=pts[i];p.length===6?g.bezierCurveTo(...p):g.lineTo(p[0],p[1]);} if(close)g.closePath();};
+  // profile of a face looking left: (height, depth) pairs shared with the Rubin vase
+  const prof=[[62,104],[112,96],[140,86],[150,88],[172,112],[200,78],[226,36],[238,44],[250,74],[270,78],[284,56],[296,76],[310,58],[334,90],[366,62],[380,70],[404,112]];
+
+  function plate1(){
+    const c=mk(), g=c.getContext('2d');
+    // studio backdrop, light falling from the upper left
+    g.fillStyle=lin(g,0,0,0,460,[[0,'#8a7454'],[1,'#665439']]); g.fillRect(0,0,LW,460);
+    g.fillStyle=rad(g,150,170,10,230,[[0,'rgba(255,240,210,.30)'],[1,'rgba(255,240,210,0)']]); g.fillRect(0,0,LW,460);
+    // painted column
+    g.fillStyle=lin(g,24,0,74,0,[[0,'#8d7655'],[.3,'#d8c6a2'],[.55,'#bba582'],[1,'#7d6748']]); g.fillRect(26,74,46,360);
+    g.globalAlpha=.22; g.fillStyle='#5a4630'; for(let x=31;x<70;x+=7) g.fillRect(x,78,2,352); g.globalAlpha=1;
+    g.fillStyle='#a48c68'; g.fillRect(18,58,62,18); g.fillRect(14,430,70,24); g.fillStyle='#c9b48f'; g.fillRect(18,58,62,4); g.fillRect(14,430,70,4);
+    // curtain swag
+    g.fillStyle=lin(g,0,0,160,0,[[0,'#4a3826'],[1,'#6b5539']]);
+    path(g,[[0,0],[178,0],[178,0,150,46,96,62],[60,74,30,140,22,210],[12,160,6,90,0,60]]); g.fill();
+    g.strokeStyle='rgba(30,20,10,.45)'; g.lineWidth=2;
+    for(const k of [40,80,120]){g.beginPath();g.moveTo(k,0);g.bezierCurveTo(k-6,30,k-20,50,k-40,60+k/4);g.stroke();}
+    g.strokeStyle='rgba(230,210,170,.25)'; for(const k of [55,95,135]){g.beginPath();g.moveTo(k,0);g.bezierCurveTo(k-6,26,k-18,44,k-38,54+k/4);g.stroke();}
+    // carpet
+    g.fillStyle=lin(g,0,455,0,560,[[0,'#8f7856'],[1,'#6f5a3e']]); g.fillRect(0,455,LW,105);
+    g.strokeStyle='rgba(60,44,26,.25)'; g.lineWidth=1;
+    for(let k=-12;k<20;k++){g.beginPath();g.moveTo(k*30,560);g.lineTo(k*30+120,455);g.stroke();g.beginPath();g.moveTo(k*30,560);g.lineTo(k*30-120,455);g.stroke();}
+    g.fillStyle='rgba(40,28,16,.4)'; g.fillRect(0,453,LW,3);
+    // armchair behind the sitter
+    g.fillStyle=lin(g,222,0,320,0,[[0,'#4c3a28'],[.5,'#5a4630'],[1,'#3a2b1d']]);
+    path(g,[[226,470],[226,236],[226,206,240,196,270,196],[300,196,318,206,318,236],[318,470]]); g.fill();
+    g.fillStyle='rgba(150,120,85,.55)';
+    for(let r=0;r<6;r++)for(let k=0;k<3;k++){const x=242+k*26+(r%2)*13,y=222+r*30; if(x<312){g.beginPath();g.arc(x,y,2.4,0,7);g.fill();}}
+    g.strokeStyle='rgba(30,20,10,.35)'; g.lineWidth=1;
+    for(let r=0;r<6;r++){g.beginPath();for(let k=0;k<4;k++){const x=242+k*26+(r%2)*13-13,y=222+r*30;k?g.lineTo(x+13,y+15):g.moveTo(x,y);}g.stroke();}
+    g.strokeStyle='#2c2016'; g.lineWidth=6; path(g,[[226,470],[226,236],[226,206,240,196,270,196],[300,196,318,206,318,236],[318,470]],false); g.stroke();
+    g.strokeStyle='rgba(200,165,115,.55)'; g.lineWidth=1.5; path(g,[[228,470],[228,236],[228,208,242,199,270,199],[296,199,312,206,314,224]],false); g.stroke();
+    g.fillStyle='#2c2016'; g.fillRect(306,470,9,40); g.fillStyle='#2c2016'; g.beginPath(); g.arc(272,190,7,0,7); g.fill();
+
+    // the sitter, in profile, facing left
+    const dress=lin(g,90,0,250,0,[[0,'#4b3c2c'],[.35,'#2e241a'],[1,'#1f1811']]);
+    // skirt and lap
+    g.fillStyle=dress;
+    path(g,[[176,330],[150,334,118,340,106,352],[96,362,96,376,98,388],[96,420,90,448,84,470],[150,478,220,478,262,472],[256,440,248,400,240,364],[236,348,232,336,228,330]]); g.fill();
+    g.strokeStyle='rgba(205,180,140,.18)'; g.lineWidth=3; g.lineCap='round';
+    for(const [x0,x1] of [[112,96],[134,124],[160,158],[188,196],[214,232]]){g.beginPath();g.moveTo(x0,368);g.bezierCurveTo(x0-4,400,x1+4,430,x1,468);g.stroke();}
+    g.strokeStyle='rgba(205,180,140,.22)'; g.lineWidth=2; g.beginPath(); g.moveTo(108,352); g.bezierCurveTo(140,342,176,338,226,338); g.stroke();
+    g.fillStyle='#1a140e'; g.beginPath(); g.ellipse(84,472,12,5,0,0,7); g.fill();
+    // bodice
+    g.fillStyle=dress;
+    path(g,[[170,256],[160,268,156,284,160,300],[164,316,170,326,176,332],[228,332],[234,304,234,276,224,258],[214,250,190,250,170,256]]); g.fill();
+    g.fillStyle='rgba(215,190,150,.18)'; path(g,[[168,262],[160,280,162,300,170,318],[174,300,172,280,176,264]]); g.fill();
+    // sleeve: shoulder to elbow, forearm to the lap
+    g.strokeStyle='#2a2117'; g.lineCap='round'; g.lineJoin='round'; g.lineWidth=24;
+    g.beginPath(); g.moveTo(212,268); g.bezierCurveTo(222,290,222,316,212,332); g.lineTo(156,356); g.stroke();
+    g.strokeStyle='rgba(215,190,150,.2)'; g.lineWidth=3; g.beginPath(); g.moveTo(204,264); g.bezierCurveTo(212,290,212,316,204,326); g.lineTo(158,346); g.stroke();
+    // hands folded in the lap
+    g.fillStyle=lin(g,128,350,160,362,[[0,'#e2ccaa'],[1,'#b99d76']]);
+    g.beginPath(); g.ellipse(146,357,15,7,-.15,0,7); g.fill(); g.beginPath(); g.ellipse(136,361,11,6,.2,0,7); g.fill();
+    // lace collar
+    g.fillStyle='#e8dcc4'; path(g,[[168,240],[204,236],[208,254],[200,258],[188,260],[176,260],[168,256]]); g.fill();
+    g.fillStyle='rgba(120,100,70,.35)'; for(let x=170;x<206;x+=5){g.beginPath();g.arc(x,258,1.6,0,7);g.fill();}
+    // neck and face
+    const s=.21, x0=146, y0=158, P=prof.map(([py,w])=>[x0+s*w,y0+s*(py-62)]);
+    g.fillStyle=lin(g,150,0,232,0,[[0,'#e8d4b2'],[.55,'#d2b991'],[1,'#a98c66']]);
+    g.beginPath(); g.moveTo(P[0][0],P[0][1]);
+    for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];g.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2);}
+    g.lineTo(P[P.length-1][0],P[P.length-1][1]); g.lineTo(172,240); g.lineTo(204,238);
+    g.bezierCurveTo(212,224,226,206,228,182); g.bezierCurveTo(228,160,212,146,192,146); g.bezierCurveTo(178,146,168,150,P[0][0],P[0][1]);
+    g.closePath(); g.fill();
+    g.strokeStyle='rgba(90,64,40,.45)'; g.lineWidth=1.2; g.stroke();
+    // features: brow, eye, nostril, lips, ear
+    g.strokeStyle='rgba(70,48,30,.75)'; g.lineWidth=1.4;
+    g.beginPath(); g.moveTo(163,178); g.quadraticCurveTo(168,175,173,177); g.stroke();
+    g.fillStyle='#4a3424'; g.beginPath(); g.ellipse(167.5,183.5,2.4,1.3,0,0,7); g.fill();
+    g.beginPath(); g.moveTo(158,196); g.lineTo(161,197); g.stroke();
+    g.strokeStyle='rgba(120,60,45,.6)'; g.beginPath(); g.moveTo(158,206); g.lineTo(163,207); g.stroke();
+    // hair: centre parting drawn back over the ear into a bun
+    g.fillStyle=lin(g,166,146,232,220,[[0,'#3b2c1e'],[1,'#22180f']]);
+    path(g,[[166,161],[170,148,186,141,202,142],[222,144,234,162,232,184],[230,204,222,222,210,234],[204,222,202,210,203,196],[203,186,196,176,186,170],[178,166,172,164,166,161]]); g.fill();
+    g.strokeStyle='rgba(200,170,130,.25)'; g.lineWidth=1;
+    for(let k=0;k<5;k++){g.beginPath();g.moveTo(172+k*5,154-k);g.bezierCurveTo(190+k*4,150,214,160,224-k*2,190+k*3);g.stroke();}
+    g.fillStyle='#2a1e14'; g.beginPath(); g.ellipse(234,184,14,17,.2,0,7); g.fill();
+    g.strokeStyle='rgba(200,170,130,.22)'; g.beginPath(); g.arc(234,184,9,-1,2); g.stroke();
+    return c;
+  }
+
+  function plate2(){
+    // the "spirit": a second exposure of a living, bearded man in a frock coat, on an otherwise black plate
+    const c=mk(), g=c.getContext('2d'); g.fillStyle='#000'; g.fillRect(0,0,LW,LH);
+    // coat and shoulders
+    g.fillStyle=lin(g,0,190,0,360,[[0,'#cfc8b8'],[1,'#8f897c']]);
+    path(g,[[236,200],[262,190,300,190,326,200],[346,214,352,250,348,300],[300,320,252,318,226,300],[222,256,224,220,236,200]]); g.fill();
+    g.fillStyle='#e9e3d4'; path(g,[[268,196],[280,226],[292,196]]); g.fill();                                   // shirt front
+    g.fillStyle='#5a554c'; path(g,[[272,198],[280,206],[288,198],[280,192]]); g.fill();                          // bow
+    // arms reaching forward to her shoulders
+    g.strokeStyle='#d8d1c1'; g.lineCap='round'; g.lineJoin='round'; g.lineWidth=20;
+    g.beginPath(); g.moveTo(244,214); g.bezierCurveTo(232,236,222,248,210,252); g.stroke();
+    g.beginPath(); g.moveTo(330,222); g.bezierCurveTo(318,260,262,262,236,258); g.stroke();
+    g.fillStyle='#fffaf0'; g.beginPath(); g.ellipse(204,252,14,9,-.4,0,7); g.fill(); g.beginPath(); g.ellipse(228,258,15,9,.2,0,7); g.fill();
+    g.fillStyle='#e6dfcf'; for(const [x,y] of [[196,256],[200,258],[220,263],[225,264]]){g.beginPath();g.ellipse(x,y,3,2,0,0,7);g.fill();}
+    // head, hair and beard
+    g.fillStyle=rad(g,280,140,6,44,[[0,'#fffaf0'],[1,'#d9d1c1']]);
+    g.beginPath(); g.ellipse(280,144,27,36,0,0,7); g.fill();
+    g.fillStyle='#6d685f'; path(g,[[252,138],[250,110,272,100,286,102],[306,104,312,122,308,140],[302,124,290,116,278,118],[266,120,256,128,252,138]]); g.fill();
+    g.fillStyle='#a49e91'; path(g,[[255,150],[256,176,268,196,282,198],[296,196,306,176,306,150],[300,168,292,178,282,180],[272,180,262,170,255,150]]); g.fill();
+    g.fillStyle='#7b766b'; g.beginPath(); g.ellipse(270,139,5,3,0,0,7); g.ellipse(291,139,5,3,0,0,7); g.fill();
+    g.strokeStyle='#8c877b'; g.lineWidth=2; g.beginPath(); g.moveTo(263,132); g.lineTo(276,131); g.moveTo(285,131); g.lineTo(298,132); g.stroke();
+    g.strokeStyle='#bdb6a7'; g.beginPath(); g.moveTo(281,142); g.lineTo(279,158); g.lineTo(284,160); g.stroke();
+    // fade below the chest, as the figure dissolves into the chair
+    g.globalCompositeOperation='destination-in';
+    g.fillStyle=lin(g,0,268,0,350,[[0,'rgba(0,0,0,1)'],[1,'rgba(0,0,0,0)']]); g.fillRect(0,0,LW,LH);
+    g.globalCompositeOperation='destination-over'; g.fillStyle='#000'; g.fillRect(0,0,LW,LH);
+    g.globalCompositeOperation='source-over';
+    return c;
+  }
+
+  const grain=(()=>{const c=mk(),g=c.getContext('2d'),d=g.createImageData(LW,LH);
+    for(let i=0;i<d.data.length;i+=4){const v=110+Math.floor(rnd()*90);d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}
+    g.putImageData(d,0,0);return c;})();
+  const age=(()=>{const c=mk(),g=c.getContext('2d');
+    for(let k=0;k<34;k++){const x=rnd()*LW,y=rnd()*LH,r=0.8+rnd()*2.6;g.fillStyle=`rgba(110,70,30,${0.15+rnd()*0.3})`;g.beginPath();g.arc(x,y,r,0,7);g.fill();}
+    g.strokeStyle='rgba(255,248,230,.35)'; g.lineWidth=.7;
+    for(let k=0;k<5;k++){const x=rnd()*LW,y=rnd()*LH;g.beginPath();g.moveTo(x,y);g.bezierCurveTo(x+20*rnd(),y+40,x-10,y+90,x+15*rnd(),y+120+80*rnd());g.stroke();}
+    return c;})();
+  const P1=plate1(), P2=plate2(), hasFilter='filter' in document.createElement('canvas').getContext('2d');
+  function blurred(src,b){const c=mk(),g=c.getContext('2d');
+    if(!b){g.drawImage(src,0,0);return c;}
+    if(hasFilter){g.filter=`blur(${b}px)`;g.drawImage(src,0,0);}
+    else{g.globalAlpha=1/9;for(let k=0;k<9;k++){const a=k*0.698;g.drawImage(src,k?b*Math.cos(a):0,k?b*Math.sin(a):0);}}
+    return c;}
+  function composite(){
+    const c=mk(), g=c.getContext('2d'); g.drawImage(P1,0,0);
+    g.globalCompositeOperation='screen'; g.globalAlpha=S.exp; g.drawImage(blurred(P2,S.blur),0,0);
+    g.globalAlpha=.10; g.fillStyle=rad(g,330,110,10,260,[[0,'#fff3d8'],[1,'rgba(255,243,216,0)']]); g.fillRect(0,0,LW,LH);   // uneven density
+    g.globalCompositeOperation='overlay'; g.globalAlpha=.16; g.drawImage(grain,0,0);
+    g.globalCompositeOperation='multiply'; g.globalAlpha=1;
+    g.fillStyle='#f0dcb4'; g.fillRect(0,0,LW,LH);                                                                // sepia toning
+    g.fillStyle=rad(g,LW/2,LH*.46,LH*.22,LH*.72,[[0,'#fff'],[.7,'#d9c4a2'],[1,'#7a6448']]); g.fillRect(0,0,LW,LH);  // vignette
+    g.globalCompositeOperation='source-over'; g.drawImage(age,0,0);
+    return c;
+  }
+  function mount(g,W,H){
+    g.fillStyle=lin(g,0,0,W,H,[[0,'#efe5cc'],[1,'#e0d2b2']]); g.fillRect(0,0,W,H);
+    g.strokeStyle='rgba(150,120,70,.35)'; g.lineWidth=1; g.strokeRect(4.5,4.5,W-9,H-9);
+  }
+  function render(target,W,H,view){
+    const g=target.getContext('2d'); mount(g,W,H);
+    if(view==='print'){
+      const m=W*0.06, iw=W-2*m, ih=iw*LH/LW*0.94, r=W*0.03;
+      g.save(); g.beginPath(); g.roundRect(m,m,iw,ih,r); g.clip(); g.drawImage(composite(),m,m,iw,ih); g.restore();
+      g.strokeStyle='#b8975a'; g.lineWidth=1.4; g.beginPath(); g.roundRect(m-5,m-5,iw+10,ih+10,r+4); g.stroke();
+      const fy=m+ih+(H-m-ih)*0.55, fw=W*0.16; g.strokeStyle='#b8975a'; g.lineWidth=1.2;
+      g.beginPath(); g.moveTo(W/2-fw,fy); g.bezierCurveTo(W/2-fw*.5,fy-6,W/2-fw*.3,fy+6,W/2-8,fy); g.moveTo(W/2+fw,fy); g.bezierCurveTo(W/2+fw*.5,fy-6,W/2+fw*.3,fy+6,W/2+8,fy); g.stroke();
+      g.fillStyle='#b8975a'; g.beginPath(); g.moveTo(W/2,fy-5); g.lineTo(W/2+5,fy); g.lineTo(W/2,fy+5); g.lineTo(W/2-5,fy); g.closePath(); g.fill();
+    }else{
+      const w=(W-W*0.14)/2, h=w*LH/LW, y=(H-h)/2-H*0.03;
+      g.drawImage(P1,W*0.04,y,w,h); g.drawImage(blurred(P2,S.blur),W*0.1+w,y,w,h);
+      g.fillStyle='#5b4a33'; g.font=`${Math.round(W*0.034)}px Segoe UI, system-ui, sans-serif`; g.textAlign='center';
+      g.fillText('exposure 1 · the sitter',W*0.04+w/2,y+h+W*0.05); g.fillText('exposure 2 · a living man',W*0.1+w*1.5,y+h+W*0.05);
+      g.font=`600 ${Math.round(W*0.06)}px Segoe UI, system-ui, sans-serif`; g.fillText('+',W*0.07+w,y+h/2);
+    }
+  }
+  const CAP={none:'', seller:'“Mrs. H——, with the spirit of her late husband, who has returned to rest his hands upon her shoulders.”',
+             plain:'A seated sitter. A second, fainter exposure of a living man, standing behind the chair, made on the same plate.'};
+  function draw(){
+    const dpr=Math.min(window.devicePixelRatio||1,2), W=cv.clientWidth||420, H=Math.round(W*4/3);
+    cv.width=W*dpr; cv.height=H*dpr; const g=cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
+    const off=document.createElement('canvas'); off.width=W; off.height=H; render(off,W,H,S.view); g.drawImage(off,0,0);
+    $('spCap').textContent=S.view==='print'?CAP[S.cap]:'';
+    $('spQ1').textContent=S.exp>0?'yes — '+Math.round(S.exp*100)+'% exposure':'no';
+    $('spQ2').textContent='no';
+    $('spQ2u').textContent=S.cap==='seller'?'the caption names it; the plate cannot':S.cap==='plain'?'the caption describes; it does not identify':'nothing names it yet';
+  }
+  window.SPIRIT_THUMB=view=>{const c=document.createElement('canvas');c.width=300;c.height=400;render(c,300,400,view);return c.toDataURL();};
+  $('spE').addEventListener('input',e=>{S.exp=e.target.value/100;$('spEv').textContent=e.target.value;draw();});
+  $('spB').addEventListener('input',e=>{S.blur=+e.target.value;$('spBv').textContent=e.target.value;draw();});
+  for(const [id,key,attr] of [['spView','view','v'],['spCapSel','cap','c']])
+    document.querySelectorAll('#'+id+' button').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.toggle('on',x===b));S[key]=b.dataset[attr];draw();}));
+  new ResizeObserver(()=>draw()).observe(cv);
+  draw();
+})();
+
+/* ---------- section 5: break the spell ---------- */
+(function(){
+  const $=id=>document.getElementById(id); if(!$('spell')) return;
+  // a generic drink ad with three faint letters in the ice; mode: 'expose' (as sold) or 'check' (spell broken)
+  const drinkAd=mode=>{
+    const cube=(x,y,r,ch)=>`<g transform="translate(${x} ${y}) rotate(${r}) scale(1.2)">
+        <rect x="-19" y="-17" width="38" height="34" rx="7" fill="url(#ice)" stroke="#f4fbff" stroke-width="1.4"/>
+        <path d="M-14 -12 L10 -13" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+        <text x="0" y="9" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="25" fill="#dbe6ec">${ch}</text>
+        ${mode==='check'?'<rect x="-11" y="-11" width="22" height="25" fill="none" stroke="#2C7A4E" stroke-width="1.4" stroke-dasharray="3 2"/>':''}</g>`;
+    let bub=''; let r=41; const rnd=()=>((r=(r*1103515245+12345)&0x7fffffff)/0x7fffffff);
+    for(let i=0;i<26;i++) bub+=`<circle cx="${(112+rnd()*74).toFixed(1)}" cy="${(110+rnd()*90).toFixed(1)}" r="${(0.8+rnd()*2.2).toFixed(1)}" fill="none" stroke="rgba(255,220,180,.55)" stroke-width=".8"/>`;
+    let drops=''; for(let i=0;i<14;i++) drops+=`<ellipse cx="${(110+rnd()*80).toFixed(1)}" cy="${(80+rnd()*120).toFixed(1)}" rx="1.4" ry="2.2" fill="rgba(255,255,255,.55)"/>`;
+    return `<svg viewBox="0 0 300 230" style="width:100%;max-width:330px;border-radius:6px;display:block" role="img" aria-label="A drink advertisement: a glass of cola with ice cubes">
+      <defs>
+        <linearGradient id="adbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6dfb2"/><stop offset="1" stop-color="#e59b4b"/></linearGradient>
+        <linearGradient id="cola" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b1a0b"/><stop offset=".45" stop-color="#7a3a17"/><stop offset="1" stop-color="#2e1407"/></linearGradient>
+        <linearGradient id="ice" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2f8fb"/><stop offset=".55" stop-color="#e1ecf2"/><stop offset="1" stop-color="#c9d9e3"/></linearGradient>
+      </defs>
+      <rect width="300" height="230" fill="url(#adbg)"/>
+      <circle cx="235" cy="60" r="70" fill="rgba(255,255,255,.18)"/>
+      <path d="M102 34 L198 34 L186 214 Q150 222 114 214 Z" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
+      <path d="M106 74 L194 74 L186 212 Q150 220 114 212 Z" fill="url(#cola)"/>
+      <ellipse cx="150" cy="74" rx="44" ry="4" fill="#c98a52" opacity=".85"/>
+      ${bub}
+      ${cube(130,72,-14,'B')}${cube(161,60,9,'U')}${cube(176,90,-6,'Y')}
+      <path d="M112 40 L120 206" stroke="rgba(255,255,255,.5)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M190 44 L186 120" stroke="rgba(255,255,255,.28)" stroke-width="2.5" stroke-linecap="round"/>
+      ${drops}
+      <ellipse cx="150" cy="34" rx="48" ry="4.5" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.6"/>
+      <text x="236" y="150" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="19" fill="#fff">Ice-cold.</text>
+      <text x="236" y="172" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="19" fill="#fff">Always.</text>
+      ${mode==='expose'?`<path d="M94 68 C 96 26, 218 22, 214 72 C 212 118, 102 122, 98 78 C 97 72, 102 62, 110 58" fill="none" stroke="#d62828" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M44 150 L 92 104 M92 104 L 78 106 M92 104 L 90 118" stroke="#d62828" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <text x="40" y="172" font-family="'Segoe Print','Bradley Hand','Comic Sans MS',cursive" font-weight="700" font-size="17" fill="#d62828" transform="rotate(-8 40 172)">LOOK</text>
+        <text x="30" y="194" font-family="'Segoe Print','Bradley Hand','Comic Sans MS',cursive" font-weight="700" font-size="17" fill="#d62828" transform="rotate(-8 30 194)">CLOSER</text>`:''}
+    </svg>`;
+  };
+  const X=[
+    {V:'One large, bright button. One small line of grey text.',
+     I:'The button is the way forward. The grey text barely counts as a choice.',
+     W:'Stay subscribed.',
+     Q:'What are all the available choices, including the visually quiet ones?',
+     R:'There are two choices, and they can be shown at equal weight.',
+     ex:`<div style="width:100%;max-width:300px;text-align:center"><div style="font:600 19px var(--serif);margin-bottom:6px">Before you go…</div>
+         <div style="font-size:13.5px;color:#555;margin-bottom:16px">Your progress, your favourites, your streak: all of it stays with you.</div>
+         <div style="background:#E8A317;color:#fff;font-weight:700;border-radius:24px;padding:12px 10px;font-size:16px;box-shadow:0 3px 10px rgba(0,0,0,.18)">Keep enjoying everything</div>
+         <div style="font-size:11px;color:#b5b5b5;margin-top:12px">no thanks, I'll lose my progress</div></div>`,
+     br:`<div style="width:100%;max-width:300px;text-align:center"><div style="font:600 19px var(--serif);margin-bottom:14px">Your choices</div>
+         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="border:2px solid #555;border-radius:8px;padding:12px 6px;font-weight:600">Keep membership</div>
+         <div style="border:2px solid #555;border-radius:8px;padding:12px 6px;font-weight:600">Cancel membership</div></div></div>`},
+    {V:'“$1” in large type and a “limited membership” badge. The renewal price is in small type, and the terms are one click away.',
+     I:'A one-off $1 membership.',
+     W:'Agree to a recurring charge.',
+     Q:'What is the renewal schedule, total cost, and cancellation process?',
+     R:'$1, then $14.99 every month, renewing automatically: $165.89 in the first year (example figures).',
+     ex:`<div style="text-align:center;max-width:300px"><div style="display:inline-block;background:#222;color:#fff;font:700 10px var(--sans);letter-spacing:.2em;padding:4px 8px;border-radius:3px">LIMITED MEMBERSHIP</div>
+         <div style="font:700 44px var(--serif);margin:8px 0 2px">$1</div><div style="font-size:15px;margin-bottom:14px">Join the club today</div>
+         <div style="background:#1f6feb;color:#fff;font-weight:700;border-radius:8px;padding:10px">Join now</div>
+         <div style="font-size:9.5px;color:#aaa;margin-top:10px">Renews at $14.99/mo. <u>Terms</u></div></div>`,
+     br:`<div style="max-width:300px;font-size:15px;line-height:1.6"><b>Month 1:</b> $1<br><b>Then:</b> $14.99 every month, automatically<br><b>First year:</b> $165.89<br><b>To stop:</b> stated plainly, before you join</div>`},
+    {V:'A seated sitter, and a pale, blurred, human-shaped area behind her.',
+     I:'Someone was there, unseen.',
+     W:'Believe it is a particular departed person, and pay for the sitting.',
+     Q:'What is physically in the image, and what identity or explanation was suggested to me?',
+     R:'Physically present: a second exposure. The identity comes from the caption, not the image.',
+     ex:()=>`<img src="${window.SPIRIT_THUMB?SPIRIT_THUMB('print'):''}" alt="the spirit photograph" style="width:min(220px,70%);border-radius:4px"><div style="font:italic 13.5px var(--serif);margin-top:8px;text-align:center">“the spirit of her late husband”</div>`,
+     br:()=>`<img src="${window.SPIRIT_THUMB?SPIRIT_THUMB('plates'):''}" alt="the two exposures" style="width:min(240px,80%);border-radius:4px"><div style="font-size:13px;margin-top:8px;text-align:center">identity: not in the image</div>`},
+    {V:'Three faint letters in the ice cubes of a drink ad, about 6% darker than the ice around them.',
+     I:'The ad is speaking to me below awareness, and it is working.',
+     W:'Click, share and buy the exposé: the book, the seminar, the outrage.',
+     Q:'Where is the evidence of a behavioral effect—not merely evidence of a hidden picture?',
+     R:'Present? Yes. Causing behaviour? The letters being there shows nothing about that.',
+     ex:()=>`<div style="width:100%;max-width:330px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="background:#c1121f;color:#fff;font:800 10px/1 'Segoe UI',sans-serif;letter-spacing:.18em;padding:5px 8px;border-radius:2px">SHOCKING DISCOVERY</span>
+          <span style="font:600 11px 'Segoe UI',sans-serif;color:#888">48K shares</span></div>
+        <div style="font:900 21px/1.12 'Arial Narrow','Segoe UI',Arial,sans-serif;letter-spacing:-.01em;color:#111;margin-bottom:5px">Hidden command found in ad — and it's working on you!</div>
+        <div style="font:13px/1.4 'Segoe UI',sans-serif;color:#555;margin-bottom:9px">Experts say your brain reads it before you do. <span style="color:#c1121f;font-weight:700">See the proof ▸</span></div>
+        ${drinkAd('expose')}</div>`,
+     br:()=>`<div style="width:100%;max-width:330px">
+        <div style="font:600 12px/1.4 'Segoe UI',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#777;margin-bottom:8px">The same ad, examined</div>
+        ${drinkAd('check')}
+        <div style="font:13.5px/1.55 'Segoe UI',sans-serif;color:#333;margin-top:10px">
+          <div><b style="color:#2C7A4E">1 · Present?</b> Yes: three letters, B U Y, about 6% darker than the ice.</div>
+          <div><b style="color:#2C7A4E">2 · Does it change behaviour?</b> Its presence shows nothing about that. The founding claim (Vicary, 1957) was admitted fake.</div>
+          <div style="color:#777;font-size:12px;margin-top:6px">The ice-cube version of the claim was popularised by Wilson Bryan Key's <i>Subliminal Seduction</i> (1973).</div></div></div>`},
+    {V:'Black and white patches: 13 of them, 38% of the image black, and no outline anywhere.',
+     I:'A man pointing at his head.',
+     W:'Accept the identity you were handed, and whatever follows from it.',
+     Q:'Can I describe the marks without naming the object I was told to see?',
+     R:'13 patches, 38% black, no outline: the man is your contribution.',
+     ex:`<img src="assets/negative-space/two-tone.png" alt="two-tone patches" style="width:min(210px,70%);border:1px solid #ddd"><div style="font:italic 13.5px var(--serif);margin-top:8px">“It's a man pointing at his head.”</div>`,
+     br:`<img src="assets/negative-space/two-tone.png" alt="two-tone patches" style="width:min(210px,70%);border:1px solid #ddd"><div style="font-size:13px;margin-top:8px;text-align:center">13 dark patches · 38% black · no outline drawn</div>`}];
+  let cur=0, broken=false;
+  const val=v=>typeof v==='function'?v():v;
+  function show(){
+    const x=X[cur];
+    $('sbV').textContent=x.V; $('sbI').textContent=x.I; $('sbW').textContent=x.W; $('sbQ').textContent=x.Q; $('sbR').textContent='→ '+x.R;
+    $('sbEx').innerHTML='<div class="mock">'+(broken?'spell broken':'mock-up')+'</div>'+val(broken?x.br:x.ex);
+    $('spell').classList.toggle('broken',broken);
+    $('sbBtn').textContent=broken?'show it as presented':'break the spell'; $('sbBtn').classList.toggle('on',broken); $('sbBtn').setAttribute('aria-pressed',broken);
+  }
+  document.querySelectorAll('#sbTabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#sbTabs button').forEach(x=>x.classList.toggle('on',x===b)); cur=+b.dataset.i; broken=false; show();}));
+  $('sbBtn').addEventListener('click',()=>{broken=!broken;show();});
+  show();
+})();
+
+/* ---------- the series: specs, downloads, renders (works without WebGL) ---------- */
+window.NS_MODELS={
+  sphere:{title:'I · The Sphere',clause:'“the figure most like itself”',render:'render-desk',cover:25.0,
+    rows:[['Hidden solid','Sphere, Ø 276 mm; the ribbon\'s inner face lies exactly on it'],
+          ['Path','4.12 turns, one per three lunations; latitude falls evenly from the top pole on Jan 1 to the bottom pole on Dec 31'],
+          ['Ribbon','284.6 × 286.8 × 287.9 mm · 476 g'],
+          ['Assembly','hangs from the eye; rod 314 mm, 9 g, glued through both pole caps']],
+    dl:[['negative_space_desk.stl','ribbon + caps','3.4 MB'],['negative_space_desk_rod.stl','rod + eye','40 KB']]},
+  icosahedron:{title:'II · The Icosahedron',clause:'“to water, the icosahedron”',render:'render-ico',cover:28.8,
+    rows:[['Hidden solid','Regular icosahedron, circumradius 138 mm, edge 145.1 mm, a vertex at each pole'],
+          ['Path','the sphere\'s year projected radially from the centre onto the twenty faces, creasing wherever it crosses an edge'],
+          ['Ribbon','251.8 × 247.6 × 288.0 mm · 422 g'],
+          ['Assembly','hangs from the eye; uses the sphere\'s rod']],
+    dl:[['negative_space_ico.stl','ribbon + caps','14.3 MB'],['negative_space_desk_rod.stl','rod + eye','40 KB']]},
+  pyramid:{title:'III · The Great Pyramid',clause:'“faces at the Kepler angle”',render:'render-pyramid',cover:29.8,
+    rows:[['Hidden solid','Square pyramid, base 290 mm, height 184.4 mm, faces at 51.83° (arctan √φ, the Kepler triangle; Giza ≈ 51.84°)'],
+          ['Path','level lines down the faces until Aug 14, 1/φ of the year, then a flat spiral inward across the base'],
+          ['Ribbon','286.9 × 302.0 × 197.7 mm · 535 g'],
+          ['Assembly','stands on its base spiral, settling 10.3 mm under its own weight; rod 226 mm, 7 g']],
+    dl:[['negative_space_pyramid.stl','ribbon + caps','1.0 MB'],['negative_space_pyramid_rod.stl','rod + eye','40 KB']]},
+  cube:{title:'IV · The Tilted Cube',clause:'“to earth, the cube — stood on its point”',render:'render-cube',cover:34.0,
+    rows:[['Hidden solid','Cube, side 159.3 mm, balanced on a corner: body diagonal (276 mm) vertical, faces at 54.7°'],
+          ['Path','level lines on all six faces; mitred at edges in a vertical mirror plane, folded square across the six zig-zag middle edges'],
+          ['Ribbon','272.3 × 242.3 × 289.0 mm · 431 g'],
+          ['Assembly','hangs from the eye, sagging 4.9 mm; uses the sphere\'s rod']],
+    dl:[['negative_space_cube.stl','ribbon + caps','0.8 MB'],['negative_space_desk_rod.stl','rod + eye','40 KB']]},
+};
+(function(){
+  const M=window.NS_MODELS, $=id=>document.getElementById(id);
+  function show(key){
+    const m=M[key];
+    document.querySelectorAll('#vTabs button').forEach(b=>{b.classList.toggle('on',b.dataset.m===key);b.setAttribute('aria-selected',b.dataset.m===key);});
+    $('sTitle').textContent=m.title; $('sClause').textContent=m.clause;
+    $('sList').innerHTML=m.rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('')+'<dt>Build</dt><dd>6 mm PETG · watertight · one body · genus 2 · fits 320 mm</dd>';
+    $('sMeter').style.width=m.cover+'%';
+    $('sCover').innerHTML='The ribbon prints <b>'+m.cover.toFixed(1)+'%</b> of the hidden surface. You supply the other <b>'+(100-m.cover).toFixed(1)+'%</b>.';
+    $('sDl').innerHTML=m.dl.map(d=>'<a href="stl/'+d[0]+'" download>⬇ '+d[1]+'<span>'+d[2]+'</span></a>').join('');
+    $('sRender').src='assets/negative-space/'+m.render+'.webp';
+    $('sRender').alt='Studio render of '+m.title.replace(/^.*· /,'');
+    window.dispatchEvent(new CustomEvent('ns-model',{detail:key}));
+    window.NS_CURRENT=key;
+  }
+  document.querySelectorAll('#vTabs button').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.m);
+    try{history.replaceState(null,'','#'+b.dataset.m);}catch(e){}}));
+  const [hm,hopt]=location.hash.slice(1).split('/');
+  window.NS_SUMMON=hopt==='summon';
+  show(M[hm]?hm:'sphere');
+  setTimeout(()=>{ if(!window.NS_VIEWER_READY){ $('vMsg').textContent='The 3D preview could not start (it needs WebGL and a connection to the three.js CDN). The studio render below shows the same piece, and the downloads work.'; } },12000);
+})();
+</script>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+            "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const stage=document.getElementById('vStage'), msg=document.getElementById('vMsg');
+let renderer;
+try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); }
+catch(e){ msg.textContent='The 3D preview needs WebGL. The studio render below shows the same piece, and the downloads work.'; throw e; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.setClearColor(0x000000,0);
+stage.prepend(renderer.domElement);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(30,1,1,6000);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.enablePan=false; controls.autoRotate=true; controls.autoRotateSpeed=1.4;
+controls.minDistance=180; controls.maxDistance=1800;
+
+scene.add(new THREE.HemisphereLight(0xf4f1ea,0x30343e,1.5));
+const key=new THREE.DirectionalLight(0xffffff,2.4); key.position.set(420,620,520); scene.add(key);
+const rim=new THREE.DirectionalLight(0xbcd6ff,0.9); rim.position.set(-500,200,-400); scene.add(rim);
+
+const root=new THREE.Group(); root.rotation.x=-Math.PI/2; scene.add(root);   // models are z-up
+const matRibbon=new THREE.MeshStandardMaterial({color:0xE9DFC9,roughness:0.62,metalness:0});
+const matRod=new THREE.MeshStandardMaterial({color:0xC9C2B2,roughness:0.5,metalness:0});
+const GHOST=0x8FC8E8;
+
+async function loadNSM(url){
+  const buf=await (await fetch(url)).arrayBuffer(), dv=new DataView(buf);
+  if(String.fromCharCode(...new Uint8Array(buf,0,4))!=='NSM1') throw new Error('bad mesh '+url);
+  const n=dv.getUint32(4,true), lo=[0,1,2].map(i=>dv.getFloat32(8+4*i,true)), hi=[0,1,2].map(i=>dv.getFloat32(20+4*i,true));
+  const span=hi.map((h,i)=>h>lo[i]?h-lo[i]:1);
+  let off=32; const out=[];
+  for(let c=0;c<n;c++){
+    const nv=dv.getUint32(off,true), nt=dv.getUint32(off+4,true); off+=8;
+    const q=new Uint16Array(buf,off,nv*3); off+=nv*6; off+=(4-(nv*6)%4)%4;
+    const idx=new Uint32Array(buf.slice(off,off+nt*12)); off+=nt*12;
+    const pos=new Float32Array(nv*3);
+    for(let i=0;i<nv*3;i++){const a=i%3;pos[i]=lo[a]+q[i]/65535*span[a];}
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(pos,3)); g.setIndex(new THREE.BufferAttribute(idx,1));
+    out.push(g);
+  }
+  return out;
+}
+
+function sphereLines(radius){
+  const pts=[];
+  const ring=(f)=>{for(let i=0;i<96;i++){pts.push(...f(i/96),...f((i+1)/96));}};
+  for(let k=1;k<9;k++){const lat=-Math.PI/2+k*Math.PI/9, r=radius*Math.cos(lat), z=radius*Math.sin(lat);
+    ring(t=>[r*Math.cos(2*Math.PI*t),r*Math.sin(2*Math.PI*t),z]);}
+  for(let k=0;k<12;k++){const lon=k*Math.PI/6;
+    ring(t=>{const lat=-Math.PI/2+Math.PI*t;return [radius*Math.cos(lat)*Math.cos(lon),radius*Math.cos(lat)*Math.sin(lon),radius*Math.sin(lat)];});}
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3)); return g;
+}
+
+const cache=new Map(); let current=null, want='sphere', ghostT=0, ghostOn=false;
+async function build(key){
+  if(cache.has(key)) return cache.get(key);
+  const [rib,rod,ghost]=await loadNSM('assets/negative-space/'+key+'.nsm');
+  const grp=new THREE.Group();
+  const ribMesh=new THREE.Mesh(toCreasedNormals(rib,Math.PI/6),matRibbon);
+  const rodMesh=new THREE.Mesh(toCreasedNormals(rod,Math.PI/4),matRod);
+  const gMat=new THREE.MeshBasicMaterial({color:GHOST,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide});
+  const gMesh=new THREE.Mesh(ghost,gMat); gMesh.renderOrder=2;
+  ghost.computeBoundingSphere();
+  const lineGeo=key==='sphere'?sphereLines(ghost.boundingSphere.radius):new THREE.EdgesGeometry(ghost,20);
+  const lMat=new THREE.LineBasicMaterial({color:GHOST,transparent:true,opacity:0,depthWrite:false});
+  const lines=new THREE.LineSegments(lineGeo,lMat); lines.renderOrder=3;
+  grp.add(ribMesh,rodMesh,gMesh,lines);
+  rib.computeBoundingBox(); rod.computeBoundingBox();
+  const box=rib.boundingBox.clone().union(rod.boundingBox), sph=box.getBoundingSphere(new THREE.Sphere());
+  const item={grp,rodMesh,gMat,lMat,radius:sph.radius,center:sph.center.clone(),tris:rib.index.count/3};
+  cache.set(key,item); return item;
+}
+
+function frameCamera(item){
+  const c=new THREE.Vector3(item.center.x,item.center.z,-item.center.y);
+  controls.target.copy(c);
+  const d=item.radius/Math.sin(THREE.MathUtils.degToRad(Math.min(camera.fov,camera.fov*camera.aspect)/2))*0.78;
+  const dir=new THREE.Vector3(0.78,0.36,0.78).normalize();
+  camera.position.copy(c).addScaledVector(dir,d);
+  controls.update();
+}
+
+async function select(key){
+  want=key; msg.textContent='loading…'; msg.style.display='flex';
+  try{
+    const item=await build(key);
+    if(want!==key) return;
+    if(current) root.remove(current.grp);
+    current=item; root.add(item.grp);
+    item.rodMesh.visible=document.getElementById('vRod').classList.contains('on');
+    frameCamera(item); msg.style.display='none';
+    document.getElementById('vTris').textContent='preview: '+Math.round(item.tris).toLocaleString()+' triangles';
+  }catch(e){ msg.textContent='Could not load the preview mesh. The downloads below still work.'; console.error(e); }
+}
+window.addEventListener('ns-model',e=>select(e.detail));
+
+const btnSummon=document.getElementById('vSummon'), btnTurn=document.getElementById('vTurn'), btnRod=document.getElementById('vRod');
+btnSummon.addEventListener('click',()=>{ghostOn=!ghostOn;btnSummon.classList.toggle('on',ghostOn);btnSummon.setAttribute('aria-pressed',ghostOn);
+  btnSummon.textContent=ghostOn?'dismiss the hidden solid':'summon the hidden solid';document.getElementById('vLegend').classList.toggle('on',ghostOn);});
+btnTurn.addEventListener('click',()=>{controls.autoRotate=!controls.autoRotate;btnTurn.classList.toggle('on',controls.autoRotate);btnTurn.setAttribute('aria-pressed',controls.autoRotate);});
+btnRod.addEventListener('click',()=>{const on=!btnRod.classList.contains('on');btnRod.classList.toggle('on',on);btnRod.setAttribute('aria-pressed',on);if(current)current.rodMesh.visible=on;});
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+new ResizeObserver(resize).observe(stage); resize();
+
+let visible=true;
+new IntersectionObserver(es=>{visible=es[0].isIntersecting;}).observe(stage);
+const clock=new THREE.Clock();
+renderer.setAnimationLoop(()=>{
+  const dt=Math.min(clock.getDelta(),0.05);
+  if(!visible) return;
+  ghostT+=((ghostOn?1:0)-ghostT)*Math.min(1,dt*4);
+  if(current){current.gMat.opacity=0.13*ghostT;current.lMat.opacity=0.85*ghostT;current.gMat.visible=current.lMat.visible=ghostT>0.003;}
+  controls.update(); renderer.render(scene,camera);
+});
+window.NS_VIEWER_READY=true;
+if(window.NS_SUMMON) btnSummon.click();
+select(window.NS_CURRENT||'sphere');
+</script>
+</body>
+</html>
