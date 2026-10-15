@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Lamp and the Flame — how shared meaning changes hands</title>
+<meta name="description" content="An exposé on legitimacy, co-optation and goal displacement: how communities build shared meaning, how custodians come to control it, and how to tell capture from ordinary change — with interactive diagrams and a scoring dashboard.">
+<link rel="canonical" href="https://promethean-theoria.netlify.app/the-lamp-and-the-flame.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="The Lamp and the Flame — how shared meaning changes hands">
+<meta property="og:description" content="Six roots, six stages, one lifecycle: how custodians of shared meaning come to control it, and how to test a real case. Interactive diagrams, every claim labeled by register.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/the-lamp-and-the-flame.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/the-lamp-and-the-flame.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — dark-first, in the Theoria family.
+   flame = purpose · comm = community · cust = custodians · spon = outside power
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --ground:   #0B0D12;
+  --ground-2: #11141B;
+  --ground-3: #181C26;
+  --rule:     #262C3A;
+  --rule-soft:#1C212E;
+
+  --ink:   #E8E4D8;
+  --ink-2: #B6B3A8;
+  --muted: #8B92A4;
+  --faint: #5C6376;
+
+  --flame: #E39A4C;
+  --gold:  #D4B87F;
+  --comm:  #6FBF9A;
+  --cust:  #B287DE;
+  --spon:  #E0596B;
+  --link:  #6FC7DC;
+
+  /* chart series — validated against --ground-2 in each theme */
+  --ser-then: #4A8BD8;
+  --ser-now:  #BF8526;
+
+  --serif: "Palatino Linotype", Palatino, "Iowan Old Style", "Book Antiqua",
+           "URW Palladio L", "Hoefler Text", Georgia, serif;
+  --label: "Bahnschrift SemiCondensed", "Bahnschrift", "DIN Alternate",
+           "Franklin Gothic Medium", "Avenir Next Condensed",
+           "Roboto Condensed", Corbel, "Segoe UI", sans-serif;
+  --mono:  Consolas, "Cascadia Mono", "SF Mono", Menlo, "DejaVu Sans Mono", monospace;
+
+  --measure: 37rem;
+  --wide: 64rem;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#E9E8E2; --ground-2:#F1F0EB; --ground-3:#F8F7F3;
+    --rule:#C4C6BD; --rule-soft:#D8D9D1;
+    --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+    --flame:#A66312; --gold:#8A6E1E; --comm:#2C7A56; --cust:#6E4B9E; --spon:#B03145; --link:#1F7A93;
+    --ser-then:#2F72BC; --ser-now:#9A6A1C;
+  }
+}
+:root[data-theme="light"]{
+  --ground:#E9E8E2; --ground-2:#F1F0EB; --ground-3:#F8F7F3;
+  --rule:#C4C6BD; --rule-soft:#D8D9D1;
+  --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+  --flame:#A66312; --gold:#8A6E1E; --comm:#2C7A56; --cust:#6E4B9E; --spon:#B03145; --link:#1F7A93;
+  --ser-then:#2F72BC; --ser-now:#9A6A1C;
+}
+:root[data-theme="dark"]{
+  --ground:#0B0D12; --ground-2:#11141B; --ground-3:#181C26;
+  --rule:#262C3A; --rule-soft:#1C212E;
+  --ink:#E8E4D8; --ink-2:#B6B3A8; --muted:#8B92A4; --faint:#5C6376;
+  --flame:#E39A4C; --gold:#D4B87F; --comm:#6FBF9A; --cust:#B287DE; --spon:#E0596B; --link:#6FC7DC;
+  --ser-then:#4A8BD8; --ser-now:#BF8526;
+}
+
+/* ═════════════════════════ BASE ═════════════════════════ */
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *, *::before, *::after{ transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
+}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.7;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+::selection{ background:var(--gold); color:var(--ground); }
+p{ text-wrap:pretty; }
+h1,h2,h3,h4{ font-weight:400; text-wrap:balance; }
+a{ color:var(--link); text-decoration-color:color-mix(in srgb, var(--link) 45%, transparent); text-underline-offset:3px; }
+a:hover{ text-decoration-color:var(--link); }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+button{ font:inherit; color:inherit; }
+b{ font-weight:400; color:var(--ink); }
+
+/* ═════════════════════════ RAIL ═════════════════════════ */
+.rail{
+  position:fixed; left:0; top:0; bottom:0; width:2.9rem; z-index:40;
+  border-right:1px solid var(--rule-soft);
+  background:linear-gradient(to bottom, var(--ground-2), var(--ground));
+  display:flex; flex-direction:column; align-items:stretch;
+  padding:0.8rem 0; gap:0.3rem;
+}
+.rail button{
+  flex:1; border:0; background:transparent; cursor:pointer;
+  position:relative; display:flex; align-items:center; justify-content:center;
+  padding:0; min-height:1.4rem;
+}
+.rail .rn{
+  font-family:var(--mono); font-size:0.56rem; letter-spacing:0.12em;
+  color:var(--faint); writing-mode:vertical-rl; transition:color .25s ease;
+}
+.rail button::after{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:transparent; transition:background .25s ease;
+}
+.rail button:hover .rn{ color:var(--ink-2); }
+.rail button.on .rn{ color:var(--ink); }
+.rail button.on::after{ background:var(--gold); }
+@media (max-width:940px){ .rail{ display:none; } }
+.wrap{ padding-left:2.9rem; padding-bottom:5rem; }
+@media (max-width:940px){ .wrap{ padding-left:0; } }
+
+/* ═════════════════════════ TOP BAR ═════════════════════════ */
+.top{
+  display:flex; justify-content:space-between; align-items:center;
+  max-width:var(--wide); margin:0 auto; padding:1.1rem 1rem 0;
+  font-family:var(--label); font-size:0.72rem; letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+.top a{ color:var(--muted); text-decoration:none; }
+.top a:hover{ color:var(--ink); }
+.theme-btn{
+  border:1px solid var(--rule); background:var(--ground-2); color:var(--muted);
+  font-family:var(--label); font-size:0.66rem; letter-spacing:0.1em;
+  text-transform:uppercase; padding:0.3rem 0.7rem; border-radius:999px; cursor:pointer;
+}
+.theme-btn:hover{ color:var(--ink); border-color:var(--muted); }
+
+/* ═════════════════════════ LAYOUT ═════════════════════════ */
+.col{ max-width:var(--measure); margin:0 auto; padding-left:1rem; padding-right:1rem; }
+.col-w{ max-width:var(--wide); margin:0 auto; padding-left:1rem; padding-right:1rem; }
+.flow{ display:flex; flex-direction:column; gap:1.05rem; }
+section{ padding-top:4.6rem; }
+.eyebrow{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.22em;
+  font-size:0.66rem; color:var(--muted);
+}
+h2{ font-size:clamp(1.65rem, 3.8vw, 2.25rem); line-height:1.15; margin-top:0.55rem; }
+h3{ font-size:1.25rem; line-height:1.25; }
+.lede{ font-size:1.12rem; line-height:1.62; color:var(--ink-2); }
+.mut{ color:var(--muted); }
+.small{ font-size:0.88rem; }
+hr.sep{ border:0; height:1px; background:var(--rule); margin:3.4rem auto 0; max-width:var(--wide); }
+
+/* register chips */
+.reg{
+  display:inline-block; font-family:var(--label); font-size:0.6rem; font-style:normal;
+  letter-spacing:0.09em; text-transform:uppercase; line-height:1;
+  padding:0.24em 0.5em 0.28em; border-radius:4px; border:1px solid;
+  vertical-align:0.16em; white-space:nowrap;
+}
+.reg-doc{ background:var(--comm); color:var(--ground); border-color:var(--comm); }
+.reg-th { color:var(--link); border-color:var(--link); }
+.reg-syn{ color:var(--gold); border-color:var(--gold); }
+.reg-ill{ color:var(--muted); border-color:var(--muted); border-style:dashed; font-style:italic; }
+.regnote{ font-size:0.86rem; color:var(--muted); font-style:italic; }
+.regnote .reg{ margin-right:0.35rem; }
+
+sup.c{ font-family:var(--mono); font-size:0.62em; line-height:0; margin-left:0.1em; }
+sup.c a{ color:var(--muted); text-decoration:none; }
+sup.c a:hover{ color:var(--link); }
+
+.key{
+  padding:0.75rem 1.05rem; border-left:3px solid var(--gold);
+  background:color-mix(in srgb, var(--gold) 7%, transparent);
+  border-radius:0 8px 8px 0; color:var(--ink); font-size:0.98rem;
+}
+.key .q{ display:block; }
+.key .q + .q{ margin-top:0.3rem; }
+.key em{ color:var(--gold); font-style:normal; }
+
+.ex{
+  border:1px dashed var(--rule); border-radius:10px; padding:0.8rem 1rem 0.9rem;
+  font-size:0.9rem; color:var(--ink-2);
+}
+.ex .ex-h{ font-family:var(--label); font-size:0.64rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.45rem; }
+ol.chain{ list-style:none; display:flex; flex-direction:column; gap:0.15rem; }
+ol.chain li{ position:relative; padding-left:1.35rem; }
+ol.chain li::before{ content:"→"; position:absolute; left:0; color:var(--gold); }
+ol.chain li:first-child::before{ content:"•"; }
+.ex .ex-end{ margin-top:0.5rem; color:var(--ink); }
+
+.fig{
+  margin-top:1.8rem; border:1px solid var(--rule); border-radius:14px;
+  background:var(--ground-2); padding:1.1rem 1.1rem 1rem;
+}
+.fig-tag{
+  font-family:var(--label); font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:0.7rem; display:flex; justify-content:space-between; gap:0.8rem; flex-wrap:wrap;
+}
+.fig-tag .hint{ color:var(--faint); letter-spacing:0.08em; }
+.fig-cap{ font-size:0.84rem; color:var(--muted); font-style:italic; text-align:center; margin-top:0.7rem; line-height:1.5; }
+.fig svg{ display:block; width:100%; height:auto; }
+svg text{ font-family:var(--label); }
+
+.seg{ display:inline-flex; border:1px solid var(--rule); border-radius:999px; overflow:hidden; background:var(--ground); }
+.seg button{
+  border:0; background:transparent; cursor:pointer; padding:0.34rem 0.85rem;
+  font-family:var(--label); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted);
+}
+.seg button + button{ border-left:1px solid var(--rule); }
+.seg button[aria-pressed="true"]{ background:color-mix(in srgb, var(--gold) 18%, var(--ground-2)); color:var(--ink); }
+.btn{
+  border:1px solid var(--rule); background:var(--ground); color:var(--ink-2); cursor:pointer;
+  font-family:var(--label); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase;
+  padding:0.36rem 0.85rem; border-radius:999px;
+}
+.btn:hover{ border-color:var(--gold); color:var(--ink); }
+input[type=range]{ accent-color:var(--gold); width:100%; cursor:pointer; }
+.slider-row{ display:flex; align-items:center; gap:0.8rem; margin-top:0.9rem; font-family:var(--label); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+.slider-row span{ white-space:nowrap; }
+
+/* ═════════════════════════ HERO ═════════════════════════ */
+.hero{ text-align:center; padding-top:3rem; }
+.hero h1{ font-size:clamp(2.2rem, 6vw, 3.5rem); line-height:1.04; letter-spacing:-0.015em; margin-top:0.7rem; }
+.hero .axline{ color:var(--gold); font-style:italic; margin-top:0.8rem; font-size:1.04rem; }
+.hero .lede{ max-width:39rem; margin:1.4rem auto 0; }
+.hero .lede + .lede{ margin-top:0.9rem; }
+.rule-line{
+  margin:1.6rem auto 0; max-width:40rem; padding:0.85rem 1.15rem;
+  border:1px solid var(--rule); border-radius:10px; background:var(--ground-2);
+  font-size:0.92rem; color:var(--ink-2); text-align:left;
+}
+.reglegend{ display:grid; grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr)); gap:0.35rem 1.2rem; margin-top:0.7rem; font-size:0.84rem; color:var(--muted); }
+.reglegend .reg{ margin-right:0.4rem; }
+
+.frames{
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:0.6rem;
+  max-width:var(--wide); margin:2.2rem auto 0; text-align:left;
+}
+@media (max-width:760px){ .frames{ grid-template-columns:repeat(2, 1fr); } }
+.frame{
+  border:1px solid var(--rule); border-radius:12px; background:var(--ground-2);
+  padding:0.6rem 0.7rem 0.8rem; position:relative; transition:border-color .2s ease;
+}
+.frame:hover, .frame:focus-within{ border-color:var(--gold); }
+.frame .fn{ font-family:var(--label); font-size:0.64rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); }
+.frame p{ font-size:0.84rem; color:var(--ink-2); line-height:1.45; margin-top:0.2rem; }
+.frame svg{ display:block; width:100%; height:auto; margin:0.2rem 0 0.1rem; }
+.frames-cap{ max-width:var(--wide); margin:0.7rem auto 0; text-align:center; font-size:0.86rem; color:var(--muted); font-style:italic; }
+.lamp-ring{ opacity:0; transition:opacity .3s ease; }
+/* the four flames flicker in lockstep — the one thing that never changes */
+.lflame{ transform-box:fill-box; transform-origin:50% 100%; animation:flick 3.4s ease-in-out infinite; }
+.lglow{ animation:glow 3.4s ease-in-out infinite; }
+@keyframes flick{
+  0%, 100%{ transform:scale(1, 1) skewX(0deg); }
+  22%{ transform:scale(.97, 1.05) skewX(-2deg); }
+  47%{ transform:scale(1.02, .96) skewX(1.2deg); }
+  71%{ transform:scale(.98, 1.03) skewX(-.8deg); }
+}
+@keyframes glow{ 0%, 100%{ opacity:1; } 22%{ opacity:.82; } 47%{ opacity:.95; } 71%{ opacity:.86; } }
+@media (prefers-reduced-motion: reduce){ .lflame, .lglow{ animation:none !important; } }
+.frame:hover .lamp-ring, .frame.on .lamp-ring{ opacity:1; }
+
+/* ═════════════════════════ ROOTS ═════════════════════════ */
+.roots{ display:grid; grid-template-columns:minmax(0, 23rem) minmax(0, 1fr); gap:1.6rem; align-items:start; }
+@media (max-width:860px){ .roots{ grid-template-columns:1fr; } }
+.roots .hexwrap{ max-width:23rem; margin:0 auto; width:100%; }
+.hnode{ cursor:pointer; }
+.hnode circle.hc{ fill:var(--ground); stroke-width:1.6; transition:fill .2s ease, stroke .3s ease; }
+.hnode .hname{ fill:var(--ink); font-size:9.2px; letter-spacing:0.1em; }
+.hnode .hph{ fill:var(--ink-2); font-family:var(--serif); font-style:italic; font-size:10.5px; transition:opacity .25s ease; }
+.hnode:hover circle.hc, .hnode:focus-visible circle.hc{ fill:var(--ground-3); }
+.hnode.on circle.hc{ fill:color-mix(in srgb, var(--edge) 16%, var(--ground)); stroke-width:2.4; }
+.rpanel{ border-left:2px solid var(--rule); padding:0.2rem 0 0.2rem 1.2rem; min-height:22rem; }
+@media (max-width:860px){ .rpanel{ min-height:0; } }
+.rpanel .rp-k{ font-family:var(--label); font-size:0.64rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
+.rpanel h3{ margin-top:0.25rem; }
+.rpanel .rp-lead{ color:var(--gold); font-style:italic; margin-top:0.3rem; }
+.rpanel .rp-body{ color:var(--ink-2); font-size:0.95rem; margin-top:0.6rem; }
+.edges{ display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; margin-top:0.9rem; }
+@media (max-width:520px){ .edges{ grid-template-columns:1fr; } }
+.edge{ border-radius:8px; padding:0.6rem 0.8rem; font-size:0.9rem; color:var(--ink); transition:opacity .25s ease, background .25s ease; }
+.edge .eh{ display:block; font-family:var(--label); font-size:0.6rem; letter-spacing:0.13em; text-transform:uppercase; margin-bottom:0.2rem; }
+.edge.g{ border-left:3px solid var(--comm); background:color-mix(in srgb, var(--comm) 8%, transparent); }
+.edge.g .eh{ color:var(--comm); }
+.edge.o{ border-left:3px solid var(--spon); background:color-mix(in srgb, var(--spon) 8%, transparent); }
+.edge.o .eh{ color:var(--spon); }
+.edge.dim{ opacity:0.45; }
+.rp-nav{ display:flex; gap:0.5rem; margin-top:1rem; }
+
+/* ═════════════════════════ REVERSAL ═════════════════════════ */
+.rev{ display:flex; align-items:stretch; justify-content:center; gap:var(--gap, 0.4rem); }
+.pill{
+  flex:1 1 0; min-width:0; border:1.5px solid var(--pc); border-radius:14px; padding:0.8rem 0.85rem;
+  background:color-mix(in srgb, var(--pc) 7%, var(--ground)); text-align:center;
+  transition:border-color .15s linear, background .15s linear;
+}
+.pill .pn{ font-family:var(--label); font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink); }
+.pill .pd{ font-size:0.82rem; color:var(--ink-2); line-height:1.45; margin-top:0.3rem; }
+.conn{ position:relative; flex:0 0 5.2rem; display:flex; align-items:center; justify-content:center; }
+.conn .arr, .conn .eq{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity .15s linear; }
+.conn .arr .al{ font-family:var(--label); font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+.conn .arr .ag{ font-size:1.6rem; color:var(--gold); line-height:1; }
+.conn .eq{ font-size:2rem; color:var(--spon); opacity:0; }
+@media (max-width:700px){
+  .rev{ flex-direction:column; }
+  .conn{ flex:0 0 3.4rem; }
+  .conn .arr .ag{ transform:rotate(90deg); }
+}
+.rev-cap{ margin-top:0.9rem; min-height:3.2em; text-align:center; font-size:0.94rem; color:var(--ink-2); }
+
+.flips{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.8rem; margin-top:1.2rem; }
+@media (max-width:620px){ .flips{ grid-template-columns:1fr; } }
+.flip{ display:grid; border:0; background:transparent; padding:0; cursor:pointer; text-align:left; perspective:900px; }
+.flip .face{
+  grid-area:1/1; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  transition:transform .6s cubic-bezier(.4,.1,.2,1);
+  border:1px solid var(--rule); border-radius:12px; background:var(--ground-2);
+  padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.35rem;
+}
+.flip .back{ transform:rotateY(180deg); border-color:color-mix(in srgb, var(--spon) 55%, var(--rule)); }
+.flip[aria-pressed="true"] .front{ transform:rotateY(-180deg); }
+.flip[aria-pressed="true"] .back{ transform:rotateY(0deg); }
+.flip .fl{ font-family:var(--label); font-size:0.6rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--muted); }
+.flip .front .fl b{ color:var(--comm); }
+.flip .back .fl b{ color:var(--spon); }
+.flip .ft{ font-size:1rem; color:var(--ink); line-height:1.45; }
+.flip .front .ft em{ color:var(--comm); font-style:normal; border-bottom:1px solid currentColor; }
+.flip .back .ft em{ color:var(--spon); font-style:normal; border-bottom:1px solid currentColor; }
+.flip:hover .face{ border-color:var(--gold); }
+
+/* ═════════════════════════ SIX STAGES ═════════════════════════ */
+.stages{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:2.4rem; margin-top:2rem; }
+.st-steps{ display:flex; flex-direction:column; }
+.st-step{ padding:0.6rem 0 3.6rem; opacity:0.42; transition:opacity .35s ease; display:flex; flex-direction:column; gap:0.8rem; }
+.st-step.on{ opacity:1; }
+.st-step:last-child{ padding-bottom:1rem; }
+.st-k{ font-family:var(--mono); font-size:0.74rem; letter-spacing:0.14em; color:var(--gold); }
+.st-step h3{ cursor:pointer; }
+.st-step p{ color:var(--ink-2); font-size:0.97rem; }
+.st-fig{ position:sticky; top:1.4rem; align-self:start; }
+.st-fig .fig{ margin-top:0; }
+.st-cap{ display:flex; gap:0.7rem; align-items:baseline; margin-top:0.6rem; min-height:3em; }
+.st-cap .sn{ font-family:var(--mono); color:var(--gold); font-size:0.8rem; }
+.st-cap .sc{ font-size:0.92rem; color:var(--ink-2); font-style:italic; line-height:1.45; }
+.st-dots{ display:flex; gap:0.4rem; justify-content:center; margin-top:0.5rem; }
+.st-dots button{
+  width:1.9rem; height:1.9rem; border-radius:50%; border:1px solid var(--rule); background:var(--ground);
+  font-family:var(--mono); font-size:0.72rem; color:var(--muted); cursor:pointer;
+}
+.st-dots button[aria-current="step"]{ border-color:var(--gold); color:var(--ink); background:color-mix(in srgb, var(--gold) 16%, var(--ground)); }
+.legend{ display:flex; flex-wrap:wrap; gap:0.35rem 1rem; justify-content:center; margin-top:0.7rem; font-family:var(--label); font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+.legend i{ display:inline-block; width:0.62rem; height:0.62rem; border-radius:50%; margin-right:0.35rem; vertical-align:-0.05em; }
+@media (max-width:860px){
+  .stages{ grid-template-columns:1fr; gap:0.4rem; }
+  .st-fig{ order:-1; top:0; z-index:6; background:var(--ground); padding:0.4rem 0 0.2rem; border-bottom:1px solid var(--rule); }
+  .st-fig .fig{ padding:0.5rem; border:0; background:transparent; }
+  .st-fig svg{ max-height:27vh; }
+  .st-fig .legend, .st-fig .fig-tag, .st-fig .st-dots{ display:none; }
+  .st-cap{ margin-top:0.2rem; min-height:2.6em; }
+  .st-step{ opacity:0.62; padding-bottom:2.6rem; }
+}
+
+/* routes — four panels on one clock */
+.rt-ctl{
+  position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap;
+  padding:0.55rem 0.1rem 0.65rem; margin-bottom:0.8rem; background:var(--ground-2); border-bottom:1px solid var(--rule-soft);
+  font-family:var(--label); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);
+}
+.rt-ctl .rt-slide{ flex:1 1 14rem; display:flex; flex-direction:column; gap:0.15rem; }
+.rt-scale{ display:grid; grid-template-columns:34fr 36fr 30fr; }
+.rt-scale span{ border-left:1px solid var(--rule); padding-left:0.4rem; white-space:nowrap; transition:color .2s ease; }
+.rt-scale span:first-child{ border-left:0; padding-left:0; }
+.rt-scale span.on{ color:var(--gold); }
+.rt-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.9rem; }
+@media (max-width:720px){ .rt-grid{ grid-template-columns:1fr; } }
+.rt{ border:1px solid var(--rule); border-radius:12px; background:var(--ground); padding:0.85rem 0.95rem 0.9rem; display:flex; flex-direction:column; gap:0.5rem; }
+.rt-h{ display:flex; align-items:baseline; gap:0.55rem; }
+.rt-h .rt-n{ font-family:var(--mono); color:var(--gold); font-size:0.76rem; }
+.rt-h b{ font-family:var(--label); text-transform:uppercase; letter-spacing:0.14em; font-size:0.82rem; }
+.rt-def{ font-size:0.86rem; color:var(--muted); line-height:1.45; font-style:italic; }
+.rt svg{ display:block; width:100%; height:auto; }
+.rt-now{ font-size:0.93rem; color:var(--ink); line-height:1.45; min-height:2.9em; border-left:2px solid var(--gold); padding-left:0.65rem; }
+.rt-key{ display:flex; flex-direction:column; gap:0.3rem; font-size:0.85rem; color:var(--ink-2); line-height:1.4; padding-top:0.55rem; border-top:1px solid var(--rule-soft); }
+.rt-key .k{
+  display:inline-block; min-width:4.8rem; margin-right:0.45rem; padding:0.14em 0.45em 0.18em; border-radius:4px; text-align:center;
+  font-family:var(--label); font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; vertical-align:0.12em;
+}
+.rt-key .k.st{ border:1px solid var(--rule); color:var(--muted); }
+.rt-key .k.ch{ border:1px solid var(--gold); background:var(--gold); color:var(--ground); }
+
+/* ═════════════════════════ INTENT ═════════════════════════ */
+.pats{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.8rem; margin-top:1.4rem; }
+@media (max-width:620px){ .pats{ grid-template-columns:1fr; } }
+.pat{
+  border:1px solid var(--rule); border-radius:12px; background:var(--ground-2); padding:0.85rem 1rem;
+  text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:0.3rem; transition:border-color .2s ease;
+}
+.pat .ph{ font-family:var(--label); font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink); }
+.pat .pl{ font-size:0.9rem; color:var(--ink-2); line-height:1.5; }
+.pat .pl::before{ content:"Look for: "; color:var(--muted); font-style:italic; }
+.pat.on, .pat:hover{ border-color:var(--gold); }
+.mixflow{ display:flex; align-items:stretch; gap:0.4rem; margin-top:0.9rem; }
+.fstep{
+  flex:1 1 0; border:1px solid var(--rule); border-radius:10px; padding:0.7rem 0.8rem; background:var(--ground);
+  font-size:0.9rem; color:var(--ink-2); line-height:1.45; transition:border-color .2s ease, background .2s ease, opacity .2s ease;
+}
+.fstep .ft{ display:block; font-family:var(--label); font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.25rem; }
+.fstep.lit{ border-color:var(--gold); background:color-mix(in srgb, var(--gold) 10%, var(--ground)); color:var(--ink); }
+.mixflow.dim .fstep:not(.lit){ opacity:0.5; }
+.farr{ align-self:center; color:var(--gold); font-size:1.2rem; }
+@media (max-width:620px){ .mixflow{ flex-direction:column; } .farr{ transform:rotate(90deg); } }
+.mix-note{ margin-top:0.7rem; font-size:0.88rem; color:var(--muted); font-style:italic; text-align:center; min-height:1.5em; }
+
+/* ═════════════════════════ LIFECYCLE ═════════════════════════ */
+.cycle{ display:grid; grid-template-columns:minmax(0, 22rem) minmax(0,1fr); gap:1.8rem; align-items:start; margin-top:1.6rem; }
+@media (max-width:860px){ .cycle{ grid-template-columns:1fr; } }
+.cy-fig{ max-width:22rem; width:100%; margin:0 auto; }
+.cy-arc{ cursor:pointer; }
+.cy-arc .band{ fill:none; stroke-width:30; transition:opacity .2s ease; opacity:0.38; }
+.cy-arc .head{ transition:opacity .2s ease; opacity:0.38; }
+.cy-arc.on .band, .cy-arc.on .head, .cy-arc:hover .band, .cy-arc:hover .head{ opacity:1; }
+.cy-arc text{ fill:var(--ink); font-size:9.6px; letter-spacing:0.14em; pointer-events:none; }
+.cy-ren{ cursor:pointer; }
+.cy-ren circle{ fill:var(--ground); stroke:var(--link); stroke-width:1.5; transition:fill .2s ease; }
+.cy-ren.on circle, .cy-ren:hover circle{ fill:color-mix(in srgb, var(--link) 22%, var(--ground)); }
+.cy-panel{ border-left:2px solid var(--rule); padding:0.1rem 0 0.2rem 1.2rem; }
+.cy-panel .cp-k{ font-family:var(--mono); font-size:0.74rem; letter-spacing:0.14em; color:var(--pc, var(--gold)); }
+.cy-panel h3{ margin-top:0.15rem; }
+.cy-panel p{ color:var(--ink-2); font-size:0.95rem; margin-top:0.6rem; }
+.cy-panel h4{ font-family:var(--label); font-size:0.66rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-top:1rem; }
+.cy-panel ul{ margin-top:0.4rem; padding-left:1.1rem; color:var(--ink-2); font-size:0.92rem; display:flex; flex-direction:column; gap:0.25rem; }
+.cy-panel ul li::marker{ color:var(--pc, var(--gold)); }
+.flaw{ margin-top:0.8rem; padding:0.65rem 0.9rem; border-left:3px solid var(--spon); background:color-mix(in srgb, var(--spon) 7%, transparent); border-radius:0 8px 8px 0; font-size:0.92rem; color:var(--ink-2); }
+.flaw b{ color:var(--spon); }
+.r4{ display:flex; flex-direction:column; gap:0.55rem; margin-top:0.7rem; }
+.r4 div{ padding:0.55rem 0.85rem; border:1px solid var(--rule); border-radius:10px; font-size:0.9rem; color:var(--ink-2); }
+.r4 .rk{ font-family:var(--mono); color:var(--cust); margin-right:0.4rem; }
+.loop{ display:flex; flex-wrap:wrap; align-items:center; gap:0.3rem; margin-top:0.5rem; }
+.loop span.n{ border:1px solid var(--rule); border-radius:999px; padding:0.15rem 0.6rem; font-family:var(--label); font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink); }
+.loop span.a{ color:var(--gold); }
+.loop span.r{ color:var(--gold); font-size:1.05rem; margin-left:0.2rem; }
+.loop-t{ font-size:0.88rem; color:var(--muted); margin-top:0.25rem; font-style:italic; }
+.cp-cases{ margin-top:1rem; font-size:0.88rem; color:var(--muted); }
+.cp-nav{ display:flex; gap:0.5rem; margin-top:1.1rem; }
+
+/* ═════════════════════════ CASEBOOK ═════════════════════════ */
+.tl{ position:relative; margin-top:1.8rem; height:var(--tlh, 7rem); }
+.tl .axis{ position:absolute; left:0; right:0; bottom:1.6rem; height:1px; background:var(--rule); }
+.tl .brk{ position:absolute; bottom:calc(1.6rem - 7px); width:14px; height:15px; transform:translateX(-50%); background:var(--ground); }
+.tl .brk::before, .tl .brk::after{ content:""; position:absolute; top:0; bottom:0; width:1px; background:var(--muted); transform:skewX(-20deg); }
+.tl .brk::before{ left:3px; } .tl .brk::after{ right:3px; }
+.tl .tick{ position:absolute; bottom:0.2rem; transform:translateX(-50%); font-family:var(--mono); font-size:0.66rem; color:var(--faint); }
+.tl .tick::before{ content:""; position:absolute; left:50%; bottom:1.15rem; height:6px; width:1px; background:var(--rule); }
+.tl .ev{ position:absolute; bottom:calc(1.6rem - 6px); height:12px; transform:translateX(-6px); border:0; padding:0; background:transparent; cursor:pointer; }
+.tl .ev .mk{ display:block; height:12px; min-width:12px; border-radius:6px; background:var(--ground); border:2px solid var(--gold); transition:background .2s ease; }
+.tl .ev.on .mk, .tl .ev:hover .mk{ background:var(--gold); }
+.tl .lab{
+  position:absolute; white-space:nowrap; transform:translateX(-50%);
+  font-family:var(--label); font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted);
+  border:0; background:transparent; cursor:pointer; padding:0 0.1rem;
+}
+.tl .lab::after{ content:""; position:absolute; left:50%; top:100%; width:1px; height:var(--stem, 0.5rem); background:var(--rule); }
+.tl .lab.on, .tl .lab:hover{ color:var(--ink); }
+.cases{ display:grid; grid-template-columns:repeat(auto-fill, minmax(18.5rem, 1fr)); gap:0.9rem; margin-top:1.4rem; }
+.case{
+  border:1px solid var(--rule); border-radius:12px; background:var(--ground-2); padding:0.95rem 1.05rem 1rem;
+  display:flex; flex-direction:column; gap:0.45rem; scroll-margin-top:5rem; transition:border-color .25s ease, box-shadow .25s ease;
+}
+.case.on{ border-color:var(--gold); box-shadow:0 0 0 1px var(--gold) inset; }
+.case .cy{ font-family:var(--mono); font-size:0.72rem; color:var(--gold); letter-spacing:0.08em; }
+.case h3{ font-size:1.08rem; }
+.case .ctag{ font-family:var(--label); font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+.case p{ font-size:0.89rem; color:var(--ink-2); line-height:1.55; }
+.case p.rv{ color:var(--ink); }
+.case p.rv::before{ content:"Reveals — "; color:var(--muted); font-style:italic; }
+
+/* ═════════════════════════ FIELD KIT ═════════════════════════ */
+.qsets{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:1.2rem; margin-top:1.4rem; }
+@media (max-width:760px){ .qsets{ grid-template-columns:1fr; } }
+.qset{ border:1px solid var(--rule); border-radius:12px; padding:0.95rem 1.1rem; background:var(--ground-2); }
+.qset h3{ font-size:1.08rem; }
+.qset ol{ margin-top:0.55rem; padding-left:1.25rem; display:flex; flex-direction:column; gap:0.3rem; font-size:0.92rem; color:var(--ink-2); }
+.qset ol li::marker{ color:var(--gold); font-family:var(--mono); font-size:0.8em; }
+.qset .qn{ margin-top:0.7rem; font-size:0.86rem; color:var(--muted); font-style:italic; }
+
+.dash{ margin-top:1.6rem; display:grid; grid-template-columns:minmax(0, 1.35fr) minmax(0, 1fr); gap:1.4rem; align-items:start; }
+@media (max-width:980px){ .dash{ grid-template-columns:1fr; } }
+.ind-table{ width:100%; border-collapse:collapse; font-size:0.86rem; }
+.ind-table th{ font-family:var(--label); font-size:0.6rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--muted); font-weight:400; text-align:left; padding:0 0.4rem 0.45rem; border-bottom:1px solid var(--rule); }
+.ind-table td{ padding:0.5rem 0.4rem; border-bottom:1px solid var(--rule-soft); vertical-align:middle; }
+.ind-table .in{ color:var(--ink); }
+.ind-table .im{ display:block; font-size:0.8rem; color:var(--muted); line-height:1.4; }
+.ind-table .ip{ font-family:var(--mono); font-size:0.74rem; color:var(--gold); white-space:nowrap; }
+.sc{ display:inline-flex; border:1px solid var(--rule); border-radius:7px; overflow:hidden; }
+.sc button{ width:1.75rem; height:1.75rem; border:0; background:var(--ground); color:var(--muted); cursor:pointer; font-family:var(--mono); font-size:0.76rem; }
+.sc button + button{ border-left:1px solid var(--rule); }
+.sc.then button[aria-pressed="true"]{ background:var(--ser-then); color:var(--ground); }
+.sc.now button[aria-pressed="true"]{ background:var(--ser-now); color:var(--ground); }
+.sc-l{ display:none; font-family:var(--label); font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-right:0.35rem; }
+@media (max-width:640px){
+  .ind-table thead{ display:none; }
+  .ind-table tr{ display:grid; grid-template-columns:1fr auto; gap:0.35rem 0.6rem; padding:0.6rem 0; border-bottom:1px solid var(--rule-soft); }
+  .ind-table td{ border:0; padding:0; }
+  .ind-table td.c-name{ grid-column:1 / -1; }
+  .ind-table td.c-ph{ grid-column:1 / -1; }
+  .sc-l{ display:inline; }
+}
+.prof{ border:1px solid var(--rule); border-radius:12px; background:var(--ground-2); padding:1rem 1.1rem; position:sticky; top:1.2rem; }
+.prof h3{ font-size:1.02rem; }
+.prof .pl-legend{ display:flex; gap:1rem; margin-top:0.35rem; font-family:var(--label); font-size:0.64rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+.prof .pl-legend i{ display:inline-block; width:0.9rem; height:0.5rem; border-radius:0 3px 3px 0; margin-right:0.35rem; vertical-align:0.05em; }
+.prow{ display:grid; grid-template-columns:4.4rem 1fr; gap:0.6rem; align-items:center; margin-top:0.7rem; position:relative; }
+.prow .pk{ font-family:var(--mono); font-size:0.76rem; color:var(--ink-2); }
+.ptrack{ position:relative; height:1.75rem; background:linear-gradient(to right, var(--rule-soft) 1px, transparent 1px) 0 0 / 33.333% 100%; border-left:1px solid var(--rule); }
+.pbar{ position:absolute; left:0; border-radius:0 4px 4px 0; transition:width .35s ease; }
+.pbar.then{ top:0.2rem; height:0.45rem; background:var(--ser-then); border-radius:0 3px 3px 0; }
+.pbar.now{ top:0.82rem; height:0.75rem; background:var(--ser-now); }
+.pval{ position:absolute; top:0.66rem; font-family:var(--mono); font-size:0.7rem; color:var(--ink-2); margin-left:0.35rem; transition:left .35s ease; }
+.paxis{ display:grid; grid-template-columns:4.4rem 1fr; gap:0.6rem; margin-top:0.3rem; }
+.paxis div{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:0.64rem; color:var(--faint); }
+.ptip{
+  position:absolute; z-index:20; right:0; top:100%; margin-top:0.2rem; width:min(17rem, 100%);
+  background:var(--ground-3); border:1px solid var(--rule); border-radius:8px; padding:0.5rem 0.7rem;
+  font-size:0.78rem; color:var(--ink-2); line-height:1.5; box-shadow:0 8px 24px rgba(0,0,0,.35);
+  opacity:0; pointer-events:none; transition:opacity .15s ease;
+}
+.prow:hover .ptip, .prow:focus-within .ptip{ opacity:1; }
+.alerts{ margin-top:1rem; display:flex; flex-direction:column; gap:0.5rem; }
+.alert{ display:flex; gap:0.6rem; align-items:flex-start; padding:0.55rem 0.75rem; border:1px solid var(--rule); border-radius:9px; font-size:0.84rem; color:var(--muted); line-height:1.45; }
+.alert .ai{ font-family:var(--mono); flex:0 0 auto; }
+.alert .as{ display:block; font-family:var(--label); font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; }
+.alert.hit{ border-color:var(--spon); color:var(--ink); background:color-mix(in srgb, var(--spon) 8%, transparent); }
+.alert.hit .ai, .alert.hit .as{ color:var(--spon); }
+.dash-ctl{ display:flex; gap:0.6rem; align-items:center; margin-top:0.8rem; flex-wrap:wrap; }
+
+/* ═════════════════════════ RENEWAL ═════════════════════════ */
+.ostrom{ display:grid; grid-template-columns:repeat(auto-fill, minmax(13rem, 1fr)); gap:0.6rem; margin-top:1.2rem; counter-reset:os; }
+.ostrom div{
+  counter-increment:os; border:1px solid var(--rule); border-radius:10px; padding:0.65rem 0.85rem 0.7rem;
+  background:var(--ground-2); font-size:0.9rem; color:var(--ink-2); line-height:1.45;
+}
+.ostrom div::before{ content:counter(os); display:block; font-family:var(--mono); font-size:0.7rem; color:var(--gold); margin-bottom:0.15rem; }
+.ostrom div.hit{ border-color:var(--comm); }
+.ostrom div .ctr{ display:block; margin-top:0.3rem; font-family:var(--label); font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--comm); }
+
+/* ═════════════════════════ THE TEST ═════════════════════════ */
+.bearers{ list-style:none; margin-top:1rem; display:flex; flex-direction:column; gap:0.35rem; }
+.bearers li{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:0.8rem; align-items:center; padding:0.35rem 0; border-bottom:1px solid var(--rule-soft); }
+.bearers .bv{ text-align:right; color:var(--flame); }
+.bearers .bt{ font-family:var(--label); font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+.bearers .bb{ color:var(--cust); }
+.div-read{ margin-top:0.7rem; text-align:center; font-size:0.94rem; color:var(--ink-2); min-height:3em; }
+.div-read b{ color:var(--ink); }
+.test{
+  margin-top:2rem; padding:1.4rem 1.5rem; border:1px solid var(--gold); border-radius:14px;
+  background:color-mix(in srgb, var(--gold) 6%, var(--ground-2)); text-align:center;
+}
+.test .tk{ font-family:var(--label); font-size:0.64rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); }
+.test p{ font-size:1.18rem; line-height:1.5; margin-top:0.5rem; color:var(--ink); }
+.closing{ margin-top:2.6rem; text-align:center; }
+.closing p{ font-size:1.05rem; color:var(--ink-2); }
+.closing p.big{ font-size:clamp(1.25rem, 3vw, 1.6rem); line-height:1.4; color:var(--ink); margin-top:0.6rem; }
+
+/* ═════════════════════════ SOURCES ═════════════════════════ */
+.srcs{ list-style:none; counter-reset:sr; margin-top:1rem; display:flex; flex-direction:column; gap:0.35rem; font-size:0.84rem; color:var(--muted); }
+.srcs li{ counter-increment:sr; position:relative; padding-left:2rem; scroll-margin-top:4rem; line-height:1.5; }
+.srcs li::before{ content:counter(sr); position:absolute; left:0; font-family:var(--mono); color:var(--gold); font-size:0.78rem; }
+.srcs li:target{ color:var(--ink); }
+.srcs a{ word-break:break-word; }
+
+footer{ margin-top:5rem; text-align:center; color:var(--muted); font-size:0.85rem; font-style:italic; padding:0 1rem; }
+footer a{ color:var(--muted); }
+footer a:hover{ color:var(--ink); }
+</style>
+</head>
+<body>
+<nav class="rail" aria-label="Sections">
+  <button data-go="pattern"><span class="rn">THE PATTERN</span></button>
+  <button data-go="roots"><span class="rn">I · ROOTS</span></button>
+  <button data-go="reversal"><span class="rn">II · REVERSAL</span></button>
+  <button data-go="stages"><span class="rn">III · SIX STAGES</span></button>
+  <button data-go="intent"><span class="rn">IV · INTENT</span></button>
+  <button data-go="lifecycle"><span class="rn">V · LIFECYCLE</span></button>
+  <button data-go="cases"><span class="rn">VI · CASEBOOK</span></button>
+  <button data-go="kit"><span class="rn">VII · FIELD KIT</span></button>
+  <button data-go="renewal"><span class="rn">VIII · RENEWAL</span></button>
+  <button data-go="test"><span class="rn">IX · THE TEST</span></button>
+</nav>
+
+<div class="wrap">
+<div class="top">
+  <a href="index.html">&larr; Promethean Theoria</a>
+  <button class="theme-btn" id="themeBtn" aria-label="Toggle color theme">Theme</button>
+</div>
+
+<!-- ═════════════════════════ HERO · THE PATTERN ═════════════════════════ -->
+<header class="hero col-w" id="pattern">
+  <div class="eyebrow">An exposé &middot; legitimacy &middot; co-optation &middot; goal displacement</div>
+  <h1>The Lamp and the Flame</h1>
+  <div class="axline">how shared meaning changes hands — and how the change is made acceptable</div>
+  <p class="lede">
+    People build shared meaning to coordinate their lives. Others gain influence by becoming its
+    interpreters, protectors, sponsors or administrators — and that influence can redirect the system
+    toward different ends. The original symbols may survive while the authority behind them changes.<sup class="c"><a href="#s1">1</a></sup>
+  </p>
+  <p class="lede">
+    The central issue is <b>legitimacy</b>: people's belief that someone has the right to interpret, lead
+    or govern. Capturing something already considered legitimate can be easier than persuading people to
+    accept an entirely new authority — and ideologies can make a particular hierarchy look natural, proper
+    or morally necessary.<sup class="c"><a href="#s2">2</a></sup>
+  </p>
+
+  <div class="frames" id="frames">
+    <div class="frame" tabindex="0"><div class="fn">1 &middot; Shared meaning</div><svg viewBox="0 0 160 136" aria-hidden="true"></svg><p>A community builds meaning, trust and practice to coordinate its life.</p></div>
+    <div class="frame" tabindex="0"><div class="fn">2 &middot; Custodians</div><svg viewBox="0 0 160 136" aria-hidden="true"></svg><p>Interpreters, protectors, sponsors and administrators gain influence.</p></div>
+    <div class="frame" tabindex="0"><div class="fn">3 &middot; Redirection</div><svg viewBox="0 0 160 136" aria-hidden="true"></svg><p>That influence can turn the system toward different ends.</p></div>
+    <div class="frame" tabindex="0"><div class="fn">4 &middot; Same symbols</div><svg viewBox="0 0 160 136" aria-hidden="true"></svg><p>The symbols survive. The authority behind them has changed.</p></div>
+  </div>
+  <div class="frames-cap">The flame is identical in every frame — what changes is who stands between it and the people. Hover a frame to ring the part that never changes.</div>
+
+  <div class="rule-line">
+    This is not one universal conspiracy, and not one fixed human instinct. It is a recurring interaction
+    between <b>human needs</b>, <b>unequal resources</b> and <b>organizational incentives</b>. Every claim
+    below wears its register:
+    <div class="reglegend">
+      <span><span class="reg reg-doc">Documented</span>in the historical record</span>
+      <span><span class="reg reg-th">Theory</span>a named scholar's model</span>
+      <span><span class="reg reg-syn">Synthesis</span>this page's combination — a hypothesis to test, not a law</span>
+      <span><span class="reg reg-ill">Illustration</span>hypothetical, not a historical case</span>
+    </div>
+  </div>
+</header>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ I · ROOTS ═════════════════════════ -->
+<section id="roots" class="col-w">
+  <div class="col" style="padding:0;">
+    <div class="eyebrow">I &middot; The root behaviors</div>
+    <h2>Six capacities that hold a community together — and open it to capture</h2>
+    <p class="lede" style="margin-top:0.9rem;">
+      The same human capacities that make collective life possible also make co-optation possible.
+      Each root is a genuine need met by a genuine community, and each has a second edge.
+    </p>
+    <p class="regnote" style="margin-top:0.7rem;"><span class="reg reg-syn">Synthesis</span>not a claim that every historical case follows the same script.</p>
+  </div>
+
+  <div class="fig">
+    <div class="fig-tag">
+      <span>Interactive &middot; the two edges</span>
+      <div class="seg" role="group" aria-label="Which edge to show">
+        <button data-edge="gift" aria-pressed="true">Makes possible</button>
+        <button data-edge="open" aria-pressed="false">Opens the way to</button>
+      </div>
+    </div>
+    <div class="roots">
+      <div class="hexwrap"><svg id="hexSvg" viewBox="0 0 360 360" role="group" aria-label="Six root behaviors arranged in a hexagon"></svg></div>
+      <div class="rpanel" id="rootPanel" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ II · REVERSAL ═════════════════════════ -->
+<section id="reversal" class="col">
+  <div class="eyebrow">II &middot; The reversal</div>
+  <h2>When the means become the end</h2>
+  <div class="flow" style="margin-top:1rem;">
+    <p class="lede">
+      A community creates an organization to serve a purpose. Over time, serving the organization can become
+      the practical definition of serving the purpose. Robert K. Merton called this <b>goal displacement</b>:
+      something valuable as an instrument comes to be treated as valuable in itself.<sup class="c"><a href="#s7">7</a></sup>
+      <span class="reg reg-th">Theory</span>
+    </p>
+    <p>It begins with three things that, at the founding, look like one.</p>
+  </div>
+</section>
+<div class="col-w">
+  <div class="fig">
+    <div class="fig-tag"><span>Interactive &middot; drag from founding to displacement</span><span class="hint">schematic</span></div>
+    <div class="rev" id="rev">
+      <div class="pill" data-hue="--cust" style="--pc:var(--cust)"><div class="pn">Leadership</div><div class="pd">the particular people entrusted with operating those arrangements</div></div>
+      <div class="conn"><div class="arr"><span class="al">operates</span><span class="ag">&rarr;</span></div><div class="eq">=</div></div>
+      <div class="pill" data-hue="--gold" style="--pc:var(--gold)"><div class="pn">Organization</div><div class="pd">the arrangements: offices, funding, procedures, membership, property</div></div>
+      <div class="conn"><div class="arr"><span class="al">pursues</span><span class="ag">&rarr;</span></div><div class="eq">=</div></div>
+      <div class="pill" data-hue="--flame" style="--pc:var(--flame)"><div class="pn">Purpose</div><div class="pd">the good sought: understanding, salvation, mutual aid, representation, justice, discovery</div></div>
+    </div>
+    <div class="slider-row"><span>means serve ends</span><input type="range" id="revT" min="0" max="100" value="0" aria-label="From means serving ends to means becoming ends"><span>means become ends</span></div>
+    <div class="rev-cap" id="revCap"></div>
+  </div>
+</div>
+<div class="col">
+  <div class="flow" style="margin-top:1.6rem;">
+    <p>
+      Those equivalences are not automatically true. They matter most when leaders control the very
+      procedures members could use to challenge them — the advantage at the center of Michels' analysis.<sup class="c"><a href="#s3">3</a></sup>
+      The first thing to track in any history: <b>when did criticism of a particular arrangement begin to be
+      treated as opposition to the underlying cause?</b>
+    </p>
+    <h3 style="margin-top:1.2rem;">The root error: a conditional becomes an identity</h3>
+    <p>
+      “A helps B, under certain conditions” becomes “A is B.” Each substitution below has that shape.
+      Click a card to watch it turn, or flip them all.
+    </p>
+    <p class="regnote"><span class="reg reg-ill">Illustration</span>constructed substitutions, not quotations from historical actors.</p>
+  </div>
+  <div class="flips" id="flips">
+    <button class="flip" aria-pressed="false"><span class="face front"><span class="fl"><b>conditional</b> · earlier</span><span class="ft">Discipline <em>helps us pursue</em> truth.</span></span><span class="face back"><span class="fl"><b>identity</b> · later</span><span class="ft">Following the authorized process <em>demonstrates</em> commitment to truth.</span></span></button>
+    <button class="flip" aria-pressed="false"><span class="face front"><span class="fl"><b>conditional</b> · earlier</span><span class="ft">Resources <em>enable</em> the mission.</span></span><span class="face back"><span class="fl"><b>identity</b> · later</span><span class="ft">Increasing resources <em>demonstrates</em> mission success.</span></span></button>
+    <button class="flip" aria-pressed="false"><span class="face front"><span class="fl"><b>conditional</b> · earlier</span><span class="ft">Leadership <em>serves</em> the community.</span></span><span class="face back"><span class="fl"><b>identity</b> · later</span><span class="ft">Supporting leadership <em>demonstrates</em> loyalty to the community.</span></span></button>
+    <button class="flip" aria-pressed="false"><span class="face front"><span class="fl"><b>conditional</b> · earlier</span><span class="ft">Continuity <em>preserves</em> valuable practices.</span></span><span class="face back"><span class="fl"><b>identity</b> · later</span><span class="ft">Whatever preserves continuity <em>must preserve</em> what is valuable.</span></span></button>
+  </div>
+  <div style="display:flex; justify-content:center; margin-top:0.9rem;"><button class="btn" id="flipAll">Flip all</button></div>
+  <p style="margin-top:1.4rem; color:var(--ink-2);">
+    None of this requires deliberate deception. Members and leaders may sincerely experience the revised
+    reading as fidelity. Whether it is rationalization or manipulation has to be shown from evidence — it
+    cannot be inferred merely because language and practice have come apart.
+  </p>
+</div>
+
+<!-- ═════════════════════════ III · SIX STAGES ═════════════════════════ -->
+<section id="stages" class="col-w">
+  <div class="col" style="padding:0;">
+    <div class="eyebrow">III &middot; The slide</div>
+    <h2>Six stages from shared value to self-sealing authority</h2>
+    <p class="lede" style="margin-top:0.9rem;">
+      The reversal does not happen in a single jump. It runs through a chain of dependencies, bargains,
+      and changes in who gets to decide what counts as faithful service.
+    </p>
+    <p class="regnote" style="margin-top:0.7rem;"><span class="reg reg-syn">Synthesis</span>Michels' and Selznick's organizational mechanisms combined with research on how ideology meets needs and legitimizes authority — a hypothesis to test against the evidence, not a historical law.<sup class="c"><a href="#s1">1</a>,<a href="#s3">3</a>,<a href="#s6">6</a></sup></p>
+  </div>
+
+  <div class="stages">
+    <div class="st-steps" id="stSteps">
+      <article class="st-step" data-stage="1">
+        <div class="st-k">STAGE 1</div>
+        <h3>Shared value creates something worth controlling</h3>
+        <p>
+          A community develops trust, practices, relationships and shared meaning. Its shared narratives are not
+          decoration: they tell people what membership, obligation and collective action mean.<sup class="c"><a href="#s8">8</a></sup>
+          Think of the result as a <b>stock of accumulated credibility</b>. Someone acting alone must persuade others
+          to listen; someone speaking from an established office can inherit attention, trust and access built by
+          generations of others.
+        </p>
+        <p>
+          That makes the institution attractive to very different actors — a sincere organizer who wants it more
+          effective, a sponsor who wants influence over what it does, an ambitious insider who wants a consequential
+          position, an outside authority who wants a dependable partner. These are possible roles, not diagnoses of
+          anyone's motives. Resource-dependence theory explains why such relationships matter even when everyone
+          describes them as practical cooperation.<sup class="c"><a href="#s9">9</a></sup>
+        </p>
+        <div class="key">What becomes contestable is not just a doctrine or an organization, but an already functioning relationship of trust.</div>
+      </article>
+
+      <article class="st-step" data-stage="2">
+        <div class="st-k">STAGE 2</div>
+        <h3>Necessary service creates dependency</h3>
+        <p>
+          Growth brings real coordination problems: someone must preserve records, distribute resources, resolve
+          disputes, train successors and communicate decisions. Specialization solves them — and gives the people who
+          operate the system knowledge, continuity and access that occasional participants lack. This is the core of
+          Michels' account of how leaders entrench.<sup class="c"><a href="#s3">3</a></sup>
+        </p>
+        <div class="key">
+          <span class="q"><em>Expertise</em> answers: how can we accomplish this?</span>
+          <span class="q"><em>Authority</em> answers: who decides what we are trying to accomplish?</span>
+          <span class="q" style="color:var(--ink-2);">Watch for the moment the first begins to confer the second.</span>
+        </div>
+        <div class="ex">
+          <div class="ex-h"><span class="reg reg-ill">Illustration</span>&nbsp; a mutual-aid association</div>
+          <ol class="chain">
+            <li>A treasurer becomes indispensable because the accounts are complicated.</li>
+            <li>The treasurer gains influence over which projects are “financially realistic.”</li>
+            <li>Financial realism becomes the main test for approving projects.</li>
+            <li>The practical mission becomes whatever the finances can comfortably sustain.</li>
+          </ol>
+          <div class="ex-end">No theft or malice is needed. Control over a means has become control over the ends.</div>
+        </div>
+      </article>
+
+      <article class="st-step" data-stage="3">
+        <div class="st-k">STAGE 3</div>
+        <h3>Dependency becomes bargaining power</h3>
+        <p>
+          Not every important contributor can redirect an organization. The question is whether the organization can
+          afford to lose them. Resource-dependence theory treats power as relational: an organization's choices are
+          constrained by whoever controls what it needs. One response is co-optation — bringing that source of
+          constraint into governance, trading some independence for support.<sup class="c"><a href="#s9">9</a></sup>
+          The support need not be money: legal permission or protection; access to audiences or distribution;
+          buildings, land, equipment or archives; specialized knowledge; recognition by other authorities;
+          recruitment and succession.
+        </p>
+        <div class="key">
+          <span class="q">“Their contribution helps us” &rarr; “We cannot continue without their cooperation.”</span>
+          <span class="q" style="color:var(--ink-2);">From there, a formally optional preference works as a veto. Judge independence by the real alternatives, not the written constitution.</span>
+        </div>
+        <p>
+          The direction of capture is often ambiguous. A movement may believe it is recruiting a powerful sponsor;
+          the sponsor may believe it is bringing the movement into a manageable relationship. Both can be partly right —
+          as in Selznick's <a href="#case-tva">Tennessee Valley Authority</a>.<sup class="c"><a href="#s6">6</a></sup>
+        </p>
+      </article>
+
+      <article class="st-step" data-stage="4">
+        <div class="st-k">STAGE 4</div>
+        <h3>Reasonable compromises change what gets selected</h3>
+        <p>
+          No one needs to announce a new mission. The organization changes which proposals succeed, which people
+          advance and which disagreements receive attention — through the four gradual routes shown below.
+        </p>
+        <div class="ex">
+          <div class="ex-h"><span class="reg reg-ill">Illustration</span>&nbsp; an educational movement</div>
+          <ol class="chain">
+            <li>A sponsor asks for predictable programming.</li>
+            <li>Predictable programming favors standardized instruction.</li>
+            <li>Standardization makes certain teachers easier to evaluate.</li>
+            <li>Those teachers are promoted.</li>
+            <li>Their successors inherit the evaluation system.</li>
+            <li>The exploratory approach survives in the mission statement but becomes hard to practice.</li>
+          </ol>
+        </div>
+        <div class="key">Each decision is defensible in isolation. Together they change the kind of organization being reproduced — with no single moment when anyone agreed to abandon the founding purpose.</div>
+      </article>
+
+      <article class="st-step" data-stage="5">
+        <div class="st-k">STAGE 5</div>
+        <h3>Inherited language reconciles — or conceals — the change</h3>
+        <p>
+          Practical priorities change while the vocabulary stays. In Merton's account, following procedures becomes
+          so important that procedures stop being judged against the purposes they were meant to serve; rules acquire
+          an authority of their own.<sup class="c"><a href="#s7">7</a></sup> The tell is a conditional relationship
+          hardening into an identity — the <a href="#flips">substitutions in Part II</a>.
+        </p>
+        <div class="key">No deception is required: the revised reading can be sincerely experienced as fidelity.</div>
+      </article>
+
+      <article class="st-step" data-stage="6">
+        <div class="st-k">STAGE 6</div>
+        <h3>The system becomes hard to correct from within</h3>
+        <p>
+          The deepest change is not necessarily that leaders become personally corrupt. It is that the mechanisms for
+          detecting and correcting departure come to depend on the very people or arrangements being questioned.
+          Michels highlights leadership's organizational advantages; Merton shows trained adherence becoming
+          rigidity. Together: a system can grow skilled at reproducing its own procedures while becoming less able to
+          ask whether they still serve its purpose.<sup class="c"><a href="#s3">3</a>,<a href="#s7">7</a></sup>
+        </p>
+        <div class="key">The revealing issue is not whether disagreement exists, but whether it can produce consequential correction.</div>
+        <p>
+          An institution may permit wide discussion while keeping appointments, budgets and binding interpretation
+          beyond challenge. That is a possibility to investigate, not something to assume from the existence of
+          hierarchy alone. The questions to ask are in the <a href="#kit">field kit</a>.
+        </p>
+      </article>
+    </div>
+
+    <div class="st-fig">
+      <div class="fig">
+        <div class="fig-tag"><span>Interactive &middot; scroll the stages or tap a number</span><span class="hint">schematic, not data</span></div>
+        <svg id="netSvg" viewBox="0 0 360 360" role="img" aria-label="Schematic network of a community: members, custodians, a sponsor and the purpose at the center, changing across six stages"></svg>
+        <div class="st-cap"><span class="sn" id="stNum">1/6</span><span class="sc" id="stCap"></span></div>
+        <div class="st-dots" id="stDots"></div>
+        <div class="legend">
+          <span><i style="background:var(--comm)"></i>members</span>
+          <span><i style="background:var(--cust)"></i>custodians</span>
+          <span><i style="background:var(--spon)"></i>sponsor</span>
+          <span><i style="background:var(--flame)"></i>purpose</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="col" style="margin-top:2.6rem;">
+  <h3 id="routes">Four routes of gradual change</h3>
+  <p style="margin-top:0.6rem; color:var(--ink-2);">
+    Institutional research associated with Wolfgang Streeck, Kathleen Thelen and James Mahoney describes how
+    substantial transformation can happen gradually.<sup class="c"><a href="#s10">10</a>,<a href="#s11">11</a></sup>
+    <span class="reg reg-th">Theory</span>
+  </p>
+</div>
+<div class="col-w">
+  <div class="fig" id="routesFig">
+    <div class="rt-ctl">
+      <button class="btn" id="routePlay">Play</button>
+      <div class="rt-slide">
+        <input type="range" id="routeT" min="0" max="100" value="0" aria-label="Time, from before to after the change" aria-describedby="routePhase">
+        <div class="rt-scale" id="routePhase"><span class="on">before</span><span>change under way</span><span>after</span></div>
+      </div>
+    </div>
+    <div class="rt-grid" id="routeGrid">
+      <div class="rt" data-r="layering">
+        <div class="rt-h"><span class="rt-n">1</span><b>Layering</b></div>
+        <p class="rt-def">New rules, offices or procedures are added alongside existing ones and gradually change how the institution operates.</p>
+        <svg viewBox="0 0 300 156" role="img" aria-label="A rule serving the original purpose; a new rule is added beside it and takes over more of the work, toward another purpose."></svg>
+        <p class="rt-now" aria-live="polite"></p>
+        <div class="rt-key"><div><span class="k st">Stays</span>the old rule, still in force</div><div><span class="k ch">Changes</span>how the institution operates &mdash; through the added layer</div></div>
+      </div>
+      <div class="rt" data-r="conversion">
+        <div class="rt-h"><span class="rt-n">2</span><b>Conversion</b></div>
+        <p class="rt-def">Existing rules or institutions are interpreted and used for different purposes.</p>
+        <svg viewBox="0 0 300 156" role="img" aria-label="One rule whose arrow swings from the original purpose to another purpose while the rule itself stays the same."></svg>
+        <p class="rt-now" aria-live="polite"></p>
+        <div class="rt-key"><div><span class="k st">Stays</span>the rule itself, word for word</div><div><span class="k ch">Changes</span>how it is interpreted, and what it is used for</div></div>
+      </div>
+      <div class="rt" data-r="drift">
+        <div class="rt-h"><span class="rt-n">3</span><b>Drift</b></div>
+        <p class="rt-def">Formal rules remain, but changing external conditions alter their effects, because the rules are not adjusted.</p>
+        <svg viewBox="0 0 300 156" role="img" aria-label="A rule keeps aiming at the same spot while shifting conditions carry the purpose away, so the rule misses."></svg>
+        <p class="rt-now" aria-live="polite"></p>
+        <div class="rt-key"><div><span class="k st">Stays</span>the rule, and where it aims</div><div><span class="k ch">Changes</span>the outside conditions &mdash; and with them, the rule&rsquo;s effect</div></div>
+      </div>
+      <div class="rt" data-r="displacement">
+        <div class="rt-h"><span class="rt-n">4</span><b>Displacement</b></div>
+        <p class="rt-def">Existing arrangements are replaced by others, sometimes through a gradual process.</p>
+        <svg viewBox="0 0 300 156" role="img" aria-label="An old rule fades out as a new rule takes its place, pointing at another purpose."></svg>
+        <p class="rt-now" aria-live="polite"></p>
+        <div class="rt-key"><div><span class="k st">Stays</span>nothing of the old arrangement</div><div><span class="k ch">Changes</span>the arrangement itself, replaced by another</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col">
+  <p style="margin-top:1.2rem; font-size:0.92rem; color:var(--muted);">
+    Unplanned transformation can run through any of the four. <i>Drift</i> here means only the specific
+    mechanism — rules left unadjusted while conditions change — not any change nobody planned.
+  </p>
+</div>
+
+<!-- ═════════════════════════ IV · INTENT ═════════════════════════ -->
+<section id="intent" class="col">
+  <div class="eyebrow">IV &middot; Intent</div>
+  <h2>Capture, accommodation — or both?</h2>
+  <p class="lede" style="margin-top:0.9rem;">
+    The contrast is not simply “conspiracy or accident.” In deliberate capture, actors set out to gain control.
+    In emergent transformation, many individually defensible decisions add up to a result few participants
+    explicitly planned. At least four patterns deserve separating.
+  </p>
+  <p class="regnote" style="margin-top:0.7rem;"><span class="reg reg-syn">Synthesis</span>analytical categories built from co-optation, resource-dependence and gradual-change research — not a standardized historical taxonomy.<sup class="c"><a href="#s4">4</a>,<a href="#s9">9</a></sup></p>
+
+  <div class="pats" id="pats">
+    <button class="pat" data-step="x"><span class="ph">Deliberate capture</span><span class="pl">actors seeking control over governance, appointments, interpretation or resources in order to redirect the institution.</span></button>
+    <button class="pat" data-step="0"><span class="ph">Unplanned accommodation</span><span class="pl">successive responses to practical constraints, with no evidence of an overarching takeover plan.</span></button>
+    <button class="pat" data-step="1"><span class="ph">Opportunistic consolidation</span><span class="pl">actors exploiting dependencies or openings they did not originally create.</span></button>
+    <button class="pat" data-step="2"><span class="ph">Defensive entrenchment</span><span class="pl">leaders restricting alternatives because they identify their own continued control with the institution's survival.</span></button>
+  </div>
+
+  <div class="fig">
+    <div class="fig-tag"><span>A plausible mixed sequence</span><span class="hint">select a pattern above</span></div>
+    <div class="mixflow" id="mixflow">
+      <div class="fstep"><span class="ft">unplanned accommodation</span>Unplanned dependence creates an opening</div>
+      <div class="farr">&rarr;</div>
+      <div class="fstep"><span class="ft">opportunistic consolidation</span>A strategic actor exploits it</div>
+      <div class="farr">&rarr;</div>
+      <div class="fstep"><span class="ft">defensive entrenchment</span>Ordinary administrative incentives stabilize the result</div>
+    </div>
+    <div class="mix-note" id="mixNote">That is how a pattern can be neither centrally planned nor innocent of intentional action.</div>
+  </div>
+
+  <div class="key" style="margin-top:1.4rem;">
+    <span class="q">Intent and outcome need separate evidence.</span>
+    <span class="q" style="color:var(--ink-2);">A harmful outcome does not prove a hidden plan. A sincere stated intention does not prove that an arrangement preserved independence.</span>
+  </div>
+</section>
+
+<!-- ═════════════════════════ V · LIFECYCLE ═════════════════════════ -->
+<section id="lifecycle" class="col-w">
+  <div class="col" style="padding:0;">
+    <div class="eyebrow">V &middot; The lifecycle</div>
+    <h2>From organic trust to capture — and back</h2>
+    <p class="lede" style="margin-top:0.9rem;">
+      Zoom out from the slide to the life of a whole institution. Two forces push it forward: <b>growth</b> in size
+      and complexity, and <b>pressure to survive</b>. Each phase solves the previous phase's problem and creates the
+      next one's. The arrows are tendencies, not laws.
+    </p>
+    <p class="regnote" style="margin-top:0.7rem;"><span class="reg reg-syn">Synthesis</span>Where it meets the six stages: Phase 2 is where necessary service becomes dependency, Phase 3 is goal displacement, and Phase 4 is where bargaining power and entrenchment settle in.</p>
+  </div>
+  <div class="cycle">
+    <div class="cy-fig">
+      <svg id="cycleSvg" viewBox="0 0 360 360" role="group" aria-label="Institutional lifecycle: four phases on a ring, with a renewal path"></svg>
+      <div class="fig-cap">Select a phase. The ring turns clockwise; renewal closes the loop.</div>
+    </div>
+    <div class="cy-panel" id="cyPanel" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ VI · CASEBOOK ═════════════════════════ -->
+<section id="cases" class="col-w">
+  <div class="col" style="padding:0;">
+    <div class="eyebrow">VI &middot; Casebook</div>
+    <h2>Different routes to a similar outcome</h2>
+    <p class="lede" style="margin-top:0.9rem;">
+      These cases are not morally or historically interchangeable. Their value is that each reveals a different
+      route by which control changes through the very arrangements meant to secure continuity or cooperation.
+    </p>
+  </div>
+
+  <div class="tl" id="tl" aria-label="Timeline of cases"></div>
+
+  <div class="cases" id="caseGrid">
+    <article class="case" id="case-gregory" data-y0="601" data-lab="Gregory">
+      <div class="cy">601</div>
+      <h3>Gregory the Great's letter to Mellitus</h3>
+      <div class="ctag">Selective continuity &middot; <span class="reg reg-doc">Documented</span></div>
+      <p>Gregory instructed that suitable pagan temple buildings in Britain be kept, their idols removed, and the buildings rededicated to Christian worship — partly so people could return to places already familiar to them.<sup class="c"><a href="#s5">5</a></sup></p>
+      <p class="rv">Familiarity and sacred geography can support a change of religious allegiance. It documents a strategy, not proof the strategy was carried out everywhere.</p>
+    </article>
+    <article class="case" id="case-spd" data-y0="1911" data-lab="SPD">
+      <div class="cy">before 1914</div>
+      <h3>German Social Democratic Party</h3>
+      <div class="ctag">Phase 4a &middot; internal oligarchy &middot; <span class="reg reg-th">Theory</span></div>
+      <p>When Michels published his study in 1911, the SPD was a mass party on its way to roughly a million members by the eve of the First World War.<sup class="c"><a href="#s30">30</a></sup> It drifted from its radical roots toward caution as a professional staff took over.<sup class="c"><a href="#s25">25</a></sup> Michels argued that specialization gives leaders control over expertise, communication and training, letting them dominate the membership.<sup class="c"><a href="#s3">3</a></sup></p>
+      <p class="rv">A movement can come under insiders' control without being infiltrated by an outside group. Administrative necessity can become entrenched authority.</p>
+    </article>
+    <article class="case" id="case-tva" data-y0="1930" data-y1="1949" data-lab="TVA">
+      <div class="cy">1930s–40s</div>
+      <h3>Tennessee Valley Authority</h3>
+      <div class="ctag">Phase 4b &middot; external co-optation &middot; <span class="reg reg-th">Theory</span></div>
+      <p>To secure local cooperation, the federal agency ran its farm program through the Farm Bureau and land-grant colleges. That informal accommodation gave established agricultural interests influence: the TVA adopted the outlook of larger, conservative white landowners and abandoned public land ownership.<sup class="c"><a href="#s6">6</a>,<a href="#s20">20</a></sup></p>
+      <p class="rv">Co-optation runs both ways — the institution absorbs potential opponents, and they reshape it. An accommodation with consequences, not one actor's complete control of another.</p>
+    </article>
+    <article class="case" id="case-cr" data-y0="1960" data-y1="1969" data-lab="CR groups">
+      <div class="cy">1960s</div>
+      <h3>Consciousness-raising groups</h3>
+      <div class="ctag">Phase 1 &middot; structurelessness &middot; <span class="reg reg-th">Theory</span></div>
+      <p>The women's liberation movement's consciousness-raising groups worked well for open discussion — and broke down when they tried to take coordinated action.<sup class="c"><a href="#s13">13</a></sup></p>
+      <p class="rv">Without explicit structure, informal leadership goes unaccountable, and groups founder when their tasks outgrow their organization.</p>
+    </article>
+    <article class="case" id="case-reg" data-y0="1971" data-lab="CAB &middot; ICC">
+      <div class="cy">Stigler, 1971</div>
+      <h3>US airline and trucking regulation</h3>
+      <div class="ctag">Phase 4c &middot; regulatory capture &middot; <span class="reg reg-th">Theory</span></div>
+      <p>The Civil Aeronautics Board kept interstate fares above intrastate fares. The Interstate Commerce Commission's trucking rules protected the railroads.<sup class="c"><a href="#s26">26</a></sup></p>
+      <p class="rv">Regulation can be acquired by the industry it regulates — and, as the <a href="#renewal">later deregulation</a> showed, capture can be undone.</p>
+    </article>
+    <article class="case" id="case-wiki" data-y0="2001" data-y1="2007" data-lab="Wikipedia">
+      <div class="cy">2001–2007</div>
+      <h3>Wikipedia</h3>
+      <div class="ctag">Phase 2 &rarr; 3 &middot; <span class="reg reg-doc">Documented</span></div>
+      <p>Active editors grew from hundreds in 2001 to a peak of 56,400 in March 2007, while implicit norms became formal policies enforced by bots and templates. Those quality controls ended up “crippling the very growth they were designed to manage”: newcomers were “rudely greeted by automated quality control systems” and “overwhelmed by the complexity of the rule system.”<sup class="c"><a href="#s17">17</a></sup></p>
+      <p class="rv">Codification can tip into rule displacement: the controls built to manage growth can choke it.</p>
+    </article>
+    <article class="case" id="case-wikis" data-y0="2014" data-lab="683 wikis">
+      <div class="cy">study, 2014</div>
+      <h3>683 wikis</h3>
+      <div class="ctag">Phase 4a &middot; <span class="reg reg-doc">Documented</span></div>
+      <p>As they grew, a small founding elite consolidated power.<sup class="c"><a href="#s27">27</a></sup></p>
+      <p class="rv">Michels' prediction holds even for open online communities.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ═════════════════════════ VII · FIELD KIT ═════════════════════════ -->
+<section id="kit" class="col-w">
+  <div class="col" style="padding:0;">
+    <div class="eyebrow">VII &middot; Field kit</div>
+    <h2>Testing a real case</h2>
+    <p class="lede" style="margin-top:0.9rem;">
+      A tradition changing is not, by itself, evidence that it has been captured. Shared symbols do not, by themselves,
+      establish a hidden line of control. Look for changes in <b>power</b>, not similarities in language or symbolism.
+    </p>
+  </div>
+
+  <div class="qsets">
+    <div class="qset">
+      <h3>Did power change hands?</h3>
+      <ol>
+        <li>Who could make binding decisions before and after the change?</li>
+        <li>Who controlled appointments, funding, communication and training?</li>
+        <li>What did new participants receive in exchange for cooperation?</li>
+        <li>Which original commitments became inconvenient or unenforceable?</li>
+        <li>Could ordinary members reject the change or replace its advocates?</li>
+        <li>What evidence shows intention, as distinct from an unintended outcome?</li>
+      </ol>
+      <p class="qn">These translate the research's emphasis on resources, leadership, legitimacy and bargaining into a historical test.<sup class="c"><a href="#s4">4</a></sup></p>
+    </div>
+    <div class="qset">
+      <h3>Can it still correct itself?</h3>
+      <ol>
+        <li>Can members inspect the evidence behind decisions?</li>
+        <li>Can they organize an alternative leadership?</li>
+        <li>Can they challenge an interpretation without forfeiting membership?</li>
+        <li>Can failures count against the governing strategy?</li>
+        <li>Can resources be redirected away from an established office?</li>
+        <li>Who decides whether a complaint is legitimate?</li>
+      </ol>
+      <p class="qn">Stage 6 in practice: disagreement is not the test — consequential correction is.</p>
+    </div>
+  </div>
+
+  <div class="col" style="padding:0; margin-top:2.6rem;">
+    <h3>Dynamic indicator dashboard</h3>
+    <p style="margin-top:0.5rem; color:var(--ink-2);">
+      Score each indicator from <b>0</b> (absent) to <b>3</b> (severe) for an earlier reading and for now. Phases
+      overlap, so read the profile as a whole — and watch the trend, not a single reading.
+    </p>
+    <p class="regnote" style="margin-top:0.5rem;"><span class="reg reg-syn">Synthesis</span>a reading aid built on the lifecycle model, not a validated instrument. Your scores stay in this browser.</p>
+  </div>
+  <div class="dash" id="dash">
+    <div>
+      <table class="ind-table" id="indTable">
+        <thead><tr><th>Indicator &middot; measure</th><th>Signals</th><th>Earlier</th><th>Now</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="dash-ctl"><button class="btn" id="dashCopy">Copy “now” into “earlier”</button><button class="btn" id="dashReset">Reset scores</button></div>
+    </div>
+    <div class="prof" id="prof">
+      <h3>Phase profile</h3>
+      <div class="pl-legend"><span><i style="background:var(--ser-then)"></i>Earlier</span><span><i style="background:var(--ser-now)"></i>Now</span></div>
+      <div id="profRows"></div>
+      <div class="paxis"><span></span><div><span>0</span><span>1</span><span>2</span><span>3</span></div></div>
+      <p class="mut" style="font-size:0.78rem; margin-top:0.45rem; line-height:1.45;">Each bar is the mean severity of the indicators that signal that phase. Hover a row for its contributors.</p>
+      <div class="alerts" id="alerts"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ VIII · RENEWAL ═════════════════════════ -->
+<section id="renewal" class="col">
+  <div class="eyebrow">VIII &middot; Resistance &amp; renewal</div>
+  <h2>The cycle is not inevitable</h2>
+  <p class="lede" style="margin-top:0.9rem;">
+    Elinor Ostrom found that long-lasting self-governed commons share common design features, each of which blocks a
+    specific failure in the cycle.<sup class="c"><a href="#s28">28</a></sup> <span class="reg reg-th">Theory</span>
+  </p>
+  <div class="ostrom">
+    <div>Clear boundaries</div>
+    <div>Rules that fit local conditions</div>
+    <div class="hit">Collective-choice arrangements: most people affected by the rules can help change them<span class="ctr">direct counter to Phase 3</span></div>
+    <div>Monitors who answer to members</div>
+    <div>Graduated sanctions</div>
+    <div>Cheap local conflict resolution</div>
+    <div>Recognized rights to self-organize</div>
+    <div>Nested, multi-layer governance</div>
+  </div>
+  <div class="flow" style="margin-top:1.5rem;">
+    <p>
+      Freeman's principles — rotate tasks, spread authority, share information widely — address Phase 1 and early
+      Phase 4.<sup class="c"><a href="#s13">13</a></sup>
+    </p>
+    <p>
+      Co-optation is not purely corrosive either. Couto's later study of the TVA treats it as a “changing balance”
+      rather than a fixed outcome: co-opted groups can gain real power over an agency, and co-optation can work as
+      participation for groups that otherwise have little power.<sup class="c"><a href="#s29">29</a></sup>
+      Capture can also be undone: Stigler's analysis fed the bipartisan deregulation of the 1970s and 1980s.
+    </p>
+    <p>
+      And Phase 4 can lead back to Phase 1 through schism, reform movements or refounding. New groups form around
+      the purpose the old institution abandoned, and the cycle starts again.
+    </p>
+  </div>
+</section>
+
+<!-- ═════════════════════════ IX · THE TEST ═════════════════════════ -->
+<section id="test" class="col">
+  <div class="eyebrow">IX &middot; The deepest root</div>
+  <h2>Mistaking the lamp for the flame</h2>
+  <p class="lede" style="margin-top:0.9rem;">
+    The root vulnerability is not merely greed. It is attachment to the concrete things through which abstract
+    values become accessible.
+  </p>
+  <ul class="bearers">
+    <li><span class="bv">a truth</span><span class="bt">through</span><span class="bb">a teacher</span></li>
+    <li><span class="bv">a community</span><span class="bt">through</span><span class="bb">an institution</span></li>
+    <li><span class="bv">a tradition</span><span class="bt">through</span><span class="bb">an authorized interpreter</span></li>
+    <li><span class="bv">a cause</span><span class="bt">through</span><span class="bb">a movement</span></li>
+    <li><span class="bv">a sense of security</span><span class="bt">through</span><span class="bb">a leader</span></li>
+  </ul>
+  <p style="margin-top:1.2rem; color:var(--ink-2);">
+    These relationships can be genuinely valuable. They also make it possible for loyalty to transfer from the value
+    to its current custodian. Research on ideological needs explains the attachment; organizational research explains
+    how custodians acquire durable power.<sup class="c"><a href="#s1">1</a>,<a href="#s3">3</a></sup>
+  </p>
+</section>
+<div class="col">
+  <div class="fig">
+    <div class="fig-tag"><span>Interactive &middot; follow the two objectives</span><span class="hint">schematic, not data</span></div>
+    <svg id="divSvg" viewBox="0 0 400 224" role="img" aria-label="Two paths, preserving the purpose and preserving the present arrangement, run together and then diverge"></svg>
+    <div class="slider-row"><span>founding</span><input type="range" id="divT" min="0" max="100" value="18" aria-label="Move along time"><span>later</span></div>
+    <div class="div-read" id="divRead" aria-live="polite"></div>
+  </div>
+
+  <div class="test">
+    <div class="tk">The counterfactual test</div>
+    <p>If preserving the founding purpose required reducing the present leadership's power, funding or prestige, could the institution recognize that as success?</p>
+  </div>
+  <p style="margin-top:1.2rem; color:var(--ink-2);">
+    It is not a universal moral test — real trade-offs can be hard. But it sharply separates two objectives that
+    institutional language often blends: preserving the purpose, and preserving the present arrangement. Follow the
+    point where they begin to diverge, then ask who has the authority to say whether the divergence exists.
+  </p>
+
+  <div class="closing">
+    <p>So the most productive question is not “Who stole whose story?” It is:</p>
+    <p class="big">How did control over interpretation, resources and membership change — and how was that change made acceptable to the people involved?</p>
+  </div>
+</div>
+
+<!-- ═════════════════════════ SOURCES ═════════════════════════ -->
+<section id="sources" class="col">
+  <div class="eyebrow">Sources</div>
+  <ol class="srcs">
+    <li id="s1">Ideology and the psychological needs it meets (existential, epistemic, relational, agency) — <a href="https://academic.oup.com/book/55900/chapter/439283793">Oxford Academic, book chapter</a></li>
+    <li id="s2">“Theories of Ideology: Origins, Development, and Prospects” — <a href="https://www.cambridge.org/core/journals/social-philosophy-and-policy/article/theories-of-ideology-origins-development-and-prospects/DA0CD9DAA62DFEB8552C461150501C5B">Social Philosophy and Policy, Cambridge</a></li>
+    <li id="s3">Iron law of oligarchy (Michels) — <a href="https://www.britannica.com/topic/iron-law-of-oligarchy">Britannica</a></li>
+    <li id="s4">Co-optation as a strategic relationship in social movements — <a href="https://www.tandfonline.com/doi/full/10.1080/14742837.2019.1577133">Social Movement Studies, Taylor &amp; Francis</a></li>
+    <li id="s5">Gregory the Great, Register 11.56 (601), letter to Mellitus on re-consecrating temples — <a href="https://portal.sds.ox.ac.uk/articles/online_resource/E06424_A_letter_of_Pope_Gregory_the_Great_Register_11_56_of_601_to_Mellitus_abbot_among_the_Franks_then_on_his_way_to_join_Augustine_in_Britain_gives_detailed_instructions_regarding_the_re-consecration_of_pagan_temples_in_southern_Britain_t/13903076">Cult of Saints database, Oxford (E06424)</a></li>
+    <li id="s6">Selznick's TVA study and co-optation — <a href="https://journals.sagepub.com/doi/10.1177/08854122231187573">SAGE journal article</a></li>
+    <li id="s7">Robert K. Merton, “Bureaucratic Structure and Personality” — <a href="http://www.csun.edu/~snk1966/Robert%20K%20Merton%20-%20Bureaucratic%20Structure%20and%20Personality.pdf">PDF</a></li>
+    <li id="s8">Shared narratives, membership and collective action — <a href="https://compass.onlinelibrary.wiley.com/doi/full/10.1111/spc3.12670">Social and Personality Psychology Compass, Wiley</a></li>
+    <li id="s9">Davis &amp; Cobb, resource-dependence theory: past and future — <a href="https://webuser.bus.umich.edu/gfdavis/Papers/davis_cobb_09_RSO.pdf">PDF</a></li>
+    <li id="s10">Institutional change: layering, conversion, drift, displacement — <a href="https://maggetti.org/wp-content/uploads/2020/06/Maggetti-Institutional-change.pdf">Maggetti, PDF</a></li>
+    <li id="s11">Gradual institutional change — <a href="https://openresearch-repository.anu.edu.au/bitstreams/7ada8b63-a1d1-4b47-9d51-c3972feb5fea/download">ANU Open Research, PDF</a></li>
+    <li id="s12">Weber on charismatic authority — <a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/9781405165518.wbeosc022">Blackwell Encyclopedia of Sociology</a></li>
+    <li id="s13">Jo Freeman, “The Tyranny of Structurelessness” — <a href="https://www.jofreeman.com/joreen/tyranny.htm">original text</a>; <a href="https://jacobin.com/2019/09/tyranny-structurelessness-jo-freeman-consciousness-raising-women-liberation-feminism">Jacobin (2019)</a>; <a href="https://coco-net.org/wp-content/uploads/2012/08/tyranny.pdf">PDF</a></li>
+    <li id="s14">Routinization of charisma — <a href="https://onlinelibrary.wiley.com/doi/am-pdf/10.1111/jssr.12483">Journal for the Scientific Study of Religion, Wiley</a></li>
+    <li id="s15">Michels on professional leadership — <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/1467-8675.12494">Constellations, Wiley</a></li>
+    <li id="s16">DiMaggio &amp; Powell, institutional isomorphism — <a href="https://muse.jhu.edu/pub/267/edited_volume/chapter/2945212">Project MUSE</a></li>
+    <li id="s17">“The Rise and Decline of an Open Collaboration System” (Wikipedia) — <a href="https://stuartgeiger.com/papers/abs-rise-and-decline-wikipedia.pdf">PDF</a></li>
+    <li id="s18">Deliberation and rule change on Wikipedia, ICWSM 2017 — <a href="https://www.brianckeegan.com/assets/pdf/2017_ICWSM.pdf">PDF</a></li>
+    <li id="s19">Robert Michels — <a href="https://www.britannica.com/biography/Robert-Michels">Britannica</a></li>
+    <li id="s20">Selznick, <i>TVA and the Grass Roots</i> — <a href="https://law-journals-books.vlex.com/vid/selznick-philip-tva-and-874322557">vLex</a></li>
+    <li id="s21">Selznick on formal and informal co-optation — <a href="https://businesssciencedaily.com/tva-and-the-grass-roots-selznick-formal-organization/">Business Science Daily</a></li>
+    <li id="s22">George Stigler, “The Theory of Economic Regulation” — <a href="https://bfi.uchicago.edu/wp-content/uploads/2023/02/3003160.pdf">Becker Friedman Institute, PDF</a></li>
+    <li id="s23">Regulatory capture — <a href="https://en.wikipedia.org/wiki/Regulatory_capture">Wikipedia</a></li>
+    <li id="s24">Industry capture and the revolving door — <a href="https://www.law.georgetown.edu/denny-center/blog/industry-capture-of-the-executive/">Georgetown Law, Denny Center</a></li>
+    <li id="s25">The SPD before 1914 — <a href="https://academic.oup.com/book/44695/chapter/378801624">Oxford Academic, book chapter</a></li>
+    <li id="s26">Stigler's lessons about regulatory capture — <a href="https://regulatorystudies.columbian.gwu.edu/lets-not-forget-george-stiglers-lessons-about-regulatory-capture">GW Regulatory Studies Center</a></li>
+    <li id="s27">Oligarchy in 683 wikis — <a href="https://academic.oup.com/joc/article/64/2/215/4086105">Journal of Communication 64(2), Oxford Academic</a></li>
+    <li id="s28">Ostrom's design principles for long-enduring commons — <a href="https://academic.oup.com/edited-volume/34674/chapter/295454254">Oxford Academic, book chapter</a></li>
+    <li id="s29">Couto, the TVA and co-optation reconsidered — <a href="https://journals.sagepub.com/doi/10.1177/009539978801900405">Administration &amp; Society, SAGE</a></li>
+    <li id="s30">SPD membership before 1914 — <a href="https://alphahistory.com/weimarrepublic/social-democratic-party-spd/">Alpha History, “The Social Democratic Party (SPD)”</a></li>
+  </ol>
+</section>
+
+<footer>
+  Where the traditions genuinely touch, it is marked. Where they only rhyme, that is marked too.<br>
+  <a href="index.html">&larr; back to Promethean Theoria</a>
+</footer>
+</div>
+
+<script>
+/* ═════════════ helpers ═════════════ */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const NS = "http://www.w3.org/2000/svg";
+const C = (...n) => `<sup class="c">${n.map(x => `<a href="#s${x}">${x}</a>`).join(",")}</sup>`;
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp01 = t => Math.max(0, Math.min(1, t));
+const smooth = (e0, e1, x) => { const t = clamp01((x - e0) / (e1 - e0)); return t * t * (3 - 2 * t); };
+const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+function hexRgb(h){ h = h.replace("#",""); if(h.length === 3) h = h.split("").map(c => c+c).join(""); const n = parseInt(h, 16); return [n>>16 & 255, n>>8 & 255, n & 255]; }
+function mixHex(a, b, t){ const A = hexRgb(a), B = hexRgb(b); return "rgb(" + A.map((v,i) => Math.round(lerp(v, B[i], t))).join(",") + ")"; }
+function svgEl(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for(const k in attrs) e.setAttribute(k, attrs[k]); if(parent) parent.appendChild(e); return e; }
+function mixDeep(a, b, t){
+  if(typeof a === "number") return lerp(a, b, t);
+  if(Array.isArray(a)) return a.map((v, i) => mixDeep(v, b[i], t));
+  const o = {}; for(const k in a) o[k] = mixDeep(a[k], b[k], t); return o;
+}
+/* tween with a timer fallback, so a hidden tab still lands on the final frame */
+function tween(dur, fn){
+  if(reduceMotion){ fn(1); return () => {}; }
+  let start = null, stopped = false, done = false;
+  const finish = () => { if(done || stopped) return; done = true; fn(1); };
+  const step = ts => {
+    if(stopped || done) return;
+    if(start === null) start = ts;
+    const t = Math.min(1, (ts - start) / dur);
+    fn(ease(t));
+    if(t < 1) requestAnimationFrame(step); else done = true;
+  };
+  requestAnimationFrame(step);
+  const to = setTimeout(finish, dur + 300);
+  return () => { stopped = true; clearTimeout(to); };
+}
+function arrowSVG(x1, y1, x2, y2, color, w, op, dash){
+  const a = Math.atan2(y2 - y1, x2 - x1), h = 5 + w * 1.6;
+  const bx = x2 - Math.cos(a) * h, by = y2 - Math.sin(a) * h;
+  const p1 = [bx + Math.sin(a) * h * .55, by - Math.cos(a) * h * .55];
+  const p2 = [bx - Math.sin(a) * h * .55, by + Math.cos(a) * h * .55];
+  return `<g opacity="${op.toFixed(3)}"><line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"${dash ? ' stroke-dasharray="4 4"' : ''}/>` +
+         `<polygon points="${x2},${y2} ${p1[0]},${p1[1]} ${p2[0]},${p2[1]}" fill="${color}"/></g>`;
+}
+
+/* ═════════════ hero · four frames ═════════════ */
+(function(){
+  /* a Roman oil lamp (lucerna), side view with a 3/4 top: ring handle, discus with
+     filling hole, long nozzle with wick hole, layered flame. Drawn in its own 110×66
+     space; the body is warmed by its own flame. Identical in all four frames. */
+  const BODY = "M20 40 C20 33 27 30 36 29.5 L64 29.5 C70 30 74 32 77 35 L96 36.5 C101 36.8 104 38.5 104 41.5 C104 44.5 101 46 97 46 L80 46.5 C76 47 72 50 68 52.5 C62 55.5 52 56.5 44 56.5 C32 56.5 22 52 20 46 C19.5 44 19.6 42 20 40 Z";
+  const lamp = k => `<g transform="translate(29.1 2.75) scale(1.05)">
+    <defs>
+      <linearGradient id="lb${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--ground-3)"/><stop offset="1" stop-color="var(--ground)"/></linearGradient>
+      <radialGradient id="lw${k}" cx="96" cy="40" r="44" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--flame)" stop-opacity=".32"/><stop offset="1" stop-color="var(--flame)" stop-opacity="0"/></radialGradient>
+      <radialGradient id="lg${k}" cx="99" cy="24" r="30" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--flame)" stop-opacity=".5"/><stop offset=".4" stop-color="var(--flame)" stop-opacity=".16"/><stop offset="1" stop-color="var(--flame)" stop-opacity="0"/></radialGradient>
+    </defs>
+    <circle class="lglow" cx="99" cy="24" r="30" fill="url(#lg${k})"/>
+    <ellipse cx="50" cy="61.4" rx="27" ry="2.1" fill="#000" opacity=".16"/>
+    <path d="M38.5 55.5 L36.8 60 L60.2 60 L58.5 55.5 Z" fill="url(#lb${k})" stroke="var(--gold)" stroke-width="1.3" stroke-linejoin="round"/>
+    <path d="M25 33 C17 21 3 24 5 35 C6.5 44 15 47 21 45 L20.5 41.2 C15 42 10.6 40.5 10 35.5 C9.5 29.2 18 28 23.5 36.5 Z" fill="url(#lb${k})" stroke="var(--gold)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="${BODY}" fill="url(#lb${k})"/>
+    <path d="${BODY}" fill="url(#lw${k})" stroke="var(--gold)" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M22.5 47.5 C30 52.5 44 54 57 53.2" fill="none" stroke="var(--gold)" stroke-width=".8" opacity=".45"/>
+    <path d="M23 38.5 C24 34.6 28.4 32.6 34 32.1" fill="none" stroke="#fff" stroke-width="1.3" stroke-linecap="round" opacity=".1"/>
+    <ellipse cx="49" cy="30.2" rx="25" ry="3.6" fill="var(--ground-2)" stroke="var(--gold)" stroke-width="1.1"/>
+    <ellipse cx="49" cy="30.4" rx="15" ry="2.1" fill="none" stroke="var(--gold)" stroke-width=".8" opacity=".7"/>
+    <ellipse cx="49" cy="30.6" rx="2.6" ry="1" fill="var(--ground)" stroke="var(--gold)" stroke-width=".6"/>
+    <ellipse cx="97.6" cy="38.4" rx="3.3" ry="1.25" fill="var(--ground)" stroke="var(--gold)" stroke-width=".8"/>
+    <path d="M97.5 38.6 L97.9 35.8" stroke="#2A1C10" stroke-width="1.5" stroke-linecap="round"/>
+    <g class="lflame">
+      <path d="M98 38.6 C92 37 90.8 30 93.6 23 C95.4 18.4 98.4 12.4 99.8 5 C102.2 12.8 106.4 18.8 106 27 C105.6 34.4 102.6 38.4 98 38.6 Z" fill="var(--flame)"/>
+      <path d="M98.2 38.2 C94 36.8 93.4 31.4 95.2 26 C96.4 22.6 98.4 19 99.6 14.2 C101.4 20 104 23.4 103.8 29.4 C103.6 34.8 101.4 38 98.2 38.2 Z" fill="#F7C35A"/>
+      <path d="M98.4 37.8 C96.2 36.8 95.9 33.6 96.9 30.6 C97.6 28.6 98.6 26.8 99.4 24.2 C100.4 27.4 101.8 29.4 101.7 32.6 C101.6 35.6 100.3 37.6 98.4 37.8 Z" fill="#FFF3D1"/>
+      <ellipse cx="98.3" cy="37.4" rx="1.9" ry="1.1" fill="#8FB8FF" opacity=".4"/>
+    </g>
+  </g>`;
+  const base = [80, 65.5];
+  const dots = [0,1,2,3,4,5,6].map(i => [20 + i*20, 126 - Math.abs(i - 3) * 4]);
+  const custPos = {2:[62, 94], 4:[98, 94]};
+  function frame(k){
+    let s = "";
+    if(k === 0){
+      dots.forEach(([x,y]) => { s += `<line x1="${x}" y1="${y}" x2="${base[0]}" y2="${base[1]}" stroke="var(--comm)" stroke-width="1" opacity=".4"/>`; });
+    } else {
+      dots.forEach(([x,y], i) => {
+        if(custPos[i]) return;
+        const t = i <= 3 ? custPos[2] : custPos[4];
+        s += `<line x1="${x}" y1="${y}" x2="${t[0]}" y2="${t[1]}" stroke="var(--comm)" stroke-width="1" opacity=".4"/>`;
+      });
+      [2,4].forEach(i => { s += `<line x1="${custPos[i][0]}" y1="${custPos[i][1]}" x2="${base[0]}" y2="${base[1]}" stroke="var(--cust)" stroke-width="1.6" opacity=".85"/>`; });
+    }
+    if(k >= 2){
+      s += `<circle cx="151" cy="14" r="6" fill="none" stroke="var(--cust)" stroke-width="1.6"/><circle cx="151" cy="14" r="1.8" fill="var(--cust)"/>`;
+      s += `<path d="M100 92 Q150 92 151 29" fill="none" stroke="var(--cust)" stroke-width="1.4" stroke-dasharray="3 3"/>`;
+      s += `<polygon points="151,22 147.5,29 154.5,29" fill="var(--cust)"/>`;
+    }
+    s += lamp(k);
+    dots.forEach(([x,y], i) => {
+      if(k > 0 && custPos[i]){ s += `<circle cx="${custPos[i][0]}" cy="${custPos[i][1]}" r="4.6" fill="var(--cust)" stroke="var(--ground-2)" stroke-width="2"/>`; }
+      else s += `<circle cx="${x}" cy="${y}" r="4.2" fill="var(--comm)" stroke="var(--ground-2)" stroke-width="2"/>`;
+    });
+    s += `<ellipse class="lamp-ring" cx="87" cy="37" rx="61" ry="34" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="3 4"/>`;
+    return s;
+  }
+  $$("#frames .frame svg").forEach((svg, k) => { svg.innerHTML = frame(k); });
+  $$("#frames .frame").forEach(f => {
+    f.addEventListener("focus", () => $$("#frames .frame").forEach(g => g.classList.add("on")));
+    f.addEventListener("blur", () => $$("#frames .frame").forEach(g => g.classList.remove("on")));
+    f.addEventListener("mouseenter", () => $$("#frames .frame").forEach(g => g.classList.add("on")));
+    f.addEventListener("mouseleave", () => $$("#frames .frame").forEach(g => g.classList.remove("on")));
+  });
+})();
+
+/* ═════════════ I · roots hexagon ═════════════ */
+const ROOTS = [
+  { name:"Belonging", title:"Belonging",
+    lead:"People attach themselves to a community, not just a proposition.",
+    body:`A belief system supplies relationships, identity, moral expectations and a sense of agency. Research on ideological participation separates four needs it meets — existential, epistemic, relational and agency: security, understanding, connection and the ability to act.${C(1)} So an institution can change substantially while people stay attached, because it still houses their community and their understanding of themselves.`,
+    gift:"Shared identity sustains commitment.",
+    open:"Loyalty to the community can become loyalty to whoever successfully claims to represent it — binding people to an institution whose priorities have shifted.",
+    gs:["sustains","commitment"], os:["loyalty to","the claimant"] },
+  { name:"Delegation", title:"Cognitive delegation",
+    lead:"People rely on interpreters.",
+    body:`No one can continually investigate every doctrine, historical claim, organizational decision or political dispute. Belief systems simplify information and offer rules for interpreting events; organizations turn those interpretations into expectations of behavior.${C(1)} The root is not gullibility. It is the practical necessity of trusting other people.`,
+    gift:"Trust makes cooperation possible.",
+    open:"Trust can concentrate: the interpreter slides from “I help you understand the tradition” to “my interpretation determines whether you belong to the tradition.”",
+    gs:["enables","cooperation"], os:["trust","concentrates"] },
+  { name:"Status", title:"Status and control",
+    lead:"Useful coordination creates powerful positions.",
+    body:`Organizations need people who keep records, communicate decisions, train members, raise resources and negotiate with outsiders. Those functions give their holders information and leverage ordinary members lack. Robert Michels' “iron law of oligarchy” describes how these advantages produce a durable leadership class — even in organizations committed to democratic ideals.${C(3)} Michels presented it as inevitable; here it is a mechanism to investigate, not a verdict that every organization must end the same way.`,
+    gift:"Specialization makes organizations effective.",
+    open:"Knowledge and control concentrate: responsibility for maintaining the organization becomes authority over what the organization is allowed to mean.",
+    gs:["makes it","effective"], os:["upkeep becomes","authority"] },
+  { name:"Security", title:"Security and survival",
+    lead:"People trade independence for continuity.",
+    body:`An organization facing opposition, or needing cooperation, may absorb outside actors into its decision-making. That can reduce threats — and give those actors influence over its direction. Co-optation research treats this as a strategic relationship, not necessarily a secret takeover.${C(4)} Participants may sincerely think: “We must make this compromise so the mission can survive.”`,
+    gift:"Compromise secures cooperation and reduces threats.",
+    open:"Compromise can redirect the mission: the organization survives by becoming less capable of pursuing its original purpose.",
+    gs:["reduces","threats"], os:["redirects the","mission"] },
+  { name:"Continuity", title:"Continuity",
+    lead:"Familiar forms make changed meanings easier to accept.",
+    body:`Attachment to places and practices can carry a religious or institutional change. In 601 Pope Gregory the Great instructed missionaries to keep suitable pagan temple buildings, remove their idols and rededicate them to Christian worship — reasoning, in part, that people would return to places already familiar to them.${C(5)} That documents one deliberate strategy. It does not show that all religious borrowing is coercive or deceptive.`,
+    gift:"Continuity preserves valuable practices.",
+    open:"Selective continuity: retain the familiar setting while changing the authority and meaning attached to it.",
+    gs:["preserves","practice"], os:["old form,","new authority"] },
+  { name:"Justification", title:"Self-justification",
+    lead:"People need to experience their actions as rightful.",
+    body:`Ideology legitimizes power not only to the governed but to those exercising it. A hierarchy can be understood as a reflection of nature, tradition, moral order or collective necessity rather than as a distribution of advantages.${C(2)} So co-optation needs no cynics: someone can sincerely believe they are defending a tradition while consolidating their own authority within it.`,
+    gift:"Shared narratives create meaning.",
+    open:"Shared narratives can justify the hierarchy that interprets them.",
+    gs:["creates","meaning"], os:["justifies the","hierarchy"] }
+];
+(function(){
+  const svg = $("#hexSvg"), panel = $("#rootPanel");
+  const cx = 180, cy = 180, R = 122, r = 48;
+  const pos = ROOTS.map((_, i) => { const a = (-90 + i*60) * Math.PI/180; return [cx + R*Math.cos(a), cy + R*Math.sin(a)]; });
+  let sel = 0, edge = "gift";
+  svgEl("circle", {cx, cy, r:R, fill:"none", stroke:"var(--rule)", "stroke-width":1}, svg);
+  svgEl("polygon", {points: pos.map(p => p.join(",")).join(" "), fill:"none", stroke:"var(--rule)", "stroke-width":0.8, opacity:0.7}, svg);
+  pos.forEach(p => svgEl("line", {x1:cx, y1:cy, x2:p[0], y2:p[1], stroke:"var(--rule-soft)", "stroke-width":1}, svg));
+  svgEl("circle", {cx, cy, r:40, fill:"var(--ground)", stroke:"var(--gold)", "stroke-width":1}, svg);
+  const t1 = svgEl("text", {x:cx, y:cy-3, "text-anchor":"middle", "font-size":10.5, fill:"var(--ink-2)", "font-style":"italic", "font-family":"Georgia, serif"}, svg); t1.textContent = "one capacity";
+  const t2 = svgEl("text", {x:cx, y:cy+12, "text-anchor":"middle", "font-size":10.5, fill:"var(--ink-2)", "font-style":"italic", "font-family":"Georgia, serif"}, svg); t2.textContent = "two edges";
+  const nodes = ROOTS.map((d, i) => {
+    const g = svgEl("g", {class:"hnode", tabindex:0, role:"button", "aria-label":d.title}, svg);
+    svgEl("circle", {class:"hc", cx:pos[i][0], cy:pos[i][1], r}, g);
+    const nm = svgEl("text", {class:"hname", x:pos[i][0], y:pos[i][1]-9, "text-anchor":"middle"}, g); nm.textContent = d.name.toUpperCase();
+    const a = svgEl("text", {class:"hph", x:pos[i][0], y:pos[i][1]+7, "text-anchor":"middle"}, g);
+    const b = svgEl("text", {class:"hph", x:pos[i][0], y:pos[i][1]+20, "text-anchor":"middle"}, g);
+    const pick = () => { sel = i; render(); };
+    g.addEventListener("click", pick);
+    g.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); pick(); } });
+    return {g, a, b};
+  });
+  function render(){
+    const hue = edge === "gift" ? "var(--comm)" : "var(--spon)";
+    nodes.forEach((n, i) => {
+      const ph = edge === "gift" ? ROOTS[i].gs : ROOTS[i].os;
+      n.a.textContent = ph[0]; n.b.textContent = ph[1];
+      n.g.style.setProperty("--edge", hue);
+      n.g.querySelector("circle").setAttribute("stroke", hue);
+      n.g.classList.toggle("on", i === sel);
+      n.g.setAttribute("aria-pressed", i === sel ? "true" : "false");
+    });
+    const d = ROOTS[sel];
+    panel.innerHTML = `<div class="rp-k">Root ${sel+1} of 6</div><h3>${d.title}</h3>
+      <div class="rp-lead">${d.lead}</div><p class="rp-body">${d.body}</p>
+      <div class="edges"><div class="edge g${edge === "open" ? " dim" : ""}"><span class="eh">Makes possible</span>${d.gift}</div>
+      <div class="edge o${edge === "gift" ? " dim" : ""}"><span class="eh">Opens the way to</span>${d.open}</div></div>
+      <div class="rp-nav"><button class="btn" data-d="-1">&larr; Previous</button><button class="btn" data-d="1">Next &rarr;</button></div>`;
+    $$("[data-d]", panel).forEach(b => b.addEventListener("click", () => { sel = (sel + +b.dataset.d + 6) % 6; render(); }));
+  }
+  $$("[data-edge]").forEach(b => b.addEventListener("click", () => {
+    edge = b.dataset.edge;
+    $$("[data-edge]").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    render();
+  }));
+  render();
+})();
+
+/* ═════════════ II · reversal slider ═════════════ */
+(function(){
+  const rev = $("#rev"), input = $("#revT"), cap = $("#revCap");
+  const pills = $$(".pill", rev), conns = $$(".conn", rev);
+  function update(){
+    const t = input.value / 100, k = smooth(0.35, 0.65, t);
+    rev.style.setProperty("--gap", lerp(0.4, 0, t) + "rem");
+    const isCol = getComputedStyle(rev).flexDirection === "column";
+    conns.forEach(c => {
+      c.style.flexBasis = (isCol ? lerp(3.4, 2.2, t) : lerp(5.2, 2.6, t)) + "rem";
+      $(".arr", c).style.opacity = 1 - k;
+      $(".eq", c).style.opacity = k;
+    });
+    const spon = hexRgb(cssVar("--spon")), ground = hexRgb(cssVar("--ground"));
+    pills.forEach(p => {
+      const col = hexRgb(cssVar(p.dataset.hue)).map((v, i) => lerp(v, spon[i], t));
+      const bg = col.map((v, i) => lerp(ground[i], v, lerp(0.07, 0.13, t)));
+      p.style.borderColor = "rgb(" + col.map(Math.round).join(",") + ")";
+      p.style.backgroundColor = "rgb(" + bg.map(Math.round).join(",") + ")";
+    });
+    cap.innerHTML = t < 0.5
+      ? "<b>Means serve ends.</b> Leaders operate the organization; the organization pursues the purpose. Each can still be judged by what it serves."
+      : "<b>Means become ends.</b> “Protecting these leaders = protecting this organization = protecting the purpose.” Criticizing an arrangement now sounds like opposing the cause.";
+  }
+  input.addEventListener("input", update);
+  update();
+  window.__revUpdate = update;
+})();
+
+/* flip cards */
+(function(){
+  const flips = $$("#flips .flip");
+  flips.forEach(f => f.addEventListener("click", () => f.setAttribute("aria-pressed", f.getAttribute("aria-pressed") === "true" ? "false" : "true")));
+  $("#flipAll").addEventListener("click", () => {
+    const anyOff = flips.some(f => f.getAttribute("aria-pressed") !== "true");
+    flips.forEach(f => f.setAttribute("aria-pressed", anyOff ? "true" : "false"));
+    $("#flipAll").textContent = anyOff ? "Flip back" : "Flip all";
+  });
+})();
+
+/* ═════════════ III · six-stage network ═════════════ */
+const STAGE_CAPS = [
+  "Trust, practice and meaning accumulate — a stock of credibility.",
+  "Specialists now stand between members and the purpose.",
+  "An outside resource the organization cannot afford to lose.",
+  "Selection shifts: who advances changes, and who stays.",
+  "The same word at the center; different priorities inside it.",
+  "Correction must now pass through those it would correct."
+];
+(function(){
+  const svg = $("#netSvg");
+  const N = 15, cx = 180, cy = 180, RING = 132, RSPEC = 74;
+  const SPEC = [0, 5, 10], SEL = [2, 7, 12], GONE = [3, 13], SRC = 8;
+  const SPONSOR = [322, 34];
+  const ang = i => (-90 + i * 360 / N) * Math.PI / 180;
+  const nearestSpec = i => { let best = SPEC[0], bd = 99; SPEC.forEach(j => { const d = Math.min(Math.abs(i - j), N - Math.abs(i - j)); if(d < bd){ bd = d; best = j; } }); return best; };
+
+  function layout(s){
+    const m = [];
+    for(let i = 0; i < N; i++){
+      const isSpec = SPEC.includes(i) && s >= 2;
+      const rr = isSpec ? RSPEC : RING;
+      const op = GONE.includes(i) && s >= 4 ? 0.16 : 1;
+      m.push({
+        x: cx + rr * Math.cos(ang(i)), y: cy + rr * Math.sin(ang(i)),
+        cust: (isSpec || (SEL.includes(i) && s >= 4)) ? 1 : 0,
+        op,
+        spoke: s === 1 ? 0.42 : (isSpec ? 0.85 : 0),
+        via: (s >= 2 && !SPEC.includes(i)) ? 0.42 * op : 0
+      });
+    }
+    return {
+      m,
+      web: s === 1 ? 0.34 : 0.16,
+      sponsor: s >= 3 ? 1 : 0,
+      cflame: s >= 5 ? 0.3 : 1,
+      ccust: s >= 5 ? 0.8 : 0,
+      corrOK: s < 6 ? 1 : 0,
+      corrBlock: s >= 6 ? 1 : 0
+    };
+  }
+
+  // static defs
+  const defs = svgEl("defs", {}, svg);
+  const rg = svgEl("radialGradient", {id:"halo"}, defs);
+  svgEl("stop", {offset:"0%", "stop-color":"var(--gold)", "stop-opacity":0.22}, rg);
+  svgEl("stop", {offset:"100%", "stop-color":"var(--gold)", "stop-opacity":0}, rg);
+  svgEl("circle", {cx, cy, r:176, fill:"url(#halo)"}, svg);
+
+  const gWeb = svgEl("g", {}, svg), gLinks = svgEl("g", {}, svg), gTop = svgEl("g", {}, svg);
+  const web = [], spokes = [], via = [];
+  for(let i = 0; i < N; i++){
+    web.push(svgEl("line", {stroke:"var(--comm)", "stroke-width":1}, gWeb));
+    spokes.push(svgEl("line", {"stroke-width":1.2}, gLinks));
+    via.push(svgEl("line", {stroke:"var(--comm)", "stroke-width":1}, gLinks));
+  }
+  const sponsorLine = svgEl("line", {stroke:"var(--spon)", "stroke-width":3.2, "stroke-linecap":"round"}, gLinks);
+  // correction arrow
+  const corrOK = svgEl("g", {}, gLinks);
+  const corrBlock = svgEl("g", {}, gLinks);
+  const sx = cx + RING * Math.cos(ang(SRC)), sy = cy + RING * Math.sin(ang(SRC));
+  const ux = (cx - sx) / RING, uy = (cy - sy) / RING;
+  corrOK.innerHTML = arrowSVG(sx + ux*12, sy + uy*12, cx - ux*34, cy - uy*34, "var(--comm)", 1.6, 1, true);
+  const bx = cx - ux * (RSPEC + 10), by = cy - uy * (RSPEC + 10);
+  corrBlock.innerHTML = `<line x1="${sx + ux*12}" y1="${sy + uy*12}" x2="${bx}" y2="${by}" stroke="var(--spon)" stroke-width="1.6" stroke-dasharray="4 4"/>` +
+    `<line x1="${bx - uy*9}" y1="${by + ux*9}" x2="${bx + uy*9}" y2="${by - ux*9}" stroke="var(--spon)" stroke-width="3" stroke-linecap="round"/>`;
+  const gateA0 = ang(SRC) - 0.2, gateA1 = ang(SRC) + 0.2;
+  const gate = svgEl("path", {d:`M${cx + RSPEC*Math.cos(gateA0)} ${cy + RSPEC*Math.sin(gateA0)} A${RSPEC} ${RSPEC} 0 0 1 ${cx + RSPEC*Math.cos(gateA1)} ${cy + RSPEC*Math.sin(gateA1)}`, fill:"none", stroke:"var(--cust)", "stroke-width":4, "stroke-linecap":"round"}, corrBlock);
+  const corrLab = svgEl("text", {x: sx + 8, y: sy + 26, "font-size":9, fill:"var(--muted)", "letter-spacing":"0.1em", "text-anchor":"middle"}, gLinks); corrLab.textContent = "CORRECTION";
+
+  // center
+  const cFlame = svgEl("circle", {cx, cy, r:30, fill:"var(--flame)"}, gTop);
+  const cCust = svgEl("circle", {cx, cy, r:30, fill:"var(--cust)"}, gTop);
+  svgEl("circle", {cx, cy, r:30, fill:"none", stroke:"var(--gold)", "stroke-width":1.4}, gTop);
+  const cl = svgEl("text", {x:cx, y:cy+3.5, "text-anchor":"middle", "font-size":9.5, fill:"#14100A", "letter-spacing":"0.12em"}, gTop); cl.textContent = "PURPOSE";
+  // sponsor
+  const sp = svgEl("g", {}, gTop);
+  svgEl("circle", {cx:SPONSOR[0], cy:SPONSOR[1], r:13, fill:"var(--spon)", stroke:"var(--ground-2)", "stroke-width":2}, sp);
+  const spl = svgEl("text", {x:SPONSOR[0], y:SPONSOR[1] - 19, "text-anchor":"middle", "font-size":9, fill:"var(--spon)", "letter-spacing":"0.1em"}, sp); spl.textContent = "SPONSOR";
+  // members
+  const mem = [];
+  for(let i = 0; i < N; i++){
+    const g = svgEl("g", {}, gTop);
+    const a = svgEl("circle", {r: SPEC.includes(i) ? 8 : 6.5, fill:"var(--comm)", stroke:"var(--ground-2)", "stroke-width":2}, g);
+    const b = svgEl("circle", {r: SPEC.includes(i) ? 8 : 6.5, fill:"var(--cust)", stroke:"var(--ground-2)", "stroke-width":2}, g);
+    mem.push({g, a, b});
+  }
+
+  function apply(L){
+    const M = L.m;
+    for(let i = 0; i < N; i++){
+      const p = M[i], q = M[(i + 1) % N];
+      web[i].setAttribute("x1", p.x); web[i].setAttribute("y1", p.y);
+      web[i].setAttribute("x2", q.x); web[i].setAttribute("y2", q.y);
+      web[i].setAttribute("opacity", L.web * Math.min(p.op, q.op));
+      spokes[i].setAttribute("x1", p.x); spokes[i].setAttribute("y1", p.y);
+      spokes[i].setAttribute("x2", cx); spokes[i].setAttribute("y2", cy);
+      spokes[i].setAttribute("stroke", SPEC.includes(i) ? "var(--cust)" : "var(--comm)");
+      spokes[i].setAttribute("opacity", p.spoke * p.op);
+      const sIdx = nearestSpec(i), sP = M[sIdx];
+      via[i].setAttribute("x1", p.x); via[i].setAttribute("y1", p.y);
+      via[i].setAttribute("x2", sP.x); via[i].setAttribute("y2", sP.y);
+      via[i].setAttribute("opacity", SPEC.includes(i) ? 0 : p.via);
+      mem[i].a.setAttribute("cx", p.x); mem[i].a.setAttribute("cy", p.y);
+      mem[i].b.setAttribute("cx", p.x); mem[i].b.setAttribute("cy", p.y);
+      mem[i].b.setAttribute("opacity", p.cust);
+      mem[i].g.setAttribute("opacity", p.op);
+    }
+    const s0 = M[SPEC[0]];
+    sponsorLine.setAttribute("x1", SPONSOR[0]); sponsorLine.setAttribute("y1", SPONSOR[1]);
+    sponsorLine.setAttribute("x2", s0.x); sponsorLine.setAttribute("y2", s0.y);
+    sponsorLine.setAttribute("opacity", L.sponsor * 0.85);
+    sp.setAttribute("opacity", L.sponsor);
+    cFlame.setAttribute("opacity", L.cflame);
+    cCust.setAttribute("opacity", L.ccust);
+    corrOK.setAttribute("opacity", L.corrOK);
+    corrBlock.setAttribute("opacity", L.corrBlock);
+  }
+
+  let cur = layout(1), stage = 1, stop = null;
+  apply(cur);
+  const steps = $$("#stSteps .st-step");
+  const dotsBox = $("#stDots");
+  const dots = [1,2,3,4,5,6].map(n => {
+    const b = document.createElement("button");
+    b.textContent = n; b.setAttribute("aria-label", "Stage " + n);
+    b.addEventListener("click", () => { go(n); steps[n-1].scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"center"}); });
+    dotsBox.appendChild(b); return b;
+  });
+  function go(s){
+    if(s === stage && stop) return;
+    stage = s;
+    const from = cur, to = layout(s);
+    if(stop) stop();
+    stop = tween(750, t => { cur = mixDeep(from, to, t); apply(cur); });
+    $("#stNum").textContent = s + "/6";
+    $("#stCap").textContent = STAGE_CAPS[s - 1];
+    steps.forEach(el => el.classList.toggle("on", +el.dataset.stage === s));
+    dots.forEach((d, i) => { if(i === s - 1) d.setAttribute("aria-current", "step"); else d.removeAttribute("aria-current"); });
+  }
+  steps.forEach(el => $("h3", el).addEventListener("click", () => go(+el.dataset.stage)));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if(en.isIntersecting) go(+en.target.dataset.stage); });
+  }, {rootMargin: "-45% 0px -45% 0px"});
+  steps.forEach(el => io.observe(el));
+  stage = 0; go(1);
+  window.__goStage = go;
+})();
+
+/* four routes of gradual change — one clock, four panels */
+(function(){
+  const input = $("#routeT"), phaseEl = $("#routePhase"), playBtn = $("#routePlay");
+  const A = [246, 44], B = [246, 114], TR = 15;
+  const NARR = {
+    layering:["One rule serves the original purpose.",
+              "A new rule is added beside it. The old one is never repealed.",
+              "The new layer now carries most of the work: the institution operates differently, though nothing was removed."],
+    conversion:["A rule serves the original purpose.",
+                "The same rule is read in a new way…",
+                "…and is now used for a different purpose. Not a word of it changed."],
+    drift:["A rule aims at the purpose, in the conditions it was written for.",
+           "Conditions change around it, and the rule is not adjusted.",
+           "Same rule, same aim — but its effect has changed: it now misses."],
+    displacement:["An existing arrangement serves the original purpose.",
+                  "Another arrangement starts to take its place — sometimes gradually.",
+                  "The old arrangement is gone. Its replacement can serve a different purpose."]
+  };
+  const block = (x, y, label, stroke, op) =>
+    `<g opacity="${op.toFixed(3)}"><rect x="${x}" y="${y}" width="104" height="34" rx="7" fill="var(--ground-3)" stroke="${stroke}" stroke-width="1.4"/>` +
+    `<text x="${x + 52}" y="${y + 21}" text-anchor="middle" font-size="10.5" fill="var(--ink)" letter-spacing="0.1em">${label}</text></g>`;
+  const target = (p, color, label, op, below) =>
+    `<g opacity="${op.toFixed(3)}"><circle cx="${p[0]}" cy="${p[1]}" r="${TR}" fill="var(--ground)" stroke="${color}" stroke-width="1.6"/><circle cx="${p[0]}" cy="${p[1]}" r="4.6" fill="${color}"/>` +
+    (label ? `<text x="${p[0]}" y="${p[1] + (below ? TR + 14 : -TR - 8)}" text-anchor="middle" font-size="9" fill="var(--muted)" letter-spacing="0.1em">${label}</text>` : "") + `</g>`;
+  const tag = (x, y, text, op, color) =>
+    `<text x="${x}" y="${y}" text-anchor="middle" font-size="9" fill="${color || "var(--gold)"}" letter-spacing="0.13em" opacity="${op.toFixed(3)}">${text}</text>`;
+  const edge = (x1, y1, p) => { const a = Math.atan2(p[1] - y1, p[0] - x1); return [p[0] - Math.cos(a) * (TR + 3), p[1] - Math.sin(a) * (TR + 3)]; };
+  const mixCol = (a, b, t) => mixHex(cssVar(a), cssVar(b), t);
+
+  const DRAW = {
+    layering(t){
+      const add = smooth(0.12, 0.42, t), w = smooth(0.38, 0.95, t);
+      let s = target(A, "var(--flame)", "ORIGINAL PURPOSE", 1, false) + target(B, "var(--cust)", "OTHER PURPOSE", 1, true);
+      s += `<rect x="18" y="97" width="104" height="34" rx="7" fill="none" stroke="var(--faint)" stroke-dasharray="4 4" opacity="${(0.6 * (1 - add)).toFixed(3)}"/>`;
+      s += block(18, 27, "RULE", "var(--gold)", 1) + block(18, 97, "NEW RULE", "var(--cust)", add);
+      let e = edge(122, 44, A); s += arrowSVG(122, 44, e[0], e[1], "var(--flame)", lerp(3.4, 1.2, w), lerp(1, 0.5, w));
+      e = edge(122, 114, B);    s += arrowSVG(122, 114, e[0], e[1], "var(--cust)", lerp(0.8, 3.4, w), add);
+      s += tag(70, 91, "ADDED", add) + tag(70, 75, "STILL IN FORCE", smooth(0.5, 0.8, t), "var(--muted)");
+      return s;
+    },
+    conversion(t){
+      const u = smooth(0.3, 0.85, t);
+      let s = target(A, "var(--flame)", "ORIGINAL PURPOSE", 1, false) + target(B, "var(--cust)", "OTHER PURPOSE", 1, true);
+      s += block(18, 62, "RULE", "var(--gold)", 1);
+      const eA = edge(122, 79, A);
+      if(u > 0) s += arrowSVG(122, 79, eA[0], eA[1], "var(--faint)", 1, 0.7 * u, true);
+      const aA = Math.atan2(A[1] - 79, A[0] - 122), aB = Math.atan2(B[1] - 79, B[0] - 122);
+      const dA = Math.hypot(A[0] - 122, A[1] - 79), dB = Math.hypot(B[0] - 122, B[1] - 79);
+      const a = lerp(aA, aB, u), d = lerp(dA, dB, u) - TR - 3;
+      s += arrowSVG(122, 79, 122 + Math.cos(a) * d, 79 + Math.sin(a) * d, mixCol("--flame", "--cust", u), 2.6, 1);
+      s += tag(70, 55, "REINTERPRETED", smooth(0.25, 0.45, t)) + tag(70, 110, "SAME WORDING", smooth(0.4, 0.6, t), "var(--muted)");
+      return s;
+    },
+    drift(t){
+      const u = smooth(0.35, 0.85, t), P = [lerp(A[0], 264, smooth(0.3, 0.55, t)), lerp(A[1], 100, u)];
+      let s = "";
+      // the conditions the purpose rests on
+      const bx = P[0] - 34, by = P[1] + 20;
+      s += `<g><rect x="${bx}" y="${by}" width="68" height="6" rx="3" fill="none" stroke="var(--faint)" stroke-width="1"/>`;
+      for(let x = bx + 4; x < bx + 64; x += 6) s += `<line x1="${x}" y1="${by + 6}" x2="${x + 4}" y2="${by}" stroke="var(--faint)" stroke-width="1"/>`;
+      s += `</g>` + tag(Math.min(P[0], 250), by + 18, t < 0.3 ? "CONDITIONS" : "CONDITIONS SHIFT", 1, t < 0.3 ? "var(--muted)" : "var(--gold)");
+      // where the rule still aims
+      s += `<circle cx="${A[0]}" cy="${A[1]}" r="${TR}" fill="none" stroke="var(--faint)" stroke-dasharray="3 4" opacity="${u.toFixed(3)}"/>`;
+      s += tag(A[0], A[1] - TR - 8, "WHERE THE RULE AIMS", smooth(0.45, 0.75, t), "var(--muted)");
+      const miss = smooth(0.7, 0.9, t);
+      s += `<g opacity="${miss.toFixed(3)}" stroke="var(--spon)" stroke-width="2" stroke-linecap="round"><line x1="${A[0] - 5}" y1="${A[1] - 5}" x2="${A[0] + 5}" y2="${A[1] + 5}"/><line x1="${A[0] + 5}" y1="${A[1] - 5}" x2="${A[0] - 5}" y2="${A[1] + 5}"/></g>`;
+      // the purpose's label rides above it, then moves to its left once it has dropped below the rule's line
+      const side = smooth(50, 62, P[1]);
+      s += target(P, "var(--flame)", "", 1, false);
+      s += tag(P[0], P[1] - TR - 8, "PURPOSE", 1 - side, "var(--muted)");
+      s += `<text x="${P[0] - TR - 7}" y="${P[1] + 3}" text-anchor="end" font-size="9" fill="var(--muted)" letter-spacing="0.1em" opacity="${side.toFixed(3)}">PURPOSE</text>`;
+      s += block(18, 27, "RULE", "var(--gold)", 1) + tag(70, 75, "UNCHANGED", smooth(0.35, 0.55, t), "var(--muted)");
+      s += arrowSVG(122, 44, A[0] - TR - 3, 44, "var(--gold)", 2.4, 1);
+      return s;
+    },
+    displacement(t){
+      // the old rule is struck out and lifts away; its replacement rises into the same slot
+      const p = smooth(0.25, 0.8, t), strike = smooth(0.15, 0.35, t);
+      const oy = 62 - 44 * p, ny = 62 + 44 * (1 - p);
+      let s = target(A, "var(--flame)", "ORIGINAL PURPOSE", 1, false) + target(B, "var(--cust)", "OTHER PURPOSE", 1, true);
+      s += `<g opacity="${(1 - p).toFixed(3)}">` + block(18, oy, "OLD RULE", "var(--gold)", 1) +
+           `<line x1="38" y1="${oy + 17}" x2="${38 + 64 * strike}" y2="${oy + 17}" stroke="var(--spon)" stroke-width="1.6" opacity="${strike.toFixed(3)}"/></g>`;
+      s += block(18, ny, "NEW RULE", "var(--cust)", p);
+      let e = edge(122, oy + 17, A); s += arrowSVG(122, oy + 17, e[0], e[1], "var(--flame)", 2.4, 1 - p);
+      e = edge(122, ny + 17, B);     s += arrowSVG(122, ny + 17, e[0], e[1], "var(--cust)", 2.4, p);
+      s += tag(70, ny + 48, "REPLACED", smooth(0.55, 0.85, t));
+      return s;
+    }
+  };
+
+  const panels = $$("#routeGrid .rt").map(el => ({key: el.dataset.r, svg: $("svg", el), now: $(".rt-now", el)}));
+  function draw(){
+    const t = input.value / 100, ph = t < 0.34 ? 0 : t < 0.7 ? 1 : 2;
+    [...phaseEl.children].forEach((c, i) => c.classList.toggle("on", i === ph));
+    panels.forEach(p => { p.svg.innerHTML = DRAW[p.key](t); p.now.textContent = NARR[p.key][ph]; });
+  }
+
+  // play: run to the middle, hold so the narration can be read, then run to the end
+  let stop = null, timer = null;
+  const label = () => { playBtn.textContent = +input.value >= 99 ? "Replay" : "Play"; };
+  function halt(){ if(stop){ stop(); stop = null; } clearTimeout(timer); }
+  function leg(from, to, dur, then){
+    stop = tween(dur, k => { input.value = lerp(from, to, k); draw(); });
+    timer = setTimeout(then, dur + 340);
+  }
+  function play(){
+    halt();
+    const start = +input.value >= 99 ? 0 : +input.value, MID = 52;
+    input.value = start; draw();
+    playBtn.textContent = "Playing…";
+    const finish = () => { stop = null; label(); };
+    const second = () => leg(+input.value, 100, 1800, finish);
+    if(start < MID) leg(start, MID, 1800, () => { timer = setTimeout(second, 2800); });
+    else second();
+  }
+  playBtn.addEventListener("click", play);
+  input.addEventListener("input", () => { halt(); draw(); label(); });
+
+  // play once, the first time the panels come into view
+  const io = new IntersectionObserver(entries => {
+    if(entries.some(en => en.isIntersecting)){
+      io.disconnect();
+      if(!reduceMotion && +input.value === 0) play();
+    }
+  }, {threshold: 0.35});
+  io.observe($("#routeGrid"));
+
+  draw();
+  window.__drawRoute = draw;
+})();
+
+/* ═════════════ IV · intent ═════════════ */
+(function(){
+  const pats = $$("#pats .pat"), flow = $("#mixflow"), steps = $$(".fstep", flow), note = $("#mixNote");
+  const NOTE0 = note.textContent;
+  const NOTES = {
+    x:"Deliberate capture does not need this sequence: here the evidence to look for is intent itself.",
+    0:"Step one: practical constraints answered one at a time open the door.",
+    1:"Step two: someone who did not create the opening uses it.",
+    2:"Step three: incentives to keep things as they are lock the result in."
+  };
+  let on = null;
+  function set(k){
+    on = k;
+    pats.forEach(p => p.classList.toggle("on", p.dataset.step === k));
+    steps.forEach((s, i) => s.classList.toggle("lit", String(i) === k));
+    flow.classList.toggle("dim", k !== null);
+    note.textContent = k === null ? NOTE0 : NOTES[k];
+  }
+  pats.forEach(p => {
+    p.addEventListener("click", () => set(on === p.dataset.step ? null : p.dataset.step));
+    p.addEventListener("mouseenter", () => { if(on === null){ steps.forEach((s, i) => s.classList.toggle("lit", String(i) === p.dataset.step)); flow.classList.add("dim"); } });
+    p.addEventListener("mouseleave", () => { if(on === null){ steps.forEach(s => s.classList.remove("lit")); flow.classList.remove("dim"); } });
+  });
+})();
+
+/* ═════════════ V · lifecycle wheel ═════════════ */
+const LOOPS = {
+  growth:{n:["Growth","formalization","exclusion"], t:"More members bring more rules, which push newcomers away and leave a smaller, more homogeneous core."},
+  threat:{n:["Threat","co-optation","dependence"], t:"Absorbing critics buys stability but gives up independence — Selznick's TVA was shaped by the allies it relied on."},
+  expert:{n:["Expertise","information advantage","entrenchment"], t:"Insiders control the knowledge needed to challenge them."},
+  legit:{n:["Legitimacy","isomorphism","loss of fit"], t:"Copying respected peers wins approval but disconnects the structure from local needs."}
+};
+const PHASES = [
+  { k:"Phase 1", name:"Organic trust", short:"ORGANIC TRUST", hue:"--comm", a0:-131, a1:-49,
+    how:`People coordinate through relationships, shared purpose and often a charismatic founder. Rules stay unwritten; status comes from what you contribute. Weber described charismatic authority as personal and unstable, and said it must eventually “become either traditionalized or rationalized, or a combination of both.”${C(12)}`,
+    flaw:`No formal structure does not mean no structure. Jo Freeman argued that “structurelessness” hides an informal leadership no one holds accountable — it “becomes a way of masking power.”${C(13)}`,
+    signs:["Decisions get made in side conversations, and newcomers can't tell how.",
+           "One founder or friend group is essential, and no one has a plan for succession.",
+           `The group takes on bigger tasks but won't change how it is organized — the point at which Freeman saw groups “founder.”${C(13)}`,
+           "Questioning how decisions are made is treated as disloyalty."],
+    loops:[], cases:[["case-cr","Consciousness-raising groups"]] },
+  { k:"Phase 2", name:"Codification", short:"CODIFICATION", hue:"--gold", a0:-41, a1:41,
+    how:`Growth makes informal coordination too expensive: norms are written down, roles assigned, paid staff appear. Weber named three steps in routinizing charisma — choosing a successor, handing control to an administrative staff, and setting up an economic order.${C(14)} Done well, this is healthy: Freeman recommended explicit, democratic structure, rotating tasks and widely shared information.${C(13)}`,
+    signs:["The number of rules grows faster than the number of members or the volume of activity.",
+           "Rules are built into tools and automated enforcement that newcomers can't see or question.",
+           `Volunteer leaders become permanent professionals — Michels' shift from roles “accessory and gratuitous” to ones “stable and irremovable.”${C(15)}`,
+           `The structure starts to copy peer organizations without evidence it works better. DiMaggio and Powell call this isomorphism — coercive, mimetic (copying) or normative (driven by professions) — and it happens “without necessarily making them more efficient.”${C(16)}`],
+    loops:["legit"], cases:[["case-wiki","Wikipedia"]] },
+  { k:"Phase 3", name:"Rule displacement", short:"RULE DISPLACEMENT", hue:"--flame", a0:49, a1:131, rev:true,
+    how:`Merton's “displacement of goals”: following rules, “originally conceived as a means, becomes transformed into an end-in-itself.” The result is rigidity, ritualism and red tape — at the extreme, a “bureaucratic virtuoso” who never breaks a rule and so cannot help the people the office exists to serve. Merton also described “trained incapacity”: skills that work in routine cases fail in new ones.${C(7)}`,
+    signs:["Fewer newcomers stay — especially the capable ones.",
+           "Most contributions are rejected or reverted, much of it automatically.",
+           `Rules become “calcified” and hard for newer members to change.${C(17)}`,
+           `Talk about the rules crowds out the work: deliberation rises while edits to the rules decline.${C(18)}`,
+           "People who comply are rewarded more than people who deliver results, and staff avoid risk.",
+           "The question “why does this rule exist?” gets no answer."],
+    loops:["growth"], cases:[["case-wiki","Wikipedia"]] },
+  { k:"Phase 4", name:"Co-optation & capture", short:"CAPTURE", hue:"--cust", a0:139, a1:221,
+    how:"Capture can start inside the organization or come from outside it.",
+    routes:[
+      ["4a","Internal oligarchy (Michels)",`The permanent staff controls information, resources and internal communication, and becomes a ruling layer whose own survival takes priority over the mission: “Who says organisation, says oligarchy.”${C(19)}`],
+      ["4b","External co-optation (Selznick)",`Absorbing new elements into leadership or policy-making “as a means of averting threats to its stability or existence.” Formal co-optation shares the burdens of power but not power itself; informal co-optation gives real influence to powerful outside groups.${C(20,21)}`],
+      ["4c","Regulatory capture (Stigler)",`“As a rule, regulation is acquired by the industry and is designed and operated primarily for its benefit.” Concentrated interests beat diffuse ones because they have far more at stake.${C(22)}`]
+    ],
+    signs:["The same leaders hold office for years, and elections are uncontested.",
+           "Leaders' interests and lifestyles drift away from the members'.",
+           "Advisory boards and “participation” exist, but the agenda is set elsewhere.",
+           `One outside group becomes an “administrative constituency” the organization must defend — and that defends it in return.${C(21)}`,
+           `Rules limit entry and protect incumbents.${C(23)}`,
+           `People move back and forth between overseer and overseen, and the overseers depend on the overseen for expertise.${C(24)}`,
+           "Mission statements stay radical while actual behavior turns conservative."],
+    loops:["expert","threat"], cases:[["case-spd","SPD"],["case-tva","TVA"],["case-reg","US regulation"],["case-wikis","683 wikis"]] }
+];
+(function(){
+  const svg = $("#cycleSvg"), panel = $("#cyPanel");
+  const cx = 180, cy = 180, r = 124;
+  const pt = (a, rr) => { const t = a * Math.PI / 180; return [cx + rr * Math.cos(t), cy + rr * Math.sin(t)]; };
+  const arcD = (a0, a1, rr, rev) => {
+    const [x0, y0] = pt(rev ? a1 : a0, rr), [x1, y1] = pt(rev ? a0 : a1, rr);
+    return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${rr} ${rr} 0 0 ${rev ? 0 : 1} ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+  };
+  let sel = 0;
+  const defs = svgEl("defs", {}, svg);
+  // center
+  svgEl("circle", {cx, cy, r:78, fill:"none", stroke:"var(--rule)", "stroke-width":1, "stroke-dasharray":"2 5"}, svg);
+  const lines = [["TWO FORCES", 9, "var(--muted)", -26, "0.18em"], ["growth in size", 12.5, "var(--ink-2)", -4, "0"], ["& complexity", 12.5, "var(--ink-2)", 12, "0"], ["pressure to survive", 12.5, "var(--ink-2)", 34, "0"]];
+  lines.forEach(([txt, fs, fill, dy, ls]) => {
+    const t = svgEl("text", {x:cx, y:cy + dy, "text-anchor":"middle", "font-size":fs, fill, "letter-spacing":ls}, svg);
+    if(fs > 10){ t.setAttribute("font-family", "Georgia, serif"); t.setAttribute("font-style", "italic"); }
+    t.textContent = txt;
+  });
+  const arcs = PHASES.map((p, i) => {
+    const g = svgEl("g", {class:"cy-arc", tabindex:0, role:"button", "aria-label":p.k + ": " + p.name}, svg);
+    svgEl("path", {class:"band", d:arcD(p.a0, p.a1, r, false), stroke:`var(${p.hue})`}, g);
+    const tip = pt(p.a1 + 4.5, r), b1 = pt(p.a1 - 0.5, r - 13), b2 = pt(p.a1 - 0.5, r + 13);
+    svgEl("polygon", {class:"head", points:`${tip.join(",")} ${b1.join(",")} ${b2.join(",")}`, fill:`var(${p.hue})`}, g);
+    const id = "arcT" + i;
+    svgEl("path", {id, d:arcD(p.a0, p.a1, r, p.rev), fill:"none"}, defs);
+    const tx = svgEl("text", {"dominant-baseline":"central"}, g);
+    const tp = svgEl("textPath", {href:"#" + id, startOffset:"50%", "text-anchor":"middle"}, tx);
+    tp.textContent = (i + 1) + " · " + p.short;
+    const pick = () => { sel = i; render(); };
+    g.addEventListener("click", pick);
+    g.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); pick(); } });
+    return g;
+  });
+  // renewal node
+  const rp = pt(225, r + 36);
+  const ren = svgEl("g", {class:"cy-ren", tabindex:0, role:"button", "aria-label":"Renewal"}, svg);
+  svgEl("circle", {cx:rp[0], cy:rp[1], r:14}, ren);
+  const rs = svgEl("text", {x:rp[0], y:rp[1] + 4.5, "text-anchor":"middle", "font-size":13, fill:"var(--link)"}, ren); rs.textContent = "↺";
+  const rl = svgEl("text", {x:rp[0], y:rp[1] - 21, "text-anchor":"middle", "font-size":9, fill:"var(--link)", "letter-spacing":"0.14em"}, ren); rl.textContent = "RENEWAL";
+  const pickRen = () => { sel = 4; render(); };
+  ren.addEventListener("click", pickRen);
+  ren.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); pickRen(); } });
+
+  const loopHTML = k => { const L = LOOPS[k]; return `<div class="loop">${L.n.map(n => `<span class="n">${n}</span>`).join('<span class="a">&rarr;</span>')}<span class="r" title="reinforcing loop">&#8635;</span></div><div class="loop-t">${L.t}</div>`; };
+  function render(){
+    arcs.forEach((g, i) => { g.classList.toggle("on", i === sel); g.setAttribute("aria-pressed", i === sel ? "true" : "false"); });
+    ren.classList.toggle("on", sel === 4);
+    let h;
+    if(sel === 4){
+      panel.style.setProperty("--pc", "var(--link)");
+      h = `<div class="cp-k">RENEWAL</div><h3>Back to Phase 1</h3>
+        <p>Phase 4 can lead back to Phase 1 through schism, reform movements or refounding: new groups form around the purpose the old institution abandoned, and the cycle starts again.</p>
+        <p>The cycle is not inevitable. What resists it — Ostrom's design principles, Freeman's rotation of tasks, the undoing of capture — is in <a href="#renewal">Part VIII</a>.</p>`;
+    } else {
+      const p = PHASES[sel];
+      panel.style.setProperty("--pc", `var(${p.hue})`);
+      h = `<div class="cp-k">${p.k.toUpperCase()}</div><h3>${p.name}</h3><p>${p.how}</p>`;
+      if(p.routes) h += `<div class="r4">${p.routes.map(r => `<div><span class="rk">${r[0]}</span><b>${r[1]}.</b> ${r[2]}</div>`).join("")}</div>`;
+      if(p.flaw) h += `<div class="flaw"><b>The hidden flaw.</b> ${p.flaw}</div>`;
+      h += `<h4>Warning signs</h4><ul>${p.signs.map(s => `<li>${s}</li>`).join("")}</ul>`;
+      if(p.loops.length) h += `<h4>Feedback loop${p.loops.length > 1 ? "s" : ""}</h4>${p.loops.map(loopHTML).join("")}`;
+      h += `<div class="cp-cases">Case${p.cases.length > 1 ? "s" : ""}: ${p.cases.map(c => `<a href="#${c[0]}" data-case="${c[0]}">${c[1]}</a>`).join(" &middot; ")}</div>`;
+    }
+    h += `<div class="cp-nav"><button class="btn" data-d="-1">&larr; Previous</button><button class="btn" data-d="1">Next &rarr;</button></div>`;
+    panel.innerHTML = h;
+    $$("[data-d]", panel).forEach(b => b.addEventListener("click", () => { sel = (sel + +b.dataset.d + 5) % 5; render(); }));
+    $$("[data-case]", panel).forEach(a => a.addEventListener("click", () => window.__pickCase && window.__pickCase(a.dataset.case)));
+  }
+  render();
+})();
+
+/* ═════════════ VI · casebook timeline ═════════════ */
+(function(){
+  const tl = $("#tl"), cards = $$("#caseGrid .case");
+  const X = y => y < 1000 ? 1 + (y - 580) / 40 * 8 : 14 + (y - 1890) / 130 * 84;
+  tl.innerHTML = `<div class="axis"></div><div class="brk" style="left:11.5%"></div>` +
+    [[600,"600"],[1900,"1900"],[1950,"1950"],[2000,"2000"]].map(([y, l]) => `<div class="tick" style="left:${X(y)}%">${l}</div>`).join("");
+  const evs = cards.map(c => {
+    const y0 = +c.dataset.y0, y1 = c.dataset.y1 ? +c.dataset.y1 : null;
+    const left = X(y0), w = y1 ? X(y1) - X(y0) : 0;
+    const ev = document.createElement("button");
+    ev.className = "ev"; ev.style.left = left + "%";
+    ev.setAttribute("aria-label", c.querySelector("h3").textContent);
+    ev.innerHTML = `<span class="mk"></span>`;
+    const lab = document.createElement("button");
+    lab.className = "lab"; lab.innerHTML = c.dataset.lab; lab.tabIndex = -1;
+    lab.dataset.x = left + w / 2;
+    tl.appendChild(ev); tl.appendChild(lab);
+    ev.addEventListener("click", () => pick(c.id, true));
+    lab.addEventListener("click", () => pick(c.id, true));
+    return {c, ev, lab, w};
+  });
+  // range widths: express in % of the timeline width
+  function layoutLabels(){
+    const W = tl.clientWidth;
+    evs.forEach(e => { e.ev.querySelector(".mk").style.width = e.w ? Math.max(12, e.w / 100 * W + 12) + "px" : "12px"; });
+    const rows = [];
+    const sorted = [...evs].sort((a, b) => a.lab.dataset.x - b.lab.dataset.x);
+    sorted.forEach(e => {
+      const w = e.lab.offsetWidth, cx = e.lab.dataset.x / 100 * W;
+      let left = Math.max(0, Math.min(W - w, cx - w / 2));
+      let row = rows.findIndex(r => r + 6 < left);
+      if(row === -1){ rows.push(0); row = rows.length - 1; }
+      rows[row] = left + w;
+      e.lab.style.left = (left + w / 2) + "px";
+      e.lab.style.bottom = `calc(2.6rem + ${row * 1.25}rem)`;
+      e.lab.style.setProperty("--stem", `calc(${row * 1.25}rem + 0.6rem)`);
+    });
+    tl.style.setProperty("--tlh", `calc(4.4rem + ${rows.length * 1.25}rem)`);
+  }
+  function pick(id, scroll){
+    evs.forEach(e => { const on = e.c.id === id; e.c.classList.toggle("on", on); e.ev.classList.toggle("on", on); e.lab.classList.toggle("on", on); });
+    const c = document.getElementById(id);
+    if(scroll && c) c.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"nearest"});
+  }
+  cards.forEach(c => c.addEventListener("mouseenter", () => evs.forEach(e => { e.ev.classList.toggle("on", e.c === c || e.c.classList.contains("on")); e.lab.classList.toggle("on", e.c === c || e.c.classList.contains("on")); })));
+  cards.forEach(c => c.addEventListener("mouseleave", () => evs.forEach(e => { const on = e.c.classList.contains("on"); e.ev.classList.toggle("on", on); e.lab.classList.toggle("on", on); })));
+  layoutLabels();
+  window.addEventListener("resize", layoutLabels);
+  window.__pickCase = id => pick(id, false);
+  // follow in-page links to a case
+  $$('a[href^="#case-"]').forEach(a => a.addEventListener("click", () => pick(a.getAttribute("href").slice(1), false)));
+})();
+
+/* ═════════════ VII · indicator dashboard ═════════════ */
+const IND = [
+  {k:"transp",   name:"Decision transparency",       m:"Share of decisions with written reasoning",      sev:"few carry any",               ph:["1","2"],             pl:"1 → 2"},
+  {k:"founder",  name:"Founder dependency",          m:"Activity that stops if a key person leaves",      sev:"most of it would",            ph:["1"],                 pl:"1"},
+  {k:"rules",    name:"Rules per active member",     m:"Rule count ÷ contributors",                       sev:"high and climbing",           ph:["2","3"],             pl:"2 → 3"},
+  {k:"retain",   name:"Newcomer retention",          m:"Share of new members active after 6 months",      sev:"few remain",                  ph:["3"],                 pl:"3"},
+  {k:"reject",   name:"Rejection rate",              m:"Share of new contributions refused or reverted",  sev:"most are",                    ph:["3"],                 pl:"3"},
+  {k:"process",  name:"Process vs. purpose time",    m:"Share of meetings spent on procedure",            sev:"most of it",                  ph:["3"],                 pl:"3"},
+  {k:"turnover", name:"Leadership turnover",         m:"Average tenure; contested elections",             sev:"long tenures, uncontested",   ph:["4a"],                pl:"4a"},
+  {k:"gap",      name:"Gap between leaders and members", m:"Differences in pay, status, information access", sev:"wide",                       ph:["4a"],                pl:"4a"},
+  {k:"outside",  name:"Outside dependency",          m:"Largest single funder or partner's share",        sev:"one party dominates",         ph:["4b"],                pl:"4b"},
+  {k:"revolve",  name:"Revolving door",              m:"Staff moving to or from the overseen party",      sev:"routine",                     ph:["4c"],                pl:"4c"},
+  {k:"distance", name:"Distance between mission and action", m:"Stated goals vs. resources actually spent", sev:"far apart",                ph:["3","4a","4b","4c"],  pl:"3 → 4"}
+];
+const PH = ["1","2","3","4a","4b","4c"];
+(function(){
+  const KEY = "lamp-flame.dashboard.v1";
+  const blank = () => Object.fromEntries(IND.map(i => [i.k, 0]));
+  let S = {then: blank(), now: blank()};
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const o = JSON.parse(raw); if(o && o.then && o.now){ IND.forEach(i => { S.then[i.k] = +o.then[i.k] || 0; S.now[i.k] = +o.now[i.k] || 0; }); } }
+  }catch(e){}
+  const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} };
+
+  const tbody = $("#indTable tbody");
+  tbody.innerHTML = IND.map(i => `<tr>
+      <td class="c-name"><span class="in">${i.name}</span><span class="im">${i.m} — severe: ${i.sev}</span></td>
+      <td class="c-ph"><span class="ip">Phase ${i.pl}</span></td>
+      <td><span class="sc-l">Earlier</span><span class="sc then" role="group" aria-label="${i.name}, earlier reading">${[0,1,2,3].map(v => `<button data-k="${i.k}" data-r="then" data-v="${v}" aria-pressed="false">${v}</button>`).join("")}</span></td>
+      <td><span class="sc-l">Now</span><span class="sc now" role="group" aria-label="${i.name}, current reading">${[0,1,2,3].map(v => `<button data-k="${i.k}" data-r="now" data-v="${v}" aria-pressed="false">${v}</button>`).join("")}</span></td>
+    </tr>`).join("");
+  tbody.addEventListener("click", e => {
+    const b = e.target.closest("button[data-k]"); if(!b) return;
+    S[b.dataset.r][b.dataset.k] = +b.dataset.v; save(); render();
+  });
+
+  const rowsBox = $("#profRows");
+  rowsBox.innerHTML = PH.map(p => `<div class="prow" tabindex="0" data-p="${p}">
+      <div class="pk">Phase ${p}</div>
+      <div class="ptrack"><div class="pbar then"></div><div class="pbar now"></div><span class="pval"></span></div>
+      <div class="ptip"></div></div>`).join("");
+
+  const mean = (r, p) => { const xs = IND.filter(i => i.ph.includes(p)).map(i => S[r][i.k]); return xs.reduce((a, b) => a + b, 0) / xs.length; };
+  function render(){
+    $$("button[data-k]", tbody).forEach(b => b.setAttribute("aria-pressed", S[b.dataset.r][b.dataset.k] === +b.dataset.v ? "true" : "false"));
+    $$(".prow", rowsBox).forEach(row => {
+      const p = row.dataset.p, a = mean("then", p), b = mean("now", p);
+      $(".pbar.then", row).style.width = (a / 3 * 100) + "%";
+      $(".pbar.now", row).style.width = (b / 3 * 100) + "%";
+      const v = $(".pval", row); v.style.left = (b / 3 * 100) + "%"; v.textContent = b.toFixed(1);
+      if(b > 2.55){ v.style.left = "auto"; v.style.right = "0.2rem"; v.style.color = "var(--ground)"; } else { v.style.right = "auto"; v.style.color = ""; }
+      row.setAttribute("aria-label", `Phase ${p}: earlier ${a.toFixed(1)}, now ${b.toFixed(1)} of 3`);
+      $(".ptip", row).innerHTML = `<b>Phase ${p}</b> — earlier ${a.toFixed(1)}, now ${b.toFixed(1)}<br>` +
+        IND.filter(i => i.ph.includes(p)).map(i => `${i.name}: ${S.then[i.k]} → ${S.now[i.k]}`).join("<br>");
+    });
+    const a1 = S.now.retain > S.then.retain && S.now.rules > S.then.rules;
+    const a2 = S.now.outside >= 2 && S.now.turnover >= 2;
+    $("#alerts").innerHTML = [
+      [a1, "Phase 2 → 3 shift", "Retention falling while the rule count rises — the earliest reliable sign of the shift from Phase 2 to Phase 3.", "Fires when retention and rules-per-member severity both rise from the earlier reading."],
+      [a2, "Entry into Phase 4", "High outside dependency together with low leadership turnover marks entry into Phase 4.", "Fires when outside dependency and leadership-turnover severity are both 2 or more now."]
+    ].map(([hit, title, msg, rule]) => `<div class="alert${hit ? " hit" : ""}"><span class="ai">${hit ? "&#9650;" : "&#9675;"}</span><div><span class="as">${hit ? "Signal · " : "Watching · "}${title}</span>${hit ? msg : rule}</div></div>`).join("");
+  }
+  $("#dashReset").addEventListener("click", () => { S = {then: blank(), now: blank()}; save(); render(); });
+  $("#dashCopy").addEventListener("click", () => { S.then = {...S.now}; save(); render(); });
+  render();
+})();
+
+/* ═════════════ IX · divergence ═════════════ */
+(function(){
+  const svg = $("#divSvg"), input = $("#divT"), read = $("#divRead");
+  const X0 = 26, XS = 168, X1 = 372, Y = 108;
+  svg.innerHTML = `
+    <line x1="${X0}" y1="202" x2="${X1}" y2="202" stroke="var(--rule)" stroke-width="1"/>
+    <text x="${X0}" y="217" font-size="9" fill="var(--faint)" letter-spacing="0.12em">FOUNDING</text>
+    <text x="${X1}" y="217" font-size="9" fill="var(--faint)" letter-spacing="0.12em" text-anchor="end">LATER</text>
+    <path id="dvGap" fill="var(--spon)" opacity=".12"/>
+    <path d="M${X0} ${Y} L${XS} ${Y}" stroke="var(--gold)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path id="dvP" d="M${XS} ${Y} C${XS + 60} ${Y} ${XS + 110} ${Y - 46} ${X1} ${Y - 62}" stroke="var(--flame)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path id="dvA" d="M${XS} ${Y} C${XS + 60} ${Y} ${XS + 110} ${Y + 46} ${X1} ${Y + 62}" stroke="var(--cust)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <text x="${X1}" y="${Y - 72}" font-size="10" fill="var(--ink-2)" text-anchor="end" letter-spacing="0.06em">PRESERVING THE PURPOSE</text>
+    <text x="${X1}" y="${Y + 80}" font-size="10" fill="var(--ink-2)" text-anchor="end" letter-spacing="0.06em">PRESERVING THE PRESENT ARRANGEMENT</text>
+    <circle cx="${XS}" cy="${Y}" r="4" fill="var(--ground-2)" stroke="var(--gold)" stroke-width="1.6"/>
+    <text x="${XS}" y="${Y + 20}" font-size="9" fill="var(--muted)" text-anchor="middle" letter-spacing="0.1em">THEY PART HERE</text>
+    <line id="dvCur" y1="16" y2="202" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 4"/>
+    <circle id="dvDP" r="5.5" fill="var(--flame)" stroke="var(--ground-2)" stroke-width="2"/>
+    <circle id="dvDA" r="5.5" fill="var(--cust)" stroke="var(--ground-2)" stroke-width="2"/>`;
+  const P = $("#dvP"), A = $("#dvA"), gap = $("#dvGap");
+  function yAt(path, x){
+    const L = path.getTotalLength(); let lo = 0, hi = L;
+    for(let k = 0; k < 24; k++){ const mid = (lo + hi) / 2; if(path.getPointAtLength(mid).x < x) lo = mid; else hi = mid; }
+    return path.getPointAtLength((lo + hi) / 2).y;
+  }
+  function update(){
+    const t = input.value / 100, x = lerp(X0, X1, t);
+    let yp = Y, ya = Y;
+    if(x > XS){ yp = yAt(P, x); ya = yAt(A, x); }
+    $("#dvCur").setAttribute("x1", x); $("#dvCur").setAttribute("x2", x);
+    $("#dvDP").setAttribute("cx", x); $("#dvDP").setAttribute("cy", yp);
+    $("#dvDA").setAttribute("cx", x); $("#dvDA").setAttribute("cy", ya);
+    $("#dvDP").setAttribute("opacity", x <= XS ? 0 : 1);
+    $("#dvDA").setAttribute("fill", x <= XS ? "var(--gold)" : "var(--cust)");
+    if(x > XS + 1){
+      const n = 24; let top = "", bot = "";
+      for(let k = 0; k <= n; k++){ const xx = lerp(XS, x, k / n); top += `${k ? "L" : "M"}${xx.toFixed(1)} ${yAt(P, xx).toFixed(1)} `; }
+      for(let k = n; k >= 0; k--){ const xx = lerp(XS, x, k / n); bot += `L${xx.toFixed(1)} ${yAt(A, xx).toFixed(1)} `; }
+      gap.setAttribute("d", top + bot + "Z");
+    } else gap.setAttribute("d", "");
+    if(x <= XS - 8) read.innerHTML = "<b>Aligned.</b> Preserving the arrangement still preserves the purpose — from inside, the two cannot be told apart.";
+    else if(x < 270) read.innerHTML = "<b>Parting.</b> This is the point to find in the historical record: where serving the arrangement stops serving the purpose.";
+    else read.innerHTML = "<b>Diverged.</b> Now the decisive question: who has the authority to say whether the divergence exists?";
+  }
+  input.addEventListener("input", update);
+  update();
+})();
+
+/* ═════════════ rail ═════════════ */
+const railBtns = $$(".rail button");
+railBtns.forEach(b => b.addEventListener("click", () =>
+  document.getElementById(b.dataset.go).scrollIntoView({behavior: reduceMotion ? "auto" : "smooth"})));
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(en => { if(en.isIntersecting) railBtns.forEach(b => b.classList.toggle("on", b.dataset.go === en.target.id)); });
+}, {rootMargin: "-30% 0px -60% 0px"});
+railBtns.forEach(b => { const s = document.getElementById(b.dataset.go); if(s) spy.observe(s); });
+
+/* ═════════════ theme toggle ═════════════ */
+const themeQ = new URLSearchParams(location.search).get("theme");
+if(themeQ === "light" || themeQ === "dark"){ document.documentElement.dataset.theme = themeQ; window.__revUpdate && window.__revUpdate(); }
+$("#themeBtn").addEventListener("click", () => {
+  const root = document.documentElement;
+  const cur = root.dataset.theme || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  root.dataset.theme = cur === "dark" ? "light" : "dark";
+  window.__revUpdate && window.__revUpdate();
+  window.__drawRoute && window.__drawRoute();
+});
+</script>
+</body>
+</html>
