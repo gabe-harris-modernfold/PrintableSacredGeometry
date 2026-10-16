@@ -53,6 +53,7 @@ works without setting `PYTHONPATH`.
 | [incense_vortex](projects/incense_vortex) | Fully passive helical smoke vortex — no fans, no electronics. |
 | [magnetic_vortex_relief](projects/magnetic_vortex_relief) | Parametric magnetic-vortex relief, clockwise and counter-clockwise. |
 | [misc_standalone_prints](projects/misc_standalone_prints) | Standalone STL/3MF prints with no generator script in the repo. |
+| [negative-space](projects/negative-space) | Design notes for a 1 m data ribbon wound around an invisible sphere — days, moon phases and Indiana temperature encoded as negative space. |
 | [rainbow_prism_tray](projects/rainbow_prism_tray) | Hex-tile prism tray and tabletop scene (OpenSCAD). |
 | [sacred_geometry_plates](projects/sacred_geometry_plates) | The numbered 2D plate series (circle → icosahedron) and its OpenSCAD generator. |
 | [golden_ratio_scrying_pool](projects/golden_ratio_scrying_pool) | Golden-ratio scrying pool: flared half-cosine wall, sound-collector rim, stand, print segments. |
