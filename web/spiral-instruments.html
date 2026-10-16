@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="Three printable vortex devices — a heat-driven incense tornado, a wind-harvesting edition, and a dust-devil plate — with the swirl physics simulated live: Rankine vortex spin-up, stack-effect draft, ram pressure, and the field finding that removed the exit cowls. Hermetic reading kept in its own labeled register.">
-<title>The Spiral Instruments — three vortex devices, two lenses</title>
+<meta name="description" content="Four printable vortex devices — a heat-driven incense tornado, a wind-harvesting edition, a dust-devil plate, and a hand-pumped smoke-ring tube — with the physics computed live: Rankine vortex spin-up, stack-effect draft, ram pressure, vortex-ring formation, and the field finding that removed the exit cowls. Hermetic reading kept in its own labeled register.">
+<title>The Spiral Instruments — four vortex devices, two lenses</title>
 <link rel="canonical" href="https://promethean-theoria.netlify.app/spiral-instruments.html">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Promethean Theoria">
-<meta property="og:title" content="The Spiral Instruments — three vortex devices, two lenses">
-<meta property="og:description" content="A passive incense tornado simulated live: twelve tangential slots, Rankine spin-up, stack draft vs wind ram — and the built instrument that overruled the drawing.">
+<meta property="og:title" content="The Spiral Instruments — four vortex devices, two lenses">
+<meta property="og:description" content="A passive incense tornado simulated live: twelve tangential slots, Rankine spin-up, stack draft vs wind ram — the built instrument that overruled the drawing — and a hand-pumped smoke-ring tube that fires vortex rings at the press of a key.">
 <meta property="og:image" content="https://promethean-theoria.netlify.app/previews/spiral-instruments.webp">
 <meta property="og:url" content="https://promethean-theoria.netlify.app/spiral-instruments.html">
 <meta name="twitter:card" content="summary_large_image">
@@ -22,7 +22,7 @@
   --ink:#1C2028; --ink-2:#454B57; --muted:#656B79; --faint:#8B909C;
   --gold:#8F6F24; --gold-soft:rgba(143,111,36,.10); --gold-line:rgba(143,111,36,.35);
   --smoke:#3A4150; --smoke-b:#9AA1AC; --ember:#C25B1E; --tube:#8A8F98;
-  --ok:#2C7A4E;
+  --ok:#2C7A4E; --latex:#C2577F;
   --serif: Charter,'Sitka Text',Cambria,Georgia,serif;
   --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
   --mono:'Cascadia Code',Consolas,'SF Mono','Roboto Mono',monospace;
@@ -33,7 +33,7 @@
     --ink:#E9E6DD; --ink-2:#B0AFA8; --muted:#868DA0; --faint:#5C6377;
     --gold:#C9B070; --gold-soft:rgba(201,176,112,.10); --gold-line:rgba(201,176,112,.35);
     --smoke:#DDE2E9; --smoke-b:#6E7683; --ember:#E8933B; --tube:#8F96A0;
-    --ok:#4FA872;
+    --ok:#4FA872; --latex:#E07FA0;
   }
 }
 *{box-sizing:border-box}
@@ -56,7 +56,9 @@ p.lede{color:var(--ink-2)}
 .panel{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;margin:16px 0}
 .simwrap{display:grid;grid-template-columns:minmax(300px,430px) 1fr;gap:20px;align-items:start}
 @media (max-width:760px){.simwrap{grid-template-columns:1fr}}
-canvas#helix{width:100%;height:auto;display:block;background:var(--panel-2);border:1px solid var(--rule);border-radius:8px}
+canvas#helix,canvas#rings{width:100%;height:auto;display:block;background:var(--panel-2);border:1px solid var(--rule);border-radius:8px}
+.hint{font-size:13px;color:var(--faint);margin-top:4px}
+.ctl label.chk{display:inline-flex;align-items:center;gap:6px;margin:0 0 0 14px;font:400 13.5px var(--sans);letter-spacing:0;text-transform:none;color:var(--muted);cursor:pointer}
 .ctl{margin:10px 0;font-size:14.5px;color:var(--ink-2)}
 .ctl label{display:block;font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
 .seg{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
@@ -71,7 +73,7 @@ input[type=range]{width:100%;accent-color:var(--gold)}
 .read .v{font:500 20px/1.3 var(--mono);color:var(--ink);margin-top:2px}
 .read .u{font-size:12px;color:var(--muted)}
 svg#rank{width:100%;height:auto;display:block}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:18px 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:14px;margin:18px 0}
 .icard{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:16px 18px}
 .icard .shot{height:225px;border-radius:8px;border:1px solid var(--rule-soft);background:#FFFFE5;margin-bottom:12px;overflow:hidden}
 .icard .shot img{width:100%;height:100%;object-fit:contain;display:block}
@@ -107,7 +109,7 @@ footer .test{font-family:var(--mono);font-size:12px;margin-top:8px}
 <header class="masthead">
   <div class="eyebrow">Promethean Theoria · Printable Sacred Geometry</div>
   <h1>The Spiral Instruments</h1>
-  <div class="sub">three printable vortex devices, described twice</div>
+  <div class="sub">four printable vortex devices, described twice</div>
   <div class="epigraph">
     “The Sun is its father, the Moon its mother, the Wind hath carried it in its belly, the Earth is its nurse.”
     <span class="src">— THE EMERALD TABLET OF HERMES TRISMEGISTUS</span>
@@ -115,12 +117,15 @@ footer .test{font-family:var(--mono);font-size:12px;margin-top:8px}
 </header>
 
 <p class="lede" style="max-width:760px;margin:26px auto">
-  Three desktop instruments, printed in PETG and raised around a clear tube of a hundred millimetres,
+  Four desktop instruments, printed in PETG and raised around a clear tube of a hundred millimetres,
   whose single purpose is to persuade air to reveal itself. The first stands a helix of incense smoke by heat
   alone; the second does the same work with harvested wind; the third teaches a spoonful of powdered earth to
-  rise and dance. All three are children of one law: <b>converging flow must spin faster, because angular
-  momentum, once granted, is conserved.</b> As on every page of this site, the physics below is computed live
-  and the interpretation is labeled — you can always tell which register a claim belongs to.
+  rise and dance; the fourth rolls the smoke into rings and sends them up the tube at the press of a key. The
+  first three are children of one law: <b>converging flow must spin faster, because angular momentum, once
+  granted, is conserved.</b> The fourth is its sibling: <b>circulation shed from a sharp edge stays bound to the
+  air that carries it</b> (Kelvin's theorem), so a puff can travel as a closed, self-propelled ring. As on every
+  page of this site, the physics below is computed live and the interpretation is labeled — you can always tell
+  which register a claim belongs to.
 </p>
 
 <h2>The standing helix <span class="rl rl-m">measured — simulated live</span></h2>
@@ -199,7 +204,70 @@ flow field, traced live by the smoke that rides it.</p>
   open, and the parts were removed from the build.
 </div>
 
-<h2>The three instruments <span class="rl rl-m">measured — as built</span></h2>
+<h2>The rolling torus <span class="rl rl-m">measured — computed live</span></h2>
+<p class="lede">Instrument IV makes the other kind of vortex. There is no swirl about the tube's axis at all:
+vorticity shed from a sharp edge rolls up into a closed loop, a <i>vortex ring</i>, which carries its own
+circulation and so propels itself — the way a smoke ring crosses a room. A piano-key lever pushes a latex
+membrane up into a sealed smoke chamber, and the displaced slug of smoky air leaves a sharp-edged orifice under
+the tube and rolls up. Pick the orifice insert, how far and how fast you press, and fire.</p>
+
+<div class="panel">
+  <div class="simwrap">
+    <canvas id="rings" width="430" height="700" role="img" aria-label="Side section of the ring base and tube: pressing the key lifts the membrane and smoke rings climb the tube"></canvas>
+    <div>
+      <div class="ctl">
+        <label>Orifice insert</label>
+        <div class="seg" id="oriSeg">
+          <button data-d="25">Ø25</button><button data-d="30" class="on">Ø30</button><button data-d="35">Ø35</button><button data-d="40">Ø40</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <label>Key travel — <span id="depthVal">100</span>% · disc <span id="strokeVal">12.0</span> mm</label>
+        <input type="range" id="depthSlider" min="10" max="100" step="5" value="100">
+        <div class="hint">pressed to its stop pin, the key lifts the membrane 12 mm and sends 86 mL</div>
+      </div>
+      <div class="ctl">
+        <label>Press time — <span id="pressVal">0.15</span> s</label>
+        <input type="range" id="pressSlider" min="0.02" max="0.40" step="0.01" value="0.15">
+        <div class="hint">a slow piano press, not a tap — under ~0.05 s the ring is gone in a blink</div>
+      </div>
+      <div class="ctl">
+        <button class="puff" id="fireBtn">press the key</button>
+        <label class="chk"><input type="checkbox" id="autoChk" checked> repeat every 4 s</label>
+      </div>
+      <div class="reads">
+        <div class="read"><div class="k">Slug length</div><div class="v" id="rLD">4.0</div><div class="u">L/D · formation number ≈ 4</div></div>
+        <div class="read"><div class="k">Ring diameter</div><div class="v" id="rDr">36</div><div class="u" id="rDrU">mm · 0.38 of bore</div></div>
+        <div class="read"><div class="k">Ring speed</div><div class="v" id="rU">0.45</div><div class="u" id="rUU">m/s · wall costs 13 %</div></div>
+        <div class="read"><div class="k">Transit</div><div class="v" id="rT">0.97</div><div class="u" id="rTU">s up the 394 mm tube</div></div>
+        <div class="read"><div class="k">Regime</div><div class="v" id="rReg" style="font-size:15px">clean ring</div><div class="u" id="rRegU">L/D within 1–4</div></div>
+        <div class="read"><div class="k">Chamber smoke</div><div class="v" id="rSmoke">90</div><div class="u">% · refills in ~1 min (assumed)</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="lede">The arithmetic behind the readouts. The membrane annulus between the Ø80 pusher and the Ø110
+clamp displaces 7.15&nbsp;mL per millimetre of travel; divided by the orifice area, that is a slug of length
+L. Clean rings want L/D between about 1 and 4 — past L/D&nbsp;≈&nbsp;4, the <a href="https://doi.org/10.1017/S0022112097008410" rel="noopener">formation
+number</a> found by Gharib, Rambod and Shariff, the ring stops taking on circulation and the rest of the slug
+trails behind it as a jet. The slug model gives the ring's circulation, Γ&nbsp;≈&nbsp;½UL; the Kelvin–Saffman
+formula turns that into speed, U&nbsp;=&nbsp;Γ/4πR&nbsp;·&nbsp;(ln&nbsp;8R/a&nbsp;−&nbsp;0.56), for a ring of radius
+R&nbsp;≈&nbsp;0.6D with a fat core (a&nbsp;≈&nbsp;0.4R). And the tube takes its share: a ring near a wall is slowed by
+its mirror image, which costs the 36&nbsp;mm ring about 13&nbsp;% in this 96&nbsp;mm bore and the 48&nbsp;mm ring over a
+quarter — the reason the inserts stop at Ø40.</p>
+
+<div class="note">
+  <b>Design note — why the valve lies flat.</b> The cone's heat turns chamber and tube into a chimney, the same
+  0.1–0.3&nbsp;Pa draft that drives the Hearth tornado. Any opening low in the chamber would let it pull a steady
+  stream of smoke up the tube between rings, about as much smoke as the rings themselves carry. So the cone's well
+  opens only into the chamber, and the refill valve is a strip of nitrile glove lying flat on a grille in the
+  floor. Its own weight, about 1&nbsp;Pa, holds it shut against the draft; a brisk release of the key lifts it, and
+  a slow one refills back through the orifice. A hinged printed flap would need about 15&nbsp;Pa to lift, so the
+  hinges went to the lighting hatch over the cone, where gravity is an ally rather than the enemy.
+</div>
+
+<h2>The four instruments <span class="rl rl-m">measured — I–III as built, IV as drawn</span></h2>
 <div class="cards">
   <div class="icard">
     <div class="shot"><img src="assets/spiral/hearth-assembly.webp" alt="Render of the hearth tornado: tall clear tube standing in a slotted amber drum with a side mouthpiece" loading="lazy"></div>
@@ -234,6 +302,18 @@ flow field, traced live by the smoke that rides it.</p>
     <div class="spec">Ø200 assembled (XL280: Ø280, needs a 300-class bed)<br>steady 2–5 m/s breeze · sun-warmed dark floor helps</div>
     <div class="dl"><a href="stl/dust_plate_arena.stl" download>⬇ arena</a><a href="stl/dust_plate_roof.stl" download>⬇ roof</a><a href="stl/dust_plate_arena_XL280.stl" download>⬇ arena XL280</a><a href="stl/dust_plate_roof_XL280.stl" download>⬇ roof XL280</a></div>
   </div>
+  <div class="icard">
+    <div class="shot"><img src="assets/spiral/ring-assembly.webp" alt="Render of the rolling torus: clear tube with three smoke rings rising from a round smoke-chamber base with a piano-key lever at the front" loading="lazy"></div>
+    <div class="clause">“The Moon its mother”</div>
+    <h3>IV · The Rolling Torus</h3>
+    <p>No swirl at all — the other vortex. A piano-key lever pushes a balloon membrane up into a sealed smoke
+    chamber; 86&nbsp;mL of smoky air leaves a sharp-edged orifice and rolls up into a ring that climbs the tube and
+    floats out of the open crown. Four drop-in orifices, Ø25–40&nbsp;mm; the Ø30 gives the formation stroke,
+    L/D&nbsp;≈&nbsp;4, at full press. No electronics: a glove-film flap lying on a floor grille refills the chamber, and the cone is
+    lit through a hinged hatch.</p>
+    <div class="spec">Ø238 base, 17 printed parts · same tube<br>drawn and CAD-verified 2026-10 — not yet lit · ~541 mm tall</div>
+    <div class="dl"><a href="stl/incense_vortex_ring.zip" download>⬇ all 16 part files + guide (.zip)</a></div>
+  </div>
 </div>
 
 <h2>The hermetic reading <span class="rl rl-h">interpretation — not physics</span></h2>
@@ -253,6 +333,10 @@ lanterns held to one whirlwind.</p>
   leeward wake are one wind differing only in degree; the drum stands between the poles and mints their
   difference into rotation. The gust and the lull, the bursting and regathering of the core, are the pendulum
   made visible in smoke — the vortex does not fail when it breaks; it keeps time.</p>
+  <p><b>Gender</b> (Instrument IV): the generative principle — every creation asks a receptive pole and a
+  projective one. The sealed chamber receives and holds the smoke; the press projects; between them a form is
+  born that neither contains, a ring that carries itself away. It is the only instrument whose vortex leaves
+  its maker: the Moon as mother, where the Sun stood as father.</p>
 </div>
 
 <h2>The reading of ascension <span class="rl rl-h">interpretation — not physics</span></h2>
@@ -271,6 +355,7 @@ metaphysical mechanism.</p>
     <tr><td>Rotational circulation</td><td>Cycles of dissolution and renewal around a stable center</td><td>Integration rather than escape from embodiment</td></tr>
     <tr><td>Expanding / contracting coils</td><td>Breath, pulse, and alternating concentration and expansion</td><td>Growth proceeds rhythmically, not linearly</td></tr>
     <tr><td>Double helix, paired strands</td><td>Polarity in dynamic union — earth/sky, receptive/active, matter/spirit</td><td>Opposites become a generative braid rather than a conflict</td></tr>
+    <tr><td>Rolling ring (Instrument IV)</td><td>The <b>ouroboros</b> — a closed circulation turning through itself</td><td>A form that moves because it turns, and holds together because it moves</td></tr>
   </table>
   <p>The core symbolic idea: ascension is not pictured as a straight line. It is a <b>spiral ascent</b> —
   every rotation returns near a familiar direction, yet the flow has advanced upward. This is why spiral forms
@@ -321,13 +406,14 @@ metaphysical mechanism.</p>
 <table>
   <tr><th>Fact</th><th>Value</th></tr>
   <tr><td>Common standard</td><td>100 mm OD × 2 mm wall clear acrylic tube, 15.5″ (393.7 mm)</td></tr>
-  <tr><td>Swirl generator</td><td>12 chord slots, 10 × 41 mm (wind: × 47), tangent entry 68° from radial</td></tr>
+  <tr><td>Swirl generator (I–III)</td><td>12 chord slots, 10 × 41 mm (wind: × 47), tangent entry 68° from radial</td></tr>
   <tr><td>Slot / bore area</td><td>0.76 (wind: 0.87) — held above the ~0.6 choke ratio</td></tr>
   <tr><td>Chamber → core</td><td>r = 45.5 mm → ≈ 6 mm; free-vortex spin-up ≈ ×7</td></tr>
-  <tr><td>Handedness</td><td>clockwise viewed from above, every instrument in the folio</td></tr>
-  <tr><td>Sources</td><td><code>incense_vortex.scad</code> · <code>incense_vortex_wind.scad</code> · <code>vortex_dust_plate.scad</code> — OpenSCAD 2021.01, every mesh verified watertight and two-manifold; the STLs above are the exact validated exports</td></tr>
-  <tr><td>Field status</td><td>Instrument I built and lit, 2026-08: standing spiral wave on first assembly; exit cowls removed after testing</td></tr>
-  <tr><td>Treatise</td><td><a href="The_Spiral_Instruments.pdf">The Spiral Instruments (PDF)</a> — the full folio, both voices</td></tr>
+  <tr><td>Ring generator (IV)</td><td>Ø110 latex membrane, Ø80 pusher, 12 mm full stroke = 86 mL; orifice inserts Ø25 / 30 / 35 / 40 with square exit edges and 6 mm bellmouth inlets; piano-key lever that lands on a stop pin at full stroke; chamber sealed against the cone's draft, refilled through a glove-film flap on a floor grille</td></tr>
+  <tr><td>Handedness</td><td>clockwise viewed from above, every swirl instrument (I–III); the ring (IV) has no swirl, only its poloidal roll</td></tr>
+  <tr><td>Sources</td><td><code>incense_vortex.scad</code> · <code>incense_vortex_wind.scad</code> · <code>vortex_dust_plate.scad</code> — OpenSCAD 2021.01 · <code>vortex_ring_base.py</code> — build123d 0.11, lever clearances checked through the stroke; every mesh verified watertight and two-manifold; the STLs above are the exact validated exports</td></tr>
+  <tr><td>Field status</td><td>Instrument I built and lit, 2026-08: standing spiral wave on first assembly; exit cowls removed after testing. Instrument IV drawn and CAD-verified 2026-10-16, revised after a geometry review the same day; not yet printed or lit</td></tr>
+  <tr><td>Treatise</td><td><a href="The_Spiral_Instruments.pdf">The Spiral Instruments (PDF)</a> — the folio of instruments I–III, both voices</td></tr>
 </table>
 <p style="color:var(--muted);font-size:14px">Safety, plainly: the ember is hotter than the vessel — PETG softens
 near 80 °C and the metal heat-shield disc under the cone is not optional. Never leave a burning cone unattended.</p>
@@ -351,7 +437,8 @@ const $ = id => document.getElementById(id);
 const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 let COL = {};
 function palette(){ COL = { smoke: css('--smoke'), smokeB: css('--smoke-b'), tube: css('--tube'),
-  ember: css('--ember'), pet: css('--gold'), panel: css('--panel-2'), faint: css('--faint') }; }
+  ember: css('--ember'), pet: css('--gold'), panel: css('--panel-2'), faint: css('--faint'),
+  latex: css('--latex') }; }
 palette();
 if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', palette);
 
@@ -468,6 +555,7 @@ function loop(now){
   state.puff *= Math.exp(-dt / 1.1);
   if (state.puff < 0.01) state.puff = 0;
   step(dt); draw();
+  ringStep(dt); ringDraw();
   requestAnimationFrame(loop);
 }
 
@@ -523,6 +611,193 @@ $('vaneSlider').addEventListener('input', e => {
   drawRank(+e.target.value);
 });
 
+/* ---------- IV: the rolling torus ---------- */
+/* geometry from projects/incense_vortex_ring/vortex_ring_base.py (mm; z above the table, y along the key) */
+const MEM_R = 55, DISC_R = 40, STROKE = 12, BORE_R = 48;
+const A_EFF = Math.PI * (MEM_R*MEM_R + MEM_R*DISC_R + DISC_R*DISC_R) / 3;   // mm³ per mm of disc travel
+const V_CH = Math.PI * 114 * 114 * 90;                                      // smoke chamber, mm³
+const F_NUM = 4;                          // formation number (Gharib, Rambod & Shariff 1998)
+const NU = 1.5e-5, FILL_TAU = 60;         // air viscosity; assumed chamber fill time constant, s
+const GROW = 0.25, SLOW = 0.2;            // ring widens / slows this much over the tube (entrainment)
+const Y_PIV = -76, Z_PIV = 24.95, TH_FULL = Math.asin(STROKE / 76);
+const Z_MEM = 33.45, Z_DT = 35.45, Z_F = 47.45, Z_FT = 52.45, Z_LB = 142.45, Z_LT = 147.45;
+
+function ringModel(D, depth, T){
+  const stroke = STROKE * depth, V = A_EFF * stroke;
+  const L = V / (Math.PI * D * D / 4), LD = L / D;
+  const Up = L / 1000 / T;                                   // slug speed, m/s
+  const G = 0.5 * Up * Math.min(L, F_NUM * D) / 1000;        // slug-model circulation, capped at pinch-off
+  const R = 0.6 * D / 1000, a = 0.4 * R, Rt = BORE_R / 1000;
+  const uSelf = G / (4 * Math.PI * R) * (Math.log(8 * R / a) - 0.558);   // Kelvin–Saffman, Gaussian core
+  const uImg = G / (2 * Math.PI * (Rt * Rt / R - R));                     // mirror ring outside the wall
+  const U = uSelf - uImg;
+  return { stroke, V, LD, Up, G, U, Dr: 1.2 * D, wall: uImg / uSelf,
+           transit: (H_TUBE / 1000) / U * (-Math.log(1 - SLOW) / SLOW), Re: Up * D / 1000 / NU };
+}
+function ringRegime(m){
+  if (m.LD < 1) return ['weak puff', 'stroke under one diameter'];
+  if (m.LD > F_NUM + 0.5) return ['ring + trailing jet', 'past the formation number ≈ 4'];
+  return ['clean ring', 'L/D within 1–4'];
+}
+const rollRate = U => -Math.min(14, 3 + 5 * U);   // rad/s on the core; ψ falling = inner side rising
+
+const RS = { D: 30, depth: 1, T: 0.15, auto: true, smoke: 0.9, press: null, rings: [], wait: 0.6 };
+const rc = $('rings'), rx = rc.getContext('2d');
+const RW = rc.width, RH = rc.height, SCL = 1.2, RCX = 255, Z0 = RH - 27;
+const px = (y, z) => [RCX + y * SCL, Z0 - z * SCL];
+const LEVER = [[6,5],[6,Z_PIV+5],[-8,Z_PIV+5],[-11,Z_PIV+2],[-62,Z_PIV+2],[-66,Z_PIV+8],[-150,Z_PIV+8],
+  [-154,Z_PIV+11],[-181,Z_PIV+11],[-184,Z_PIV+8],[-184,Z_PIV-5],[-176,Z_PIV-8],[-72,Z_PIV-8],[-58,5]];
+
+function fire(){
+  if (RS.press) return;
+  RS.press = { t: 0, T: RS.T, depth: RS.depth, D: RS.D, m: ringModel(RS.D, RS.depth, RS.T), fired: false };
+}
+function launch(pr){
+  const m = pr.m;
+  const ring = { z: 0, age: 0, U0: m.U, R0: m.Dr / 2, alpha: RS.smoke * Math.min(1, m.LD),
+                 roll: rollRate(m.U), parts: [], tail: [] };
+  for (let i = 0; i < 280; i++)
+    ring.parts.push({ phi: Math.random() * 6.283, psi: Math.random() * 6.283, k: 0.25 + 0.75 * Math.sqrt(Math.random()) });
+  if (m.LD > F_NUM + 0.5){                                   // slug left over after pinch-off
+    const extra = (m.LD - F_NUM) * pr.D / 1000 / m.Up;
+    for (let i = 0; i < 90; i++) ring.tail.push({ d: Math.random() * extra * 1.6, x: (Math.random() - 0.5) * pr.D * 0.5 });
+  }
+  RS.rings.push(ring);
+  RS.smoke *= 1 - m.V / V_CH;                                // refill air dilutes the chamber
+}
+function ringStep(dt){
+  RS.smoke += (1 - RS.smoke) * dt / FILL_TAU;
+  if (RS.auto){ RS.wait -= dt; if (RS.wait <= 0 && !RS.press){ fire(); RS.wait = 4; } }
+  const pr = RS.press;
+  if (pr){
+    pr.t += dt;
+    if (!pr.fired && pr.t >= pr.T){ pr.fired = true; launch(pr); }
+    if (pr.t > pr.T + 0.7) RS.press = null;
+  }
+  for (const r of RS.rings){
+    r.z += r.U0 * (1 - SLOW * Math.min(r.z / H_TUBE, 1)) * 1000 * dt;
+    r.age += dt;
+    for (const q of r.parts) q.psi += r.roll * dt;
+  }
+  RS.rings = RS.rings.filter(r => r.z < H_TUBE + 30);
+}
+function keyAngle(){
+  const pr = RS.press; if (!pr) return 0;
+  const ease = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+  const k = pr.t <= pr.T ? ease(pr.t / pr.T) : 1 - ease((pr.t - pr.T) / 0.7);
+  return Math.asin(STROKE * pr.depth / 76) * k;
+}
+function rect(y0, y1, z0, z1){ const [a, b] = px(y0, z1), [c, d] = px(y1, z0); rx.fillRect(a, b, c - a, d - b); }
+function poly(pts){ rx.beginPath(); pts.forEach(([y, z], i) => { const [X, Y] = px(y, z); i ? rx.lineTo(X, Y) : rx.moveTo(X, Y); }); }
+
+function ringDraw(){
+  rx.fillStyle = COL.panel; rx.fillRect(0, 0, RW, RH);
+  const th = keyAngle(), lift = -Y_PIV * Math.sin(th);
+  /* table */
+  rx.strokeStyle = COL.faint; rx.lineWidth = 1; rx.globalAlpha = 0.6;
+  rx.beginPath(); rx.moveTo(8, Z0 + 0.5); rx.lineTo(RW - 8, Z0 + 0.5); rx.stroke();
+  /* chamber smoke */
+  rx.fillStyle = COL.smokeB; rx.globalAlpha = 0.06 + 0.28 * RS.smoke; rect(-114, 114, Z_FT, Z_LB);
+  /* printed structure, cut through the key's plane */
+  rx.fillStyle = COL.pet; rx.globalAlpha = 0.85;
+  rect(-150, -55, Z_F, Z_FT); rect(55, 68, Z_F, Z_FT); rect(108, 119.2, Z_F, Z_FT);     // floor + tongue
+  rect(-58.5, -55, Z_MEM, Z_F); rect(55, 58.5, Z_MEM, Z_F);                                // membrane spigot
+  rect(-116.4, -114, Z_FT, Z_LB); rect(114, 116.4, Z_FT, Z_LB);                            // chamber wall
+  rect(-119.2, -35.2, Z_LB, Z_LT); rect(35.2, 67, Z_LB, Z_LT); rect(109, 119.2, Z_LB, Z_LT); // lid
+  rect(64, 112, Z_LT, Z_LT + 3);                                                            // hatch
+  rect(-52.8, -50.4, Z_LT, Z_LT + 10); rect(50.4, 52.8, Z_LT, Z_LT + 10);                 // tube collars
+  rect(-47.6, -45.2, Z_LT, Z_LT + 10); rect(45.2, 47.6, Z_LT, Z_LT + 10);
+  rect(66, 68.4, 29, Z_F); rect(107.6, 110, 29, Z_F);                                      // cone well
+  rx.globalAlpha = 0.4;                                                                     // feet and front posts
+  rect(60, 87, 0, Z_F); rect(-87, -60, 0, Z_F); rect(-150, -127, 0, Z_F);                 // sit beside the cut
+  rx.globalAlpha = 0.85;
+  const ro = RS.D / 2;                                                                      // orifice insert
+  rect(-35, -ro, Z_LT - 3, Z_LT); rect(ro, 35, Z_LT - 3, Z_LT);                           // square exit edge
+  for (const s of [-1, 1]){                                                                 // body, bellmouth inlet
+    const pts = [[s * 28, Z_LB - 12], [s * 28, Z_LT - 3], [s * ro, Z_LT - 3], [s * ro, Z_LB - 6]];
+    for (let i = 1; i <= 8; i++){ const t = i / 16 * Math.PI; pts.push([s * (ro + 6 - 6 * Math.cos(t)), Z_LB - 6 - 6 * Math.sin(t)]); }
+    poly(pts); rx.closePath(); rx.fill();
+  }
+  rx.globalAlpha = 1;
+  rx.strokeStyle = COL.pet; rx.lineWidth = 2.4;
+  poly([[67.2, 29], [83, 13], [93, 13], [108.8, 29]]); rx.stroke();                        // well funnel
+  /* cap, cone, ember */
+  rx.fillStyle = COL.faint; rect(72.5, 103.5, 24.5, 30.5);
+  rx.fillStyle = COL.ember; rx.globalAlpha = 0.75; poly([[80.5, 30.5], [95.5, 30.5], [88, 52.4]]); rx.fill();
+  rx.globalAlpha = 1; const [ex, ey] = px(88, 52.4);
+  rx.beginPath(); rx.arc(ex, ey, 3.2, 0, 7); rx.fill();
+  rx.globalAlpha = 0.25; rx.beginPath(); rx.arc(ex, ey, 8, 0, 7); rx.fill(); rx.globalAlpha = 1;
+  /* lever, rotated about its pin */
+  const c = Math.cos(th), sn = Math.sin(th);
+  const rot = ([y, z]) => [Y_PIV + (y - Y_PIV) * c - (z - Z_PIV) * sn, Z_PIV + (y - Y_PIV) * sn + (z - Z_PIV) * c];
+  rx.fillStyle = COL.pet; poly(LEVER.map(rot)); rx.closePath(); rx.fill();
+  rx.fillStyle = COL.panel; const [pX, pY] = px(Y_PIV, Z_PIV);
+  rx.beginPath(); rx.arc(pX, pY, 2.6, 0, 7); rx.fill();
+  rx.fillStyle = COL.tube; const [sX, sY] = px(-134, 5.05);                                 // stop pin
+  rx.beginPath(); rx.arc(sX, sY, 2.5 * SCL, 0, 7); rx.fill();
+  /* pusher disc and membrane */
+  rx.fillStyle = COL.tube; rect(-DISC_R, DISC_R, Z_DT - 4 + lift, Z_DT + lift);
+  rx.strokeStyle = COL.latex; rx.lineWidth = 2.2;
+  poly([[-MEM_R - 1.25, Z_MEM], [-DISC_R, Z_DT + lift + 0.6], [DISC_R, Z_DT + lift + 0.6], [MEM_R + 1.25, Z_MEM]]); rx.stroke();
+  /* rings */
+  for (const r of RS.rings){
+    const sr = r.z / H_TUBE, R = r.R0 * (1 + GROW * Math.min(sr, 1)), a = 0.38 * R;
+    const fade = (sr > 0.88 ? Math.max(0, (1.02 - sr) / 0.14) : 1) * Math.min(1, r.age / 0.08);
+    const zc = Z_LT + r.z;
+    for (const t of r.tail){                                   // trailing jet behind a pinched-off ring
+      const tz = (r.age - t.d) * r.U0 * 1000 * 0.45;
+      if (tz <= 0 || tz > r.z - a) continue;
+      const [X, Y] = px(t.x * (1 + tz / 250), Z_LT + tz);
+      rx.fillStyle = COL.smokeB;
+      rx.globalAlpha = r.alpha * 0.55 * Math.exp(-r.age / 1.4) * fade;
+      rx.beginPath(); rx.arc(X, Y, 1.6, 0, 7); rx.fill();
+    }
+    for (const q of r.parts){
+      const rr = R + a * q.k * Math.cos(q.psi);
+      const [X, Y0r] = px(rr * Math.cos(q.phi), zc + a * q.k * Math.sin(q.psi));
+      const Y = Y0r - rr * Math.sin(q.phi) * SCL * 0.22;       // seen from a little above
+      if (Y < 22) continue;
+      const front = Math.sin(q.phi) < 0;
+      rx.fillStyle = front ? COL.smoke : COL.smokeB;
+      rx.globalAlpha = r.alpha * (front ? 0.8 : 0.32) * fade;
+      rx.beginPath(); rx.arc(X, Y, front ? 2.2 : 1.6, 0, 7); rx.fill();
+    }
+  }
+  rx.globalAlpha = 1;
+  /* tube, open crown */
+  rx.fillStyle = COL.tube; rx.globalAlpha = 0.9;
+  rect(-50, -48, Z_LT, Z_LT + H_TUBE); rect(48, 50, Z_LT, Z_LT + H_TUBE);
+  rx.globalAlpha = 0.6; rx.strokeStyle = COL.tube; rx.lineWidth = 1.2;
+  const [tx, ty] = px(0, Z_LT + H_TUBE);
+  rx.beginPath(); rx.ellipse(tx, ty, 50 * SCL, 5, 0, 0, 7); rx.stroke();
+  rx.globalAlpha = 1;
+  $('rSmoke').textContent = Math.round(RS.smoke * 100);
+}
+function ringReadouts(){
+  const m = ringModel(RS.D, RS.depth, RS.T), [reg, regU] = ringRegime(m);
+  $('rLD').textContent = m.LD.toFixed(1);
+  $('rDr').textContent = m.Dr.toFixed(0);
+  $('rDrU').textContent = `mm · ${(m.Dr / (2 * BORE_R)).toFixed(2)} of bore`;
+  $('rU').textContent = m.U.toFixed(2);
+  $('rUU').textContent = `m/s · wall costs ${Math.round(m.wall * 100)} %`;
+  $('rT').textContent = m.transit.toFixed(2);
+  $('rTU').textContent = m.transit < 0.25 ? 's · gone in a blink — press slower'
+    : m.transit > 2.5 ? 's · lazy; room drafts will scatter it' : 's up the 394 mm tube';
+  $('rReg').textContent = reg; $('rRegU').textContent = regU;
+  $('depthVal').textContent = Math.round(RS.depth * 100);
+  $('strokeVal').textContent = m.stroke.toFixed(1);
+  $('pressVal').textContent = RS.T.toFixed(2);
+}
+$('oriSeg').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  RS.D = +b.dataset.d;
+  $('oriSeg').querySelectorAll('button').forEach(o => o.classList.toggle('on', o === b));
+  ringReadouts();
+}));
+$('depthSlider').addEventListener('input', e => { RS.depth = +e.target.value / 100; ringReadouts(); });
+$('pressSlider').addEventListener('input', e => { RS.T = +e.target.value; ringReadouts(); });
+$('fireBtn').addEventListener('click', () => { fire(); RS.wait = 4; });
+$('autoChk').addEventListener('change', e => { RS.auto = e.target.checked; RS.wait = 1; });
+
 /* ---------- self-test ---------- */
 function selfTest(){
   let n = 0, fail = 0;
@@ -536,6 +811,16 @@ function selfTest(){
   const p0 = { r: 20, th: 0.3, y: 50 }; const th0 = p0.th;
   P[0].r = 20; P[0].th = 0.3; P[0].y = 50; step(1/60);
   ok(P[0].th < th0, 'handedness: θ decreases — clockwise seen from above');
+  const m30 = ringModel(30, 1, 0.15);
+  ok(Math.abs(A_EFF * STROKE / 1000 - 85.8) < 0.3, 'full stroke displaces 86 mL');
+  ok(Math.abs(m30.LD - 4.05) < 0.05, 'Ø30 at full press: slug L/D ≈ 4');
+  ok(Math.abs(m30.wall - 0.134) < 0.01, 'mirror image slows the 36 mm ring ≈ 13 %');
+  ok(m30.transit > 0.8 && m30.transit < 1.2, 'a soft press climbs the tube in ≈ 1 s');
+  ok(ringRegime(ringModel(25, 1, 0.15))[0] === 'ring + trailing jet', 'Ø25 full press overshoots the formation number');
+  ok(ringModel(30, 1, 0.02).U > 2.5, 'a 20 ms tap fires a ring faster than 2.5 m/s');
+  ok(ringModel(40, 1, 0.15).wall > ringModel(30, 1, 0.15).wall, 'wider rings lose more to the wall');
+  const psi = Math.PI, d = rollRate(0.5) / 60;
+  ok(Math.sin(psi + d) > Math.sin(psi), 'poloidal roll: the inner side of the core rises');
   return { n, fail };
 }
 
@@ -543,6 +828,9 @@ function selfTest(){
 drawRank(68);
 for (let i = 0; i < 420; i++) step(1/30);         // prewarm: the helix is standing at first paint
 draw();
+ringReadouts();
+for (let i = 0; i < 40; i++) ringStep(1/30);    // prewarm: the first ring is mid-tube at first paint
+ringDraw();
 const st = selfTest();
 $('footTest').textContent = `Self-test at load: ${st.n} asserts, ${st.fail} failures.`;
 requestAnimationFrame(loop);

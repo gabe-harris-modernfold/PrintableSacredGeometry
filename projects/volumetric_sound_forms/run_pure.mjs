@@ -1,7 +1,8 @@
 // Runs the page's DOM-free core under node and writes the demo forms as STL.
 //
 //   node run_pure.mjs                 -> js_cylinder_<layout>[_hollow].stl, demo_field.f32, demo_field.json,
-//                                        js_cavity_<open|closed|halves|moment>.stl, demo_cavity.json, demo_cavity_field.f32
+//                                        js_cavity_<open|closed|halves|moment>.stl, demo_cavity.json, demo_cavity_field.f32,
+//                                        js_wave_*.stl, demo_wave.json, demo_voice.f32
 //   node run_pure.mjs some.wav        -> also js_<basename>.stl from a real WAV via VSF.parseWav
 //
 // The block between /* @pure-begin */ and /* @pure-end */ in
@@ -118,6 +119,39 @@ fs.writeFileSync(path.join(here, 'demo_field.json'), JSON.stringify(summary, nul
   fs.writeFileSync(path.join(here, 'demo_cavity.json'), JSON.stringify(cav));
 }
 
+// ── the waveform solid: the spoken-vowel demo four ways (three with thickness by pitch); its samples, windows,
+//    pitch track and profiles for numpy ──
+{
+  const x = VSF.synthVoice(sr, VSF.VOICE_SECONDS);
+  fs.writeFileSync(path.join(here, 'demo_voice.f32'), Buffer.from(x.buffer, x.byteOffset, x.byteLength));
+  const W0 = VSF.defaults();
+  const wruns = [
+    { name: 'js_wave_fins.stl', P: { ...W0 } },
+    { name: 'js_wave_fins_halves.stl', P: { ...W0, whalf: 1 } },
+    { name: 'js_wave_flat_rms_fixed_halves.stl', P: { ...W0, whalf: 1, wtip: 0, wn: 48, wmeas: 'rms', wgam: 0.6, wpitch: 0 } },
+    { name: 'js_wave_waveform.stl', P: { ...W0, wmode: 'wave', t0: 0.5, t1: 0.8 } },
+  ];
+  const wav = { sr, seconds: VSF.VOICE_SECONDS, runs: [] };
+  for (const run of wruns){
+    const t = Date.now(), r = VSF.waveShape(x, sr, run.P), s = r.stats;
+    const buf = VSF.writeSTL(r.mesh.pos, r.mesh.idx, 'Promethean Theoria - volumetric sound form - demo - waveform');
+    fs.writeFileSync(path.join(here, run.name), Buffer.from(buf));
+    const bodies = s.half ? 2 : 1;
+    check(s.badEdges === 0 && s.badDir === 0, `${run.name}: ${s.badEdges} odd, ${s.badDir} reversed edges`);
+    check(s.shells === bodies && s.euler === 2 * bodies, `${run.name}: ${s.shells} shells, Euler ${s.euler}`);
+    check(s.vol > 0 && s.fits && Math.abs(s.vol / s.exact - 1) < 1e-5, `${run.name}: volume ${s.vol} vs exact lathe ${s.exact}, fits ${s.fits}`);
+    if (s.half) check(s.over < 0.5 && Math.abs(s.min[2]) < 1e-6, `${run.name}: halves overhang ${s.over.toFixed(3)} deg, z from ${s.min[2]}`);
+    check(buf.byteLength === 84 + 50 * s.F, `${run.name}: STL byte length`);
+    if (run.P.wmode !== 'wave' && run.P.wpitch) check(s.pitched && s.voiced > 0.8 * s.n, `${run.name}: pitched ${s.pitched}, ${s.voiced} of ${s.n} windows voiced`);
+    const pitchNote = s.pitched ? `  pitch ${s.fLo.toFixed(0)}-${s.fHi.toFixed(0)} Hz (${s.voiced} voiced)` : '';
+    console.log(`${run.name.padEnd(34)} V ${String(s.V).padStart(7)}  F ${String(s.F).padStart(7)}  Euler ${s.euler}  shells ${s.shells}  odd ${s.badEdges}  rev ${s.badDir}  vol ${(s.vol / 1000).toFixed(1).padStart(6)} cm3 (lathe ${((s.vol / s.exact - 1)).toExponential(1)})  over ${s.over.toFixed(0).padStart(2)} deg  ${s.mode === 'wave' ? s.n + ' stations' : s.fins + ' fins'}${pitchNote}  size ${s.size.map(v => v.toFixed(1)).join(' x ')}  ${Date.now() - t} ms`);
+    wav.runs.push({ name: run.name, P: run.P, s0: r.amp.s0, s1: r.amp.s1, raw: Array.from(r.amp.raw), amp: Array.from(r.amp.a),
+      pitch: r.pitch ? { f: Array.from(r.pitch.f), voiced: Array.from(r.pitch.voiced), dip: Array.from(r.pitch.dip), fMed: r.pitch.fMed } : null,
+      thick: r.thick ? Array.from(r.thick.t) : null, X: Array.from(r.prof.X), R: Array.from(r.prof.R), stats: s });
+  }
+  fs.writeFileSync(path.join(here, 'demo_wave.json'), JSON.stringify(wav));
+}
+
 if (process.argv[2]){
   const wavPath = process.argv[2];
   const ab = fs.readFileSync(wavPath);
@@ -129,5 +163,5 @@ if (process.argv[2]){
   check(s.badEdges === 0 && s.badDir === 0 && s.euler === 2 && s.vol > 0, `${name}: not closed`);
   console.log(`${name.padEnd(34)} ${w.sr} Hz ${w.channels} ch ${(w.samples.length / w.sr).toFixed(1)} s -> F ${s.F}  Euler ${s.euler}  vol ${(s.vol / 1000).toFixed(1)} cm3  size ${s.size.map(v => v.toFixed(1)).join(' x ')}`);
 }
-console.log(failures ? `${failures} FAILURE(S)` : 'all forms closed, oriented, inside the bed (cavity halves: two bodies; sealed: one body, its cavity a shell of its own)');
+console.log(failures ? `${failures} FAILURE(S)` : 'all forms closed, oriented, inside the bed (halves: two bodies; sealed cavity: one body, its cavity a shell of its own)');
 process.exit(failures ? 1 : 0);

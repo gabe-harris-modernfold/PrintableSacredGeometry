@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <title>Volumetric Sound Forms — print what you hear</title>
-<meta name="description" content="Upload an mp3 or wav and print its form: its spectrogram raised on the wall of a cylinder, or the standing-wave pressure it sets ringing inside a vessel, the loud lobes fused to the shell. A watertight STL, computed in the browser; nothing is uploaded.">
+<meta name="description" content="Upload an mp3 or wav and print its form: the waveform turned on a lathe into a stack of discs as wide as it is loud and as thick as its pitch is low, its spectrogram raised on the wall of a cylinder, or the standing-wave pressure it sets ringing inside a vessel. A watertight STL, computed in the browser; nothing is uploaded.">
 <link rel="canonical" href="https://promethean-theoria.netlify.app/volumetric-sound-forms.html">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Promethean Theoria">
 <meta property="og:title" content="Volumetric Sound Forms — print what you hear">
-<meta property="og:description" content="Upload a sound and print it two ways: the spectrogram stood up as a cylinder, or the three-dimensional standing wave it makes inside a vessel. Watertight STL sized for a 320 mm printer, computed live in the browser.">
+<meta property="og:description" content="Upload a sound and print it three ways: the waveform spun into a stack of discs, the spectrogram stood up as a cylinder, or the three-dimensional standing wave it makes inside a vessel. Watertight STL sized for a 320 mm printer, computed live in the browser.">
 <meta property="og:image" content="https://promethean-theoria.netlify.app/previews/volumetric-sound-forms.webp">
 <meta property="og:url" content="https://promethean-theoria.netlify.app/volumetric-sound-forms.html">
 <meta name="twitter:card" content="summary_large_image">
@@ -264,8 +264,8 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
 <header class="plate" id="p0" style="border-top:0">
   <div class="plate__head">
     <span class="plate__no">PLATE&nbsp;0</span>
-    <span class="plate__ttl" id="p0ttl">The sound as a solid · spectral cylinder</span>
-    <span class="plate__note" id="heroNote">100 Hz tone · 6.0 s</span>
+    <span class="plate__ttl" id="p0ttl">The sound as a solid · waveform solid</span>
+    <span class="plate__note" id="heroNote">spoken “ah” · 2.4 s</span>
     <button class="btn" id="themeBtn" type="button" title="Cycle the colour theme">theme · auto</button>
   </div>
   <div class="stage" id="stg3d" style="height:min(64vh,560px)">
@@ -280,16 +280,31 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
     <div class="gonio__grp">
       <input type="file" id="file" accept="audio/*,.mp3,.wav,.ogg,.flac,.m4a">
       <label class="btn btn--act" for="file">Upload mp3 / wav</label>
+      <button class="btn" id="voiceBtn" type="button" title="a synthetic spoken 'ah' on a falling pitch, 2.4 seconds long">spoken “ah”</button>
       <button class="btn" id="demoBtn" type="button" title="a pure 100 Hz sine, six seconds long">100 Hz tone</button>
     </div>
-    <div class="gonio__grp"><span class="gonio__meta" id="audioMeta">pure 100 Hz sine · 44.1 kHz · mono · 6.0 s</span></div>
+    <div class="gonio__grp"><span class="gonio__meta" id="audioMeta">synthetic spoken “ah” · 44.1 kHz · mono · 2.4 s</span></div>
   </div>
 
   <div class="gonio">
     <span class="gonio__row">FORM</span>
     <div class="gonio__grp">
       <span class="gonio__lab">Form</span>
-      <span class="seg" id="formSeg"><button class="btn btn--aether" data-v="chart" type="button" title="the spectrogram stood up: time up the axis, pitch around it, loudness as relief">spectral cylinder</button><button class="btn btn--aether" data-v="cavity" type="button" title="the standing-wave pressure of the clip inside a rigid vessel, its loud lobes fused to the shell">cavity form</button></span>
+      <span class="seg" id="formSeg"><button class="btn btn--aether" data-v="wave" type="button" title="the waveform spun about its time axis: every moment a disc as wide as it is loud">waveform solid</button><button class="btn btn--aether" data-v="chart" type="button" title="the spectrogram stood up: time up the axis, pitch around it, loudness as relief">spectral cylinder</button><button class="btn btn--aether" data-v="cavity" type="button" title="the standing-wave pressure of the clip inside a rigid vessel, its loud lobes fused to the shell">cavity form</button></span>
+    </div>
+    <div class="gonio__grp" data-form="wave">
+      <span class="gonio__lab">Profile</span>
+      <span class="seg" id="wmodeSeg"><button class="btn" data-v="fins" type="button" title="one thin disc per window of the clip">fins</button><button class="btn" data-v="wave" type="button" title="the radius follows the waveform's peak every 0.3 mm along the axis; trim to a short stretch to see single cycles">waveform</button></span>
+    </div>
+    <div class="gonio__grp" id="wpitchGrp" data-form="wave">
+      <span class="gonio__lab">Thickness</span>
+      <span class="seg" id="wpitchSeg"><button class="btn" data-v="0" type="button" title="every disc the Fin thickness">fixed</button><button class="btn" data-v="1" type="button" title="each disc as thick as its moment's pitch is low, like a wavelength: an octave down, twice as thick">by pitch</button></span>
+    </div>
+    <div class="gonio__grp" id="wnGrp" data-form="wave"><span class="gonio__lab">Fins</span><input class="rng" id="wn" type="range" min="16" max="200" step="1" value="72" aria-label="Number of fins"><span class="rdout" id="wnv">72</span></div>
+    <div class="gonio__grp" data-form="wave"><span class="gonio__lab">Curve</span><input class="rng" id="wgam" type="range" min="0.3" max="2" step="0.05" value="1" aria-label="Curve exponent: below 1 lifts the quiet parts"><span class="rdout" id="wgamv">1.00</span></div>
+    <div class="gonio__grp" data-form="wave">
+      <span class="gonio__lab">Print as</span>
+      <span class="seg" id="whalfSeg"><button class="btn" data-v="0" type="button" title="lying along its axis, as displayed: the fins hang and need support">whole</button><button class="btn" data-v="1" type="button" title="cut through the axis; both halves lie on their flat cut faces, every half-disc upright: no supports">halves</button></span>
     </div>
     <div class="gonio__grp" data-form="chart">
       <span class="gonio__lab">Layout</span>
@@ -343,11 +358,15 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
     </div>
     <div class="gonio">
       <span class="gonio__row">ANALYSIS</span>
-      <div class="gonio__grp">
+      <div class="gonio__grp" data-form="wave">
+      <span class="gonio__lab">Height</span>
+      <span class="seg" id="wmeasSeg"><button class="btn" data-v="peak" type="button" title="the peak of each window, as an audio editor draws the waveform">peak</button><button class="btn" data-v="rms" type="button" title="the root-mean-square of each window: smoother, nearer to loudness">rms</button></span>
+    </div>
+      <div class="gonio__grp" data-form="chart cavity">
       <span class="gonio__lab">Window</span>
       <span class="seg" id="fftSeg"><button class="btn" data-v="1024" type="button">1024</button><button class="btn" data-v="2048" type="button">2048</button><button class="btn" data-v="4096" type="button">4096</button></span>
     </div>
-      <div class="gonio__grp"><span class="gonio__lab">Time steps</span><input class="rng" id="nt" type="range" min="64" max="1024" step="32" value="256" aria-label="Time steps"><span class="rdout" id="ntv">256</span></div>
+      <div class="gonio__grp" data-form="chart cavity"><span class="gonio__lab">Time steps</span><input class="rng" id="nt" type="range" min="64" max="1024" step="32" value="256" aria-label="Time steps"><span class="rdout" id="ntv">256</span></div>
       <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Bands</span><input class="rng" id="nf" type="range" min="32" max="512" step="16" value="96" aria-label="Frequency bands"><span class="rdout" id="nfv">96</span></div>
       <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Low</span><input class="rng" id="fmin" type="range" min="0" max="1000" step="1" value="0" aria-label="Lowest frequency"><span class="rdout" id="fminv">40 Hz</span></div>
       <div class="gonio__grp" data-form="chart"><span class="gonio__lab">High</span><input class="rng" id="fmax" type="range" min="0" max="1000" step="1" value="1000" aria-label="Highest frequency"><span class="rdout" id="fmaxv">12 kHz</span></div>
@@ -363,6 +382,12 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
     </div>
     <div class="gonio">
       <span class="gonio__row">SIZE</span>
+      <div class="gonio__grp" data-form="wave"><span class="gonio__lab">Length</span><input class="rng" id="wlen" type="range" min="60" max="300" step="5" value="240" aria-label="Length along the axis, mm"><span class="rdout" id="wlenv">240 mm</span></div>
+      <div class="gonio__grp" data-form="wave"><span class="gonio__lab">Radius</span><input class="rng" id="wrad" type="range" min="10" max="90" step="1" value="52" aria-label="Radius of the loudest disc, mm"><span class="rdout" id="wradv">52 mm</span></div>
+      <div class="gonio__grp" data-form="wave"><span class="gonio__lab">Core</span><input class="rng" id="wcore" type="range" min="1" max="10" step="0.5" value="3" aria-label="Spindle radius, mm"><span class="rdout" id="wcorev">3.0 mm</span></div>
+      <div class="gonio__grp" id="wfinGrp" data-form="wave"><span class="gonio__lab">Fin</span><input class="rng" id="wfin" type="range" min="0.6" max="4" step="0.1" value="1.2" aria-label="Fin thickness at the rim, mm; with thickness by pitch, the thinnest fin"><span class="rdout" id="wfinv">1.2 mm</span></div>
+      <div class="gonio__grp" id="wtapGrp" data-form="wave"><span class="gonio__lab">Flare</span><input class="rng" id="wtap" type="range" min="1" max="30" step="0.5" value="4" aria-label="Fin flank angle, degrees"><span class="rdout" id="wtapv">4.0°</span></div>
+      <div class="gonio__grp" data-form="wave"><span class="gonio__lab">Tips</span><input class="rng" id="wtip" type="range" min="0" max="40" step="1" value="10" aria-label="Length of the pointed ends, mm; 0 = flat"><span class="rdout" id="wtipv">10 mm</span></div>
       <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Radius</span><input class="rng" id="r0" type="range" min="15" max="120" step="1" value="45" aria-label="Base radius, mm"><span class="rdout" id="r0v">45 mm</span></div>
       <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Height</span><input class="rng" id="h" type="range" min="40" max="300" step="1" value="160" aria-label="Height, mm"><span class="rdout" id="hv">160 mm</span></div>
       <div class="gonio__grp" data-form="chart"><span class="gonio__lab">Foot</span><input class="rng" id="foot" type="range" min="0" max="20" step="0.5" value="6" aria-label="Plain foot, mm"><span class="rdout" id="footv">6 mm</span></div>
@@ -391,6 +416,7 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
       <span class="gonio__lab">Overhang</span>
       <span class="seg" id="slopeSeg"><button class="btn" data-v="0" type="button" title="the wall exactly as analysed">off</button><button class="btn" data-v="45" type="button" title="fill under every ledge so no face leans more than 45° from vertical: prints without supports">45°</button><button class="btn" data-v="55" type="button" title="no face past 55°">55°</button><button class="btn" data-v="65" type="button" title="no face past 65°">65°</button></span>
     </div>
+      <div class="gonio__grp" data-form="wave"><span class="gonio__lab">Facets</span><input class="rng" id="wseg" type="range" min="48" max="360" step="8" value="160" aria-label="Facets around the axis"><span class="rdout" id="wsegv">160</span></div>
       <div class="gonio__grp" data-form="cavity" hidden><span class="gonio__lab">Voxel</span><input class="rng" id="cvox" type="range" min="0.6" max="3" step="0.1" value="1.2" aria-label="Voxel size, mm"><span class="rdout" id="cvoxv">1.2 mm</span></div>
       <div class="gonio__grp">
       <span class="gonio__lab">Fit bed</span>
@@ -412,9 +438,12 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
   </div>
 
   <div class="cap" id="cap0">
-    <b>Fig. 0</b> — Time climbs the axis; frequency wraps the circumference; loudness pushes the wall outward.
-    Every triangle is placed by rule on a closed grid, so the body is watertight by construction and the
-    manifold cell above is a check, not a repair. The file you download is binary STL in millimetres.
+    <b>Fig. 0</b> — The waveform spun about its time axis. Time runs along the spindle; every window of the clip
+    is one thin disc, as wide as that moment is loud and as thick as its pitch is low, so a strong vowel is a broad
+    disc, a deep voice a heavy one, and a hush is bare spindle.
+    Every triangle is placed by rule on a lathe, so the body is watertight by construction and the manifold cell
+    above is a check, not a repair. Print it as <em>halves</em>: both lie on their flat cut faces, every half-disc
+    upright, and need no supports. The file you download is binary STL in millimetres.
   </div>
 </header>
 
@@ -422,15 +451,16 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
 <div class="plate" id="p1" style="border-top:0">
   <div class="plate__head">
     <span class="plate__no">PLATE&nbsp;I</span>
-    <span class="plate__ttl" id="p1ttl">The unrolled surface · what the wall is made of</span>
-    <span class="plate__note" id="specNote">mirror · 256 × 192</span>
+    <span class="plate__ttl" id="p1ttl">The waveform and its outline · what the discs are cut from</span>
+    <span class="plate__note" id="specNote">72 fins</span>
   </div>
   <div class="stage" style="height:200px"><canvas id="spec"></canvas></div>
   <div class="stage" style="height:56px; border-top:1px solid var(--rule-soft)"><canvas id="wave"></canvas></div>
   <div class="cap" id="cap1">
-    <b>Fig. 1</b> — The cylinder wall, cut along one line and laid flat. Each row is one moment; each column
-    is one band; brightness is loudness above the floor. The strip beneath is the waveform, with the trimmed
-    region lit. Tune the floor, gamma and blur under <em>More controls</em> until the picture reads; then the solid will too.
+    <b>Fig. 1</b> — The waveform as an audio editor draws it, with the outline of the solid laid over it: every
+    disc's rim sits on the loudest instant of its window, and the profile spun about the centre line is the solid
+    above. The violet line is the pitch that set each disc's thickness; dots mark the windows that had a pitch of
+    their own. The strip beneath is the whole clip, with the trimmed region lit; trim to one word under <em>More controls</em>.
   </div>
 </div>
 
@@ -440,29 +470,52 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
     <p class="eyebrow">A tool in two plates · acoustics &amp; the printable solid</p>
     <h1 class="h-act">Volumetric<br>Sound Forms</h1>
     <p class="lede">
-      Give the page a recording and it listens the way a spectrogram does: in short overlapping windows,
-      each sorted into bands from low to high. Then it stands that picture up. Time runs up a column,
-      pitch runs around it, and the loudness of every band raises a ridge on the wall. What comes out is a
-      solid you can hold, sized for a 320 mm printer, watertight by construction.
+      Give the page a recording and it draws what every audio editor draws: the waveform, the height of the sound
+      against time. Then it turns that picture on a lathe. Each window of the clip becomes a thin disc as wide as that
+      moment is loud and as thick as its pitch is low, threaded on a spindle, so a spoken word comes out as a stack of fins that swells where the voice
+      is strong and thins to a needle where it falls silent. What comes out is a solid you can hold, sized for a
+      320 mm printer, watertight by construction.
     </p>
     <p>
-      That is one reading of a sound: a chart made solid. The page offers a second, closer to what sound is. Inside a
-      vessel a frequency is not a stripe but a <em>standing wave</em>, pressure that swells in lobes and falls away at
-      nodal surfaces where the air hardly moves, its shape fixed by the frequency and the vessel. Choose
-      <em>cavity form</em> and the clip is played, in the arithmetic, by a small speaker in the wall of a cone-shaped
-      vessel; the loudest air becomes solid, fused to the vessel's shell.
+      That is the plainest reading of a sound, and the page offers two more. The <em>spectral cylinder</em> stands the
+      spectrogram up: time runs up a column, pitch runs around it, and the loudness of every band raises a ridge on the
+      wall. The <em>cavity form</em> is closer to what sound is in a room. Inside a vessel a frequency is not a stripe but
+      a <em>standing wave</em>, pressure that swells in lobes and falls away at nodal surfaces where the air hardly moves;
+      the clip is played, in the arithmetic, by a small speaker in the wall of a cone-shaped vessel, and the loudest air
+      becomes solid, fused to the vessel's shell.
     </p>
     <p>
       Nothing is uploaded anywhere. The decoding, the transform, the mesh and the STL are all computed in this
-      tab, and the sound never leaves it. A six-second pure 100 Hz tone is loaded at the start so the plates have
-      something to show; replace it with your own file with the button above, or drop the file onto the plate.
+      tab, and the sound never leaves it. A synthetic spoken “ah”, 2.4 seconds long, is loaded at the start so the
+      plates have something to show, and a pure 100 Hz tone is a button away; replace either with your own file with
+      the button above, or drop the file onto the plate.
+    </p>
+  </div>
+</section>
+
+<section class="col sect" id="s0">
+  <div class="flow">
+    <p class="eyebrow">The waveform solid</p>
+    <h2 class="h-sub">A waveform turned on a lathe</h2>
+    <ol>
+      <li><span class="reg reg--fact">decoded</span> The browser's own codec turns the file into samples at 44.1 kHz; stereo is folded to mono, and the trim under <em>More controls</em> keeps the stretch you want: one word makes a better sculpture than a sentence.</li>
+      <li><span class="reg reg--fact">measured</span> The kept stretch is cut into as many equal windows as there are fins. A window's height is its <em>peak</em>, the largest swing of the waveform inside it, which is exactly what an audio editor draws; <em>rms</em> takes the root-mean-square instead, smoother and nearer to loudness. Heights are divided by the loudest window and raised to the <em>curve</em>: below 1 lifts the quiet parts, above 1 sharpens the loud ones.</li>
+      <li><span class="reg reg--fact">pitched</span> Each window's pitch is found by YIN: the waveform is compared with itself shifted by every period from 1/1200 to 1/50 of a second, and the first shift at which it nearly repeats is its period. A window that never repeats (a hiss, a breath, near silence) has no pitch of its own and borrows its neighbours'. With <em>thickness by pitch</em> a disc is as thick as its period is long, as a wavelength is: the clip's middle pitch gets the middle thickness, an octave lower doubles it and an octave higher halves it, held between the <em>fin</em> thickness and four fifths of the spacing so a gap always stays open.</li>
+      <li><span class="reg reg--proof">outlined</span> Each window becomes a fin centred in it: a disc of that thickness at the rim (<em>fin</em> millimetres when thickness is fixed), standing above the spindle by the window's height times the radius. Its flanks lean by the <em>flare</em> angle, widening toward the root until it meets its neighbours, so the fins are stiffest where they join and no two points of the outline share a place on the axis. A window quieter than a tenth of a millimetre leaves bare spindle, and the ends close in cones, the <em>tips</em>.</li>
+      <li><span class="reg reg--proof">turned</span> The outline is spun about the axis in 160 facets. Each ring is joined to the next by a band of quads and the ends by fans to the poles, so every edge is shared by exactly two triangles and the body is closed before any check runs. Its volume is checked against the exact volume of that stack of faceted frusta, to a part in a hundred thousand.</li>
+      <li><span class="reg reg--fact">laid down</span> Whole, the solid lies along its axis on its largest disc, as it is shown. As <em>halves</em> it is cut through the axis and both halves lie on their flat cut faces side by side; every half-disc then stands upright on the bed, no face leans past vertical, and it prints without supports. Glue the halves face to face.</li>
+    </ol>
+    <p>
+      <em>Waveform</em> profile drops the windows: the radius follows the peak at every 0.3 mm along the axis, so the
+      outline is the waveform itself at that resolution. Over a whole clip it reads as a dense, bristling envelope; trim
+      to a fraction of a second and the single cycles of the voice appear, each a ridge of its own.
     </p>
   </div>
 </section>
 
 <section class="col sect" id="s1">
   <div class="flow">
-    <p class="eyebrow">How it is made</p>
+    <p class="eyebrow">How the spectral cylinder is made</p>
     <h2 class="h-sub">From pressure to polygon in six moves</h2>
     <ol>
       <li><span class="reg reg--fact">decoded</span> The browser's own codec turns the mp3 or wav into samples at 44.1 kHz; stereo is folded to mono.</li>
@@ -538,6 +591,13 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
     <p class="eyebrow">Printing notes</p>
     <h2 class="h-sub">What the printer will and will not forgive</h2>
     <p>
+      The waveform solid is a stack of thin discs, and a disc lying on its side is an overhang: whole, the lower half of
+      every fin hangs in air. Print it as <em>halves</em>. Each half lies on its flat cut face, every half-disc stands
+      upright like a page in a rack, and the Overhang cell reads 0°. Keep the fin at three nozzle widths or more
+      (1.2 mm for a 0.4 mm nozzle; with thickness by pitch it is the thinnest disc, the highest note) and the core at 3 mm or more for a 240 mm piece; the flare thickens the roots where a
+      fin would snap. Glue the halves face to face.
+    </p>
+    <p>
       A loud transient next to a quiet one is a step in the wall. If the relief is deep and the time steps are
       many, that step can lean past 45° and the printer will droop into it. The cures are the ones on the plate:
       lower the relief, or under <em>More controls</em> raise the blur along the axis, use fewer time steps, or set <em>Overhang</em> to 45°, which fills
@@ -591,7 +651,7 @@ noscript .col{ padding-top:3rem; color:var(--forbid); }
   <div class="flow flow--tight">
     <p class="eyebrow">Colophon</p>
     <p style="font-size:0.86rem;color:var(--muted);line-height:1.6">
-      Zero dependencies, by house rule: the Fourier transform, the mesh builder, the manifold check, the STL writer,
+      Zero dependencies, by house rule: the Fourier transform, the lathe, the mesh builder, the manifold check, the STL writer,
       the Bessel functions, the mode solver, marching tetrahedra and the 3D view are hand-written in this one file. A numpy re-implementation in the repository regenerates
       the same demo and compares fields and vertices against this page's output; scipy, LAPACK, VTK and a scikit-fem
       finite-element model check the cavity form from outside. Colour follows the mineral-lattices
@@ -625,8 +685,11 @@ function defaults(){
     db: -60, gamma: 1, contrast: 1, bz: 1, bt: 1,
     r0: 45, depth: 12, h: 160, foot: 6, fade: 0.02, hollow: 0, wall: 2, flr: 3,
     fit: 1, bed: 300, t0: 0, t1: 0, slope: 0,
+    // the waveform solid, the form the page opens on
+    form: 'wave', wmode: 'fins', wn: 72, wmeas: 'peak', wgam: 1, wlen: 240, wrad: 52, wcore: 3, wfin: 1.2, wtap: 4,
+    wtip: 10, wseg: 160, whalf: 0, wpitch: 1,
     // the cavity form
-    form: 'chart', cr0: 50, cr1: 40, ch: 120, cwall: 2, cflr: 3, ctop: 'open', ctune: 60, cq: 30,
+    cr0: 50, cr1: 40, ch: 120, cwall: 2, cflr: 3, ctop: 'open', ctune: 60, cq: 30,
     cfill: 15, csmooth: 1, cvox: 1.2, csrc: 0.62, cmode: 'clip', ct: 0, chalf: 0,
   };
 }
@@ -1189,7 +1252,7 @@ function shape(an, sr, P, cache){
     fits: ext.size.every(v => v <= 320 + 1e-6), scale, massG: sc.vol / 1000 * 1.27,
     nR: padded.nR, nC: padded.nC, nRi: mesh.nRi, nFoot: g.nFoot, dz: g.dz, ms: now() - t, mapOk: map.ok,
   };
-  return { power, field, S: padded.S, nR: padded.nR, nC: padded.nC, nT: an.nT, nF, env: an.env, mesh, normals, stats, map };
+  return { form: 'chart', power, field, S: padded.S, nR: padded.nR, nC: padded.nC, nT: an.nT, nF, env: an.env, mesh, normals, stats, map };
 }
 function pipeline(samples, sr, P){
   const an = analyse(samples, sr, P);
@@ -1817,6 +1880,317 @@ function cavityPipeline(an, sr, P, progress){
   return r;
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   THE WAVEFORM SOLID. The picture an audio editor draws, a waveform's
+   height against time, spun about its time axis: every moment of the clip
+   becomes a disc whose radius is how loud that moment is, threaded on a
+   spindle. In fins mode each window of the clip is one thin disc; in
+   waveform mode the radius follows the peak at every station along the axis.
+   ════════════════════════════════════════════════════════════════════ */
+const VOICE_SECONDS = 2.4;                // the spoken-vowel demo's length
+const WAVE_STEP = 0.3;                    // waveform mode: mm between stations along the axis
+const WAVE_MIN_FIN = 0.1;                 // mm: a fin lower than this above the core is left out
+
+/* ─── the spoken-vowel demo: a long "ah" falling 0.9 of an octave (165 → 88 Hz, a 5.5 Hz vibrato on top)
+   with a short second breath, rough as a real voice is. Ten harmonics through two formants; the roughness is a random gain with knots every
+   16 ms, cosine-interpolated. Deterministic (a 32-bit LCG), so the page and node see the same samples. ─── */
+function synthVoice(sr, seconds){
+  const n = Math.floor(sr * seconds), out = new Float32Array(n);
+  let x = 0x9E3779B9 >>> 0;
+  const rnd = () => { x = (Math.imul(x, 1664525) + 1013904223) >>> 0; return x / 4294967296; };
+  const kDt = 0.016, nK = Math.ceil(seconds / kDt) + 2, knot = new Float64Array(nK);
+  for (let k = 0; k < nK; k++) knot[k] = 2 * rnd() - 1;
+  const bump = (t, c, a, d) => t < c ? Math.exp(-Math.pow((c - t) / a, 2)) : Math.exp(-Math.pow((t - c) / d, 1.6));
+  const H = 10, F1 = 750, F2 = 1150;
+  let ph = 0, peak = 0;
+  for (let i = 0; i < n; i++){
+    const t = i / sr, u = t / seconds;
+    const f0 = 165 * Math.pow(2, -0.9 * u) + 3 * Math.sin(TAU * 5.5 * t);
+    ph += TAU * f0 / sr;
+    let s = 0;
+    for (let h = 1; h <= H; h++){
+      const fh = h * f0;
+      s += (1 / (1 + Math.pow((fh - F1) / 160, 2)) + 0.6 / (1 + Math.pow((fh - F2) / 220, 2)) + 0.08) / h * Math.sin(h * ph);
+    }
+    const env = 0.07 * bump(t, 0.1, 0.04, 0.06) + bump(t, 0.58, 0.26, 1.1) + 0.2 * bump(t, 1.35, 0.2, 0.3);
+    const kf = t / kDt, k0 = Math.floor(kf), fr = kf - k0, sm = 0.5 - 0.5 * Math.cos(Math.PI * fr);
+    const rough = 1 + 0.42 * (knot[k0] * (1 - sm) + knot[k0 + 1] * sm);
+    out[i] = s * env * rough;
+    if (Math.abs(out[i]) > peak) peak = Math.abs(out[i]);
+  }
+  const g = peak > 0 ? 0.9 / peak : 0;
+  for (let i = 0; i < n; i++) out[i] *= g;
+  return out;
+}
+
+/* ─── amplitude per window: peak |s| (what an editor draws) or RMS, over the trimmed span,
+   normalised to the loudest window and shaped by the curve exponent ─── */
+function waveAmplitudes(samples, sr, P, n){
+  const { s0, s1 } = span(samples.length, sr, P.t0, P.t1);
+  const hop = (s1 - s0) / n, raw = new Float64Array(n), rms = P.wmeas === 'rms';
+  let mx = 0;
+  for (let i = 0; i < n; i++){
+    const a = Math.floor(s0 + i * hop), b = Math.max(a + 1, Math.floor(s0 + (i + 1) * hop));
+    let v = 0;
+    if (rms){ for (let s = a; s < b; s++) v += samples[s] * samples[s]; v = Math.sqrt(v / (b - a)); }
+    else for (let s = a; s < b; s++){ const q = Math.abs(samples[s]); if (q > v) v = q; }
+    raw[i] = v;
+    if (v > mx) mx = v;
+  }
+  const g = Math.max(0.2, +P.wgam || 1), a = new Float64Array(n);
+  for (let i = 0; i < n; i++) a[i] = mx > 0 ? Math.pow(raw[i] / mx, g) : 0;
+  return { a, raw, max: mx, s0, s1, hop, n };
+}
+
+/* ─── pitch per window, by YIN (de Cheveigné & Kawahara 2002). The difference function
+   d(τ) = Σ_{j<W} (x_j − x_{j+τ})² comes from one FFT cross-correlation and prefix sums of x², is divided by its
+   running mean, and the first dip under YIN_TH is refined by a parabola. Each frame is W + τmax samples centred
+   on its window, W = 2·τmax, so the lowest pitch fits twice over. A window quieter than PITCH_QUIET of the
+   loudest, or whose deepest dip stays above YIN_UNVOICED (noise, breath, a hiss), has no pitch of its own and
+   takes the log-interpolated pitch of its voiced neighbours. ─── */
+const PITCH_LO = 50, PITCH_HI = 1200;     // Hz: the search range
+const YIN_TH = 0.15, YIN_UNVOICED = 0.3;  // cumulative-mean-normalised dips: the threshold, and the voicing limit
+const PITCH_QUIET = 0.02;                 // share of the loudest window below which a window is not pitched
+function yinFrame(samples, start, W, tauMax, buf){
+  const len = samples.length, Lf = W + tauMax, N = buf.N, ar = buf.ar, ai = buf.ai, br = buf.br, bi = buf.bi, x = buf.x, cum = buf.cum, d = buf.d;
+  for (let j = 0; j < Lf; j++){ const s = start + j; x[j] = s >= 0 && s < len ? samples[s] : 0; }
+  for (let j = 0; j < N; j++){ ar[j] = j < W ? x[j] : 0; ai[j] = 0; br[j] = j < Lf ? x[j] : 0; bi[j] = 0; }
+  fft(ar, ai); fft(br, bi);
+  // r(τ) = Σ_j x_j x_{j+τ} = IFFT(conj(A)·B)(τ), and IFFT(Z) = conj(FFT(conj Z)) / N
+  for (let k = 0; k < N; k++){
+    const re = ar[k] * br[k] + ai[k] * bi[k], im = ar[k] * bi[k] - ai[k] * br[k];
+    ar[k] = re; ai[k] = -im;
+  }
+  fft(ar, ai);
+  cum[0] = 0;
+  for (let j = 0; j < Lf; j++) cum[j + 1] = cum[j] + x[j] * x[j];
+  const e0 = cum[W];
+  let run = 0;
+  d[0] = 1;
+  for (let tau = 1; tau <= tauMax; tau++){
+    const dt = Math.max(0, e0 + (cum[tau + W] - cum[tau]) - 2 * ar[tau] / N);
+    run += dt;
+    d[tau] = run > 0 ? dt * tau / run : 1;
+  }
+  return d;
+}
+function yinPick(d, tauMin, tauMax){
+  let tau = -1;
+  for (let t = tauMin; t <= tauMax; t++) if (d[t] < YIN_TH){
+    while (t < tauMax && d[t + 1] < d[t]) t++;
+    tau = t; break;
+  }
+  if (tau < 0){
+    let best = tauMin;
+    for (let t = tauMin + 1; t <= tauMax; t++) if (d[t] < d[best]) best = t;
+    if (d[best] > YIN_UNVOICED) return { tau: 0, dip: d[best] };
+    tau = best;
+  }
+  let tr = tau;
+  if (tau > tauMin && tau < tauMax){
+    const a = d[tau - 1], b = d[tau], c = d[tau + 1], den = a - 2 * b + c;
+    if (den > 0) tr = tau + 0.5 * (a - c) / den;
+  }
+  return { tau: tr, dip: d[tau] };
+}
+function wavePitch(samples, sr, amp){
+  const n = amp.n, tauMin = Math.max(2, Math.floor(sr / PITCH_HI)), tauMax = Math.ceil(sr / PITCH_LO), W = 2 * tauMax, Lf = W + tauMax;
+  let N = 1;
+  while (N < Lf) N <<= 1;
+  const buf = { N, ar: new Float64Array(N), ai: new Float64Array(N), br: new Float64Array(N), bi: new Float64Array(N),
+                x: new Float64Array(Lf), cum: new Float64Array(Lf + 1), d: new Float64Array(tauMax + 1) };
+  const f = new Float64Array(n), voiced = new Uint8Array(n), dip = new Float64Array(n);
+  let nVoiced = 0;
+  for (let i = 0; i < n; i++){
+    dip[i] = 1;
+    if (!(amp.raw[i] >= PITCH_QUIET * amp.max) || !(amp.max > 0)) continue;
+    const c = amp.s0 + (i + 0.5) * amp.hop, start = Math.floor(c - 0.5 * Lf + 0.5);
+    const pk = yinPick(yinFrame(samples, start, W, tauMax, buf), tauMin, tauMax);
+    dip[i] = pk.dip;
+    if (pk.tau > 0){ f[i] = sr / pk.tau; voiced[i] = 1; nVoiced++; }
+  }
+  // the unpitched windows: log-interpolated between voiced neighbours, held at the ends
+  let prev = -1;
+  for (let i = 0; i < n; i++){
+    if (!voiced[i]) continue;
+    if (prev < 0) for (let k = 0; k < i; k++) f[k] = f[i];
+    else for (let k = prev + 1; k < i; k++){ const t = (k - prev) / (i - prev); f[k] = Math.exp(Math.log(f[prev]) * (1 - t) + Math.log(f[i]) * t); }
+    prev = i;
+  }
+  if (prev >= 0) for (let k = prev + 1; k < n; k++) f[k] = f[prev];
+  const vf = [];
+  for (let i = 0; i < n; i++) if (voiced[i]) vf.push(f[i]);
+  vf.sort((p, q) => p - q);
+  const m = vf.length, fMed = m ? (m & 1 ? vf[m >> 1] : Math.sqrt(vf[m / 2 - 1] * vf[m / 2])) : 0;
+  return { f, voiced, dip, nVoiced, fMed, fLo: m ? vf[0] : 0, fHi: m ? vf[m - 1] : 0, tauMin, tauMax, W };
+}
+/* ─── thickness from pitch, as a wavelength is: proportional to the period. The clip's median pitch gets the
+   geometric middle of [thinnest, thickest]; an octave down doubles the thickness, an octave up halves it,
+   clamped. Thinnest is the Fin control, thickest 0.8 of the fin spacing, so a gap always stays open. ─── */
+function waveThickness(pitch, P, n){
+  const p = +P.wlen / n, tMax = 0.8 * p, tMin = Math.min(tMax, Math.max(0.2, +P.wfin)), tMid = Math.sqrt(tMin * tMax);
+  const t = new Float64Array(n);
+  for (let i = 0; i < n; i++) t[i] = Math.min(tMax, Math.max(tMin, tMid * pitch.fMed / pitch.f[i]));
+  return { t, tMin, tMax, tMid };
+}
+
+/* ─── the profile: radius against axial position, from the pole at one end to the pole at the other.
+   Fins: a trapezoid per window, its rim wfin thick (or, by pitch, the window's own thickness), flanks leaning
+   wtap° so no two profile points share an axial position (a printed half needs no zero-area faces); the core
+   runs between. ─── */
+function waveCount(P){
+  return P.wmode === 'wave' ? Math.max(8, Math.min(4000, Math.round(+P.wlen / WAVE_STEP))) : Math.max(4, P.wn | 0);
+}
+/* the triangle count before the build: every fin is at most four rings, every station one */
+function waveEstimate(P){
+  const n = waveCount(P), nSeg = Math.max(8, (P.wseg | 0) & ~1), rings = P.wmode === 'wave' ? n : 4 * n + 2;
+  const F = (+P.whalf | 0) ? 2 * ((rings - 1) * nSeg + 2 * rings) : 2 * rings * nSeg;
+  return { n, rings, nSeg, F, bytes: 84 + 50 * F };
+}
+function waveProfile(amp, P, thick){
+  const L = +P.wlen, rc = Math.max(0.5, +P.wcore), Rmax = Math.max(rc + 1, +P.wrad), n = amp.n, a = amp.a;
+  const tip = Math.max(0, +P.wtip || 0), X = [], R = [];
+  const put = (x, r) => {
+    const k = X.length - 1;
+    if (k >= 0 && Math.abs(X[k] - x) < 1e-9 && Math.abs(R[k] - r) < 1e-9) return;
+    X.push(x); R.push(r);
+  };
+  let fins = 0;
+  put(tip > 0 ? -tip : 0, 0);
+  if (P.wmode === 'wave'){
+    for (let i = 0; i < n; i++) put(L * i / (n - 1), rc + (Rmax - rc) * a[i]);
+  } else {
+    const p = L / n, w0 = Math.min(0.4 * p, 0.5 * Math.max(0.2, +P.wfin)), tn = Math.tan(Math.max(0.5, Math.min(45, +P.wtap)) * Math.PI / 180);
+    put(0, rc);
+    for (let i = 0; i < n; i++){
+      const h = (Rmax - rc) * a[i];
+      if (h < WAVE_MIN_FIN) continue;
+      const w = thick ? Math.min(0.4 * p, 0.5 * thick[i]) : w0, c = (i + 0.5) * p, u = Math.min(0.5 * p, w + h * tn);
+      put(c - u, rc); put(c - w, rc + h); put(c + w, rc + h); put(c + u, rc);
+      fins++;
+    }
+    put(L, rc);
+  }
+  put(tip > 0 ? L + tip : L, 0);
+  return { X: Float64Array.from(X), R: Float64Array.from(R), fins, L, tip, rc, Rmax };
+}
+
+/* ─── the lathe: the profile spun about the x axis. Whole: nSeg columns, wrapping. Half: θ ∈ [0, π] in
+   nSeg/2 + 1 columns and a flat cut face on z = 0; a flat end (pole in its ring's plane) becomes a half-disc
+   fanned from its θ = 0 corner, so the cut face never carries a zero-area triangle.
+   v(k, j) = k·nC + j for ring k (profile point k + 1). ─── */
+function latheMesh(X, R, nSeg, half){
+  const M = X.length, nR = M - 2;
+  if (nR < 2 || R[0] !== 0 || R[M - 1] !== 0) throw new Error('profile must run pole to pole');
+  for (let k = 1; k < M - 2; k++) if (!(X[k + 1] > X[k])) throw new Error('profile not strictly increasing at ' + k);
+  nSeg = Math.max(8, nSeg & ~1);
+  const nC = half ? (nSeg >> 1) + 1 : nSeg;
+  const flat0 = X[1] === X[0], flat1 = X[M - 1] === X[M - 2];
+  const pole0 = !(half && flat0), pole1 = !(half && flat1);
+  const nV = nR * nC + (pole0 ? 1 : 0) + (pole1 ? 1 : 0);
+  const cols = half ? nC - 1 : nC;
+  let F = 2 * (nR - 1) * cols;
+  F += pole0 ? cols : nC - 2;
+  F += pole1 ? cols : nC - 2;
+  if (half) F += 2 * (nR - 1) + (pole0 ? 1 : 0) + (pole1 ? 1 : 0);
+  const pos = new Float32Array(3 * nV), idx = new Uint32Array(3 * F);
+  const cs = new Float64Array(nC), sn = new Float64Array(nC);
+  for (let j = 0; j < nC; j++){
+    const th = half ? Math.PI * j / (nC - 1) : TAU * j / nC;
+    cs[j] = Math.cos(th); sn[j] = Math.sin(th);
+  }
+  if (half){ cs[0] = 1; sn[0] = 0; cs[nC - 1] = -1; sn[nC - 1] = 0; }
+  for (let k = 0; k < nR; k++) for (let j = 0; j < nC; j++){
+    const p = 3 * (k * nC + j), r = R[k + 1];
+    pos[p] = X[k + 1]; pos[p + 1] = r * cs[j]; pos[p + 2] = r * sn[j];
+  }
+  let B = -1, T = -1, v = nR * nC;
+  if (pole0){ B = v++; pos[3 * B] = X[0]; }
+  if (pole1){ T = v++; pos[3 * T] = X[M - 1]; }
+  let n = 0;
+  const tri = (a, b, c) => { idx[n++] = a; idx[n++] = b; idx[n++] = c; };
+  const V = (k, j) => k * nC + (j % nC);
+  for (let k = 0; k < nR - 1; k++) for (let j = 0; j < cols; j++){
+    const a = V(k, j), b = V(k, j + 1), c = V(k + 1, j + 1), d = V(k + 1, j);
+    tri(a, b, c); tri(a, c, d);
+  }
+  const q = nR - 1, e = nC - 1;
+  if (pole0) for (let j = 0; j < cols; j++) tri(B, V(0, j + 1), V(0, j));
+  else for (let j = 1; j < e; j++) tri(V(0, 0), V(0, j + 1), V(0, j));
+  if (pole1) for (let j = 0; j < cols; j++) tri(T, V(q, j), V(q, j + 1));
+  else for (let j = 1; j < e; j++) tri(V(q, 0), V(q, j), V(q, j + 1));
+  if (half){
+    // the cut face, facing −z: (k,0) → (k+1,0) → (k+1,π) → (k,π)
+    for (let k = 0; k < nR - 1; k++){ tri(V(k, 0), V(k + 1, 0), V(k + 1, e)); tri(V(k, 0), V(k + 1, e), V(k, e)); }
+    if (pole0) tri(B, V(0, 0), V(0, e));
+    if (pole1) tri(V(q, 0), T, V(q, e));
+  }
+  if (n !== 3 * F) throw new Error('lathe triangle count ' + n / 3 + ' vs ' + F);
+  return { pos, idx, nV, nF: F, nR, nC, half };
+}
+/* the exact volume of that lathe: a stack of frusta with regular nSeg-gon sections */
+function latheVolume(X, R, nSeg){
+  const c = 0.5 * nSeg * Math.sin(TAU / nSeg);
+  let v = 0;
+  for (let k = 0; k < X.length - 1; k++){
+    const A0 = c * R[k] * R[k], A1 = c * R[k + 1] * R[k + 1];
+    v += (X[k + 1] - X[k]) / 3 * (A0 + A1 + Math.sqrt(A0 * A1));
+  }
+  return v;
+}
+
+/* ─── samples → profile → lathe → placed on the bed → checks. Whole: lying along x, resting on its
+   largest disc. Halves: both cut faces down, side by side along y. ─── */
+const PITCH_CACHE = new WeakMap();
+function waveShape(samples, sr, P){
+  const t = now(), n = waveCount(P), amp = waveAmplitudes(samples, sr, P, n);
+  // pitch sets each fin's thickness; a clip with no pitched window at all keeps the fixed fin. The track depends
+  // only on the samples and the windows, so a slider that changes the shape alone reuses it
+  let pitch = null;
+  if (P.wmode !== 'wave' && (+P.wpitch | 0)){
+    const key = [sr, amp.s0, amp.s1, n, P.wmeas].join('|'), hit = PITCH_CACHE.get(samples);
+    pitch = hit && hit.key === key ? hit.pitch : wavePitch(samples, sr, amp);
+    PITCH_CACHE.set(samples, { key, pitch });
+  }
+  const thick = pitch && pitch.nVoiced ? waveThickness(pitch, P, n) : null;
+  const prof = waveProfile(amp, P, thick ? thick.t : null);
+  const half = !!(+P.whalf | 0), nSeg = Math.max(8, (P.wseg | 0) & ~1);
+  const lm = latheMesh(prof.X, prof.R, nSeg, half);
+  let rTop = 0;
+  for (let k = 0; k < prof.R.length; k++) if (prof.R[k] > rTop) rTop = prof.R[k];
+  const xMid = 0.5 * (prof.X[0] + prof.X[prof.X.length - 1]);
+  let pos = lm.pos, idx = lm.idx, nV = lm.nV;
+  if (!half){
+    let zMin = Infinity;
+    for (let v = 0; v < nV; v++) if (pos[3 * v + 2] < zMin) zMin = pos[3 * v + 2];
+    for (let v = 0; v < nV; v++){ pos[3 * v] -= xMid; pos[3 * v + 2] -= zMin; }
+  } else {
+    const off = rTop + 4, m = idx.length, P2 = new Float32Array(6 * nV), I2 = new Uint32Array(2 * m);
+    for (let v = 0; v < nV; v++){
+      const x = pos[3 * v] - xMid, y = pos[3 * v + 1], z = pos[3 * v + 2], o = 3 * (nV + v);
+      P2[3 * v] = x; P2[3 * v + 1] = y + off; P2[3 * v + 2] = z;
+      P2[o] = x; P2[o + 1] = y - off; P2[o + 2] = z;
+    }
+    for (let i = 0; i < m; i++){ I2[i] = idx[i]; I2[m + i] = idx[i] + nV; }
+    pos = P2; idx = I2; nV *= 2;
+  }
+  const mesh = { pos, idx, nV, nF: idx.length / 3 };
+  const scale = (+P.fit | 0) ? fitToBed(mesh, +P.bed) : 1;
+  const normals = vertexNormals(pos, idx, nV);
+  const ext = extents(pos), sc = solidCheck(pos, idx, nV), ov = overhang(pos, idx, ext.min[2] + 1e-4);
+  const exact = latheVolume(prof.X, prof.R, nSeg) * scale * scale * scale;
+  const stats = {
+    form: 'wave', V: sc.V, E: sc.E, F: sc.F, euler: sc.euler, vol: sc.vol, badEdges: sc.badEdges, badDir: sc.badDir,
+    bytes: 84 + 50 * sc.F, size: ext.size, min: ext.min, max: ext.max, fits: ext.size.every(v => v <= 320 + 1e-6), scale,
+    massG: sc.vol / 1000 * 1.27, over: ov.maxDeg, overFrac: ov.frac, shells: meshComponents(idx, nV), half,
+    exact, rings: lm.nR, around: nSeg, n, fins: prof.fins, mode: P.wmode === 'wave' ? 'wave' : 'fins',
+    windowMs: amp.hop / sr * 1000, s0: amp.s0, s1: amp.s1, rTop, ms: now() - t,
+    pitched: !!thick, voiced: pitch ? pitch.nVoiced : 0, fLo: pitch ? pitch.fLo : 0, fHi: pitch ? pitch.fHi : 0, fMed: pitch ? pitch.fMed : 0,
+    tLo: thick ? Math.min(...thick.t) : 0, tHi: thick ? Math.max(...thick.t) : 0,
+  };
+  return { form: 'wave', amp, pitch, thick, prof, mesh, normals, stats };
+}
+
 /* ─── the DOM-free half of the load-time self-test ─── */
 function selfTestPure(){
   let asserts = 0, failures = 0;
@@ -1925,6 +2299,84 @@ function selfTestPure(){
     for (let v = 0; v < mh.nV; v++) if (Math.abs(mh.pos[3 * v + 1] - T_MIN) < 1e-6) flat++;
     ok(flat > 100, 'hemisphere cut face on one plane (' + flat + ' vertices)');
   }
+  // ── the waveform solid ──
+  {
+    const sr = 44100, x = synthVoice(sr, VOICE_SECONDS);
+    let pk = 0;
+    for (let i = 0; i < x.length; i++) if (Math.abs(x[i]) > pk) pk = Math.abs(x[i]);
+    ok(x.length === Math.floor(sr * VOICE_SECONDS) && Math.abs(pk - 0.9) < 1e-6, 'voice demo length and peak ' + pk);
+    // amplitudes of a square wave whose windows are known exactly
+    const sq = new Float32Array(1000);
+    for (let i = 0; i < 1000; i++) sq[i] = (i >= 300 && i < 400 ? 0.5 : 0.25) * (i & 1 ? 1 : -1);
+    const Q = defaults(), am = waveAmplitudes(sq, 1000, Q, 10);
+    ok(am.a[3] === 1 && Math.abs(am.a[0] - 0.5) < 1e-12 && am.max === 0.5, 'peak per window ' + Array.from(am.a));
+    Q.wmeas = 'rms'; Q.wgam = 2;
+    const ar = waveAmplitudes(sq, 1000, Q, 10);
+    ok(Math.abs(ar.a[0] - 0.25) < 1e-12 && ar.a[3] === 1, 'rms per window, curve 2: ' + ar.a[0]);
+    // the voice as fins: closed, exact, resting on the bed
+    const P = defaults(); P.wn = 40; P.wseg = 48;
+    const sh = waveShape(x, sr, P), s = sh.stats, pr = sh.prof;
+    let mono = true, maxR = 0;
+    for (let k = 1; k < pr.X.length - 2; k++) if (!(pr.X[k + 1] > pr.X[k])) mono = false;
+    for (let k = 0; k < pr.R.length; k++) if (pr.R[k] > maxR) maxR = pr.R[k];
+    ok(mono && pr.R[0] === 0 && pr.R[pr.R.length - 1] === 0 && pr.X[0] === -P.wtip, 'profile runs pole to pole, strictly along the axis');
+    ok(Math.abs(maxR - P.wrad) < 1e-9, 'the loudest fin reaches the radius ' + maxR);
+    ok(s.badEdges === 0 && s.badDir === 0 && s.euler === 2 && s.shells === 1, 'waveform solid closed: ' + [s.badEdges, s.badDir, s.euler, s.shells].join('/'));
+    ok(Math.abs(s.vol / s.exact - 1) < 1e-5, 'waveform volume against its frusta ' + s.vol / s.exact);
+    ok(s.fins > 20 && s.fins <= 40 && s.fits && Math.abs(s.min[2]) < 1e-6, 'waveform fins ' + s.fins + ', resting on the bed');
+    // pitch: the voice against the formula it was made from, and each fin's rim exactly its window's thickness
+    const pv = sh.pitch, th = sh.thick, pp = P.wlen / P.wn;
+    let worst = 0, nv = 0, rims = 0, rimBad = 0;
+    for (let i = 0; i < pv.f.length; i++){
+      if (!pv.voiced[i] || sh.amp.a[i] < 0.1) continue;
+      const tc = (sh.amp.s0 + (i + 0.5) * sh.amp.hop) / sr, ft = 165 * Math.pow(2, -0.9 * tc / VOICE_SECONDS) + 3 * Math.sin(TAU * 5.5 * tc);
+      worst = Math.max(worst, Math.abs(pv.f[i] / ft - 1)); nv++;
+    }
+    ok(!!th && nv > 25 && worst < 0.03, 'voice pitch against its formula: ' + nv + ' windows, worst ' + worst);
+    for (let k = 1; k < pr.X.length - 2; k++) if (pr.R[k] === pr.R[k + 1] && pr.R[k] > pr.rc + 1e-9){
+      const i = Math.floor(0.5 * (pr.X[k] + pr.X[k + 1]) / pp);
+      rims++; if (Math.abs(pr.X[k + 1] - pr.X[k] - Math.min(0.8 * pp, th.t[i])) > 1e-9) rimBad++;
+    }
+    ok(rims === s.fins && rimBad === 0 && th.t[0] < th.t[th.t.length - 1], 'fin rims follow the pitch: ' + rims + ' rims, ' + rimBad + ' off, ' + th.t[0].toFixed(2) + ' → ' + th.t[th.t.length - 1].toFixed(2) + ' mm');
+    {
+      const Pp = defaults();
+      for (const f of [82.41, 220, 440, 987.77]){
+        const sn = new Float32Array(Math.floor(0.6 * sr));
+        for (let i = 0; i < sn.length; i++) sn[i] = 0.5 * Math.sin(TAU * f * i / sr);
+        const pc = wavePitch(sn, sr, waveAmplitudes(sn, sr, Pp, 8));
+        let w = 0;
+        for (let i = 0; i < 8; i++) w = Math.max(w, Math.abs(pc.f[i] / f - 1));
+        ok(pc.nVoiced === 8 && w < 2e-3, 'pitch of a ' + f + ' Hz sine: ' + pc.nVoiced + ' voiced, worst ' + w);
+      }
+      let z = 12345 >>> 0;
+      const noise = new Float32Array(Math.floor(0.6 * sr));
+      for (let i = 0; i < noise.length; i++){ z = (Math.imul(z, 1664525) + 1013904223) >>> 0; noise[i] = z / 4294967296 - 0.5; }
+      const pn = wavePitch(noise, sr, waveAmplitudes(noise, sr, Pp, 8));
+      Pp.wn = 24;
+      const ns = waveShape(noise, sr, Pp);
+      ok(pn.nVoiced === 0 && !ns.thick && ns.stats.badEdges === 0 && ns.stats.euler === 2, 'white noise has no pitch and keeps the fixed fin: ' + pn.nVoiced + ' voiced');
+      const sw = new Float32Array(Math.floor(1.5 * sr));
+      let ph = 0;
+      for (let i = 0; i < sw.length; i++){ ph += TAU * 110 * Math.pow(4, i / sw.length) / sr; sw[i] = 0.5 * Math.sin(ph); }
+      const ss = waveShape(sw, sr, Pp), tw = ss.thick.t;
+      let mono = true;
+      for (let i = 1; i < 24; i++) if (tw[i] > tw[i - 1] + 1e-9) mono = false;
+      ok(mono && tw[0] > 1.5 * tw[23] && ss.stats.badEdges === 0 && ss.stats.euler === 2, 'a rising sweep thins the fins: ' + tw[0].toFixed(2) + ' → ' + tw[23].toFixed(2) + ' mm');
+    }
+    P.whalf = 1;
+    const hs = waveShape(x, sr, P).stats;
+    ok(hs.badEdges === 0 && hs.badDir === 0 && hs.shells === 2 && hs.euler === 4 && Math.abs(hs.vol / s.vol - 1) < 1e-5, 'waveform halves: ' + [hs.shells, hs.euler, hs.vol / s.vol].join('/'));
+    ok(hs.over < 0.5 && Math.abs(hs.min[2]) < 1e-6, 'halves print without supports: ' + hs.over.toFixed(3) + ' deg');
+    P.wtip = 0; P.wpitch = 0;
+    const hf = waveShape(x, sr, P).stats;   // flat ends: half-disc caps, no pole on the cut face; fixed fins
+    ok(hf.badEdges === 0 && hf.badDir === 0 && hf.shells === 2 && Math.abs(hf.vol / hf.exact - 1) < 1e-5, 'flat-ended halves closed');
+    P.whalf = 0; P.wmode = 'wave'; P.t0 = 0.5; P.t1 = 0.8; P.wtip = 10;
+    const ws = waveShape(x, sr, P).stats;
+    ok(ws.badEdges === 0 && ws.badDir === 0 && ws.euler === 2 && Math.abs(ws.vol / ws.exact - 1) < 1e-5 && ws.rings === waveCount(P), 'waveform mode closed: ' + ws.rings + ' stations');
+    const big = defaults(); big.wn = 24; big.wseg = 24; big.wlen = 300; big.wrad = 90; big.wtip = 40; big.bed = 200;
+    const bs = waveShape(x, sr, big).stats;
+    ok(bs.scale < 1 && Math.max(...bs.size) <= 200 + 1e-3 && Math.abs(bs.vol / bs.exact - 1) < 1e-5, 'waveform fit to bed ' + bs.scale);
+  }
   return { asserts, failures };
 }
 /* ─── the heavier cavity checks: the mode solver against the straight duct's closed form, and the demo
@@ -1982,6 +2434,8 @@ return {
   KMAX, K11, NRHO, VOX_MAX, T_MIN, besselJ, besselZerosPrime, sturmCount, solveTridiag, tridiagEig, cavityGeom, cavityModes,
   HBINS, resonanceG, cavityDrive, cavityGrid, gaussKernel, gaussBlur3, cavityField, fillThreshold, cavityImplicit, cleanComponents, marchingTets, meshComponents,
   cavityMesh, cavityPipeline, selfTestCavity,
+  VOICE_SECONDS, WAVE_STEP, WAVE_MIN_FIN, PITCH_LO, PITCH_HI, YIN_TH, YIN_UNVOICED, PITCH_QUIET, yinFrame, yinPick, wavePitch, waveThickness,
+  synthVoice, waveAmplitudes, waveCount, waveEstimate, waveProfile, latheMesh, latheVolume, waveShape,
 };
 })();
 if (typeof globalThis !== 'undefined') globalThis.VSF = VSF;
@@ -2030,7 +2484,7 @@ function rgb01(h){ const c = hx(h); return [c[0] / 255, c[1] / 255, c[2] / 255];
 /* ─── state ─── */
 const P = VSF.defaults();
 let spin = !RM, showGrid = true, cutView = false;
-const AUDIO = { name: '100 Hz tone', base: '100-Hz-tone', sr: 44100, duration: 6, channels: 1, len: 0, peaks: null, samples: null, synthetic: true };
+const AUDIO = { name: 'spoken “ah”', base: 'spoken-ah', sr: 44100, duration: VSF.VOICE_SECONDS, channels: 1, len: 0, peaks: null, samples: null, synthetic: true };
 const A = { an: null, anGen: 0, sh: null, cav: null, gen: 0, busy: false, job: '', err: '' };
 const dirty = { stft: false, shape: false, draw: false };
 const mapCache = { key: null, map: null };
@@ -2117,7 +2571,13 @@ function schedule(stage){
 }
 function run(){
   queued = false;
-  if (dirty.stft){ dirty.stft = false; dirty.shape = false; requestAnalysis(); return; }
+  if (dirty.stft){
+    dirty.stft = false;
+    // the waveform solid reads the samples, not the spectrogram: drop the stale analysis (the other forms
+    // ask for a fresh one when they are chosen) and go straight to the shape
+    if (P.form === 'wave'){ A.an = null; A.gen++; A.busy = false; dirty.shape = true; }
+    else { dirty.shape = false; requestAnalysis(); return; }
+  }
   if (A.busy && A.job === 'stft') return;
   if (dirty.shape){ dirty.shape = false; runShape(); dirty.draw = true; }
   if (dirty.draw){ dirty.draw = false; drawAll(); }
@@ -2150,13 +2610,25 @@ function acceptAnalysis(an){
   schedule('shape');
 }
 function runShape(){
-  if (!A.an) return;
+  if (P.form === 'wave'){ runWave(); return; }
+  if (!A.an){ if (AUDIO.samples) schedule('stft'); return; }
   if (P.form === 'cavity'){ runCavity(); return; }
   const g = VSF.gridSpec(P, A.an.nT);
   if (g.F > MAX_F){ A.err = 'too many triangles'; updateStats(); return; }
   A.err = '';
   try { A.sh = VSF.shape(A.an, AUDIO.sr, P, mapCache); }
   catch (e){ console.error(e); A.err = e.message; updateStats(); return; }
+  uploadMesh(); fitCamera(false);
+  window.__derived = { P, A, AUDIO, VSF };
+}
+/* ─── the waveform solid: straight from the samples, on the main thread (a lathe of ~100 k triangles, ~0.1 s) ─── */
+function runWave(){
+  if (!AUDIO.samples) return;
+  const e = VSF.waveEstimate(P);
+  if (e.F > MAX_F){ A.err = 'too many triangles'; updateStats(); return; }
+  A.err = '';
+  try { A.sh = VSF.waveShape(AUDIO.samples, AUDIO.sr, P); }
+  catch (err){ console.error(err); A.err = err.message; updateStats(); return; }
   uploadMesh(); fitCamera(false);
   window.__derived = { P, A, AUDIO, VSF };
 }
@@ -2234,6 +2706,7 @@ async function loadArrayBuffer(ab, name){
   return A.sh ? A.sh.stats : null;
 }
 function setAudio(samples, sr, channels, name, synthetic){
+  // synthetic: the demo's description, or false for a file
   AUDIO.samples = samples; AUDIO.sr = sr; AUDIO.channels = channels; AUDIO.name = name;
   AUDIO.base = (name || 'sound').replace(/\.[^.]+$/, '').replace(/[^\w\-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'sound';
   AUDIO.len = samples.length; AUDIO.duration = samples.length / sr; AUDIO.synthetic = synthetic;
@@ -2244,19 +2717,24 @@ function setAudio(samples, sr, channels, name, synthetic){
   if (P.ct > d) P.ct = 0;
   applyRange('ct', P.ct);
   $('t0v').textContent = '0.0 s'; $('t1v').textContent = 'end';
-  $('audioMeta').textContent = (synthetic ? 'pure ' + VSF.DEMO_HZ + ' Hz sine' : name) + ' · ' + (sr / 1000).toFixed(1) + ' kHz · ' + (channels === 1 ? 'mono' : channels === 2 ? 'stereo' : channels + ' ch') + ' · ' + fmtSec(AUDIO.duration);
+  $('audioMeta').textContent = (synthetic || name) + ' · ' + (sr / 1000).toFixed(1) + ' kHz · ' + (channels === 1 ? 'mono' : channels === 2 ? 'stereo' : channels + ' ch') + ' · ' + fmtSec(AUDIO.duration);
   workerLoad(samples);
   syncHash();
 }
-function loadDemo(sync){
-  const sr = 44100, samples = VSF.synthDemo(sr, 6);
-  setAudio(samples, sr, 1, VSF.DEMO_HZ + ' Hz tone', true);
+function loadDemo(sync, which){
+  const sr = 44100, voice = which !== 'tone';
+  const samples = voice ? VSF.synthVoice(sr, VSF.VOICE_SECONDS) : VSF.synthDemo(sr, 6);
+  setAudio(samples, sr, 1, voice ? 'spoken “ah”' : VSF.DEMO_HZ + ' Hz tone', voice ? 'synthetic spoken “ah”' : 'pure ' + VSF.DEMO_HZ + ' Hz sine');
   if (sync){
-    const r = VSF.pipeline(samples, sr, P);
-    A.an = { spec: r.spec, env: r.env, nT: r.nT, nBins: r.nBins, N: r.N, hop: r.hop, K: r.K, s0: 0, s1: samples.length, ms: r.analyseMs };
-    A.anGen++;
-    A.sh = r; A.busy = false; setProgress(1);
-    if (P.form === 'cavity'){ const ci = cavityInputs(); A.cav = ci; acceptCavity(cavityMain(ci, P)); }
+    A.busy = false; setProgress(1);
+    if (P.form === 'wave'){ A.an = null; A.sh = VSF.waveShape(samples, sr, P); }
+    else {
+      const r = VSF.pipeline(samples, sr, P);
+      A.an = { spec: r.spec, env: r.env, nT: r.nT, nBins: r.nBins, N: r.N, hop: r.hop, K: r.K, s0: 0, s1: samples.length, ms: r.analyseMs };
+      A.anGen++;
+      A.sh = r;
+      if (P.form === 'cavity'){ const ci = cavityInputs(); A.cav = ci; acceptCavity(cavityMain(ci, P)); }
+    }
     uploadMesh(); fitCamera(true); drawAll();
     window.__derived = { P, A, AUDIO, VSF };
   } else schedule('stft');
@@ -2355,7 +2833,10 @@ function fitCamera(reset){
   const s = A.sh.stats, cam = GL.cam;
   cam.target = [0, 0, (s.min[2] + s.max[2]) / 2];
   cam.base = Math.max(s.size[0], s.size[1], s.size[2]) * 1.15 / Math.tan(cam.fov / 2) * 0.62;
-  if (reset){ cam.az = 0.6; cam.el = 0.42; cam.zoom = 1; }
+  if (reset || cam.form !== A.sh.form){
+    const wave = A.sh.form === 'wave';
+    cam.az = wave ? -1.3 : 0.6; cam.el = wave ? 0.28 : 0.42; cam.zoom = wave ? 0.6 : 1; cam.form = A.sh.form;
+  }
 }
 function resizeGL(){
   const cv = $('gl'), dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -2450,10 +2931,11 @@ function sizeCanvas(cv){
   return { ctx, w: w / dpr, h: h / dpr };
 }
 function drawSpec(){
+  if (P.form === 'wave') return drawSpecWave();
   if (P.form === 'cavity') return drawSpecCavity();
   const { ctx, w, h } = sizeCanvas($('spec'));
   ctx.clearRect(0, 0, w, h);
-  if (!A.sh || A.sh.form === 'cavity') return;
+  if (!A.sh || A.sh.form !== 'chart') return;
   const { S, nR, nC } = A.sh, lut = C.lut;
   offCv.width = nC; offCv.height = nR;
   const octx = offCv.getContext('2d'), img = octx.createImageData(nC, nR), d = img.data;
@@ -2537,12 +3019,67 @@ function drawSpecCavity(){
   ctx.textAlign = 'right'; ctx.fillText(fmtHz(fMax), L + pw, xy);
   $('specNote').textContent = 'cavity · ' + ci.modes.count + ' modes · ' + fmtHz(d.window[0]) + ' – ' + fmtHz(d.window[1]);
 }
+/* the waveform solid: the trimmed waveform, each sample's height mapped exactly as the solid maps it, under the
+   outline the lathe spins */
+const waveCache = { key: null, pk: null };
+function drawSpecWave(){
+  const { ctx, w, h } = sizeCanvas($('spec'));
+  ctx.clearRect(0, 0, w, h);
+  const sh = A.sh && A.sh.form === 'wave' ? A.sh : null;
+  if (!sh || !AUDIO.samples) return;
+  const pr = sh.prof, s = sh.stats, X = pr.X, R = pr.R, M = X.length;
+  const L = 46, T0 = 8, Bm = 18, pw = w - L - 8, ph = h - Bm - T0, mid = T0 + ph / 2;
+  const x0 = X[0], sx = pw / (X[M - 1] - x0), sy = (ph / 2 - 3) / pr.Rmax, px = x => L + (x - x0) * sx;
+  ctx.fillStyle = C.ground3; ctx.fillRect(L, T0, pw, ph);
+  const cols = Math.max(2, Math.round(pr.L * sx)), key = [AUDIO.len, s.s0, s.s1, cols].join('|');
+  if (waveCache.key !== key){ waveCache.key = key; waveCache.pk = VSF.peaks(AUDIO.samples.subarray(s.s0, s.s1), cols); }
+  const pk = waveCache.pk, amax = sh.amp.max > 0 ? sh.amp.max : 1, g = Math.max(0.2, +P.wgam || 1);
+  const rad = v => Math.sign(v) * (pr.rc + (pr.Rmax - pr.rc) * Math.pow(Math.min(1, Math.abs(v) / amax), g));
+  ctx.strokeStyle = C.air; ctx.globalAlpha = 0.6; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let c = 0; c < cols; c++){
+    const x = Math.round(px((c + 0.5) / cols * pr.L)) + 0.5;
+    ctx.moveTo(x, mid - rad(pk[2 * c + 1]) * sy); ctx.lineTo(x, mid - rad(pk[2 * c]) * sy);
+  }
+  ctx.stroke();
+  // the outline: radius against position, above and mirrored below the axis
+  ctx.beginPath();
+  for (let k = 0; k < M; k++) ctx.lineTo(px(X[k]), mid - R[k] * sy);
+  for (let k = M - 1; k >= 0; k--) ctx.lineTo(px(X[k]), mid + R[k] * sy);
+  ctx.closePath();
+  ctx.globalAlpha = 0.22; ctx.fillStyle = C.solid; ctx.fill();
+  ctx.globalAlpha = 0.95; ctx.strokeStyle = C.solid; ctx.stroke();
+  ctx.globalAlpha = 0.5; ctx.strokeStyle = C.faint; ctx.setLineDash([3, 4]);
+  ctx.beginPath(); ctx.moveTo(L, Math.round(mid) + 0.5); ctx.lineTo(L + pw, Math.round(mid) + 0.5); ctx.stroke(); ctx.setLineDash([]);
+  if (sh.thick){
+    // the pitch that set each fin's thickness, on its own log scale: dots where the window was pitched, a line through all
+    const pc = sh.pitch, n = pc.f.length, p = pr.L / n, lo = Math.log(pc.fLo / 1.25), hi = Math.max(Math.log(pc.fHi * 1.25), lo + Math.LN2);
+    const fy = f => T0 + 4 + (ph - 8) * (1 - (Math.log(f) - lo) / (hi - lo));
+    ctx.globalAlpha = 0.9; ctx.strokeStyle = C.aether; ctx.fillStyle = C.aether; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) ctx.lineTo(px((i + 0.5) * p), fy(pc.f[i]));
+    ctx.stroke(); ctx.lineWidth = 1;
+    for (let i = 0; i < n; i++) if (pc.voiced[i]){ ctx.beginPath(); ctx.arc(px((i + 0.5) * p), fy(pc.f[i]), 1.8, 0, VSF.TAU); ctx.fill(); }
+    ctx.font = '10px ' + C_MONO(); ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    ctx.fillText(fmtHz(pc.f[0]), px(0.5 * p) + 6, fy(pc.f[0]) - 9);
+    ctx.textAlign = 'right'; ctx.fillText(fmtHz(pc.f[n - 1]) + ' · pitch', px((n - 0.5) * p) - 6, fy(pc.f[n - 1]) - 9);
+  }
+  ctx.globalAlpha = 1; ctx.strokeStyle = C.rule; ctx.strokeRect(L + 0.5, T0 + 0.5, pw - 1, ph - 1);
+  ctx.fillStyle = C.faint; ctx.font = '10px ' + C_MONO(); ctx.textBaseline = 'middle'; ctx.textAlign = 'right';
+  ctx.fillText(pr.Rmax.toFixed(0) + ' mm', L - 5, T0 + 6); ctx.fillText('axis', L - 5, mid);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  const xy = h - 5, t0 = s.s0 / AUDIO.sr, t1 = s.s1 / AUDIO.sr;
+  ctx.fillText(fmtSec(t0), px(0), xy); ctx.textAlign = 'right'; ctx.fillText(fmtSec(t1), px(pr.L), xy);
+  ctx.textAlign = 'center'; ctx.fillText('TIME ALONG THE AXIS → · radius = ' + (P.wmeas === 'rms' ? 'rms' : 'peak') + ' of each ' + fmtMs(s.windowMs) + (sh.thick ? ' · thickness = pitch' : ''), L + pw / 2, xy);
+  $('specNote').textContent = (s.mode === 'wave' ? s.n + ' stations' : s.fins + ' fins') + ' · ' + fmtMs(s.windowMs) + ' each · ' + pr.L + ' mm' +
+    (s.pitched ? ' · ' + fmtHz(s.fLo) + '–' + fmtHz(s.fHi) : '');
+}
 function drawWave(){
   const { ctx, w, h } = sizeCanvas($('wave'));
   ctx.clearRect(0, 0, w, h);
   const pk = AUDIO.peaks; if (!pk) return;
-  const n = pk.length / 2, mid = h / 2, L = 46, pw = w - L - 8;
-  const s0 = A.an ? A.an.s0 / AUDIO.len : 0, s1 = A.an ? A.an.s1 / AUDIO.len : 1;
+  const n = pk.length / 2, mid = h / 2, L = 46, pw = w - L - 8, sp = VSF.span(AUDIO.len, AUDIO.sr, P.t0, P.t1);
+  const s0 = sp.s0 / AUDIO.len, s1 = sp.s1 / AUDIO.len;
   ctx.fillStyle = C.ground3; ctx.fillRect(L, 0, pw, h);
   ctx.fillStyle = C.aether; ctx.globalAlpha = 0.12; ctx.fillRect(L + pw * s0, 0, pw * (s1 - s0), h); ctx.globalAlpha = 1;
   for (let b = 0; b < n; b++){
@@ -2562,15 +3099,18 @@ function drawWave(){
 function C_MONO(){ return getComputedStyle($('pg')).getPropertyValue('--mono') || 'monospace'; }
 function fmtSec(s){ return s >= 100 ? Math.round(s) + ' s' : s.toFixed(1) + ' s'; }
 function fmtHz(f){ return f >= 1000 ? (f / 1000).toFixed(f >= 10000 ? 1 : 2).replace(/\.?0+$/, '') + ' kHz' : Math.round(f) + ' Hz'; }
+function fmtMs(ms){ return ms >= 1000 ? (ms / 1000).toFixed(2) + ' s' : ms >= 10 ? ms.toFixed(0) + ' ms' : ms.toFixed(1) + ' ms'; }
 function fmtMB(b){ return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : (b / 1024).toFixed(0) + ' kB'; }
 
 /* ─── the readout cells ─── */
-function fmtOver(s, chart){
+function fmtOver(s, form){
   const v = $('sOvr');
   if (s.over <= 45.05){ v.textContent = 'max ' + s.over.toFixed(0) + '° · support-free'; v.className = 'cell__v is-ok'; }
   else { v.textContent = 'max ' + s.over.toFixed(0) + '°'; v.className = 'cell__v ' + (s.overFrac > 0.02 ? 'is-warn' : ''); }
-  $('sOvrN').textContent = (s.overFrac * 100).toFixed(1) + ' % of the surface leans past 45°' +
-    (chart ? ((P.slope | 0) ? ' · limit ' + (P.slope | 0) + '°' : ' · limit off') : (P.chalf | 0 ? ' · cut face on the bed, the vault over the lobes needs support' : ' · the lobes hang inside: support them from the floor'));
+  const note = form === 'chart' ? ((P.slope | 0) ? ' · limit ' + (P.slope | 0) + '°' : ' · limit off')
+    : form === 'wave' ? ((P.whalf | 0) ? ' · cut faces on the bed, every half-disc upright' : ' · lying whole, the fins hang: print as halves, or support them')
+    : (P.chalf | 0 ? ' · cut face on the bed, the vault over the lobes needs support' : ' · the lobes hang inside: support them from the floor');
+  $('sOvrN').textContent = (s.overFrac * 100).toFixed(1) + ' % of the surface leans past 45°' + note;
 }
 function fmtBed(s){
   const bedV = $('sBed');
@@ -2589,7 +3129,7 @@ function updateStatsCavity(){
   est.classList.toggle('is-warn', F >= WARN_F && F < MAX_F); est.classList.toggle('is-bad', F >= MAX_F);
   $('dlBtn').disabled = !sh || A.busy || F >= MAX_F;
   $('dlName').textContent = stlName();
-  $('heroNote').textContent = (AUDIO.synthetic ? VSF.DEMO_HZ + ' Hz tone' : AUDIO.name) + ' · ' + fmtSec(AUDIO.duration) + ' · cavity · ' + P.ctop +
+  $('heroNote').textContent = AUDIO.name + ' · ' + fmtSec(AUDIO.duration) + ' · cavity · ' + P.ctop +
     ((P.chalf | 0) ? ' · halves' : '') + (P.cmode === 'moment' ? ' · at ' + P.ct.toFixed(2) + ' s' : '');
   if (A.err){ $('sMan').textContent = A.err; $('sMan').className = 'cell__v is-bad'; }
   if (!sh) return;
@@ -2612,18 +3152,47 @@ function updateStatsCavity(){
   $('sAnaN').textContent = 'Q ' + P.cq + ' · fill ' + (s.fill * 100).toFixed(1) + ' %' + (P.cmode === 'moment' ? ' (ringing × ' + s.gain.toFixed(2) + ')' : '') +
     ' · wall ' + tp.toFixed(1) + '°' + (tp > 14 ? ' (steep: modes approximate)' : '') + ' · ' +
     s.msModes.toFixed(0) + ' + ' + s.msField.toFixed(0) + ' + ' + s.msMesh.toFixed(0) + ' ms';
-  fmtOver(s, false);
+  fmtOver(s, 'cavity');
+}
+function updateStatsWave(){
+  const e = VSF.waveEstimate(P), est = $('est'), sh = A.sh && A.sh.form === 'wave' ? A.sh : null, F = sh ? sh.stats.F : e.F;
+  est.textContent = (P.wmode === 'wave' ? e.n + ' stations' : e.n + ' fins') + ' · ' + e.nSeg + ' facets around → ' + (sh ? '' : '≈ ') +
+    F.toLocaleString() + ' triangles · ' + fmtMB(84 + 50 * F);
+  est.classList.toggle('is-warn', F >= WARN_F && F < MAX_F); est.classList.toggle('is-bad', F >= MAX_F);
+  $('dlBtn').disabled = !sh || F >= MAX_F;
+  $('dlName').textContent = stlName();
+  $('heroNote').textContent = AUDIO.name + ' · ' + fmtSec(AUDIO.duration) + ' · waveform solid · ' + (P.wmode === 'wave' ? 'waveform' : P.wn + ' fins' + ((P.wpitch | 0) ? ' by pitch' : '')) + ((P.whalf | 0) ? ' · halves' : '');
+  if (A.err){ $('sMan').textContent = A.err; $('sMan').className = 'cell__v is-bad'; return; }
+  if (!sh) return;
+  const s = sh.stats;
+  $('sTris').textContent = s.F.toLocaleString() + ' · ' + fmtMB(s.bytes);
+  $('sTrisN').textContent = s.rings + ' rings × ' + s.around + ' facets' + (s.half ? ' · two halves' : '') + ' · V ' + s.V.toLocaleString();
+  fmtBed(s);
+  $('sVol').textContent = (s.vol / 1000).toFixed(1) + ' cm³ · ' + s.massG.toFixed(0) + ' g';
+  $('sVolN').textContent = '1.27 g/cm³, 100 % infill';
+  const man = $('sMan'), good = s.badEdges === 0 && s.badDir === 0 && s.vol > 0 && s.shells === (s.half ? 2 : 1) && s.euler === 2 * s.shells;
+  man.textContent = good ? 'closed · ' + (s.half ? '2 halves' : 'Euler 2') : 'FAULT';
+  man.className = 'cell__v ' + (good ? 'is-ok' : 'is-bad');
+  const dv = Math.abs(s.vol / s.exact - 1);
+  $('sManN').textContent = 'E ' + s.E.toLocaleString() + ' · odd edges ' + s.badEdges + ' · reversed ' + s.badDir + ' · volume ' +
+    (dv < 1e-4 ? 'matches the exact lathe' : 'off the exact lathe by ' + (dv * 100).toFixed(3) + ' %');
+  $('sAna').textContent = s.mode === 'wave' ? s.n + ' stations' : s.fins + ' of ' + s.n + ' fins';
+  $('sAnaN').textContent = (P.wmeas === 'rms' ? 'rms' : 'peak') + ' of each ' + fmtMs(s.windowMs) + ' window · curve ' + (+P.wgam).toFixed(2) +
+    (s.pitched ? ' · pitch ' + fmtHz(s.fLo) + '–' + fmtHz(s.fHi) + ' in ' + s.voiced + ' windows → fins ' + s.tHi.toFixed(1) + '–' + s.tLo.toFixed(1) + ' mm'
+      : (s.mode === 'fins' && (P.wpitch | 0) ? ' · no pitch found: fixed fins' : '')) + ' · ' + s.ms.toFixed(0) + ' ms';
+  fmtOver(s, 'wave');
 }
 function updateStats(){
+  if (P.form === 'wave') return updateStatsWave();
   if (P.form === 'cavity') return updateStatsCavity();
   const g = VSF.gridSpec(P, A.an ? A.an.nT : (P.nt | 0));
   const est = $('est');
   est.textContent = g.nR + ' × ' + g.nC + (g.nRi ? ' + ' + g.nRi + ' inner' : '') + ' → ' + g.F.toLocaleString() + ' triangles · ' + fmtMB(g.bytes);
   est.classList.toggle('is-warn', g.F >= WARN_F && g.F < MAX_F); est.classList.toggle('is-bad', g.F >= MAX_F);
-  $('dlBtn').disabled = g.F >= MAX_F || !A.sh || A.sh.form === 'cavity';
+  $('dlBtn').disabled = g.F >= MAX_F || !A.sh || A.sh.form !== 'chart';
   $('dlName').textContent = stlName();
   if (A.err){ $('sMan').textContent = A.err; $('sMan').className = 'cell__v is-bad'; return; }
-  if (!A.sh || A.sh.form === 'cavity') return;
+  if (!A.sh || A.sh.form !== 'chart') return;
   const s = A.sh.stats;
   $('sTris').textContent = s.F.toLocaleString() + ' · ' + fmtMB(s.bytes);
   $('sTrisN').textContent = s.nR + ' rows × ' + s.nC + ' around' + (s.nRi ? ' · ' + s.nRi + ' inner rows' : '') + ' · V ' + s.V.toLocaleString();
@@ -2639,17 +3208,19 @@ function updateStats(){
     $('sAna').textContent = A.an.N + ' · ' + A.an.nT + ' × ' + A.sh.nF;
     $('sAnaN').textContent = 'hop ' + (A.an.hop / AUDIO.sr * 1000).toFixed(0) + ' ms · ' + A.an.K + ' frame' + (A.an.K > 1 ? 's' : '') + ' per step · ' + A.an.ms.toFixed(0) + ' + ' + s.ms.toFixed(0) + ' ms';
   }
-  fmtOver(s, true);
-  $('heroNote').textContent = (AUDIO.synthetic ? VSF.DEMO_HZ + ' Hz tone' : AUDIO.name) + ' · ' + fmtSec(AUDIO.duration) + ' · ' + P.layout + (P.hollow | 0 ? ' · hollow' : '');
+  fmtOver(s, 'chart');
+  $('heroNote').textContent = AUDIO.name + ' · ' + fmtSec(AUDIO.duration) + ' · ' + P.layout + (P.hollow | 0 ? ' · hollow' : '');
 }
 function stlName(){
   const d = new Date(), p = n => (n < 10 ? '0' : '') + n, stamp = d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+  if (P.form === 'wave') return AUDIO.base + '-waveform-' + (P.wmode === 'wave' ? 'wave' : P.wn + '-fins' + ((P.wpitch | 0) ? '-by-pitch' : '')) + ((P.whalf | 0) ? '-halves' : '') + '-' + stamp + '.stl';
   if (P.form === 'cavity') return AUDIO.base + '-cavity-' + P.ctop + ((P.chalf | 0) ? '-halves' : '') + (P.cmode === 'moment' ? '-at-' + P.ct.toFixed(2).replace('.', 's') : '') + '-' + stamp + '.stl';
   return AUDIO.base + '-cylinder-' + P.layout + ((P.hollow | 0) ? '-hollow' : '') + '-' + stamp + '.stl';
 }
 function exportSTL(){
   if (!A.sh) return null;
-  const what = A.sh.form === 'cavity' ? 'cavity ' + P.ctop + ((P.chalf | 0) ? ' halves' : '') : P.layout + ((P.hollow | 0) ? ' hollow' : '');
+  const what = A.sh.form === 'wave' ? 'waveform ' + (P.wmode === 'wave' ? 'wave' : P.wn + ' fins') + ((P.whalf | 0) ? ' halves' : '')
+    : A.sh.form === 'cavity' ? 'cavity ' + P.ctop + ((P.chalf | 0) ? ' halves' : '') : P.layout + ((P.hollow | 0) ? ' hollow' : '');
   return VSF.writeSTL(A.sh.mesh.pos, A.sh.mesh.idx, 'Promethean Theoria - volumetric sound form - ' + AUDIO.base + ' - ' + what);
 }
 function download(){
@@ -2685,6 +3256,16 @@ const RANGES = {
   bed: { stage: 'shape', fmt: v => v + ' mm' },
   t0: { stage: 'stft', fmt: v => v.toFixed(1) + ' s' },
   t1: { stage: 'stft', fmt: v => v.toFixed(1) + ' s' },
+  // the waveform solid rebuilds in a tenth of a second, so it follows a slider while dragged
+  wn: { stage: 'shape', fmt: v => '' + v, int: true },
+  wgam: { stage: 'shape', fmt: v => v.toFixed(2) },
+  wlen: { stage: 'shape', fmt: v => v + ' mm' },
+  wrad: { stage: 'shape', fmt: v => v + ' mm' },
+  wcore: { stage: 'shape', fmt: v => v.toFixed(1) + ' mm' },
+  wfin: { stage: 'shape', fmt: v => v.toFixed(1) + ' mm' },
+  wtap: { stage: 'shape', fmt: v => v.toFixed(1) + '°' },
+  wtip: { stage: 'shape', fmt: v => v + ' mm' },
+  wseg: { stage: 'shape', fmt: v => '' + v, int: true },
   // the cavity form rebuilds in about a second, so it follows a slider when it is let go, not while dragged
   cr0: { stage: 'shape', cav: true, fmt: v => v + ' mm' },
   cr1: { stage: 'shape', cav: true, fmt: v => v + ' mm' },
@@ -2703,7 +3284,9 @@ const SEGS = { fftSeg: { key: 'fft', stage: 'stft', num: true }, scaleSeg: { key
                hollowSeg: { key: 'hollow', stage: 'shape', num: true }, fitSeg: { key: 'fit', stage: 'shape', num: true },
                formSeg: { key: 'form', stage: 'shape' }, slopeSeg: { key: 'slope', stage: 'shape', num: true },
                ctopSeg: { key: 'ctop', stage: 'shape' }, chalfSeg: { key: 'chalf', stage: 'shape', num: true },
-               cmodeSeg: { key: 'cmode', stage: 'shape' } };
+               cmodeSeg: { key: 'cmode', stage: 'shape' },
+               wmodeSeg: { key: 'wmode', stage: 'shape' }, wmeasSeg: { key: 'wmeas', stage: 'shape' }, whalfSeg: { key: 'whalf', stage: 'shape', num: true },
+               wpitchSeg: { key: 'wpitch', stage: 'shape', num: true } };
 function readRange(key){
   const el = $(key), r = RANGES[key];
   let v = +el.value;
@@ -2732,7 +3315,8 @@ function onRange(key, final){
   P[key] = v;
   applyRange(key, v);
   syncHash();
-  const live = r.stage !== 'stft' && !r.cav && P.form !== 'cavity' && VSF.gridSpec(P, A.an ? A.an.nT : P.nt).F <= LIVE_MAX;
+  const live = !r.cav && (P.form === 'wave' ? VSF.waveEstimate(P).F <= LIVE_MAX
+    : r.stage !== 'stft' && P.form !== 'cavity' && VSF.gridSpec(P, A.an ? A.an.nT : P.nt).F <= LIVE_MAX);
   if (final || live) schedule(r.stage);
   else updateStats();
 }
@@ -2749,7 +3333,8 @@ function bindControls(){
       syncSegs(); syncHash(); schedule(s.stage);
     }));
   }
-  $('demoBtn').addEventListener('click', () => loadDemo(false));
+  $('voiceBtn').addEventListener('click', () => loadDemo(false, 'voice'));
+  $('demoBtn').addEventListener('click', () => loadDemo(false, 'tone'));
   $('wholeBtn').addEventListener('click', () => { P.t0 = 0; P.t1 = 0; applyRange('t0', 0); applyRange('t1', +$('t1').max); syncHash(); schedule('stft'); });
   $('file').addEventListener('change', e => { loadFile(e.target.files[0]); e.target.value = ''; });
   const plate = $('p0');
@@ -2781,19 +3366,26 @@ function syncSegs(){
     const s = SEGS[id];
     $(id).querySelectorAll('.btn').forEach(b => b.classList.toggle('is-on', '' + P[s.key] === b.dataset.v));
   }
-  const chart = P.form !== 'cavity';
-  document.querySelectorAll('[data-form]').forEach(el => { el.hidden = el.dataset.form !== (chart ? 'chart' : 'cavity'); });
+  const form = P.form, chart = form === 'chart', wave = form === 'wave', pick = (a, b, c) => wave ? a : chart ? b : c;
+  document.querySelectorAll('[data-form]').forEach(el => { el.hidden = !el.dataset.form.split(' ').includes(form); });
   $('fadeGrp').hidden = !chart || P.layout !== 'transpose';
   $('wallGrp').hidden = !chart || !(P.hollow | 0); $('flrGrp').hidden = !chart || !(P.hollow | 0);
-  $('ctGrp').hidden = chart || P.cmode !== 'moment';
+  $('ctGrp').hidden = form !== 'cavity' || P.cmode !== 'moment';
+  $('wnGrp').hidden = $('wfinGrp').hidden = $('wtapGrp').hidden = $('wpitchGrp').hidden = !wave || P.wmode === 'wave';
   $('spinBtn').classList.toggle('is-on', spin); $('gridBtn').classList.toggle('is-on', showGrid); $('cutBtn').classList.toggle('is-on', cutView);
-  $('p0ttl').textContent = 'The sound as a solid · ' + (chart ? 'spectral cylinder' : 'cavity form');
-  $('moreHint').textContent = chart ? 'trim · analysis · size · print' : 'trim · analysis · vessel · field · print';
-  $('p1ttl').textContent = chart ? 'The unrolled surface · what the wall is made of' : 'The driving band · what sets the air ringing';
-  $('cap0').innerHTML = chart ? CAP0_CHART : CAP0_CAVITY;
-  $('cap1').innerHTML = chart ? CAP1_CHART : CAP1_CAVITY;
+  $('p0ttl').textContent = 'The sound as a solid · ' + pick('waveform solid', 'spectral cylinder', 'cavity form');
+  $('moreHint').textContent = pick('trim · height · size · print', 'trim · analysis · size · print', 'trim · analysis · vessel · field · print');
+  $('p1ttl').textContent = pick('The waveform and its outline · what the discs are cut from', 'The unrolled surface · what the wall is made of', 'The driving band · what sets the air ringing');
+  $('cap0').innerHTML = pick(CAP0_WAVE, CAP0_CHART, CAP0_CAVITY);
+  $('cap1').innerHTML = pick(CAP1_WAVE, CAP1_CHART, CAP1_CAVITY);
 }
-const CAP0_CHART = document.getElementById('cap0').innerHTML, CAP1_CHART = document.getElementById('cap1').innerHTML;
+const CAP0_WAVE = document.getElementById('cap0').innerHTML, CAP1_WAVE = document.getElementById('cap1').innerHTML;
+const CAP0_CHART = '<b>Fig. 0</b> — Time climbs the axis; frequency wraps the circumference; loudness pushes the wall outward. ' +
+  'Every triangle is placed by rule on a closed grid, so the body is watertight by construction and the manifold cell above is a ' +
+  'check, not a repair. The file you download is binary STL in millimetres.';
+const CAP1_CHART = '<b>Fig. 1</b> — The cylinder wall, cut along one line and laid flat. Each row is one moment; each column is one ' +
+  'band; brightness is loudness above the floor. The strip beneath is the waveform, with the trimmed region lit. Tune the floor, gamma ' +
+  'and blur under <em>More controls</em> until the picture reads; then the solid will too.';
 const CAP0_CAVITY = '<b>Fig. 0</b> — The air inside a vessel, played the clip by a small speaker in its wall. Where the standing ' +
   'waves are loudest, the air is made solid; the quiet air between the lobes, where the nodal surfaces run, stays empty. The lobes ' +
   'are fused to a thin shell of the vessel, so the whole is one closed solid, meshed from voxels by marching tetrahedra. Press ' +
@@ -2808,7 +3400,7 @@ function syncControls(){
 }
 
 /* ─── URL hash: parameters only, never the audio ─── */
-const HASH_KEYS = ['form', 'layout', 'fft', 'nt', 'nf', 'fmin', 'fmax', 'scale', 'db', 'gamma', 'contrast', 'bz', 'bt', 'r0', 'depth', 'h', 'foot', 'fade', 'hollow', 'wall', 'flr', 'slope', 'fit', 'bed',
+const HASH_KEYS = ['form', 'wmode', 'wpitch', 'wn', 'wmeas', 'wgam', 'wlen', 'wrad', 'wcore', 'wfin', 'wtap', 'wtip', 'wseg', 'whalf', 'layout', 'fft', 'nt', 'nf', 'fmin', 'fmax', 'scale', 'db', 'gamma', 'contrast', 'bz', 'bt', 'r0', 'depth', 'h', 'foot', 'fade', 'hollow', 'wall', 'flr', 'slope', 'fit', 'bed',
                    'cr0', 'cr1', 'ch', 'cwall', 'cflr', 'ctop', 'cvox', 'chalf', 'ctune', 'cq', 'cfill', 'csmooth', 'csrc', 'cmode', 'ct'];
 function syncHash(){
   const q = new URLSearchParams(), D = VSF.defaults();
@@ -2831,7 +3423,12 @@ function applyHash(){
   num('r0', 15, 120); num('depth', 0, 40); num('h', 40, 300); num('foot', 0, 20); num('fade', 0, 0.1);
   num('hollow', 0, 1); num('wall', 0.8, 6); num('flr', 1.2, 10); num('fit', 0, 1); num('bed', 100, 320);
   P.nt = Math.round(P.nt / 32) * 32; P.nf = Math.round(P.nf / 16) * 16; P.hollow = P.hollow ? 1 : 0; P.fit = P.fit ? 1 : 0;
-  if (['chart', 'cavity'].includes(q.get('form'))) P.form = q.get('form');
+  if (['wave', 'chart', 'cavity'].includes(q.get('form'))) P.form = q.get('form');
+  if (['fins', 'wave'].includes(q.get('wmode'))) P.wmode = q.get('wmode');
+  if (['peak', 'rms'].includes(q.get('wmeas'))) P.wmeas = q.get('wmeas');
+  num('wn', 16, 200); num('wgam', 0.3, 2); num('wlen', 60, 300); num('wrad', 10, 90); num('wcore', 1, 10); num('wfin', 0.6, 4);
+  num('wtap', 1, 30); num('wtip', 0, 40); num('wseg', 48, 360); num('whalf', 0, 1); num('wpitch', 0, 1);
+  P.wn = Math.round(P.wn); P.wseg = Math.round(P.wseg / 8) * 8; P.whalf = P.whalf ? 1 : 0; P.wpitch = P.wpitch ? 1 : 0;
   if (['0', '45', '55', '65'].includes(q.get('slope'))) P.slope = +q.get('slope');
   if (['open', 'closed'].includes(q.get('ctop'))) P.ctop = q.get('ctop');
   if (['clip', 'moment'].includes(q.get('cmode'))) P.cmode = q.get('cmode');
@@ -2853,7 +3450,7 @@ window.__selfTest = function(){
   if (A.sh){
     const s = A.sh.stats;
     ok(s.badEdges === 0 && s.badDir === 0, 'page mesh edges');
-    ok(A.sh.form === 'cavity' ? (s.euler & 1) === 0 && s.shells >= 1 : s.euler === 2, 'page mesh Euler ' + s.euler);
+    ok(A.sh.form === 'cavity' ? (s.euler & 1) === 0 && s.shells >= 1 : A.sh.form === 'wave' ? s.euler === 2 * s.shells : s.euler === 2, 'page mesh Euler ' + s.euler);
     ok(s.vol > 0, 'page mesh volume');
     ok(!(P.fit | 0) || Math.max(...s.size) <= P.bed + 1e-3, 'page mesh inside the bed limit');
     if (s.F < 400000){ const b = exportSTL(); ok(b.byteLength === 84 + 50 * s.F, 'page STL bytes'); }
@@ -2881,7 +3478,7 @@ window.__cavitySelfTest = () => VSF.selfTestCavity();
 window.__cavityTestResult = () => cavityTest;
 window.__loadArrayBuffer = loadArrayBuffer;
 window.__exportSTL = exportSTL;
-window.__runDemo = () => loadDemo(false);
+window.__runDemo = which => loadDemo(false, which);
 window.__whenIdle = whenIdle;
 
 /* ─── boot: everything the headless screenshot needs happens synchronously ─── */

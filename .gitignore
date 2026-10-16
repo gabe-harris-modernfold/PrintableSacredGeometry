@@ -29,5 +29,7 @@ _*_dec.stl
 /projects/volumetric_sound_forms/demo_surface.f32
 /projects/volumetric_sound_forms/demo_cavity.json
 /projects/volumetric_sound_forms/demo_cavity_field.f32
+/projects/volumetric_sound_forms/demo_wave.json
+/projects/volumetric_sound_forms/demo_voice.f32
 /projects/volumetric_sound_forms/__pycache__/
 /projects/volumetric_sound_forms/test_tone.wav

@@ -2,11 +2,12 @@
 
 Same frame placement, periodic Hann, band map, dB/gamma/contrast, layouts, blur,
 erosion, foot, solid/hollow cylinder topology and binary STL as the page, so the
-two can be diffed field-by-field and vertex-by-vertex.
+two can be diffed field-by-field and vertex-by-vertex. The waveform solid's windows,
+profile and lathe likewise, read from the voice demo run_pure.mjs writes.
 
     python sound_form_reference.py --write-test-wav test_tone.wav
     python sound_form_reference.py --wav test_tone.wav [--layout mirror|plain|transpose] [--hollow] [--nt 192] [--nf 96]
-    python sound_form_reference.py --compare        # against run_pure.mjs's demo_field.*, demo_cavity.* and js_*.stl
+    python sound_form_reference.py --compare        # against run_pure.mjs's demo_field.*, demo_cavity.*, demo_wave.json and js_*.stl
 
 Rounding conventions pinned to the JS: Math.round -> floor(x + 0.5); Math.ceil(x - 1e-9);
 values stored to Float32Array are cast to float32 at the same points."""
@@ -31,7 +32,9 @@ def defaults():
                 db=-60, gamma=1, contrast=1, bz=1, bt=1,
                 r0=45, depth=12, h=160, foot=6, fade=0.02, hollow=0, wall=2, flr=3,
                 fit=1, bed=300, t0=0, t1=0, slope=0,
-                form="chart", cr0=50, cr1=40, ch=120, cwall=2, cflr=3, ctop="open", ctune=60, cq=30,
+                form="wave", wmode="fins", wn=72, wmeas="peak", wgam=1, wlen=240, wrad=52, wcore=3, wfin=1.2, wtap=4,
+                wtip=10, wseg=160, whalf=0, wpitch=1,
+                cr0=50, cr1=40, ch=120, cwall=2, cflr=3, ctop="open", ctune=60, cq=30,
                 cfill=15, csmooth=1, cvox=1.2, csrc=0.62, cmode="clip", ct=0, chalf=0)
 
 
@@ -788,6 +791,322 @@ def compare_cavity():
     return 1 if fails else 0
 
 
+# ─── the waveform solid ───────────────────────────────────────────────────────
+# The same windows, profile and lathe as the page, so the STLs can be diffed triangle by triangle; and one
+# check that does not go through the profile at all: every disc's rim, read off the page's STL as the largest
+# vertex radius in its window, against the peak of that window computed here straight from the samples.
+WAVE_STEP = 0.3
+WAVE_MIN_FIN = 0.1
+
+
+def wave_count(P):
+    if P["wmode"] == "wave":
+        return max(8, min(4000, js_round(float(P["wlen"]) / WAVE_STEP)))
+    return max(4, int(P["wn"]))
+
+
+def wave_amplitudes(x, sr, P, n):
+    s0, s1 = span(len(x), sr, P["t0"], P["t1"])
+    hop = (s1 - s0) / n
+    x64 = x.astype(np.float64)
+    raw = np.zeros(n)
+    for i in range(n):
+        a = int(np.floor(s0 + i * hop))
+        b = max(a + 1, int(np.floor(s0 + (i + 1) * hop)))
+        seg = x64[a:b]
+        raw[i] = np.sqrt(np.sum(seg * seg) / (b - a)) if P["wmeas"] == "rms" else np.abs(seg).max()
+    mx = raw.max()
+    g = max(0.2, float(P["wgam"]) or 1.0)
+    a = (raw / mx) ** g if mx > 0 else np.zeros(n)
+    return dict(a=a, raw=raw, max=mx, s0=s0, s1=s1, hop=hop, n=n)
+
+
+PITCH_LO, PITCH_HI = 50, 1200
+YIN_TH, YIN_UNVOICED, PITCH_QUIET = 0.15, 0.3, 0.02
+
+
+def yin_cmnd(frame, W, tau_max):
+    """YIN's cumulative-mean-normalised difference by direct summation of (x_j - x_{j+tau})^2 over sliding
+    windows; the page gets the same function from an FFT cross-correlation and prefix sums"""
+    win = np.lib.stride_tricks.sliding_window_view(frame, W)[: tau_max + 1]
+    d = ((win[0][None, :] - win[1:]) ** 2).sum(1)
+    run = np.cumsum(d)
+    tau = np.arange(1, tau_max + 1)
+    out = np.ones(tau_max + 1)
+    out[1:] = np.where(run > 0, d * tau / np.where(run > 0, run, 1.0), 1.0)
+    return out
+
+
+def yin_pick(d, tau_min, tau_max):
+    tau = -1
+    t = tau_min
+    while t <= tau_max:
+        if d[t] < YIN_TH:
+            while t < tau_max and d[t + 1] < d[t]:
+                t += 1
+            tau = t
+            break
+        t += 1
+    if tau < 0:
+        best = tau_min + int(np.argmin(d[tau_min:tau_max + 1]))
+        if d[best] > YIN_UNVOICED:
+            return 0.0, float(d[best])
+        tau = best
+    tr = float(tau)
+    if tau_min < tau < tau_max:
+        a, b, c = d[tau - 1], d[tau], d[tau + 1]
+        den = a - 2 * b + c
+        if den > 0:
+            tr = tau + 0.5 * (a - c) / den
+    return tr, float(d[tau])
+
+
+def wave_pitch(x, sr, amp):
+    n = amp["n"]
+    tau_min, tau_max = max(2, int(np.floor(sr / PITCH_HI))), int(np.ceil(sr / PITCH_LO))
+    W = 2 * tau_max
+    Lf = W + tau_max
+    x64 = x.astype(np.float64)
+    f, voiced, dip = np.zeros(n), np.zeros(n, dtype=np.uint8), np.ones(n)
+    for i in range(n):
+        if not (amp["max"] > 0 and amp["raw"][i] >= PITCH_QUIET * amp["max"]):
+            continue
+        c = amp["s0"] + (i + 0.5) * amp["hop"]
+        start = int(np.floor(c - 0.5 * Lf + 0.5))
+        idx = np.arange(start, start + Lf)
+        frame = np.where((idx >= 0) & (idx < len(x64)), x64[np.clip(idx, 0, len(x64) - 1)], 0.0)
+        tau, dip[i] = yin_pick(yin_cmnd(frame, W, tau_max), tau_min, tau_max)
+        if tau > 0:
+            f[i], voiced[i] = sr / tau, 1
+    prev = -1
+    for i in range(n):
+        if not voiced[i]:
+            continue
+        if prev < 0:
+            f[:i] = f[i]
+        else:
+            for k in range(prev + 1, i):
+                t = (k - prev) / (i - prev)
+                f[k] = np.exp(np.log(f[prev]) * (1 - t) + np.log(f[i]) * t)
+        prev = i
+    if prev >= 0:
+        f[prev + 1:] = f[prev]
+    vf = np.sort(f[voiced == 1])
+    m = len(vf)
+    f_med = (vf[m >> 1] if m & 1 else np.sqrt(vf[m // 2 - 1] * vf[m // 2])) if m else 0.0
+    return dict(f=f, voiced=voiced, dip=dip, nVoiced=int(m), fMed=float(f_med))
+
+
+def wave_thickness(pitch, P, n):
+    p = float(P["wlen"]) / n
+    t_max = 0.8 * p
+    t_min = min(t_max, max(0.2, float(P["wfin"])))
+    t_mid = np.sqrt(t_min * t_max)
+    return np.minimum(t_max, np.maximum(t_min, t_mid * pitch["fMed"] / pitch["f"]))
+
+
+def wave_profile(amp, P, thick=None):
+    L, rc = float(P["wlen"]), max(0.5, float(P["wcore"]))
+    Rmax, tip, n, a = max(rc + 1, float(P["wrad"])), max(0.0, float(P["wtip"] or 0)), amp["n"], amp["a"]
+    X, R = [], []
+
+    def put(x, r):
+        if X and abs(X[-1] - x) < 1e-9 and abs(R[-1] - r) < 1e-9:
+            return
+        X.append(x)
+        R.append(r)
+
+    put(-tip if tip > 0 else 0.0, 0.0)
+    if P["wmode"] == "wave":
+        for i in range(n):
+            put(L * i / (n - 1), rc + (Rmax - rc) * a[i])
+    else:
+        p = L / n
+        w0 = min(0.4 * p, 0.5 * max(0.2, float(P["wfin"])))
+        tn = np.tan(max(0.5, min(45.0, float(P["wtap"]))) * np.pi / 180)
+        put(0.0, rc)
+        for i in range(n):
+            h = (Rmax - rc) * a[i]
+            if h < WAVE_MIN_FIN:
+                continue
+            w = min(0.4 * p, 0.5 * thick[i]) if thick is not None else w0
+            c = (i + 0.5) * p
+            u = min(0.5 * p, w + h * tn)
+            put(c - u, rc); put(c - w, rc + h); put(c + w, rc + h); put(c + u, rc)
+        put(L, rc)
+    put(L + tip if tip > 0 else L, 0.0)
+    return dict(X=np.array(X), R=np.array(R), L=L, rc=rc, Rmax=Rmax, tip=tip)
+
+
+def lathe_mesh(X, R, n_seg, half):
+    """the page's latheMesh: rings for the interior profile points, poles at the ends (a flat end of a half is a
+    half-disc fanned from its theta = 0 corner), and for a half the cut face on z = 0"""
+    M = len(X)
+    nR = M - 2
+    n_seg = max(8, int(n_seg) & ~1)
+    nC = n_seg // 2 + 1 if half else n_seg
+    flat0, flat1 = X[1] == X[0], X[M - 1] == X[M - 2]
+    pole0, pole1 = not (half and flat0), not (half and flat1)
+    j = np.arange(nC)
+    th = np.pi * j / (nC - 1) if half else TAU * j / nC
+    cs, sn = np.cos(th), np.sin(th)
+    if half:
+        cs[0], sn[0], cs[-1], sn[-1] = 1.0, 0.0, -1.0, 0.0
+    r = R[1:M - 1, None]
+    pos = np.stack([np.repeat(X[1:M - 1], nC), (r * cs).ravel(), (r * sn).ravel()], 1)
+    extra = []
+    B = T = -1
+    v = nR * nC
+    if pole0:
+        B, v = v, v + 1
+        extra.append([X[0], 0.0, 0.0])
+    if pole1:
+        T, v = v, v + 1
+        extra.append([X[M - 1], 0.0, 0.0])
+    if extra:
+        pos = np.vstack([pos, np.array(extra)])
+    pos = pos.astype(F32)
+    cols = nC - 1 if half else nC
+
+    def V(k, jj):
+        return k * nC + (jj % nC)
+
+    k, jj = np.meshgrid(np.arange(nR - 1), np.arange(cols), indexing="ij")
+    a, b, c, d = V(k, jj), V(k, jj + 1), V(k + 1, jj + 1), V(k + 1, jj)
+    tris = [np.stack([np.stack([a, b, c], -1), np.stack([a, c, d], -1)], 2).reshape(-1, 3)]
+    q, e = nR - 1, nC - 1
+    jc = np.arange(cols)
+    jf = np.arange(1, e)
+    if pole0:
+        tris.append(np.stack([np.full(cols, B), V(0, jc + 1), V(0, jc)], 1))
+    else:
+        tris.append(np.stack([np.full(len(jf), V(0, 0)), V(0, jf + 1), V(0, jf)], 1))
+    if pole1:
+        tris.append(np.stack([np.full(cols, T), V(q, jc), V(q, jc + 1)], 1))
+    else:
+        tris.append(np.stack([np.full(len(jf), V(q, 0)), V(q, jf), V(q, jf + 1)], 1))
+    if half:
+        kk = np.arange(nR - 1)
+        cut = np.stack([np.stack([V(kk, 0), V(kk + 1, 0), V(kk + 1, e)], 1),
+                        np.stack([V(kk, 0), V(kk + 1, e), V(kk, e)], 1)], 1).reshape(-1, 3)
+        tris.append(cut)
+        if pole0:
+            tris.append(np.array([[B, V(0, 0), V(0, e)]]))
+        if pole1:
+            tris.append(np.array([[V(q, 0), T, V(q, e)]]))
+    return pos, np.concatenate(tris, 0).astype(np.int64)
+
+
+def lathe_volume(X, R, n_seg):
+    c = 0.5 * n_seg * np.sin(TAU / n_seg)
+    A = c * R * R
+    return float(np.sum(np.diff(X) / 3 * (A[:-1] + A[1:] + np.sqrt(A[:-1] * A[1:]))))
+
+
+def wave_shape(x, sr, P):
+    n = wave_count(P)
+    amp = wave_amplitudes(x, sr, P, n)
+    pitch = wave_pitch(x, sr, amp) if P["wmode"] != "wave" and int(P.get("wpitch", 0)) else None
+    thick = wave_thickness(pitch, P, n) if pitch and pitch["nVoiced"] else None
+    prof = wave_profile(amp, P, thick)
+    half = bool(int(P["whalf"]))
+    n_seg = max(8, int(P["wseg"]) & ~1)
+    pos, idx = lathe_mesh(prof["X"], prof["R"], n_seg, half)
+    x_mid = 0.5 * (prof["X"][0] + prof["X"][-1])
+    p64 = pos.astype(np.float64)
+    if not half:
+        p64[:, 0] -= x_mid
+        p64[:, 2] -= float(pos[:, 2].min())
+        pos = p64.astype(F32)
+    else:
+        off = float(prof["R"].max()) + 4
+        A_, B_ = p64.copy(), p64.copy()
+        A_[:, 0] -= x_mid; B_[:, 0] -= x_mid
+        A_[:, 1] += off; B_[:, 1] -= off
+        pos = np.vstack([A_, B_]).astype(F32)
+        idx = np.vstack([idx, idx + len(p64)])
+    scale = fit_to_bed(pos, float(P["bed"])) if int(P["fit"]) else 1.0
+    return dict(amp=amp, pitch=pitch, thick=thick, prof=prof, pos=pos, idx=idx, n_seg=n_seg, half=half, scale=scale,
+                exact=lathe_volume(prof["X"], prof["R"], n_seg) * scale ** 3, stats=solid_check(pos, idx))
+
+
+def compare_wave(tol_mm=1e-4):
+    path = os.path.join(HERE, "demo_wave.json")
+    if not os.path.exists(path):
+        print("  (no demo_wave.json: run node run_pure.mjs first)")
+        return 1
+    with open(path) as fh:
+        js = json.load(fh)
+    sr = js["sr"]
+    fails = 0
+
+    def ok(cond, msg):
+        nonlocal fails
+        print(("  ok   " if cond else "  FAIL ") + msg)
+        if not cond:
+            fails += 1
+
+    x = np.fromfile(os.path.join(HERE, "demo_voice.f32"), dtype="<f4")
+    ok(len(x) == int(np.floor(sr * js["seconds"])) and abs(np.abs(x).max() - 0.9) < 1e-6,
+       f"voice demo: {len(x)} samples, peak {np.abs(x).max():.7f}")
+    for run in js["runs"]:
+        P = dict(defaults())
+        P.update(run["P"])
+        name = run["name"]
+        r = wave_shape(x, sr, P)
+        amp, prof = r["amp"], r["prof"]
+        ok(amp["s0"] == run["s0"] and amp["s1"] == run["s1"] and amp["n"] == len(run["raw"]), f"{name}: span {amp['s0']}..{amp['s1']} in {amp['n']} windows")
+        dr = np.abs(amp["raw"] - np.array(run["raw"])).max()
+        da = np.abs(amp["a"] - np.array(run["amp"])).max()
+        ok(dr <= 1e-12 and da <= 1e-12, f"{name}: window {P['wmeas']} and curve {P['wgam']}, max|d| {dr:.1e} / {da:.1e}")
+        pt, jp = r["pitch"], run.get("pitch")
+        ok((pt is None) == (jp is None), f"{name}: pitch {'on' if pt is not None else 'off'} in both")
+        if pt is not None and jp is not None:
+            same_v = np.array_equal(pt["voiced"], np.array(jp["voiced"], dtype=np.uint8))
+            df = np.abs(pt["f"] / np.array(jp["f"]) - 1).max()
+            ok(same_v and df <= 1e-6, f"{name}: YIN by direct sums vs the page's FFT: {pt['nVoiced']} voiced windows identical, pitch max rel|d| {df:.1e}")
+            dt = np.abs(r["thick"] - np.array(run["thick"])).max()
+            ok(dt <= 1e-6, f"{name}: thickness from pitch (median {pt['fMed']:.1f} Hz), max|d| {dt:.1e} mm")
+            # and against the truth: the demo was made on a known pitch contour
+            tc = (amp["s0"] + (np.arange(amp["n"]) + 0.5) * amp["hop"]) / sr
+            ft = 165 * 2 ** (-0.9 * tc / js["seconds"]) + 3 * np.sin(TAU * 5.5 * tc)
+            sel = (pt["voiced"] == 1) & (amp["a"] >= 0.1)
+            err = np.abs(pt["f"][sel] / ft[sel] - 1).max()
+            ok(sel.sum() > 0.5 * amp["n"] and err < 0.03, f"{name}: pitch vs the voice's own contour (165 Hz falling 0.9 octave), {sel.sum()} windows, worst {err * 100:.2f} %")
+        same = len(prof["X"]) == len(run["X"])
+        dX = np.abs(prof["X"] - np.array(run["X"])).max() if same else np.inf
+        dR = np.abs(prof["R"] - np.array(run["R"])).max() if same else np.inf
+        ok(same and dX <= 1e-7 and dR <= 1e-9, f"{name}: profile {len(prof['X'])} points, max|d| x {dX:.1e} r {dR:.1e} mm")
+        s = r["stats"]
+        st = run["stats"]
+        ok(s["V"] == st["V"] and s["F"] == st["F"] and s["badEdges"] == 0 and s["badDir"] == 0 and s["euler"] == st["euler"],
+           f"{name}: V {s['V']} F {s['F']} Euler {s['euler']} odd {s['badEdges']} rev {s['badDir']}")
+        js_tri = read_stl(os.path.join(HERE, name)).astype(np.float64)
+        py_tri = r["pos"][r["idx"]].astype(np.float64)
+        if js_tri.shape == py_tri.shape:
+            dv = np.abs(js_tri - py_tri).max()
+            ok(dv <= tol_mm, f"{name}: vertex max|d| {dv:.1e} mm over {len(py_tri)} triangles in order")
+        else:
+            ok(False, f"{name}: triangle count {js_tri.shape[0]} vs {py_tri.shape[0]}")
+        vj = stl_volume(os.path.join(HERE, name))
+        ok(abs(vj / r["exact"] - 1) <= 1e-5, f"{name}: volume {vj / 1000:.3f} cm3 vs the exact faceted lathe {r['exact'] / 1000:.3f} ({(vj / r['exact'] - 1):+.1e})")
+        if P["wmode"] == "fins" and not r["half"]:
+            # the rims, straight from the samples: window i's largest vertex radius is rc + (R - rc)(peak/max)^curve
+            v = np.unique(js_tri.reshape(-1, 3), axis=0)
+            zc = 0.5 * (v[:, 2].min() + v[:, 2].max())
+            rad = np.hypot(v[:, 1], v[:, 2] - zc)
+            xs = v[:, 0] + 0.5 * (prof["X"][0] + prof["X"][-1])
+            n, p = amp["n"], prof["L"] / amp["n"]
+            want = prof["rc"] + (prof["Rmax"] - prof["rc"]) * amp["a"]
+            want = np.where(want - prof["rc"] < WAVE_MIN_FIN, prof["rc"], want)
+            got = np.array([rad[(xs > i * p - 1e-3) & (xs < (i + 1) * p + 1e-3)].max() for i in range(n)])
+            dm = np.abs(got - want).max()
+            ok(dm <= tol_mm, f"{name}: every disc's rim against its window's peak, from the samples, max|d| {dm:.1e} mm")
+        write_stl(os.path.join(HERE, "py_" + name[3:]), r["pos"], r["idx"])
+    print("compare waveform:", "PASS" if not fails else f"{fails} FAILURE(S)")
+    return 1 if fails else 0
+
+
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -816,6 +1135,7 @@ def main():
     if a.compare:
         rc = max(rc, compare())
         rc = max(rc, compare_cavity())
+        rc = max(rc, compare_wave())
     if not (a.write_test_wav or a.wav or a.compare):
         ap.print_help()
     return rc
