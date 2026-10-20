@@ -381,7 +381,7 @@ footer a{ color:var(--muted); }
           then trimmed by a factor fitted to a 3-D simulation of the real head.</li>
         <li><b>The neck counts as mass too.</b> Between gourd and head sits a 10&ndash;12 mm neck bore, and
           its air has to move with the plug in the window. Count it only as volume, as the textbook formula
-          does, and these voices come out 2.4&ndash;3.7 semitones flat. The solver instead treats the
+          does, and these voices come out 2.5&ndash;4 semitones flat. The solver instead treats the
           gourd's interior as a one-dimensional acoustic line, in which every thin slice is both mass and
           spring. That counts the bore, the waist between the bulbs and the gourd's own length (up to
           0.6 radians of phase in Earth). A finite-element model of each printed air space then checks
@@ -636,10 +636,14 @@ footer a{ color:var(--muted); }
   <div class="eyebrow">VI &middot; The build</div>
   <h2>Twenty-four parts, PETG, one M3 bolt and a swivel</h2>
   <div class="status" style="margin-top:1.2rem;">
-    <b>Status:</b> designed and checked in CAD on 2026-10-20. Every cavity's built volume matches its
-    design to within 0.1 cents of pitch. No two parts come within 3 mm of each other unless they are
-    meant to mate. Every STL is watertight, single-bodied and fits a 320 mm bed. Nothing has been
-    printed or heard yet: the wind bands in &sect;III are the model's until the first windy day says otherwise.
+    <b>Status:</b> designed and checked in CAD on 2026-10-20, and the pitch was re-solved the same day
+    after a review of the tone mathematics. A 3-D finite-element model of each printed air space puts
+    all nine voices within &minus;4 to +2 cents of their targets. That model includes the gourd, the neck bore,
+    the plenum, the labium, and open air above the window. No two parts come within 3 mm of each other
+    unless they are meant to mate. Every STL is watertight, single-bodied and fits a 320 mm bed. Nothing
+    has been printed or heard yet. Printing tolerance and air temperature will move the real pitches by
+    tens of cents, so tune as below. The wind bands in &sect;III are the model's until the first windy day
+    says otherwise.
   </div>
   <div class="shots" style="margin-top:1.2rem;">
     <figure><img src="assets/ogdoad/three-quarter.webp" alt="Three-quarter render: the big Earth gourd at the centre of an eight-spoked wheel of gourd whistles, a dove-tail vane on a boom behind and a plumb-bob below" loading="lazy"><figcaption>Three-quarter, from upwind.</figcaption></figure>
