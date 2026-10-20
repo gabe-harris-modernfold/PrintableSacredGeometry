@@ -32,13 +32,14 @@
   .tabs button.on{background:#1c2b4d;border-color:var(--accA);color:var(--txt)}
 
   .grid{display:grid;grid-template-columns:300px minmax(440px,1fr) 340px;gap:12px}
-  .ggrid{display:grid;grid-template-columns:280px minmax(440px,1fr) 300px;gap:12px}
+  .ggrid{display:grid;grid-template-columns:300px minmax(440px,1fr) 290px;gap:12px;align-items:start}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
   .panel h2{font-size:11.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);margin-bottom:10px}
   .full{grid-column:1/-1}
   .row2{display:grid;grid-template-columns:1fr 1.2fr;gap:12px;grid-column:1/-1}
   .row2in{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-  @media(max-width:1180px){.grid,.ggrid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}}
+  @media(max-width:1180px){.grid,.ggrid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}
+    .ggrid>.stagecol{grid-column:1/-1;order:-1}}
   @media(max-width:760px){
     .grid,.ggrid{grid-template-columns:1fr}
     /* desktop-density controls are too small to tap reliably on a touchscreen */
@@ -68,7 +69,7 @@
   .chips button.lore{border-color:#3a2f17;color:#c9a86b}
   .loretag{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;
     padding:1px 6px;border-radius:10px;background:#3a2417;color:#ffb26b;vertical-align:middle}
-  .ck{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--dim);margin-bottom:6px;cursor:pointer}
+  .ctl label.ck{display:flex;justify-content:flex-start;align-items:center;gap:7px;font-size:12.5px;color:var(--dim);margin-bottom:6px;cursor:pointer}
   .ck input{accent-color:var(--accA)}
 
   /* harmonic editor rows */
@@ -93,28 +94,76 @@
   canvas{display:block;width:100%;border-radius:8px;background:var(--panel2)}
   .caption{font-size:11.5px;color:var(--dim);margin-top:6px}
 
-  /* guided stepper */
-  .step{display:flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid var(--line);
-    border-radius:8px;margin-bottom:6px;cursor:pointer;color:var(--dim);font-size:13px;user-select:none}
-  .step .num{font-family:var(--mono);font-size:11px;width:18px;height:18px;border-radius:50%;
-    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  /* guided: lesson column */
+  .stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:10px}
+  .step{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px 5px;
+    border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--dim);font-size:10.5px;
+    user-select:none;text-align:center;line-height:1.15}
+  .step .num{font-family:var(--mono);font-size:11px;width:20px;height:20px;border-radius:50%;
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
   .step:hover{border-color:var(--accA)}
   .step.cur{background:#1c2b4d;border-color:var(--accA);color:var(--txt)}
   .step.cur .num{border-color:var(--accA);color:var(--accA)}
   .step.done .num{color:var(--good);border-color:var(--good)}
-  .navrow{display:flex;gap:6px;margin:10px 0 14px}
+  .navrow{display:flex;gap:6px;margin:0 0 12px}
   .navrow button{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
-    border-radius:7px;padding:8px;font-size:13px;cursor:pointer}
-  .navrow button:hover{border-color:var(--accA)}
-  .rtitle{font-size:15px;font-weight:600;margin-bottom:7px;color:var(--accA)}
-  .rtext{font-size:13px;line-height:1.6;color:var(--txt)}
-  .rlink{font-size:12px;color:var(--accB);margin-top:10px;font-style:italic}
+    border-radius:7px;padding:8px 6px;font-size:12.5px;cursor:pointer}
+  .navrow button:hover:not(:disabled){border-color:var(--accA)}
+  .navrow button:disabled{opacity:.35;cursor:default}
+  .navrow #btnNext{flex:1.6;border-color:#3a4a6f}
+  .rtitle{font-size:15px;font-weight:600;margin-bottom:6px;color:var(--accA)}
+  .idea{font-size:13.5px;line-height:1.55;color:var(--txt)}
+  .lh{font-size:10.5px;text-transform:uppercase;letter-spacing:1.1px;color:var(--dim);margin:13px 0 6px;font-weight:600}
+  ul.look{padding-left:17px;font-size:12.5px;line-height:1.5;color:var(--txt)}
+  ul.look li{margin-bottom:5px}
+  ul.look li::marker{color:var(--accA)}
+  code{font-family:var(--mono);font-size:11.5px;background:#0a1120;padding:1px 5px;border-radius:4px;color:#a9c4ef}
+  .trybox{display:flex;flex-wrap:wrap;gap:5px}
+  .trybox button{background:#16223c;border:1px solid #2c3d63;color:var(--txt);border-radius:14px;
+    padding:5px 11px;font-size:12px;cursor:pointer;text-align:left}
+  .trybox button:hover{border-color:var(--accA)}
+  .trybox button.lore{border-color:#3a2f17;color:#c9a86b}
+  details.more{margin-top:13px;border-top:1px solid var(--line);padding-top:9px}
+  details.more>summary{cursor:pointer;font-size:12px;color:var(--accB);user-select:none}
+  details.more .mbody{font-size:12.5px;line-height:1.55;color:var(--txt);margin-top:7px}
+  details.more .mbody p{margin-bottom:7px}
+  .dim{color:var(--dim)}
+  .subs{display:flex;flex-direction:column;gap:3px;margin:2px 0 10px}
+  .subs div{display:flex;gap:7px;align-items:baseline;padding:4px 8px;border:1px solid var(--line);border-radius:7px;
+    font-size:12px;color:var(--dim);cursor:pointer;user-select:none}
+  .subs div b{font-family:var(--mono);font-weight:600;font-size:11px}
+  .subs div:hover{border-color:var(--accA)}
+  .subs div.cur{background:#1c2b4d;border-color:var(--accA);color:var(--txt)}
+  .subs div.cur b{color:var(--accA)}
+  .subs div.done b{color:var(--good)}
+  .subs div i{margin-left:auto;font-size:10px;color:#c9a86b;font-style:normal}
+  details.predict{margin-top:12px;background:#151d31;border:1px solid #33406a;border-radius:8px;padding:7px 10px}
+  details.predict>summary{cursor:pointer;font-size:12.5px;color:var(--txt);user-select:none}
+  details.predict>summary b{color:var(--warn)}
+  details.predict>div{font-size:12.5px;line-height:1.5;margin-top:6px;color:var(--good)}
+  .kchips{display:flex;gap:3px;flex-wrap:wrap}
+  .kchips button{min-width:26px;padding:4px 6px;font-family:var(--mono)}
+  #detLbl{font-family:var(--mono);font-size:11px;color:var(--txt);min-width:150px}
 
-  /* documentation */
-  .docs{columns:2;column-gap:12px}
-  @media(max-width:900px){.docs{columns:1}}
-  details.doc{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
-    margin:0 0 12px;break-inside:avoid;overflow:hidden}
+  /* guided: stage column */
+  .narr{display:flex;align-items:center;gap:9px;min-height:30px;margin:-2px 0 8px;padding:5px 10px;
+    border-left:3px solid var(--line);background:var(--panel2);border-radius:0 7px 7px 0;
+    font-size:12.5px;color:var(--dim)}
+  .narr.live{border-left-color:var(--accA);color:var(--txt)}
+  .narr .stepn{font-family:var(--mono);font-size:11px;color:var(--accA);white-space:nowrap}
+  .stagebar{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .stagebar button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+    border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;white-space:nowrap}
+  .stagebar button:hover:not(:disabled){border-color:var(--accA);color:var(--txt)}
+  .stagebar button.on{background:#1c2b4d;border-color:var(--accA);color:var(--txt)}
+  .stagebar button:disabled{opacity:.35;cursor:default}
+  .stagebar .scrubwrap{flex:1;min-width:180px;display:flex;flex-direction:column}
+  .stagebar .scrubwrap input{height:18px}
+  .stagebar .scrubwrap span{font-size:10.5px;color:var(--dim);font-family:var(--mono)}
+  .stagebar .sep{width:1px;align-self:stretch;background:var(--line)}
+
+  /* notes */
+  details.doc{background:var(--panel2);border:1px solid var(--line);border-radius:9px;overflow:hidden}
   details.doc>summary{cursor:pointer;list-style:none;padding:11px 14px;font-size:13.5px;
     font-weight:600;color:var(--txt);display:flex;align-items:center;gap:9px;user-select:none}
   details.doc>summary::-webkit-details-marker{display:none}
@@ -123,16 +172,9 @@
   details.doc[open]>summary .chev{transform:rotate(90deg)}
   details.doc>summary .tag{margin-left:auto;font-size:9.5px;font-weight:600;text-transform:uppercase;
     letter-spacing:.7px;padding:2px 7px;border-radius:20px}
-  .tag.math{background:#1c2b4d;color:#7fb4ff} .tag.caveat{background:#3a2417;color:#ffb26b}
+  .tag.caveat{background:#3a2417;color:#ffb26b}
   .doc .body{padding:2px 15px 14px;font-size:13px;line-height:1.6;color:var(--txt)}
   .doc .body p{margin:0 0 9px} .doc .body p:last-child{margin-bottom:0}
-  .doc .body code{font-family:var(--mono);font-size:12px;background:#0a1120;padding:1px 5px;
-    border-radius:4px;color:#a9c4ef}
-  .doc .body b{color:#fff} .doc .body .dim{color:var(--dim)}
-  .docbar{display:flex;gap:8px;margin-bottom:12px}
-  .docbar button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
-    border-radius:7px;padding:6px 12px;font-size:12px;cursor:pointer}
-  .docbar button:hover{border-color:var(--accA);color:var(--txt)}
 </style>
 </head>
 <body>
@@ -149,16 +191,42 @@
 <!-- ================= GUIDED MODE ================= -->
 <div id="guidedView" class="ggrid">
   <div class="panel">
-    <h2>The ladder of complexity</h2>
-    <div id="gStepper"></div>
-    <div class="navrow"><button id="btnPrev">← Prev</button><button id="btnNext">Next →</button></div>
+    <div id="gStepper" class="stepper"></div>
+    <div class="navrow"><button id="btnPrev">←</button><button id="btnNext">Next →</button></div>
     <div id="gTitle" class="rtitle"></div>
-    <div id="gText" class="rtext"></div>
-    <div id="gLink" class="rlink"></div>
+    <div id="gSubs" class="subs"></div>
+    <p id="gIdea" class="idea"></p>
+    <div class="lh">Look for</div>
+    <ul id="gLook" class="look"></ul>
+    <div class="lh">Try this</div>
+    <div id="gTry" class="trybox"></div>
+    <details class="predict" id="gPredict"><summary></summary><div></div></details>
+    <details class="more" id="gMore"><summary>More detail</summary><div class="mbody" id="gMoreBody"></div></details>
   </div>
-  <div class="panel">
-    <h2>Stage <span style="float:right;text-transform:none;letter-spacing:0" id="gCaption"></span></h2>
+  <div class="panel stagecol">
+    <div id="narr" class="narr"></div>
     <canvas id="gStage" height="520"></canvas>
+    <div class="stagebar">
+      <button id="btnReplay" title="replay the transition into this rung (R)">↻ replay</button>
+      <div class="scrubwrap">
+        <input type="range" id="scrub" min="0" max="1000" value="1000" title="scrub the transition">
+        <span id="scrubLbl"></span>
+      </div>
+      <span class="sep"></span>
+      <button id="btnPause2" title="pause the signal (space)">⏸</button>
+      <button id="rateReal" title="true rate: f revolutions per second">real time</button>
+      <button id="rateSlow" title="dilate time so the fundamental turns once per second">1 rev/s</button>
+    </div>
+    <div class="stagebar" id="detbar">
+      <button id="detRestart" title="start the sum again">⏮</button>
+      <button id="detPrev" title="back one sample / step">◀</button>
+      <button id="detPlay" title="play / pause">⏸</button>
+      <button id="detNext" title="forward one sample / step">▶</button>
+      <span id="detLbl"></span>
+      <span class="sep"></span>
+      <span class="hint" id="kLbl" style="margin:0">test k</span>
+      <div class="kchips" id="kChips"></div>
+    </div>
   </div>
   <div id="guidedCtlSlot"></div>
 </div>
@@ -178,7 +246,7 @@
     <h2>Rung 3 · FFT — the recipe, recovered</h2>
     <canvas id="dSpec" height="180"></canvas>
     <canvas id="dWind" height="230" style="margin-top:8px"></canvas>
-    <div class="caption">bars: real FFT of the sampled wave · below: wave wound at ×f, centroid jumps at each harmonic</div>
+    <div class="caption">bars: real FFT of the sampled wave · below: wave wound at ×f, its average arrow jumps at each harmonic</div>
   </div>
 
   <div class="panel full" style="padding:8px 12px">
@@ -189,13 +257,13 @@
     <div class="panel">
       <h2>Rung 4 · mandala — the spectrum in polar space</h2>
       <canvas id="dMandala" height="380"></canvas>
-      <div class="caption">r(θ) = R₀ + Σ aₙ·cos(nθ+φₙ) — harmonic n draws n-fold petals · hover a spectrum bar or harmonic row to spotlight</div>
+      <div class="caption">harmonic n = a ring with n petals · bold outline = their amplitude-weighted average, r(θ) = R₀ + Σ aₙ·cos(nθ+φₙ) · hover a spectrum bar or harmonic row to spotlight</div>
     </div>
     <div class="panel">
       <h2>Rung 5 · horn torus — all of it in 3D</h2>
       <canvas id="dTorus" height="256"></canvas>
       <div class="row2in">
-        <div><canvas id="dTop" height="104"></canvas><div class="caption">top view → the mandala</div></div>
+        <div><canvas id="dTop" height="104"></canvas><div class="caption">top view → the mandala's rings</div></div>
         <div><canvas id="dSide" height="104"></canvas><div class="caption">height over time → the waveform</div></div>
       </div>
       <div class="caption">fundamental spins the flow · harmonic n threads the central pinch n× per lap · drag to orbit, wheel to zoom</div>
@@ -203,52 +271,23 @@
   </div>
 </div>
 
-<!-- ================= DOCS (both modes) ================= -->
+<!-- ================= NOTES (both modes) ================= -->
 <div class="panel" style="margin-top:12px">
-  <h2>How it all connects — notes</h2>
-  <div class="docbar">
-    <button id="docOpenAll">expand all</button><button id="docCloseAll">collapse all</button>
-  </div>
-  <div class="docs">
-    <details class="doc"><summary><span class="chev">▶</span>Frequency is a rotation rate<span class="tag math">math</span></summary>
-      <div class="body"><p>A frequency <code>f</code> counts repetitions per second. The cleanest picture of "repeating" is a point
-      going around a circle — a <b>phasor</b>. Angle is phase, revolutions per second is frequency, and the point's
-      height traced over time is a sine wave. Everything else in this tool is that one rotation, dressed differently.</p>
-      <p class="dim">The rotation is shown at its true rate — 1 Hz is one revolution per second. Above a few hertz a 60 fps display can only strobe the motion (the wagon-wheel effect), just as a camera would. The Time-dilation slider is an explicit, labelled slow-motion control when you want to inspect the cycle.</p></div>
-    </details>
-    <details class="doc"><summary><span class="chev">▶</span>What the FFT really does<span class="tag math">math</span></summary>
-      <div class="body"><p>The FFT asks a wave: <i>which rotation rates are hiding in you?</i> Winding the waveform around a circle
-      at a trial rate leaves the drawing balanced — unless the rate matches a component, when the graph piles up on one side
-      and its <b>centre of mass</b> jumps away from zero. Each jump is a spectrum bar.</p>
-      <p>The bars here come from a genuine radix-2 FFT of the sampled wave (1024 samples, one exact period), so the
-      spectrum <b>recovers</b> exactly the harmonic recipe you dialed in — nothing is echoed back by shortcut.</p></div>
-    </details>
-    <details class="doc"><summary><span class="chev">▶</span>Mandalas are spectra in polar space<span class="tag math">math</span></summary>
-      <div class="body"><p>Read the spectrum in polar coordinates: harmonic <code>n</code> with amplitude <code>aₙ</code> becomes an
-      n-petalled ripple, <code>r(θ) = R₀ + Σ aₙ·cos(nθ + φₙ)</code>. Fold-symmetry <i>is</i> frequency ratio, drawn in space;
-      phases rotate the petals. A mandala is a spectrum you can look at.</p></div>
-    </details>
-    <details class="doc"><summary><span class="chev">▶</span>The horn torus closes the loop<span class="tag math">math</span></summary>
-      <div class="body"><p>A horn torus is a torus whose tube radius equals its ring radius, so the hole pinches to a single
-      point — the <b>vortex</b>. Signal flow lives on its surface: the fundamental carries particles around the axis
-      (toroidal), harmonic <code>n</code> wraps them <code>n</code> times through the pinch per lap (poloidal), tracing a (1,n) winding.</p>
-      <p>Seen from above, the windings are the mandala's rose curves. A particle's height over time is the waveform.
-      The FFT of that trace is the spectrum. <b>One motion, four shadows</b> — that is the ladder.</p></div>
-    </details>
-    <details class="doc"><summary><span class="chev">▶</span>Solfeggio &amp; mod-9: lore, labeled<span class="tag caveat">lore</span></summary>
-      <div class="body"><p>The solfeggio frequency chips (174–963 Hz) and the mod-9 mandala overlay come from numerology
-      culture, not acoustics — the same "3-6-9" vortex-math family covered (and carefully fenced off) in this repo's
-      Rodin-coil math notes. Digit sums of multiples repeat with period 9 because we write numbers in base 10; that is
-      real arithmetic, but it appears nowhere in the physics of waves.</p>
-      <p class="dim">They're included because the patterns are pretty and the boundary between math and lore is itself worth teaching.</p></div>
-    </details>
-  </div>
+  <details class="doc"><summary><span class="chev">▶</span>Solfeggio &amp; mod-9: lore, labeled<span class="tag caveat">lore</span></summary>
+    <div class="body"><p>The solfeggio frequency chips (174–963 Hz) and the mod-9 mandala overlay come from numerology
+    culture, not acoustics — the same "3-6-9" vortex-math family covered (and carefully fenced off) in this repo's
+    Rodin-coil math notes. Digit sums of multiples repeat with period 9 because we write numbers in base 10; that is
+    real arithmetic, but it appears nowhere in the physics of waves.</p>
+    <p class="dim">They're included because the patterns are pretty and the boundary between math and lore is itself worth teaching.</p></div>
+  </details>
 </div>
 
-<!-- ================= SHARED CONTROL PANEL (moves between modes) ================= -->
+<!-- ================= SHARED CONTROL PANEL (moves between modes) =================
+     data-show lists the rungs (1–5) and/or "dash" where each block appears, so the
+     guided panel only offers the controls the current rung is about. -->
 <div class="panel" id="ctlPanel" style="display:none">
   <h2>Signal</h2>
-  <div class="ctl">
+  <div class="ctl" data-show="1 2 3 4 5 dash">
     <label>Frequency <b id="freqVal">220 Hz</b></label>
     <input type="range" id="freqSlider" min="0" max="1000" value="347">
     <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
@@ -258,7 +297,7 @@
     <div class="chips" id="freqChips"></div>
     <div class="hint">solfeggio chips are numerology-culture, not acoustics — here they're just seed numbers <span class="loretag">lore</span></div>
   </div>
-  <div class="ctl">
+  <div class="ctl" data-show="2 3 4 5 dash">
     <label>Waveform presets</label>
     <div class="btnrow" id="wfRow">
       <button data-wf="sine">Sine</button><button data-wf="square">Square</button>
@@ -266,35 +305,37 @@
       <button data-wf="organ">Organ</button>
     </div>
   </div>
-  <div class="ctl">
+  <div class="ctl" data-show="2 3 4 dash">
     <label>Harmonics <span class="hint" style="margin:0">amp · phase — hover to spotlight</span></label>
     <div id="harmRows"></div>
     <button id="addHarm" class="wide">+ add harmonic</button>
   </div>
-  <div class="ctl">
+  <div class="ctl" data-show="1 dash">
     <label>Time dilation <b id="speedVal">real time</b></label>
     <input type="range" id="speed" min="0" max="1000" value="1000">
     <div class="hint">1× = true rate · drag left to slow the clock deliberately (to 1/100k×)</div>
     <div class="btnrow" style="margin-top:5px"><button id="btnPause">⏸ pause</button></div>
   </div>
-  <div class="ctl">
+  <div class="ctl" data-show="3.4 dash">
     <label>FFT winding frequency <b id="windFVal">1.00 ×f</b></label>
     <input type="range" id="windF" min="20" max="1200" value="100">
     <div class="btnrow" style="margin-top:5px"><button id="btnSweep">▶ auto-sweep 0.2→12</button></div>
   </div>
-  <div class="ctl">
-    <label class="ck"><input type="checkbox" id="mod9"> mod-9 overlay on mandala&nbsp;<span class="loretag">lore</span></label>
-    <label class="ck"><input type="checkbox" id="autoRot" checked> auto-rotate torus</label>
+  <div class="ctl" data-show="4 5 dash">
+    <label class="ck" data-show="4 dash"><input type="checkbox" id="mod9"> mod-9 overlay on mandala&nbsp;<span class="loretag">lore</span></label>
+    <label class="ck" data-show="5 dash"><input type="checkbox" id="autoRot" checked> auto-rotate torus</label>
   </div>
-  <h2 style="margin-top:4px">Readouts</h2>
-  <div class="tiles">
-    <div class="tile big"><div class="k">frequency</div><div class="v" id="tF">—</div></div>
-    <div class="tile"><div class="k">period 1/f</div><div class="v" id="tT">—</div></div>
-    <div class="tile"><div class="k">note ≈</div><div class="v" id="tNote">—</div></div>
-    <div class="tile"><div class="k">time dilation</div><div class="v" id="tSlow">—</div></div>
-    <div class="tile"><div class="k">harmonics</div><div class="v" id="tHarm">—</div></div>
-    <div class="tile"><div class="k">dominant symmetry</div><div class="v" id="tPetal">—</div></div>
-    <div class="tile"><div class="k">digital root <span style="color:var(--warn)">lore</span></div><div class="v gold" id="tRoot">—</div></div>
+  <div data-show="dash">
+    <h2 style="margin-top:4px">Readouts</h2>
+    <div class="tiles">
+      <div class="tile big"><div class="k">frequency</div><div class="v" id="tF">—</div></div>
+      <div class="tile"><div class="k">period 1/f</div><div class="v" id="tT">—</div></div>
+      <div class="tile"><div class="k">note ≈</div><div class="v" id="tNote">—</div></div>
+      <div class="tile"><div class="k">time dilation</div><div class="v" id="tSlow">—</div></div>
+      <div class="tile"><div class="k">harmonics</div><div class="v" id="tHarm">—</div></div>
+      <div class="tile"><div class="k">dominant symmetry</div><div class="v" id="tPetal">—</div></div>
+      <div class="tile"><div class="k">digital root <span style="color:var(--warn)">lore</span></div><div class="v gold" id="tRoot">—</div></div>
+    </div>
   </div>
 </div>
 
@@ -313,6 +354,7 @@ const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const lerp = (a,b,t)=>a+(b-a)*t;
 const frac = x => x-Math.floor(x);
 const smooth = t => t<=0?0 : t>=1?1 : t*t*(3-2*t);
+const seg = (t,a,b) => clamp((t-a)/(b-a),0,1);      // local progress of t inside [a,b]
 
 function eng(v,u,d=3){
   if(!isFinite(v)) return '—';
@@ -324,7 +366,9 @@ function eng(v,u,d=3){
 }
 function setupCanvas(id){
   const c=$(id), dpr=Math.min(2,window.devicePixelRatio||1);
-  const w=c.clientWidth, hAttr=parseInt(c.getAttribute('height'));
+  /* the height attribute is the DESIGN height; remember it, because c.height is rewritten below */
+  if(!c.dataset.h) c.dataset.h=c.getAttribute('height');
+  const w=c.clientWidth, hAttr=parseInt(c.dataset.h);
   /* below 520px wide, scale height with width so plots keep their designed aspect */
   const h=Math.min(hAttr, Math.max(90, Math.round(hAttr*w/520)));
   c.width=w*dpr; c.height=h*dpr; c.style.height=h+'px';
@@ -338,12 +382,12 @@ const RGBC={};
 function rgba(hex,a){
   let c=RGBC[hex];
   if(!c){ c=parseInt(hex.slice(1,3),16)+','+parseInt(hex.slice(3,5),16)+','+parseInt(hex.slice(5,7),16); RGBC[hex]=c; }
-  return 'rgba('+c+','+a.toFixed(3)+')';
+  return 'rgba('+c+','+clamp(a,0,1).toFixed(3)+')';
 }
 
 /* ================= state ================= */
 const S = {
-  mode:'guided', rung:1,
+  mode:'guided', rung:1, sub:1,     // sub = rung-3 sub-step 1..5
   f:220,
   harmonics:[{n:1,amp:1,ph:0}],     // n:1..16 integer · amp 0..1 · ph radians
   speed:1, paused:false,
@@ -356,7 +400,10 @@ const FMIN=1, FMAX=20000, FLOG=Math.log10(FMAX/FMIN);
    artificial slow-down. Above a few Hz a 60 fps display can only strobe the
    motion (wagon-wheel effect); the Time-dilation slider is the user's
    explicit, labelled slow-motion control. WCLK is a wall-time clock used
-   ONLY for decorative pulses so UI shimmer never misrepresents f. */
+   ONLY for decorative pulses so UI shimmer never misrepresents f.
+   During a guided transition the signal clock is HELD, so the morph is a
+   clean geometric change rather than a strobe; the one morph that needs
+   motion (rung 1→2) runs its own labelled slow-motion cycle. */
 const WCLK={t:0};
 function fmtRate(r){ return r>=100?Math.round(r).toLocaleString('en-US'):r>=1?r.toFixed(2):r.toFixed(3); }
 function dilLabel(){
@@ -366,7 +413,12 @@ function dilLabel(){
 }
 
 const N=1024, SWEEP_N=480, SWEEP_LO=0.2, SWEEP_HI=12;
-const WIND_BASE=0.62, WIND_AMP=0.30;   // winding radius = R·(BASE + AMP·wave)
+/* Honest DFT winding: each sample becomes an arrow whose SIGNED length is the
+   sample value (negative samples point backwards) at angle 2π·rate·t, and every
+   sample is weighted equally. No offset "drum" radius — that would add a term the
+   DFT does not have. */
+const WIND_BASE=0, WIND_AMP=1;          // winding radius = R·(BASE + AMP·wave)
+const WIND_MAG=2;                       // gold arrow = 2 × average: its length reads as amplitude
 const WIND_P=8;                        // periods wound around the circle: many laps make
                                        // mismatches cancel cleanly and matches pile up hard
 const FRE=new Float32Array(N), FIM=new Float32Array(N);
@@ -430,7 +482,7 @@ function computeSpectrum(){
       mx=Math.max(mx,mag); tot+=mag;
     }
   }
-  CACHE.specMax=mx; CACHE.magTot=Math.max(1,tot);
+  CACHE.specMax=mx; CACHE.magTot=Math.max(1e-9,tot);
 }
 /* 3Blue1Brown winding: wrap the wave around a circle at trial rate fw (multiples of f);
    the centroid magnitude spikes when fw hits a harmonic */
@@ -458,17 +510,16 @@ function buildSweep(){
   }
   CACHE.sweepMax=mx;
 }
-/* composite epicycle tip at time t (cycles) — unit-normalized so the chain fits its circle */
-function ampNorm(){ let t=0; for(const h of S.harmonics) t+=h.amp; return t>0?1/t:1; }
-function tipAt(t){
+/* composite epicycle tip at time t (cycles) — normalized by Σamp so the chain fits its circle.
+   The waveform panels use this SAME scale, so a spinner tip and the pen always line up. */
+function harmsSum(harms){ let t=0; for(const h of harms) t+=h.amp; return t>1e-9?t:1; }
+function tipOf(harms,t){
   let x=0,y=0;
-  for(const h of S.harmonics){
-    const a=TAU*h.n*t+h.ph;
-    x+=h.amp*Math.cos(a); y+=h.amp*Math.sin(a);
-  }
-  const s=ampNorm();
+  for(const h of harms){ const a=TAU*h.n*t+h.ph; x+=h.amp*Math.cos(a); y+=h.amp*Math.sin(a); }
+  const s=1/harmsSum(harms);
   return {x:x*s, y:y*s};
 }
+const tipAt = t => tipOf(S.harmonics,t);
 const digitalRoot = x => x<=0 ? 0 : 1+((Math.round(x)-1)%9);
 function noteName(f){
   const NM=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
@@ -497,15 +548,18 @@ function buildTorusGeom(){
     wire.push(ring);
   }
   /* one (1,n) winding curve per harmonic: 1 toroidal lap, n poloidal wraps —
-     every θ=π crossing threads the central pinch */
+     every θ=π crossing threads the central pinch. Poloidal angle θ = nφ + φₙ, so
+     the curve seen from straight above is r(φ) = 1 + cos(nφ + φₙ): exactly the
+     mandala's n-petal ring for that harmonic. A particle riding it bobs with
+     height sin(n·2πft + φₙ) — that harmonic's own sine. */
   const curves=[];
   for(const h of CACHE.spec.slice(0,6)){
     const pts=[];
     for(let i=0;i<=384;i++){
       const u=i/384;
-      pts.push(hornPt(TAU*u+h.ph, TAU*h.n*u));
+      pts.push(hornPt(TAU*u, TAU*h.n*u+h.ph));
     }
-    curves.push({n:h.n, mag:h.mag, pts});
+    curves.push({n:h.n, mag:h.mag, ph:h.ph, pts});
   }
   CACHE.torus={wire,curves};
 }
@@ -537,12 +591,20 @@ function region(T,x,y,w,h,fn){
   fn({ctx:c,w,h});
   c.restore();
 }
+function withAlpha(ctx,a,fn){
+  if(a<=0.002) return;
+  const g=ctx.globalAlpha; ctx.globalAlpha=g*Math.min(1,a); fn(); ctx.globalAlpha=g;
+}
 function circle(ctx,x,y,r,style,lw){
   ctx.strokeStyle=style; ctx.lineWidth=lw||1;
   ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.stroke();
 }
 function dot(ctx,x,y,r,style){
   ctx.fillStyle=style; ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.fill();
+}
+function label(ctx,txt,x,y,o={}){
+  ctx.font=o.font||'10px "Segoe UI",sans-serif'; ctx.fillStyle=o.col||'#7f8db0';
+  ctx.textAlign=o.align||'left'; ctx.fillText(txt,x,y); ctx.textAlign='left';
 }
 /* normalized wave value at u ∈ [0,1) cycles */
 function wv(u){ return CACHE.wnorm[Math.floor(frac(u)*N)%N]; }
@@ -551,10 +613,9 @@ function wv(u){ return CACHE.wnorm[Math.floor(frac(u)*N)%N]; }
 function drawPhasor(T,o={}){
   const {ctx,w,h}=T;
   const cx=o.cx??w/2, cy=o.cy??h/2, R=o.R??Math.min(w,h)*0.40;
-  const harms=o.harms??S.harmonics;
-  const ns=o.harms?1:ampNorm();
+  const harms=o.harms??S.harmonics, phi=o.phi??CLK.phi, ns=1/harmsSum(harms);
   circle(ctx,cx,cy,R,'#2a3a5f',1);
-  ctx.strokeStyle='#1c2740';
+  ctx.strokeStyle='#1c2740'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(cx-R-6,cy); ctx.lineTo(cx+R+6,cy);
   ctx.moveTo(cx,cy-R-6); ctx.lineTo(cx,cy+R+6); ctx.stroke();
   /* trail: last cycle of composite tip positions (deterministic from phi — no buffer) */
@@ -564,7 +625,7 @@ function drawPhasor(T,o={}){
       ctx.strokeStyle=rgba('#ffa14f',0.55*(1-c0/K));
       ctx.lineWidth=1.5; ctx.beginPath();
       for(let k=c0;k<=c0+CH;k++){
-        const p=o.harms?tipOf(harms,CLK.phi-k/K):tipAt(CLK.phi-k/K);
+        const p=tipOf(harms,phi-k/K);
         const X=cx+p.x*R, Y=cy-p.y*R;
         k===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
       }
@@ -575,7 +636,8 @@ function drawPhasor(T,o={}){
   const Hs=[...harms].sort((a,b)=>a.n-b.n);
   let px=cx, py=cy;
   for(const hh of Hs){
-    const a=TAU*hh.n*CLK.phi+hh.ph, r=hh.amp*ns*R;
+    const a=TAU*hh.n*phi+hh.ph, r=hh.amp*ns*R;
+    if(r<0.2) continue;
     const nx=px+r*Math.cos(a), ny=py-r*Math.sin(a);
     const af=alphaFor(hh.n);
     circle(ctx,px,py,r,rgba(HCOL(hh.n),0.20*af),1);
@@ -585,32 +647,66 @@ function drawPhasor(T,o={}){
     px=nx; py=ny;
   }
   dot(ctx,px,py,4,'#ffffff');
-  /* height guide toward the (adjoining) waveform */
-  if(o.guide){
-    ctx.strokeStyle=rgba('#6fe3a0',0.5); ctx.setLineDash([4,4]); ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(w-2,py); ctx.stroke();
-    ctx.setLineDash([]);
-  }
-  if(o.bigLabel){
-    ctx.fillStyle='#dbe4f5'; ctx.font='600 26px '+'"Cascadia Code",Consolas,monospace';
-    ctx.textAlign='center';
-    ctx.fillText(eng(S.f,'Hz'),cx,cy+R+44);
-    ctx.font='12px "Segoe UI",sans-serif'; ctx.fillStyle='#7f8db0';
-    ctx.fillText('one revolution = one cycle = '+eng(1/S.f,'s'),cx,cy+R+64);
-    ctx.fillText(S.speed>=0.995
-      ? 'true rate: '+fmtRate(S.f)+' rev/s'+(S.f>4?' — your screen strobes it, exactly as a camera would':'')
-      : 'time dilated '+dilLabel()+' → '+fmtRate(S.f*S.speed)+' rev/s on screen',cx,cy+R+80);
-    ctx.textAlign='left';
-  }
-}
-function tipOf(harms,t){
-  let x=0,y=0,tot=0;
-  for(const h of harms){ const a=TAU*h.n*t+h.ph; x+=h.amp*Math.cos(a); y+=h.amp*Math.sin(a); tot+=h.amp; }
-  const s=tot>0?1/tot:1;
-  return {x:x*s,y:y*s};
+  return {x:px,y:py};
 }
 
-/* ---- rung 2: waveform ---- */
+/* ---- rung 2 (guided): one period of tip height, drawn by a pen ----
+   Same vertical scale as the phasor (amp = R, mid = phasor centre), so the
+   horizontal guide from the spinner tip lands exactly on the pen. */
+const scopeAlpha = age => 0.30+0.65*(1-age);   // freshly drawn ink is brightest
+function drawScope(T,g){
+  const {ctx}=T, W=g.x1-g.x0, harms=g.harms??S.harmonics, phi=g.phi??CLK.phi;
+  const fa=g.frameAlpha??1, top=g.mid-g.amp*1.12, bot=g.mid+g.amp*1.12;
+  withAlpha(ctx,fa,()=>{
+    ctx.strokeStyle='#2a3a5f'; ctx.lineWidth=1; ctx.strokeRect(g.x0,top,W,bot-top);
+    ctx.strokeStyle='#1c2740'; ctx.beginPath();
+    ctx.moveTo(g.x0,g.mid); ctx.lineTo(g.x1,g.mid);
+    ctx.moveTo(g.x0+W/2,top); ctx.lineTo(g.x0+W/2,bot); ctx.stroke();
+    label(ctx,'tip height → time · one period',g.x0+2,top-6);
+    label(ctx,'0',g.x0,bot+13,{font:'10px "Cascadia Code",Consolas,monospace',align:'center'});
+    label(ctx,'T/2',g.x0+W/2,bot+13,{font:'10px "Cascadia Code",Consolas,monospace',align:'center'});
+    label(ctx,'T = '+eng(1/S.f,'s'),g.x1,bot+13,{font:'10px "Cascadia Code",Consolas,monospace',align:'right'});
+  });
+  if(g.wave===false) return null;
+  const ns=1/harmsSum(harms);
+  /* spotlight: that harmonic's own sine, on the same scale */
+  if(S.hoverN>0){
+    const hh=harms.find(x=>x.n===S.hoverN);
+    if(hh){
+      ctx.strokeStyle=rgba(HCOL(hh.n),0.6); ctx.lineWidth=1.2; ctx.beginPath();
+      for(let i=0;i<=220;i++){
+        const u=i/220, X=g.x0+W*u, Y=g.mid-hh.amp*ns*Math.sin(TAU*hh.n*u+hh.ph)*g.amp;
+        i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+      }
+      ctx.stroke();
+    }
+  }
+  /* ink laid down over the last cycle (or since g.from, while being traced) */
+  const t0=Math.max(phi-1,g.from??-Infinity), span=phi-t0;
+  if(span>1e-4){
+    const M=Math.max(8,Math.ceil(span*240)), CH=6, dimK=S.hoverN?0.4:1;
+    for(let c0=0;c0<M;c0+=CH){
+      const tm=t0+span*(c0+CH/2)/M;
+      ctx.strokeStyle=rgba('#ffa14f',scopeAlpha(clamp(phi-tm,0,1))*dimK); ctx.lineWidth=1.9;
+      ctx.beginPath();
+      let pX=null;
+      for(let k=c0;k<=Math.min(M,c0+CH);k++){
+        const t=t0+span*k/M, X=g.x0+W*frac(t), Y=g.mid-tipOf(harms,t).y*g.amp;
+        (pX===null||X<pX-W/2)?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+        pX=X;
+      }
+      ctx.stroke();
+    }
+  }
+  /* the pen */
+  const pX=g.x0+W*frac(phi), pY=g.mid-tipOf(harms,phi).y*g.amp;
+  ctx.strokeStyle=rgba('#6fe3a0',0.35*fa); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pX,top); ctx.lineTo(pX,bot); ctx.stroke();
+  dot(ctx,pX,pY,3.8,rgba('#6fe3a0',fa));
+  return {x:pX,y:pY};
+}
+
+/* ---- rung 2 (dashboard): waveform over two periods ---- */
 function drawWave(T,o={}){
   const {ctx,w,h}=T;
   const pad=28, x1=w-8, mid=h/2, amp=h*0.36, per=o.periods??2;
@@ -641,11 +737,9 @@ function drawWave(T,o={}){
   }
   ctx.stroke();
   /* phase-locked cursor */
-  if(o.cursor!==false){
-    const cu=frac(CLK.phi/per), X=pad+(x1-pad)*cu, v=wv(cu*per);
-    ctx.strokeStyle=rgba('#6fe3a0',0.6); ctx.beginPath(); ctx.moveTo(X,6); ctx.lineTo(X,h-6); ctx.stroke();
-    dot(ctx,X,mid-v*amp,3.5,'#6fe3a0');
-  }
+  const cu=frac(CLK.phi/per), X=pad+(x1-pad)*cu, v=wv(cu*per);
+  ctx.strokeStyle=rgba('#6fe3a0',0.6); ctx.beginPath(); ctx.moveTo(X,6); ctx.lineTo(X,h-6); ctx.stroke();
+  dot(ctx,X,mid-v*amp,3.5,'#6fe3a0');
   /* real-time axis: period boundaries in actual seconds — they rescale with f */
   ctx.fillStyle='#7f8db0'; ctx.font='10px "Cascadia Code",Consolas,monospace';
   ctx.textAlign='center';
@@ -662,12 +756,17 @@ function drawWave(T,o={}){
 function specX(f,pad,x1){
   return pad+(x1-pad)*(Math.log10(f)-Math.log10(FMIN))/(Math.log10(FMAX)-Math.log10(FMIN));
 }
+/* bar geometry shared by the renderer and the bar→ring morph */
+function specGeom(w,h){
+  const pad=26, x1=w-8;
+  return {pad, x1, base:h-20, top:12, bwid:clamp((x1-pad)*0.014,3,9)};
+}
 function drawSpectrum(T,o={}){
   const {ctx,w,h}=T;
-  const pad=26, x1=w-8, base=h-20, top=12;
+  const {pad,x1,base,top,bwid}=specGeom(w,h);
   const grow=o.grow??1;
   /* axis + decade ticks */
-  ctx.strokeStyle='#2a3a5f'; ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(x1,base); ctx.stroke();
+  ctx.strokeStyle='#2a3a5f'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(x1,base); ctx.stroke();
   ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
   for(const d of [1,10,100,1000,10000]){
     const X=specX(d,pad,x1);
@@ -679,17 +778,15 @@ function drawSpectrum(T,o={}){
   ctx.strokeStyle=rgba('#ffa14f',0.30); ctx.setLineDash([3,4]);
   ctx.beginPath(); ctx.moveTo(Xf,top); ctx.lineTo(Xf,base); ctx.stroke(); ctx.setLineDash([]);
   let over=0;
-  const bwid=clamp((x1-pad)*0.014,3,9);
   for(let n=1;n<=24;n++){
     const mag=MAGS[n]||0; if(!mag) continue;
     const fh=n*S.f;
     if(fh>FMAX){ over++; continue; }
     const X=specX(fh,pad,x1);
-    const pulse=1+0.05*Math.sin(TAU*(WCLK.t*0.7+n*0.13));   // wall-clock shimmer, not signal rate
-    const ht=(base-top)*(mag/CACHE.specMax)*pulse*grow;
+    const ht=(base-top)*(mag/CACHE.specMax)*grow;
     const af=alphaFor(n);
     ctx.fillStyle=rgba(HCOL(n),0.85*af);
-    ctx.fillRect(X-bwid/2,base-ht,bwid,ht);
+    if(!(o.skip&&o.skip.has(n))) ctx.fillRect(X-bwid/2,base-ht,bwid,ht);   // skipped bars are being drawn elsewhere (the bar→ring morph)
     if(o.lockN===n){ ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.2; ctx.strokeRect(X-bwid/2,base-ht,bwid,ht); }
     if(!o.compact){
       ctx.fillStyle=rgba(HCOL(n),Math.max(0.55,af));
@@ -705,7 +802,7 @@ function drawSpectrum(T,o={}){
     if(over){ ctx.fillStyle='#7f8db0'; ctx.textAlign='right';
       ctx.fillText('▸ '+over+' beyond '+eng(FMAX,'Hz'),x1-2,top+8); ctx.textAlign='left'; }
     ctx.fillStyle='#7f8db0';
-    ctx.fillText('FFT · real frequency, log axis (Hz) — slide f and the comb glides',pad+2,top-2);
+    ctx.fillText((o.num?o.num+' ':'')+'spectrum · real Hz, log axis',pad+2,top-2);
   }
 }
 
@@ -721,43 +818,45 @@ function lockedN(fw){
   return best;
 }
 const sgnCol = v => v>=0?'#ffa14f':'#4fc3f7';
+/* strip geometry shared by the renderer and the scope→strip morph */
+function stripGeom(w,h){ return {x0:10, x1:w-10, mid:h*0.55, amp:h*0.28}; }
 /* the wave about to be wound — sign-coloured, phase-locked time cursor */
 function drawWaveStrip(T,o={}){
   const {ctx,w,h}=T;
-  const pad=10, x1=w-10, mid=h*0.55, amp=h*0.28;
-  ctx.strokeStyle='#1c2740'; ctx.beginPath(); ctx.moveTo(pad,mid); ctx.lineTo(x1,mid); ctx.stroke();
+  const {x0:pad,x1,mid,amp}=stripGeom(w,h), wa=o.waveAlpha??1;
+  ctx.strokeStyle='#1c2740'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad,mid); ctx.lineTo(x1,mid); ctx.stroke();
   const M=256, bw=(x1-pad)/M;
   for(let i=0;i<M;i++){
     const v=wv(i/M);
     ctx.fillStyle=rgba(sgnCol(v),0.20);
     ctx.fillRect(pad+i*bw,Math.min(mid,mid-v*amp),bw+0.5,Math.abs(v*amp));
   }
-  for(let c0=0;c0<M;c0+=8){
-    ctx.strokeStyle=rgba(sgnCol(wv((c0+4)/M)),0.95); ctx.lineWidth=1.7; ctx.beginPath();
+  if(wa>0) for(let c0=0;c0<M;c0+=8){
+    ctx.strokeStyle=rgba(sgnCol(wv((c0+4)/M)),0.95*wa); ctx.lineWidth=1.7; ctx.beginPath();
     for(let i=c0;i<=c0+8;i++){
       const X=pad+(x1-pad)*i/M, Y=mid-wv(i/M)*amp;
       i===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
     }
     ctx.stroke();
   }
-  if(o.markU!==undefined){
+  if(o.markU!==undefined&&wa>0){
     const X=pad+(x1-pad)*o.markU;
-    ctx.strokeStyle=rgba('#ffffff',0.5); ctx.lineWidth=1;
+    ctx.strokeStyle=rgba('#ffffff',0.5*wa); ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(X,6); ctx.lineTo(X,h-4); ctx.stroke();
-    dot(ctx,X,mid-wv(o.markU)*amp,3.5,'#ffffff');
+    dot(ctx,X,mid-wv(o.markU)*amp,3.5,rgba('#ffffff',wa));
   }
-  ctx.fillStyle='#7f8db0'; ctx.font='10px "Segoe UI",sans-serif';
-  ctx.fillText('one period = '+eng(1/S.f,'s')+' — orange above zero, cyan below · white dot = the sample being wound',pad+2,10);
+  label(ctx,(o.num?o.num+' ':'')+'one period = '+eng(1/S.f,'s')+' · orange above zero, cyan below · white dot = the sample being wound',pad+2,10);
 }
+function windGeom(w,h){ return {cx:w/2, cy:h/2, R:Math.min(w,h)*0.375}; }
 function drawWindCircle(T,o={}){
   const {ctx,w,h}=T;
-  const R=o.R??Math.min(w,h)*0.375, cx=o.cx??w/2, cy=o.cy??h/2;
-  const fw=o.fw??S.windF;
+  const g=windGeom(w,h), R=o.R??g.R, cx=o.cx??g.cx, cy=o.cy??g.cy;
+  const fw=o.fw??S.windF, rev=o.reveal??1;
   circle(ctx,cx,cy,R,'#2a3a5f',1);
   ctx.strokeStyle='#1c2740';
   ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
   /* wound wave (WIND_P periods), sign-coloured: mismatch = balanced tangle,
-     match = all the orange piles onto one side */
+     match = orange AND the reversed cyan pile onto one side */
   for(let c0=0;c0<N;c0+=8){
     ctx.strokeStyle=rgba(sgnCol(CACHE.wnorm[((c0+4)*WIND_P)%N]),0.7); ctx.lineWidth=1.2; ctx.beginPath();
     for(let i=c0;i<=c0+8;i++){
@@ -767,11 +866,11 @@ function drawWindCircle(T,o={}){
     }
     ctx.stroke();
   }
-  /* mass dots — the weight the centroid balances */
-  for(let k=0;k<64;k++){
+  /* sample dots — equal weights: the average is over samples, not along the drawn line */
+  if(rev>0) for(let k=0;k<64;k++){
     const i=Math.floor(k/64*N), v=CACHE.wnorm[(i*WIND_P)%N];
     const r=R*(WIND_BASE+WIND_AMP*v), a=-TAU*fw*WIND_P*i/N;
-    dot(ctx,cx+r*Math.cos(a),cy+r*Math.sin(a),1+2.2*Math.abs(v),rgba(sgnCol(v),0.8));
+    dot(ctx,cx+r*Math.cos(a),cy+r*Math.sin(a),2.2,rgba(sgnCol(v),0.8*rev));
   }
   /* time cursor: the sample being wound right now (pairs with the strip cursor) */
   if(o.markU!==undefined){
@@ -779,24 +878,24 @@ function drawWindCircle(T,o={}){
     const r=R*(WIND_BASE+WIND_AMP*CACHE.wnorm[(iu*WIND_P)%N]), a=-TAU*fw*WIND_P*iu/N;
     dot(ctx,cx+r*Math.cos(a),cy+r*Math.sin(a),4,'#ffffff');
   }
-  /* centroid = centre of mass, magnified ×2.4 */
-  const c=centroid(fw), MAG=2.4;
-  const gx=cx+c.x*R*MAG, gy=cy+c.y*R*MAG;
-  ctx.strokeStyle=rgba('#ffd166',0.95); ctx.lineWidth=2;
-  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(gx,gy); ctx.stroke();
-  dot(ctx,gx,gy,5,'#ffd166');
+  /* average arrow ×2 (= amplitude) — grows out of the centre while revealing */
+  if(rev>0){
+    const c=centroid(fw), MAG=WIND_MAG*rev;
+    const gx=cx+c.x*R*MAG, gy=cy+c.y*R*MAG;
+    ctx.strokeStyle=rgba('#ffd166',0.95*rev); ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(gx,gy); ctx.stroke();
+    dot(ctx,gx,gy,5,rgba('#ffd166',rev));
+  }
   dot(ctx,cx,cy,1.5,'#3a4a6f');
   /* lock indicator */
   const ln=lockedN(fw);
-  if(ln){
-    circle(ctx,cx,cy,R+7,rgba(HCOL(ln),0.45+0.4*Math.sin(TAU*WCLK.t*1.5)),2.5);
-    ctx.fillStyle=HCOL(ln); ctx.font='600 12px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
-    ctx.fillText('⚡ locked: harmonic '+ln+' ('+eng(ln*S.f,'Hz')+')',cx,cy-R-12);
-    ctx.textAlign='left';
+  if(ln&&rev>0){
+    circle(ctx,cx,cy,R+7,rgba(HCOL(ln),(0.45+0.4*Math.sin(TAU*WCLK.t*1.5))*rev),2.5);
+    label(ctx,'⚡ locked: harmonic '+ln+' ('+eng(ln*S.f,'Hz')+')',cx,cy-R-12,
+      {font:'600 12px "Cascadia Code",Consolas,monospace',col:rgba(HCOL(ln),rev),align:'center'});
   }
-  ctx.fillStyle='#7f8db0'; ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
-  ctx.fillText('winding '+fw.toFixed(2)+'×f = '+eng(fw*S.f,'Hz')+' · '+WIND_P+' periods · gold = centre of mass',cx,cy+R+16);
-  ctx.textAlign='left';
+  withAlpha(ctx,rev,()=>label(ctx,(o.num?o.num+' ':'')+'winding '+fw.toFixed(2)+'×f = '+eng(fw*S.f,'Hz')+' · '+WIND_P+' periods · gold = 2 × average arrow',
+    cx,cy+R+16,{font:'10px "Cascadia Code",Consolas,monospace',align:'center'}));
 }
 function drawSweepPlot(T,o={}){
   const {ctx,w,h}=T;
@@ -804,7 +903,7 @@ function drawSweepPlot(T,o={}){
   const fw=o.fw??S.windF;
   const fx=f=>px0+(px1-px0)*(f-SWEEP_LO)/(SWEEP_HI-SWEEP_LO);
   const fy=m=>py1-(py1-py0-8)*(m/CACHE.sweepMax);
-  ctx.strokeStyle='#2a3a5f'; ctx.strokeRect(px0,py0,px1-px0,py1-py0);
+  ctx.strokeStyle='#2a3a5f'; ctx.lineWidth=1; ctx.strokeRect(px0,py0,px1-px0,py1-py0);
   ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
   for(let g=1;g<=SWEEP_HI;g++){
     const X=fx(g);
@@ -836,9 +935,9 @@ function drawSweepPlot(T,o={}){
     if(rev>=1) dot(ctx,Xm,fy(CACHE.sweep[j]),4.5,'#ffd166');
   }
   ctx.fillStyle='#7f8db0'; ctx.font='10px "Cascadia Code",Consolas,monospace';
-  ctx.fillText('|centroid| vs winding rate · 1×f = '+eng(S.f,'Hz'),px0+4,py0-3);
+  ctx.fillText((o.num?o.num+' ':'')+'|average arrow| vs winding rate (×f)',px0+4,py0-3);
 }
-/* combined side-by-side (dashboard tile + morph target) */
+/* combined side-by-side (dashboard tile) */
 function drawWinding(T,o={}){
   const {w,h}=T;
   const cw=Math.min(h,w*0.44);
@@ -846,105 +945,76 @@ function drawWinding(T,o={}){
   region(T,cw,0,w-cw,h,t=>drawSweepPlot(t,o));
 }
 
-/* ---- rung 4: mandala ---- */
-function drawMandala(T,o={}){
-  const {ctx,w,h}=T;
-  const cx=o.cx??w/2, cy=o.cy??h/2;
-  const s=(o.scale??Math.min(w,h)*0.335)*(o.scaleMul??1);
-  const coef=o.coef??1, al=o.alpha??1;
-  const rot=n=>TAU*n*WCLK.t*0.04;   // decorative petal drift on wall time (shape is what teaches)
-  /* per-harmonic rose layers: harmonic n = n-fold petals in its own colour */
-  for(const hh of CACHE.spec.slice(0,6)){
-    const af=alphaFor(hh.n);
-    ctx.strokeStyle=rgba(HCOL(hh.n),0.38*al*af); ctx.lineWidth=1.1;
-    ctx.beginPath();
-    for(let i=0;i<=180;i++){
-      const th=i/180*TAU;
-      const r=s*0.92*(hh.mag/CACHE.specMax)*Math.abs(Math.cos((hh.n*th+hh.ph+rot(hh.n))/1))*coef;
-      const X=cx+r*Math.cos(th), Y=cy+r*Math.sin(th);
-      i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
-    }
-    ctx.stroke();
-  }
-  /* composite outline: r(θ) = R0 + Σ aₙ·cos(nθ+φₙ+rot) — the spectrum, in polar space */
-  ctx.beginPath();
-  for(let i=0;i<=256;i++){
-    const th=i/256*TAU;
-    let r=0.52;
-    for(const hh of CACHE.spec)
-      r+=coef*0.36*(hh.mag/CACHE.magTot)*Math.cos(hh.n*th+hh.ph+rot(hh.n));
-    r=Math.max(0.04,r)*s;
-    const X=cx+r*Math.cos(th), Y=cy+r*Math.sin(th);
-    i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
-  }
-  ctx.closePath();
-  ctx.fillStyle=rgba('#ffa14f',0.06*al); ctx.fill();
-  ctx.strokeStyle=rgba('#ffa14f',0.95*al); ctx.lineWidth=2; ctx.stroke();
-  /* mod-9 digital-root overlay (lore) */
-  if(S.mod9&&(o.mod9!==false)){
-    const r9=s*1.12;
-    ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
-    const pt9=k=>{ const a=-Math.PI/2+(k-1)/9*TAU; return {x:cx+r9*Math.cos(a),y:cy+r9*Math.sin(a)}; };
-    for(let k=1;k<=9;k++){
-      const p=pt9(k);
-      dot(ctx,p.x,p.y,2.5,rgba('#ffd166',([3,6,9].includes(k)?0.9:0.45)*al));
-      ctx.fillStyle=rgba('#ffd166',0.6*al); ctx.fillText(String(k),p.x,p.y-7);
-    }
-    for(const hh of CACHE.spec.slice(0,6)){
-      ctx.strokeStyle=rgba('#ffd166',0.28*al*alphaFor(hh.n)); ctx.lineWidth=1;
-      ctx.beginPath();
-      for(let k=1;k<=9;k++){
-        const p=pt9(digitalRoot(hh.n*k));
-        k===1?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);
-      }
-      ctx.stroke();
-    }
-    ctx.textAlign='left';
-  }
-  dot(ctx,cx,cy,2+1.5*Math.abs(Math.sin(TAU*WCLK.t*0.5)),rgba('#ff5fd7',0.9*al));
-}
-
-/* ---- rung 5: horn torus ---- */
+/* ---- rungs 4–5: one projector for the mandala AND the horn torus ----
+   The mandala is literally the torus seen from straight above with its height
+   squashed to zero (camRx = −π/2, zScale = 0). Sharing the projector is what
+   lets the 4→5 transition lift the very same curves into 3D. */
 const view={rx:-1.02, ry:0.6, zoom:1};
-const ITEMS=[];
-function drawTorus(T,o={}){
-  const {ctx,w,h}=T;
-  if(!CACHE.torus) return;
-  const rx=o.camRx??view.rx, ry=o.camRy??view.ry, zs=o.zScale??1, al=o.alpha??1;
-  const scale=Math.min(w,h)*0.235*view.zoom*(o.scaleMul??1);
+const TOP_RX=-Math.PI/2;
+function torusProj(o,w,h){
+  const rx=o.camRx??view.rx, ry=o.camRy??view.ry, zs=o.zScale??1;
+  const scale=o.scalePx??Math.min(w,h)*0.235*view.zoom;
   const cx=o.cx??w/2, cy=o.cy??h/2;
   const cyr=Math.cos(ry), syr=Math.sin(ry), cxr=Math.cos(rx), sxr=Math.sin(rx);
-  const P=p=>{
+  return p=>{
     const z=p.z*zs;
     const x1=p.x*cyr-p.y*syr, y1=p.x*syr+p.y*cyr;
     const y2=y1*cxr-z*sxr, z2=y1*sxr+z*cxr;
     const per=1/(1-y2*0.13);
     return {X:cx+x1*scale*per, Y:cy-z2*scale*per, d:y2};
   };
+}
+/* a harmonic's ring/winding: brighter and thicker with amplitude */
+function ringStyle(mag){ const k=mag/CACHE.specMax; return {a:0.42+0.58*k, lw:1.1+1.2*k}; }
+const FLAT_SHADE=0.65;               // depth shade of a curve lying in the z=0 plane
+const ITEMS=[];
+function drawTorus(T,o={}){
+  const {ctx,w,h}=T;
+  if(!CACHE.torus) return;
+  const P=torusProj(o,w,h), al=o.alpha??1, wa=(o.wireAlpha??1)*al;
+  const phi=o.phi??CLK.phi;
+  if((o.zScale??1)===0){
+    /* flat = the mandala: nothing to depth-sort, so draw one path per ring in
+       harmonic order — the same way the bar→ring morph draws them */
+    for(const cv of CACHE.torus.curves){
+      const st=ringStyle(cv.mag), af=alphaFor(cv.n)*al;
+      ctx.strokeStyle=rgba(HCOL(cv.n),st.a*af*FLAT_SHADE); ctx.lineWidth=st.lw;
+      ctx.beginPath();
+      cv.pts.forEach((q,i)=>{ const p=P(q); i?ctx.lineTo(p.X,p.Y):ctx.moveTo(p.X,p.Y); });
+      ctx.stroke();
+    }
+    for(const cv of CACHE.torus.curves) for(let k=0;k<14;k++){
+      const p=P(cv.pts[Math.floor(frac(k/14+phi)*(cv.pts.length-1))]);
+      dot(ctx,p.X,p.Y,2.2,rgba(HCOL(cv.n),alphaFor(cv.n)*al));
+    }
+    const o0=P({x:0,y:0,z:0});
+    dot(ctx,o0.X,o0.Y,3.2,rgba('#ff5fd7',0.9*al));
+    return;
+  }
   ITEMS.length=0;
-  for(const ring of CACHE.torus.wire){
+  if(wa>0.003) for(const ring of CACHE.torus.wire){
     let prev=null;
     for(const q of ring){
       const p=P(q);
-      if(prev) ITEMS.push({d:(p.d+prev.d)/2,a:prev,b:p,col:'rgba(90,110,160,'+(0.16*al).toFixed(3)+')',lw:1});
+      if(prev) ITEMS.push({d:(p.d+prev.d)/2,a:prev,b:p,col:'rgba(90,110,160,'+(0.16*wa).toFixed(3)+')',lw:1});
       prev=p;
     }
   }
   for(const cv of CACHE.torus.curves){
-    const col=HCOL(cv.n), af=alphaFor(cv.n)*al;
+    const col=HCOL(cv.n), af=alphaFor(cv.n)*al, st=ringStyle(cv.mag);
     let prev=null;
     for(let i=0;i<cv.pts.length;i++){
       const p=P(cv.pts[i]);
       if(prev){
         const sh=0.35+0.60*clamp(((p.d+prev.d)/2/2.2+1)/2,0,1);
-        ITEMS.push({d:(p.d+prev.d)/2,a:prev,b:p,col:rgba(col,af*sh),lw:1.6});
+        ITEMS.push({d:(p.d+prev.d)/2,a:prev,b:p,col:rgba(col,st.a*af*sh),lw:st.lw});
       }
       prev=p;
     }
     /* flow dots: fundamental drives one toroidal lap per cycle */
     const nd=14;
     for(let k=0;k<nd;k++){
-      const u=frac(k/nd+CLK.phi);
+      const u=frac(k/nd+phi);
       const p=P(cv.pts[Math.floor(u*(cv.pts.length-1))]);
       ITEMS.push({d:p.d,dot:p,col:rgba(col,af),r:2.2});
     }
@@ -959,9 +1029,68 @@ function drawTorus(T,o={}){
       ctx.beginPath(); ctx.moveTo(it.a.X,it.a.Y); ctx.lineTo(it.b.X,it.b.Y); ctx.stroke();
     }
   }
-  if(o.label!==false){
-    ctx.fillStyle=rgba('#ff5fd7',0.75*al); ctx.font='10px "Cascadia Code",Consolas,monospace';
-    ctx.fillText('◦ central pinch = the vortex',10,h-9);
+  if(o.label!==false)
+    label(ctx,'◦ central pinch = the vortex',10,h-9,{font:'10px "Cascadia Code",Consolas,monospace',col:rgba('#ff5fd7',0.75*al)});
+}
+/* the mandala proper: amplitude-weighted average of the rings,
+   r(θ) = 1 + Σ wₙ·cos(nθ + φₙ), wₙ = aₙ / Σa — drawn through the torus projector */
+function drawComposite(ctx,P,al){
+  if(al<=0.002) return;
+  ctx.beginPath();
+  for(let i=0;i<=256;i++){
+    const th=i/256*TAU;
+    let r=1;
+    for(const hh of CACHE.spec) r+=(hh.mag/CACHE.magTot)*Math.cos(hh.n*th+hh.ph);
+    const p=P({x:r*Math.cos(th), y:r*Math.sin(th), z:0});
+    i?ctx.lineTo(p.X,p.Y):ctx.moveTo(p.X,p.Y);
+  }
+  ctx.closePath();
+  ctx.fillStyle=rgba('#ffa14f',0.07*al); ctx.fill();
+  ctx.strokeStyle=rgba('#ffa14f',0.95*al*(S.hoverN?0.5:1)); ctx.lineWidth=2.2; ctx.stroke();
+}
+function mandalaGeom(w,h){ return {cx:w/2, cy:h/2, U:Math.min(w,h)*0.215}; }
+function drawMandala(T,o={}){
+  const {ctx,w,h}=T, g=mandalaGeom(w,h);
+  const cx=o.cx??g.cx, cy=o.cy??g.cy, U=o.U??g.U;
+  const top={camRx:TOP_RX, camRy:0, zScale:0, cx, cy, scalePx:U};
+  drawTorus(T,{...top, wireAlpha:0, label:false});
+  drawComposite(ctx,torusProj(top,w,h),1);
+  drawMod9(ctx,cx,cy,U,1);
+  if(o.legend!==false) drawRingLegend(T);
+}
+/* mod-9 digital-root overlay (lore) */
+function drawMod9(ctx,cx,cy,U,al){
+  if(!S.mod9||al<=0.002) return;
+  const r9=U*2.12;
+  ctx.font='10px "Cascadia Code",Consolas,monospace'; ctx.textAlign='center';
+  const pt9=k=>{ const a=-Math.PI/2+(k-1)/9*TAU; return {x:cx+r9*Math.cos(a),y:cy+r9*Math.sin(a)}; };
+  for(let k=1;k<=9;k++){
+    const p=pt9(k);
+    dot(ctx,p.x,p.y,2.5,rgba('#ffd166',([3,6,9].includes(k)?0.9:0.45)*al));
+    ctx.fillStyle=rgba('#ffd166',0.6*al); ctx.fillText(String(k),p.x,p.y-7);
+  }
+  for(const hh of CACHE.spec.slice(0,6)){
+    ctx.strokeStyle=rgba('#ffd166',0.28*alphaFor(hh.n)*al); ctx.lineWidth=1;
+    ctx.beginPath();
+    for(let k=1;k<=9;k++){
+      const p=pt9(digitalRoot(hh.n*k));
+      k===1?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);
+    }
+    ctx.stroke();
+  }
+  ctx.textAlign='left';
+}
+/* which ring is which: n petals, and its share of the average */
+function drawRingLegend(T){
+  const {ctx,h}=T, L=CACHE.spec.slice(0,6);
+  let y=h-12-14*(L.length-1);
+  label(ctx,'ring · petals · weight',12,y-16);
+  for(const hh of L){
+    const af=alphaFor(hh.n);
+    ctx.fillStyle=rgba(HCOL(hh.n),af); ctx.fillRect(12,y-8,9,9);
+    label(ctx,hh.n+'× · '+hh.n+' petal'+(hh.n>1?'s':'')+' · '+Math.round(100*hh.mag/CACHE.magTot)+'%',26,y,
+      {font:'10.5px "Cascadia Code",Consolas,monospace',col:rgba('#dbe4f5',0.85*af)});
+    y+=14;
   }
 }
 /* torus seen from straight above — computed re-projection, IS the mandala's rose family */
@@ -971,7 +1100,7 @@ function drawTop(T){
   const s=Math.min(w,h)*0.22, cx=w/2, cy=h/2;
   circle(ctx,cx,cy,2*s,'#1c2740',1);
   for(const cv of CACHE.torus.curves){
-    ctx.strokeStyle=rgba(HCOL(cv.n),0.8*alphaFor(cv.n)); ctx.lineWidth=1.2;
+    ctx.strokeStyle=rgba(HCOL(cv.n),ringStyle(cv.mag).a*alphaFor(cv.n)); ctx.lineWidth=1.2;
     ctx.beginPath();
     for(let i=0;i<cv.pts.length;i++){
       const q=cv.pts[i], X=cx+q.x*s, Y=cy+q.y*s;
@@ -988,7 +1117,7 @@ function drawTop(T){
 function drawSide(T){
   const {ctx,w,h}=T;
   const mid=h/2, amp=h*0.36, K=120;
-  ctx.strokeStyle='#1c2740'; ctx.beginPath(); ctx.moveTo(4,mid); ctx.lineTo(w-4,mid); ctx.stroke();
+  ctx.strokeStyle='#1c2740'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(4,mid); ctx.lineTo(w-4,mid); ctx.stroke();
   ctx.strokeStyle=rgba('#ffa14f',0.9); ctx.lineWidth=1.4; ctx.beginPath();
   for(let k=0;k<=K;k++){
     const y=tipAt(CLK.phi-(K-k)/K*2).y;
@@ -1027,139 +1156,803 @@ function drawLadder(T){
   ctx.fillText('click a node to study that rung',w-166,y+3);
 }
 
-/* ================= guided mode: rungs, morphs, stepper ================= */
-const RUNGS=[null,
- {t:'1 · Frequency — a rotation rate',
-  x:'A frequency is just a count: how many times something repeats each second. The cleanest picture of repetition is a point riding a circle f times per second — shown here at its TRUE rate. Above a few hertz your screen can only strobe it (the wagon-wheel effect), exactly as a camera would; drag Time dilation to slow the clock deliberately. Every other view in this tool is this one rotation, dressed differently.',
-  l:'Next: unroll the dot’s height into time →', c:'angle = phase · spin rate = frequency'},
- {t:'2 · Waveform — rotation unrolled into time',
-  x:'Track only the height of the spinning point and let time flow sideways: a sine wave. Stack more spinners — harmonics at 2f, 3f, … riding tip-to-tail — and their summed height draws any repeating waveform. Add harmonics on the right and watch the shape change.',
-  l:'Next: the wave curls back into a circle — the FFT →', c:'epicycles (left) draw the waveform (right), phase-locked'},
- {t:'3 · FFT — the recipe, recovered',
-  x:'The FFT asks the wave: which spin rates are hiding in you? The wave (top) is wound around a circle — orange where it is positive, cyan where negative. At most winding rates the colours stay balanced and the gold centre-of-mass sits home. When the rate hits a harmonic, all the orange piles onto one side — the centroid jumps, and that jump is a spectrum bar. Now slide the frequency: the comb glides along the Hz axis. The recipe keeps its shape; frequency only decides where it lives.',
-  l:'Next: each bar folds into petals →', c:'it hunts on its own — grab the winding slider to steer · add harmonics for more spikes'},
- {t:'4 · Mandala — the spectrum in polar space',
-  x:'Read the recipe in polar coordinates: harmonic n with amplitude aₙ becomes an n-petalled ripple, r(θ) = R₀ + Σ aₙ·cos(nθ+φₙ). Fold-symmetry is frequency ratio drawn in space, and phases rotate the petals. That is all a mandala is — a spectrum you can look at.',
-  l:'Next: the mandala lifts into 3D →', c:'petal count = harmonic number · try the mod-9 overlay (lore)'},
- {t:'5 · Horn torus — one motion, four shadows',
-  x:'Give the circle its third dimension: a horn torus, whose tube pinches to a central point — the vortex. The fundamental carries particles around the axis; harmonic n threads them n times through the pinch per lap. From above: the mandala. A particle’s height in time: the waveform. Its FFT: the spectrum.',
-  l:'Top of the ladder — switch to Free Play to drive all views at once.', c:'drag to orbit · wheel zooms · insets are computed re-projections'},
-];
-const TRANS={active:false,a:1,dir:1,tau:0,target:1};
-function goRung(r){
-  r=clamp(r,1,5);
-  if(r===S.rung&&!TRANS.active) return;
-  if(TRANS.active||Math.abs(r-S.rung)>1){
-    TRANS.active=false; S.rung=r; syncGuided(); return;
-  }
-  TRANS.active=true; TRANS.a=Math.min(S.rung,r);
-  TRANS.dir=r>S.rung?1:-1; TRANS.tau=TRANS.dir>0?0:1; TRANS.target=r;
-  syncGuided();
-}
-function boxbg(t){ t.ctx.strokeStyle='#2a3a5f'; t.ctx.strokeRect(0.5,0.5,t.w-1,t.h-1); }
-
-function stage1(T){
-  drawPhasor(T,{cx:T.w*0.5,cy:T.h*0.44,R:T.h*0.30,harms:[{n:1,amp:1,ph:0}],bigLabel:true});
-}
-function stage2(T){
-  region(T,0,0,T.w*0.42,T.h,t=>drawPhasor(t,{guide:true}));
-  region(T,T.w*0.42,0,T.w*0.58,T.h,t=>drawWave(t,{periods:1}));
-}
-function stage3Geom(w,h){
+/* ================= guided mode: stage layouts =================
+   Each rung's layout lives in one geometry function, shared by the rung's
+   own renderer and by the morphs in and out of it — so a transition starts
+   on exactly the previous rung's frame and lands on exactly the next one's. */
+const NAMES=['Frequency','Waveform','FFT','Mandala','Horn torus'];
+function G1(w,h){ return {cx:w*0.5, cy:h*0.44, R:h*0.30}; }
+function G2(w,h){ return {cx:w*0.2, cy:h*0.5, R:Math.min(w*0.17,h*0.34), x0:w*0.42, x1:w-16}; }
+function G3(w,h){
   return {strip:{x:0,y:0,w:w,h:h*0.20},
           circ:{x:0,y:h*0.22,w:w*0.52,h:h*0.78},
           sweep:{x:w*0.54,y:h*0.22,w:w*0.46,h:h*0.40},
           bars:{x:w*0.54,y:h*0.66,w:w*0.46,h:h*0.34}};
 }
+function G5(w,h,zoom){ return {cx:w*0.36, cy:h*0.5, scale:Math.min(w*0.70,h)*0.225*zoom}; }
+const inR=(T,r,fn)=>region(T,r.x,r.y,r.w,r.h,fn);
+function boxbg(t){ t.ctx.fillStyle='#0e1524'; t.ctx.fillRect(0,0,t.w,t.h);
+  t.ctx.strokeStyle='#2a3a5f'; t.ctx.lineWidth=1; t.ctx.strokeRect(0.5,0.5,t.w-1,t.h-1); }
+/* the fundamental alone (rung 1), and the recipe growing in from it (1→2) */
+function fundOnly(){ const f=S.harmonics.find(h=>h.n===1)||{ph:0}; return [{n:1,amp:1,ph:f.ph}]; }
+function harmsGrow(g){
+  return S.harmonics.map(h=>h.n===1?{n:1,amp:lerp(1,h.amp,g),ph:h.ph}:{n:h.n,amp:h.amp*g,ph:h.ph});
+}
+function dashedGuide(ctx,a,b,al){
+  ctx.strokeStyle=rgba('#6fe3a0',0.55*al); ctx.setLineDash([4,4]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.setLineDash([]);
+}
+
+function stage1Labels(T,g){
+  const {ctx}=T, y=g.cy+g.R;
+  label(ctx,eng(S.f,'Hz')+(S.f>=16?'  ·  '+noteName(S.f):''),g.cx,y+44,{font:'600 26px "Cascadia Code",Consolas,monospace',col:'#dbe4f5',align:'center'});
+  label(ctx,'one revolution = one cycle = '+eng(1/S.f,'s'),g.cx,y+64,{font:'12px "Segoe UI",sans-serif',align:'center'});
+  label(ctx,S.speed>=0.995
+    ? 'true rate: '+fmtRate(S.f)+' rev/s'+(S.f>4?' — your screen strobes it, exactly as a camera would':'')
+    : 'time dilated '+dilLabel()+' → '+fmtRate(S.f*S.speed)+' rev/s on screen',g.cx,y+80,{font:'12px "Segoe UI",sans-serif',align:'center'});
+}
+function stage1(T){
+  const g=G1(T.w,T.h);
+  drawPhasor(T,{...g,harms:fundOnly()});
+  stage1Labels(T,g);
+}
+function stage2(T){
+  const g=G2(T.w,T.h);
+  const tip=drawPhasor(T,{cx:g.cx,cy:g.cy,R:g.R});
+  const pen=drawScope(T,{x0:g.x0,x1:g.x1,mid:g.cy,amp:g.R});
+  dashedGuide(T.ctx,tip,pen,1);
+  label(T.ctx,'spinners, tip-to-tail',g.cx,g.cy-g.R*1.12-6,{align:'center'});
+}
+/* rung 3 has sub-steps: 3·1–3·3 build the detector by hand, 3·4 sweeps it
+   (the winding + spectrum), 3·5 is the optional "why the FFT is fast" view */
 function stage3(T){
-  const g=stage3Geom(T.w,T.h), u=frac(CLK.phi);
-  region(T,g.strip.x,g.strip.y,g.strip.w,g.strip.h,t=>drawWaveStrip(t,{markU:u}));
-  region(T,g.circ.x,g.circ.y,g.circ.w,g.circ.h,t=>drawWindCircle(t,{markU:u}));
-  region(T,g.sweep.x,g.sweep.y,g.sweep.w,g.sweep.h,t=>drawSweepPlot(t));
-  region(T,g.bars.x,g.bars.y,g.bars.w,g.bars.h,t=>drawSpectrum(t,{lockN:lockedN(S.windF)}));
+  if(S.sub===4) stage3Spectrum(T);
+  else if(S.sub===5) drawFFTView(T);
+  else drawDetector(T);
+}
+function stage3Spectrum(T,o={}){
+  const g=G3(T.w,T.h), u=frac(CLK.phi), al=o.alpha??1;
+  withAlpha(T.ctx,al,()=>{
+    inR(T,g.strip,t=>drawWaveStrip(t,{markU:u,num:'①'}));
+    inR(T,g.circ,t=>drawWindCircle(t,{markU:u,num:'②'}));
+    inR(T,g.sweep,t=>drawSweepPlot(t,{num:'③'}));
+  });
+  if(o.bars!==false) inR(T,g.bars,t=>drawSpectrum(t,{lockN:lockedN(S.windF),num:'④'}));
+}
+function stage4Extras(T,al){
+  withAlpha(T.ctx,al,()=>{
+    region(T,10,8,150,90,t=>{boxbg(t);drawSpectrum(t,{compact:true});});
+    label(T.ctx,'the spectrum (rung 3)',12,110);
+    drawRingLegend(T);
+  });
 }
 function stage4(T){
-  drawMandala(T,{scale:Math.min(T.w,T.h)*0.40});
-  region(T,10,8,180,120,t=>{boxbg(t);drawSpectrum(t,{compact:true});});
+  drawMandala(T,{legend:false});
+  stage4Extras(T,1);
+}
+function stage5Insets(T,al,dx){
+  const {ctx,w,h}=T;
+  withAlpha(ctx,al,()=>{
+    ctx.save(); ctx.translate(dx,0);
+    region(T,w*0.71,18,w*0.28,h*0.38,t=>{boxbg(t);drawTop(t);});
+    region(T,w*0.71,h*0.56,w*0.28,h*0.38,t=>{boxbg(t);drawSide(t);});
+    label(ctx,'top view → the mandala\'s rings',w*0.71,12);
+    label(ctx,'height over time → the waveform',w*0.71,h*0.56-5);
+    ctx.restore();
+  });
 }
 function stage5(T){
-  const {ctx,w,h}=T;
-  region(T,0,0,w*0.70,h,t=>drawTorus(t));
-  region(T,w*0.71,16,w*0.28,h*0.38,t=>{boxbg(t);drawTop(t);});
-  region(T,w*0.71,h*0.56,w*0.28,h*0.38,t=>{boxbg(t);drawSide(t);});
-  ctx.fillStyle='#7f8db0'; ctx.font='10px "Segoe UI",sans-serif';
-  ctx.fillText('top view → the mandala',w*0.71,12);
-  ctx.fillText('height over time → the waveform',w*0.71,h*0.56-5);
+  const g=G5(T.w,T.h,view.zoom);
+  drawTorus(T,{cx:g.cx,cy:g.cy,scalePx:g.scale});
+  stage5Insets(T,1,0);
 }
-/* morphs: MORPHS[a] animates rung a → a+1 with tau ∈ [0,1] */
-const MORPHS={
-  1:function(T,tau){                       /* phasor unrolls into the waveform */
-    const {ctx,w,h}=T;
-    const cx=lerp(w*0.5,w*0.21,tau), cy=lerp(h*0.44,h*0.5,tau), R=lerp(h*0.30,h*0.24,tau);
-    drawPhasor(T,{cx,cy,R,trail:false});
-    const K=200, CH=20, x0=cx+R*1.18, x1=w-26, ampY=lerp(R,h*0.30,tau);
-    for(let c0=0;c0<K;c0+=CH){
-      ctx.strokeStyle=rgba('#ffa14f',0.9*(1-0.6*c0/K)); ctx.lineWidth=1.8; ctx.beginPath();
-      for(let k=c0;k<=Math.min(K,c0+CH);k++){
-        const p=tipAt(CLK.phi-k/K);
-        const X=lerp(cx+p.x*R, x0+(x1-x0)*(k/K), tau);
-        const Y=lerp(cy-p.y*R, cy-p.y*ampY,   tau);
-        k===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+
+/* ================= rung 3 · 1–3: the detector, sample by sample =================
+   One period is recorded as ND samples. Test wave k completes exactly k cycles
+   in that record, so a mismatch cancels exactly (leakage waits for 3·4).
+   Sample n contributes the pair (x·cos θₙ, x·sin θₙ), θₙ = 2πkn/ND; the totals
+   C, S are the DFT bin X_k = C − i·S. Plots draw up = +S (the conjugate) so the
+   sine total reads directly; the lesson text states this convention. */
+const ND=32;
+const DET={k:1, m:0, playing:true, acc:0, rate:6.5};   // m = samples added so far
+const SINC='#c9a8ff', COSC='#7fb4ff';                   // sine test violet, cosine test blue
+const detX = n => CACHE.wnorm[(n*N/ND)|0];
+const detTh = n => TAU*DET.k*n/ND;
+function resetDet(){ DET.m=0; DET.acc=0; DET.playing=true; }
+function detPartials(){              // P[j] = (C, S) after j samples, j = 0..ND
+  const P=[{C:0,S:0}];
+  for(let n=0;n<ND;n++){
+    const x=detX(n), th=detTh(n), p=P[n];
+    P.push({C:p.C+x*Math.cos(th), S:p.S+x*Math.sin(th)});
+  }
+  return P;
+}
+function GD(w,h,sub){
+  const Lw=w*0.62, Rx=w*0.655, Rw=w-Rx-4, ps=Math.min(Rw,h*0.62);
+  const plot={x:Rx+(Rw-ps)/2, y:4, w:ps, h:ps}, right={x:Rx,y:0,w:Rw,h};
+  if(sub===1) return {sig:{x:0,y:0,w:Lw,h:h*0.24},
+    tests:[{k:'sin',x:0,y:h*0.26,w:Lw,h:h*0.21}], prods:[{k:'sin',x:0,y:h*0.49,w:Lw,h:h*0.25}],
+    run:{x:0,y:h*0.76,w:Lw,h:h*0.24}, right};
+  if(sub===2) return {sig:{x:0,y:0,w:Lw,h:h*0.19},
+    tests:[{k:'sin',x:0,y:h*0.205,w:Lw,h:h*0.15},{k:'cos',x:0,y:h*0.37,w:Lw,h:h*0.15}],
+    prods:[{k:'sin',x:0,y:h*0.55,w:Lw,h:h*0.215},{k:'cos',x:0,y:h*0.78,w:Lw,h:h*0.215}], plot, right};
+  return {sig:{x:0,y:0,w:Lw,h:h*0.19}, tests:[], prods:[], dial:{x:0,y:h*0.21,w:Lw,h:h*0.79}, plot, right};
+}
+function rowGeom(r){ return {x0:r.x+30, x1:r.x+r.w-8, mid:r.y+r.h*0.56, amp:r.h*0.34}; }
+const stemX = (g,n) => g.x0+(g.x1-g.x0)*n/ND;
+/* one row of stems (or shaded bars) on a shared sample axis */
+function drawStemRow(ctx,r,o){
+  const g=rowGeom(r), al=o.alpha??1, rev=o.reveal??ND, sr=o.stemReveal??1;
+  withAlpha(ctx,al,()=>{
+    ctx.strokeStyle='#1c2740'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(g.x0-6,g.mid); ctx.lineTo(g.x1+4,g.mid); ctx.stroke();
+    label(ctx,o.label,r.x+4,r.y+11,{col:o.labelCol||'#7f8db0'});
+  });
+  if(o.curve) withAlpha(ctx,al*(o.curveAlpha??1),()=>{
+    ctx.strokeStyle=rgba(o.curveCol,0.45); ctx.lineWidth=1.4; ctx.beginPath();
+    for(let i=0;i<=200;i++){ const u=i/200, X=g.x0+(g.x1-g.x0)*u, Y=g.mid-o.curve(u)*g.amp; i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }
+    ctx.stroke();
+  });
+  const bw=(g.x1-g.x0)/ND*0.62;
+  withAlpha(ctx,al,()=>{
+    for(let n=0;n<ND;n++){
+      if(n>=rev) break;
+      const v=o.val(n), X=stemX(g,n), sk=sr>=1?1:smooth(clamp(sr*1.6-(n/ND)*0.6,0,1));
+      if(sk<=0) continue;
+      const Y=g.mid-v*g.amp*sk, col=o.col(n,v), hi=n===o.cur;
+      if(o.bars){
+        ctx.fillStyle=rgba(col,hi?1:0.8); ctx.fillRect(X-bw/2,Math.min(g.mid,Y),bw,Math.abs(Y-g.mid));
+        if(hi){ ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.2; ctx.strokeRect(X-bw/2,Math.min(g.mid,Y),bw,Math.abs(Y-g.mid)); }
+      } else {
+        ctx.strokeStyle=rgba(col,hi?1:0.75); ctx.lineWidth=hi?2.2:1.3;
+        ctx.beginPath(); ctx.moveTo(X,g.mid); ctx.lineTo(X,Y); ctx.stroke();
+        dot(ctx,X,Y,hi?3.6:2.2,rgba(hi?'#ffffff':col,sk));
+      }
+    }
+  });
+}
+function arrow(ctx,x0,y0,x1,y1,col,lw,head){
+  ctx.strokeStyle=col; ctx.lineWidth=lw;
+  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+  const L=Math.hypot(x1-x0,y1-y0); if(L<3||head===false) return;
+  const a=Math.atan2(y1-y0,x1-x0), hs=Math.min(8,L*0.35);
+  ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(x1,y1);
+  ctx.lineTo(x1-hs*Math.cos(a-0.4),y1-hs*Math.sin(a-0.4)); ctx.lineTo(x1-hs*Math.cos(a+0.4),y1-hs*Math.sin(a+0.4));
+  ctx.closePath(); ctx.fill();
+}
+const deg = r => Math.round(((r*180/Math.PI)%360+360)%360);
+/* the two totals as one arrow (3·2), built tip-to-tail from sample arrows (3·3) */
+function drawResultPlot(ctx,p,o){
+  const cx=p.x+p.w/2, cy=p.y+p.h/2, rp=p.w*0.38, P=o.P, m=o.m, k2=2/ND;
+  const pt=j=>({x:cx+rp*k2*P[j].C, y:cy-rp*k2*P[j].S});
+  ctx.strokeStyle='#2a3a5f'; ctx.lineWidth=1; ctx.strokeRect(p.x+0.5,p.y+0.5,p.w-1,p.h-1);
+  ctx.strokeStyle='#1c2740'; ctx.beginPath();
+  ctx.moveTo(p.x+6,cy); ctx.lineTo(p.x+p.w-6,cy); ctx.moveTo(cx,p.y+6); ctx.lineTo(cx,p.y+p.h-6); ctx.stroke();
+  ctx.setLineDash([3,4]); circle(ctx,cx,cy,rp,'#2a3a5f',1); ctx.setLineDash([]);
+  label(ctx,'cosine total →',p.x+p.w-6,cy+13,{col:COSC,align:'right'});
+  label(ctx,'↑ sine total',p.x+6,p.y+14,{col:SINC});
+  label(ctx,'amplitude 1',cx+rp*0.72,cy+rp*0.72+12,{font:'9.5px "Segoe UI",sans-serif',col:'#3a4a6f'});
+  if(o.chain){
+    for(let j=0;j<m;j++){
+      const a=pt(j), b=pt(j+1), hi=j===m-1;
+      ctx.strokeStyle=rgba(sgnCol(detX(j)),hi?1:0.75); ctx.lineWidth=hi?2.6:1.6;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      dot(ctx,b.x,b.y,hi?3:1.6,rgba(sgnCol(detX(j)),0.9));
+    }
+  } else if(m>0){
+    ctx.strokeStyle=rgba('#dbe4f5',0.35); ctx.lineWidth=1; ctx.beginPath();
+    for(let j=0;j<=m;j++){ const q=pt(j); j?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); }
+    ctx.stroke();
+  }
+  const e=pt(m), done=m>=ND;
+  if(o.legs&&m>0){
+    ctx.lineCap='round';
+    arrow(ctx,cx,cy,e.x,cy,rgba(COSC,0.85),3.2,false);
+    arrow(ctx,e.x,cy,e.x,e.y,rgba(SINC,0.85),3.2,false);
+    ctx.lineCap='butt';
+  }
+  if(m>0) arrow(ctx,cx,cy,e.x,e.y,rgba('#ffd166',done?1:0.5),done?2.6:1.6);
+  dot(ctx,cx,cy,2,'#3a4a6f');
+  /* readouts */
+  const C=P[m].C, Sv=P[m].S, A=k2*Math.hypot(C,Sv), y=p.y+p.h+16, mono='10.5px "Cascadia Code",Consolas,monospace';
+  label(ctx,'cos total C = '+C.toFixed(2),p.x,y,{font:mono,col:COSC});
+  label(ctx,'sin total S = '+Sv.toFixed(2),p.x+p.w,y,{font:mono,col:SINC,align:'right'});
+  label(ctx,'amplitude 2|X|/N = '+A.toFixed(2)+(A>0.02?' · angle '+deg(Math.atan2(Sv,C))+'°':''),p.x,y+16,{font:mono,col:'#ffd166'});
+  if(o.complex){
+    label(ctx,'as one complex number:  X_k = C − i·S',p.x,y+36,{font:'11px "Cascadia Code",Consolas,monospace',col:'#dbe4f5'});
+    label(ctx,'(drawn with up = +S, the conjugate, so S reads directly)',p.x,y+51,{font:'9.5px "Segoe UI",sans-serif'});
+  }
+  if(done) label(ctx,A>0.05?'✔ k×f is present':'✘ cancels: no k×f component',p.x,y+(o.complex?70:36),
+    {font:'600 12px "Segoe UI",sans-serif',col:A>0.05?'#6fe3a0':'#ff8f8f'});
+}
+/* 3·1 right column: where the products went */
+function drawTally(ctx,r,P){
+  const m=DET.m; let pos=0,neg=0;
+  for(let n=0;n<m;n++){ const v=detX(n)*Math.sin(detTh(n)); v>=0?pos+=v:neg+=v; }
+  const tot=pos+neg, base=r.y+r.h*0.42, sc=r.h*0.30/(ND/2), bx=r.x+r.w*0.22, bw=r.w*0.16;
+  label(ctx,'where the products went',r.x+4,r.y+14);
+  ctx.strokeStyle='#2a3a5f'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(r.x+8,base); ctx.lineTo(r.x+r.w-8,base); ctx.stroke();
+  ctx.fillStyle=rgba('#ffa14f',0.85); ctx.fillRect(bx,base-pos*sc,bw,pos*sc);
+  ctx.fillStyle=rgba('#4fc3f7',0.85); ctx.fillRect(bx+bw*1.4,base,bw,-neg*sc);
+  ctx.fillStyle='#dbe4f5'; ctx.fillRect(bx+bw*2.8,Math.min(base,base-tot*sc),bw,Math.abs(tot*sc));
+  const mono='10.5px "Cascadia Code",Consolas,monospace';
+  label(ctx,'+'+pos.toFixed(1),bx+bw/2,base-pos*sc-5,{font:mono,col:'#ffa14f',align:'center'});
+  label(ctx,neg.toFixed(1),bx+bw*1.9,base-neg*sc+13,{font:mono,col:'#4fc3f7',align:'center'});
+  const ly=base+(ND/2)*sc+16;
+  label(ctx,'positives',bx+bw/2,ly,{align:'center'});
+  label(ctx,'negatives',bx+bw*1.9,ly,{align:'center'});
+  label(ctx,'total',bx+bw*3.3,ly,{align:'center'});
+  const A=2*tot/ND;
+  label(ctx,'total = '+tot.toFixed(2),r.x+8,r.y+r.h*0.87,{font:'600 13px "Cascadia Code",Consolas,monospace',col:'#dbe4f5'});
+  label(ctx,'÷ N/2 = '+A.toFixed(2)+'  → the amplitude at k×f',r.x+8,r.y+r.h*0.87+17,{font:mono,col:'#ffd166'});
+  const msg=m<ND?'adding sample '+m+' of '+ND+'…':(Math.abs(A)>0.05?'✔ k×f is present':'✘ cancels: no k×f component');
+  label(ctx,msg,r.x+8,r.y+r.h*0.87+35,{font:'600 12px "Segoe UI",sans-serif',col:m<ND?'#7f8db0':Math.abs(A)>0.05?'#6fe3a0':'#ff8f8f'});
+}
+function drawDetector(T,o={}){
+  const {ctx,w,h}=T, sub=o.sub??S.sub, g=GD(w,h,sub), m=o.m??DET.m, cur=m>0?m-1:-1, al=o.restAlpha??1;
+  const P=detPartials(), kk=DET.k;
+  drawStemRow(ctx,g.sig,{label:'x[n] · the recorded signal — one period, N = '+ND+' samples',
+    val:detX, curve:wv, curveCol:'#ffa14f', col:()=> '#dbe4f5', cur, stemReveal:o.sigStem??1, curveAlpha:o.curveAlpha??1});
+  if(al<=0.002) return;
+  withAlpha(ctx,al,()=>{
+    for(const t of g.tests){
+      const f=t.k==='sin'?Math.sin:Math.cos, col=t.k==='sin'?SINC:COSC;
+      drawStemRow(ctx,t,{label:'test wave: '+t.k+'(2π·k·n/N),  k = '+kk+'  → '+kk+' cycle'+(kk>1?'s':'')+' in the record',labelCol:col,
+        val:n=>f(TAU*kk*n/ND), curve:u=>f(TAU*kk*u), curveCol:col, col:()=>col, cur});
+    }
+    for(const t of g.prods){
+      const f=t.k==='sin'?Math.sin:Math.cos;
+      drawStemRow(ctx,t,{label:'x[n] × '+t.k+'(…) — orange where they agree in sign, cyan where they disagree',labelCol:t.k==='sin'?SINC:COSC,
+        val:n=>detX(n)*f(detTh(n)), col:(n,v)=>sgnCol(v), bars:true, reveal:m, cur});
+    }
+    /* the sample cursor, through every row it touches */
+    if(cur>=0){
+      const rg=rowGeom(g.sig), X=stemX(rg,cur), last=g.prods.length?g.prods[g.prods.length-1]:g.sig;
+      ctx.strokeStyle=rgba('#ffffff',0.22); ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(X,g.sig.y+14); ctx.lineTo(X,last.y+last.h-4); ctx.stroke();
+    }
+    if(g.run){
+      const rg=rowGeom(g.run), sc=rg.amp/(ND/2);
+      drawStemRow(ctx,g.run,{label:'running total of x[n] × sin(…)',val:()=>0,col:()=>'#000',reveal:0});
+      ctx.setLineDash([3,4]); ctx.strokeStyle='#2a3a5f'; ctx.beginPath();
+      ctx.moveTo(rg.x0,rg.mid-ND/2*sc); ctx.lineTo(rg.x1,rg.mid-ND/2*sc);
+      ctx.moveTo(rg.x0,rg.mid+ND/2*sc); ctx.lineTo(rg.x1,rg.mid+ND/2*sc); ctx.stroke(); ctx.setLineDash([]);
+      label(ctx,'N/2 = full strength',rg.x1,rg.mid-ND/2*sc-3,{font:'9.5px "Segoe UI",sans-serif',col:'#3a4a6f',align:'right'});
+      ctx.strokeStyle='#ffd166'; ctx.lineWidth=2; ctx.beginPath();
+      for(let j=0;j<=m;j++){
+        const X=j===0?rg.x0-4:stemX(rg,j-1)+(rg.x1-rg.x0)/ND*0.5, Y=rg.mid-P[j].S*sc;
+        j?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
       }
       ctx.stroke();
+      if(m>0) dot(ctx,stemX(rg,m-1)+(rg.x1-rg.x0)/ND*0.5,rg.mid-P[m].S*sc,3.5,'#ffd166');
     }
-  },
-  2:function(T,tau){                       /* wave curls into the winding circle; bars grow */
-    const {ctx,w,h}=T;
-    const A=smooth(Math.min(1,tau/0.55)), B=Math.max(0,(tau-0.55)/0.45);
-    const g=stage3Geom(w,h);
-    if(B===0){
-      /* each sign-coloured chunk of the wave flies from the time axis to its wound position */
-      const R=Math.min(g.circ.w,g.circ.h)*0.375;
-      const wcx=g.circ.x+g.circ.w/2, wcy=g.circ.y+g.circ.h/2;
-      const sx0=w*0.42+28, sx1=w-26, smid=h*0.5, samp=h*0.30, K=220;
-      for(let c0=0;c0<K;c0+=10){
-        ctx.strokeStyle=rgba(sgnCol(wv((c0+5)/K)),0.9); ctx.lineWidth=1.6; ctx.beginPath();
-        for(let k=c0;k<=Math.min(K,c0+10);k++){
-          const u=k/K, ang=-TAU*u, rr=R*(WIND_BASE+WIND_AMP*wv(u));
-          const X=lerp(sx0+(sx1-sx0)*u, wcx+rr*Math.cos(ang), A);
-          const Y=lerp(smid-wv(u)*samp, wcy+rr*Math.sin(ang), A);
-          k===c0?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+    if(sub===1) drawTally(ctx,g.right,P);
+    if(sub===2) drawResultPlot(ctx,g.plot,{P,m,legs:true,complex:true});
+    if(sub===3){
+      drawResultPlot(ctx,g.plot,{P,m,chain:true});
+      drawSpokes(ctx,g.dial,m);
+    }
+  });
+}
+/* 3·3: every sample as an arrow from the centre — signed length, angle 2πkn/N */
+function drawSpokes(ctx,r,m){
+  const cx=r.x+r.w/2, cy=r.y+r.h*0.53, Rs=Math.min(r.w,r.h)*0.40, cur=m-1;
+  circle(ctx,cx,cy,Rs,'#2a3a5f',1);
+  ctx.strokeStyle='#1c2740'; ctx.beginPath();
+  ctx.moveTo(cx-Rs-6,cy); ctx.lineTo(cx+Rs+6,cy); ctx.moveTo(cx,cy-Rs-6); ctx.lineTo(cx,cy+Rs+6); ctx.stroke();
+  label(ctx,'each sample → one arrow: length = x[n] (signed), angle = 2π·k·n/N',r.x+4,r.y+12);
+  /* what the arrow tips trace between samples: the continuous winding */
+  ctx.strokeStyle=rgba('#ffa14f',0.18); ctx.lineWidth=1; ctx.beginPath();
+  for(let i=0;i<=400;i++){ const u=i/400, v=wv(u), th=TAU*DET.k*u, X=cx+Rs*v*Math.cos(th), Y=cy-Rs*v*Math.sin(th); i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }
+  ctx.stroke();
+  for(let n=0;n<ND;n++){
+    const v=detX(n), th=detTh(n), X=cx+Rs*v*Math.cos(th), Y=cy-Rs*v*Math.sin(th);
+    if(n>=m){ ctx.strokeStyle='rgba(127,141,176,0.10)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(X,Y); ctx.stroke(); continue; }
+    if(n===cur) continue;
+    arrow(ctx,cx,cy,X,Y,rgba(sgnCol(v),0.6),1.3,false);
+    dot(ctx,X,Y,2,rgba(sgnCol(v),0.8));
+  }
+  if(cur>=0){
+    const v=detX(cur), th=detTh(cur);
+    ctx.setLineDash([4,4]);
+    arrow(ctx,cx,cy,cx+Rs*Math.cos(th),cy-Rs*Math.sin(th),rgba('#ffffff',0.4),1,false);
+    ctx.setLineDash([]);
+    arrow(ctx,cx,cy,cx+Rs*v*Math.cos(th),cy-Rs*v*Math.sin(th),sgnCol(v),2.6);
+    const mono='10.5px "Cascadia Code",Consolas,monospace';
+    label(ctx,'n = '+cur+':  x = '+v.toFixed(2)+',  angle = '+deg(th)+'°',r.x+4,r.y+r.h-22,{font:mono,col:'#dbe4f5'});
+    label(ctx,v<0?'negative sample → the arrow points backwards along the dashed test direction'
+                  :'positive sample → the arrow points along the dashed test direction',r.x+4,r.y+r.h-7,
+      {col:sgnCol(v)});
+  }
+}
+
+/* ================= rung 3 · 5: why the FFT is fast =================
+   8 samples, split even/odd, two 4-point DFTs E and O, twiddle, then each
+   pair (E[k], W^k·O[k]) makes TWO outputs. All values are computed, not drawn
+   from a table — X here equals the direct 8-point DFT. */
+const FFTV={step:0, k:0, kAuto:true, playing:true, acc:0, kacc:0};
+const FFT_STEPS=['Split the 8 samples into even (blue) and odd (orange)',
+  'Transform each half on its own: two 4-point DFTs, E and O',
+  'Twist each O[k] by the twiddle Wᵏ — a turn of k/8 of a circle',
+  'Combine: one pair (E[k], Wᵏ·O[k]) makes two outputs — X[k] by adding, X[k+4] by subtracting',
+  'Repeat the split inside each half: the butterfly — 12 butterflies instead of 64 products'];
+const FFT_DUR=[4,5,5,10,1e9];
+const cmul=(a,b)=>({re:a.re*b.re-a.im*b.im, im:a.re*b.im+a.im*b.re});
+function dftC(xs){
+  const n=xs.length, out=[];
+  for(let k=0;k<n;k++){ let re=0,im=0; for(let j=0;j<n;j++){ const t=-TAU*k*j/n; re+=xs[j]*Math.cos(t); im+=xs[j]*Math.sin(t); } out.push({re,im}); }
+  return out;
+}
+function fft8(){
+  const x=[0,1,2,3,4,5,6,7].map(n=>CACHE.wnorm[n*N/8+N/16]);   // mid-eighth instants: avoids the zero crossings
+  const E=dftC([x[0],x[2],x[4],x[6]]), O=dftC([x[1],x[3],x[5],x[7]]);
+  const W=[0,1,2,3].map(k=>({re:Math.cos(-TAU*k/8), im:Math.sin(-TAU*k/8)}));
+  const WO=O.map((o,k)=>cmul(W[k],o)), X=[];
+  for(let k=0;k<4;k++){
+    X[k]={re:E[k].re+WO[k].re, im:E[k].im+WO[k].im};
+    X[k+4]={re:E[k].re-WO[k].re, im:E[k].im-WO[k].im};
+  }
+  return {x,E,O,W,WO,X};
+}
+const cmag=z=>Math.hypot(z.re,z.im);
+/* display: up = −Im = +sine total, matching the 3·2 plot */
+const vx=(cx,z,s)=>cx+z.re*s, vy=(cy,z,s)=>cy+z.im*s;
+function drawDial(ctx,cx,cy,rd,lbl,lblCol){
+  circle(ctx,cx,cy,rd,'#2a3a5f',1);
+  ctx.strokeStyle='#1c2740'; ctx.lineWidth=1; ctx.beginPath();
+  ctx.moveTo(cx-rd,cy); ctx.lineTo(cx+rd,cy); ctx.moveTo(cx,cy-rd); ctx.lineTo(cx,cy+rd); ctx.stroke();
+  if(lbl) label(ctx,lbl,cx,cy+rd+12,{font:'10px "Cascadia Code",Consolas,monospace',col:lblCol||'#7f8db0',align:'center'});
+}
+function drawFFTView(T){
+  const {ctx,w,h}=T, F=fft8(), st=FFTV.step, k=FFTV.k, BL='#4fc3f7', OR='#ffa14f';
+  const colX=j=>w*(j+0.5)/8, rd=Math.min(w/16-8,h*0.075);
+  const mono='10px "Cascadia Code",Consolas,monospace';
+  /* row 1: the samples */
+  const mid=h*0.10, amp=h*0.065;
+  label(ctx,'8 samples of the signal',6,12);
+  ctx.strokeStyle='#1c2740'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(colX(0)-20,mid); ctx.lineTo(colX(7)+20,mid); ctx.stroke();
+  for(let n=0;n<8;n++){
+    const col=n%2?OR:BL, X=colX(n), Y=mid-F.x[n]*amp;
+    ctx.strokeStyle=col; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(X,mid); ctx.lineTo(X,Y); ctx.stroke();
+    dot(ctx,X,Y,3,col); label(ctx,'x'+n,X,mid+amp+14,{font:mono,col,align:'center'});
+  }
+  if(st===4){ drawButterfly(T,F,k); return; }
+  const y2=h*0.37, y3=h*0.60, y4=h*0.83;
+  const sEO=rd*0.9/Math.max(1e-6,...F.E.map(cmag),...F.O.map(cmag),...F.WO.map(cmag));
+  const sX=rd*0.9/Math.max(1e-6,...F.X.map(cmag));
+  /* the split: each sample's line to its half */
+  for(let n=0;n<8;n++){
+    const col=n%2?OR:BL, j=n%2?4+(n-1)/2:n/2;
+    ctx.strokeStyle=rgba(col,st===0?0.7:0.18); ctx.lineWidth=st===0?1.6:1;
+    ctx.beginPath(); ctx.moveTo(colX(n),mid+amp+20); ctx.lineTo(colX(j),y2-rd-20); ctx.stroke();
+  }
+  label(ctx,'even samples x0 x2 x4 x6',w*0.25,y2-rd-24,{col:BL,align:'center'});
+  label(ctx,'odd samples x1 x3 x5 x7',w*0.75,y2-rd-24,{col:OR,align:'center'});
+  if(st<1) return;
+  /* row 2: E and O, the half-size transforms */
+  for(let j=0;j<4;j++){
+    drawDial(ctx,colX(j),y2,rd,'E['+j+']',BL);
+    arrow(ctx,colX(j),y2,vx(colX(j),F.E[j],sEO),vy(y2,F.E[j],sEO),BL,2);
+    drawDial(ctx,colX(j+4),y2,rd,'O['+j+']',OR);
+    arrow(ctx,colX(j+4),y2,vx(colX(j+4),F.O[j],sEO),vy(y2,F.O[j],sEO),OR,2);
+  }
+  if(st<2) return;
+  /* row 3: twiddle — O[k] turned by k/8 of a circle */
+  for(let j=0;j<4;j++){
+    const cx=colX(j+4);
+    drawDial(ctx,cx,y3,rd,'W'+['⁰','¹','²','³'][j]+'·O['+j+']',OR);
+    ctx.setLineDash([3,3]); arrow(ctx,cx,y3,vx(cx,F.O[j],sEO),vy(y3,F.O[j],sEO),rgba(OR,0.35),1.4,false); ctx.setLineDash([]);
+    const a0=Math.atan2(F.O[j].im,F.O[j].re), a1=Math.atan2(F.WO[j].im,F.WO[j].re);
+    if(j>0&&cmag(F.O[j])>1e-6){
+      ctx.strokeStyle=rgba('#ffd166',0.7); ctx.lineWidth=1.2; ctx.beginPath();
+      ctx.arc(cx,y3,rd*0.45,a0,a0-j*TAU/8,true); ctx.stroke();
+    }
+    arrow(ctx,cx,y3,vx(cx,F.WO[j],sEO),vy(y3,F.WO[j],sEO),OR,2);
+    ctx.strokeStyle=rgba(OR,0.25); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(cx,y2+rd+16); ctx.lineTo(cx,y3-rd); ctx.stroke();
+  }
+  label(ctx,'×Wᵏ: turn O[k] by k/8 of a circle',colX(4)-rd,y3-rd-6,{col:'#ffd166'});
+  if(st<3) return;
+  /* row 4: one pair → two outputs */
+  for(let j=0;j<8;j++){
+    const hi=j===k||j===k+4, cx=colX(j);
+    drawDial(ctx,cx,y4,rd,'X['+j+']',hi?'#ffd166':'#7f8db0');
+    if(!hi) arrow(ctx,cx,y4,vx(cx,F.X[j],sX),vy(y4,F.X[j],sX),rgba('#ffd166',0.35),1.6);
+  }
+  /* wiring of the highlighted pair: the butterfly, drawn on the dials themselves */
+  const eX=colX(k), oX=colX(k+4);
+  ctx.lineWidth=1.6;
+  for(const [x0,y0,x1,col] of [[eX,y2+rd+14,colX(k),BL],[eX,y2+rd+14,colX(k+4),BL],[oX,y3+rd+14,colX(k+4),OR],[oX,y3+rd+14,colX(k),OR]]){
+    ctx.strokeStyle=rgba(col,0.7); ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y4-rd-2); ctx.stroke();
+  }
+  label(ctx,'+',colX(k)+10,y4-rd-6,{font:'600 13px "Segoe UI",sans-serif',col:'#6fe3a0'});
+  label(ctx,'−',colX(k+4)-16,y4-rd-6,{font:'600 13px "Segoe UI",sans-serif',col:'#ff8f8f'});
+  for(const [j,sg] of [[k,1],[k+4,-1]]){
+    const cx=colX(j), E=F.E[k], WO={re:sg*F.WO[k].re, im:sg*F.WO[k].im};
+    const ex=vx(cx,E,sX), ey=vy(y4,E,sX);
+    arrow(ctx,cx,y4,ex,ey,BL,2);
+    if(sg<0) ctx.setLineDash([3,3]);
+    arrow(ctx,ex,ey,ex+WO.re*sX,ey+WO.im*sX,OR,2);
+    ctx.setLineDash([]);
+    arrow(ctx,cx,y4,vx(cx,F.X[j],sX),vy(y4,F.X[j],sX),'#ffd166',2.4);
+  }
+  label(ctx,'X['+k+'] = E['+k+'] + W'+['⁰','¹','²','³'][k]+'·O['+k+']     X['+(k+4)+'] = E['+k+'] − W'+['⁰','¹','²','³'][k]+'·O['+k+']   — one pair, two outputs, nothing recomputed',
+    6,h-6,{font:mono,col:'#dbe4f5'});
+}
+function drawButterfly(T,F,k){
+  const {ctx,w,h}=T, BL='#4fc3f7', OR='#ffa14f', mono='10px "Cascadia Code",Consolas,monospace';
+  const x0=w*0.07, x1=w*0.52, yT=h*0.30, yB=h*0.92, colx=c=>lerp(x0,x1,c/3), rowy=i=>lerp(yT,yB,i/7);
+  const order=[0,4,2,6,1,5,3,7];
+  for(let s=1;s<=3;s++){
+    const span=1<<(s-1);
+    for(let g=0;g<8;g+=span*2) for(let j=0;j<span;j++){
+      const a=g+j, b=g+j+span, hi=s===3&&j===k;
+      const col=hi?'#ffd166':s===3?'rgba(127,141,176,0.55)':'rgba(127,141,176,0.30)';
+      ctx.strokeStyle=col; ctx.lineWidth=hi?2.4:1.1; ctx.beginPath();
+      for(const [p,q] of [[a,a],[a,b],[b,a],[b,b]]){ ctx.moveTo(colx(s-1),rowy(p)); ctx.lineTo(colx(s),rowy(q)); }
+      ctx.stroke();
+      if(s===3) label(ctx,'W'+['⁰','¹','²','³'][j],colx(2)+10,rowy(b)-4,{font:mono,col:hi?'#ffd166':'#3a4a6f'});
+    }
+  }
+  for(let c=0;c<=3;c++) for(let i=0;i<8;i++) dot(ctx,colx(c),rowy(i),c===3&&(i===k||i===k+4)?4:2.6,c===0?(order[i]%2?OR:BL):'#dbe4f5');
+  for(let i=0;i<8;i++){
+    label(ctx,'x'+order[i],colx(0)-10,rowy(i)+4,{font:mono,col:order[i]%2?OR:BL,align:'right'});
+    label(ctx,'X'+i,colx(3)+10,rowy(i)+4,{font:mono,col:(i===k||i===k+4)?'#ffd166':'#dbe4f5'});
+  }
+  label(ctx,'2-point',colx(0.5),yT-16,{align:'center'});
+  label(ctx,'4-point: E, O',colx(1.5),yT-16,{align:'center'});
+  label(ctx,'8-point',colx(2.5),yT-16,{align:'center',col:'#ffd166'});
+  label(ctx,'(the step you just watched)',colx(2.5),yT-5,{align:'center',col:'#ffd166',font:'9.5px "Segoe UI",sans-serif'});
+  const tx=w*0.62, f13='12px "Segoe UI",sans-serif';
+  const lines=[['Each column of crossings','#dbe4f5'],['is one level of the split.','#dbe4f5'],
+    ['Inputs arrive bit-reversed:','#7f8db0'],['0 4 2 6 1 5 3 7','#7f8db0'],['',''],
+    ['N = 8','#ffd166'],['  direct sum: 8 × 8 = 64 multiply-adds','#dbe4f5'],['  FFT: 3 levels × 4 = 12 butterflies','#dbe4f5'],['',''],
+    ['N = 1024 (this page\'s spectrum)','#ffd166'],['  direct: 1,048,576','#dbe4f5'],['  FFT: 512 × 10 = 5,120 butterflies','#dbe4f5'],['',''],
+    ['Same answer, X[0…7], exactly —','#6fe3a0'],['only the bookkeeping changed.','#6fe3a0']];
+  lines.forEach(([t,c],i)=>label(ctx,t,tx,yT+i*17,{font:f13,col:c}));
+}
+
+/* sub-step and FFT-step changes crossfade from a snapshot of the previous frame */
+const XF={a:0, cv:null};
+function snapStage(){
+  const T=CV.gStage; if(!T||S.mode!=='guided') return;
+  if(!XF.cv) XF.cv=document.createElement('canvas');
+  XF.cv.width=T.c.width; XF.cv.height=T.c.height;
+  XF.cv.getContext('2d').drawImage(T.c,0,0);
+  XF.a=1;
+}
+
+/* ================= guided mode: morphs =================
+   MORPHS[a] animates rung a → a+1 as tau goes 0 → 1 (and plays backwards for
+   Prev). steps() narrates each phase in the bar above the stage. */
+const MORPHS={
+  1:{ dur:4.8,
+    steps:()=>[[0,.26,'The circle steps aside to make room for time'],
+               [.26,.74,'Slow motion: one revolution draws one period of the wave (T = '+eng(1/S.f,'s')+')'],
+               [.74,1,S.harmonics.length>1?'Add the harmonics: faster spinners ride tip-to-tail and reshape the wave'
+                                          :'A pure sine needs just one spinner']],
+    draw(T,tau){
+      const {ctx,w,h}=T, g1=G1(w,h), g2=G2(w,h);
+      const a=smooth(seg(tau,0,.26)), b=smooth(seg(tau,.26,.74)), c=smooth(seg(tau,.74,1));
+      withAlpha(ctx,1-a*1.6,()=>stage1Labels(T,g1));
+      const phi=CLK.phi+b;                     // one full labelled cycle, ending where it began
+      const harms=harmsGrow(c);
+      const tip=drawPhasor(T,{cx:lerp(g1.cx,g2.cx,a),cy:lerp(g1.cy,g2.cy,a),R:lerp(g1.R,g2.R,a),harms,phi});
+      const pen=drawScope(T,{x0:g2.x0,x1:g2.x1,mid:g2.cy,amp:g2.R,harms,phi,from:CLK.phi,frameAlpha:a});
+      if(pen) dashedGuide(ctx,tip,pen,a*Math.min(1,b*6+c));
+      withAlpha(ctx,c,()=>label(ctx,'spinners, tip-to-tail',g2.cx,g2.cy-g2.R*1.12-6,{align:'center'}));
+    }},
+  2:{ dur:5.0,
+    steps:()=>[[0,.3,'Keep one period of the wave — this is the recording we will analyse'],
+               [.3,.64,'Sample it: '+ND+' evenly spaced measurements, x[0] … x['+(ND-1)+']'],
+               [.64,1,'Bring in a test wave: we will compare the recording with it, sample by sample']],
+    draw(T,tau){
+      const {ctx,w,h}=T, g2=G2(w,h), sig=GD(w,h,1).sig, rg=rowGeom(sig), u0=frac(CLK.phi);
+      const a=smooth(seg(tau,0,.3)), b=seg(tau,.3,.64), c=smooth(seg(tau,.64,1));
+      if(a<1){
+        /* phasor and scope frame fade; the drawn period travels up into the signal row */
+        const W2=g2.x1-g2.x0, Wr=rg.x1-rg.x0, K=240, CH=6;
+        const P=u=>({x:lerp(g2.x0+W2*u, rg.x0+Wr*u, a), y:lerp(g2.cy-tipAt(u).y*g2.R, rg.mid-wv(u)*rg.amp, a)});
+        withAlpha(ctx,1-a,()=>{
+          const tip=drawPhasor(T,{cx:g2.cx,cy:g2.cy,R:g2.R});
+          drawScope(T,{x0:g2.x0,x1:g2.x1,mid:g2.cy,amp:g2.R,wave:false});
+          const px=g2.x0+W2*u0;
+          dashedGuide(ctx,tip,{x:px,y:g2.cy-tipAt(u0).y*g2.R},1);
+          ctx.strokeStyle=rgba('#6fe3a0',0.35); ctx.lineWidth=1; ctx.beginPath();
+          ctx.moveTo(px,g2.cy-g2.R*1.12); ctx.lineTo(px,g2.cy+g2.R*1.12); ctx.stroke();
+          dot(ctx,px,g2.cy-tipAt(u0).y*g2.R,3.8,'#6fe3a0');
+          label(ctx,'spinners, tip-to-tail',g2.cx,g2.cy-g2.R*1.12-6,{align:'center'});
+        });
+        drawStemRow(ctx,sig,{label:'x[n] · the recorded signal — one period, N = '+ND+' samples',
+          val:detX, col:()=>'#dbe4f5', stemReveal:0, alpha:a});
+        for(let c0=0;c0<K;c0+=CH){
+          const um=(c0+CH/2)/K;
+          ctx.strokeStyle=rgba('#ffa14f',lerp(scopeAlpha(frac(CLK.phi-um)),0.45,a));
+          ctx.lineWidth=lerp(1.9,1.4,a); ctx.beginPath();
+          for(let k=c0;k<=Math.min(K,c0+CH);k++){ const p=P(k/K); k===c0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y); }
+          ctx.stroke();
         }
-        ctx.stroke();
+        return;
       }
-    } else {
-      const t3=smooth(B);
-      region(T,g.strip.x,g.strip.y,g.strip.w,g.strip.h,t=>drawWaveStrip(t,{markU:frac(CLK.phi)}));
-      region(T,g.circ.x,g.circ.y,g.circ.w,g.circ.h,t=>drawWindCircle(t,{fw:1}));
-      region(T,g.sweep.x,g.sweep.y,g.sweep.w,g.sweep.h,t=>drawSweepPlot(t,{fw:1,reveal:t3}));
-      region(T,g.bars.x,g.bars.y,g.bars.w,g.bars.h,t=>drawSpectrum(t,{grow:t3}));
-    }
-  },
-  3:function(T,tau){                       /* spectrum bars fold into petals */
-    const {ctx,w,h}=T, t=smooth(tau);
-    ctx.globalAlpha=1-t;
-    region(T,0,0,w*0.60,h,tt=>drawWinding(tt));
-    region(T,w*0.61,0,w*0.39,h,tt=>drawSpectrum(tt));
-    ctx.globalAlpha=1;
-    drawMandala(T,{scale:Math.min(w,h)*0.40,alpha:t,coef:t,scaleMul:lerp(0.35,1,t)});
-  },
-  4:function(T,tau){                       /* the mandala lifts into 3D */
-    const {w,h}=T, t=smooth(tau);
-    if(t<1) drawMandala(T,{cx:lerp(w*0.5,w*0.35,t),cy:h*0.5,scale:Math.min(w,h)*0.40,alpha:1-t,mod9:false});
-    region(T,0,0,w*0.70,h,tt=>drawTorus(tt,{
-      camRx:lerp(-Math.PI/2+0.02,-0.55,t), zScale:t, alpha:lerp(0.25,1,t), label:false}));
-  },
+      /* sample, then reveal the detector around the samples */
+      drawDetector(T,{sub:1, sigStem:b, restAlpha:c});
+    }},
+  3:{ dur:5.6,
+    steps:()=>[[0,.2,'Keep only the spectrum'],
+               [.2,.55,'Bend each bar into a ring around one centre'],
+               [.55,.8,'Let each ring ripple: harmonic n grows n petals'],
+               [.8,1,'Average the rings, weighted by amplitude: the mandala']],
+    draw(T,tau){
+      const {ctx,w,h}=T, g=G3(w,h), m=mandalaGeom(w,h);
+      const a=smooth(seg(tau,0,.2)), b=seg(tau,.2,.55), c=seg(tau,.55,.8), d=smooth(seg(tau,.8,1));
+      const L=CACHE.spec.slice(0,6), bent=new Set(L.map(x=>x.n));
+      stage3Spectrum(T,{alpha:1-a,bars:false});
+      /* bars that won't become rings (beyond the first six) and the axis fade out */
+      const sb=smooth(b);
+      if(b===0) inR(T,g.bars,t=>drawSpectrum(t,{lockN:a<0.5?lockedN(S.windF):0,num:'④'}));
+      else withAlpha(ctx,1-sb,()=>inR(T,g.bars,t=>drawSpectrum(t,{skip:bent,num:'④'})));
+      const sgm=specGeom(g.bars.w,g.bars.h);
+      if(b>0) L.forEach((hh,k)=>{
+        const bk=smooth(clamp(b*1.5-k*0.1,0,1)), ck=smooth(clamp(c*1.5-k*0.1,0,1));
+        const st=ringStyle(hh.mag), af=alphaFor(hh.n), fh=hh.n*S.f, col=HCOL(hh.n);
+        const onAxis=fh<=FMAX;
+        /* a straight bar of length L0 bends (curvature growing from 0) into a circle of radius U */
+        const A0={x:g.bars.x+(onAxis?specX(fh,sgm.pad,sgm.x1):sgm.x1), y:g.bars.y+sgm.base};
+        const L0=(sgm.base-sgm.top)*(hh.mag/CACHE.specMax), A1={x:m.cx+m.U, y:m.cy};
+        const Ax=lerp(A0.x,A1.x,bk), Ay=lerp(A0.y,A1.y,bk), psi=lerp(-Math.PI/2,Math.PI/2,bk);
+        const Ln=lerp(L0,TAU*m.U,bk), al=bk*TAU;
+        ctx.strokeStyle=rgba(col,lerp(0.85,st.a*FLAT_SHADE,bk)*af*(onAxis?1:bk));
+        ctx.lineWidth=lerp(sgm.bwid,st.lw,bk); ctx.lineCap=bk>0.05&&bk<1?'round':'butt';
+        ctx.beginPath();
+        const S_=bk>=1?384:120;
+        for(let i=0;i<=S_;i++){
+          const s=i/S_; let X,Y;
+          if(bk>=1){
+            const th=TAU*s, r=m.U*(1+ck*Math.cos(hh.n*th+hh.ph));
+            X=m.cx+r*Math.cos(th); Y=m.cy+r*Math.sin(th);
+          } else if(al<1e-4){ X=Ax+Ln*s*Math.cos(psi); Y=Ay+Ln*s*Math.sin(psi); }
+          else { const q=Ln/al; X=Ax+q*(Math.sin(psi+al*s)-Math.sin(psi)); Y=Ay-q*(Math.cos(psi+al*s)-Math.cos(psi)); }
+          i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+        }
+        ctx.stroke(); ctx.lineCap='butt';
+      });
+      if(d>0) for(const hh of L) for(let j=0;j<14;j++){    // the flow dots of rungs 4–5
+        const u=Math.floor(frac(j/14+CLK.phi)*384)/384, th=TAU*u, r=m.U*(1+Math.cos(hh.n*th+hh.ph));
+        dot(ctx,m.cx+r*Math.cos(th),m.cy+r*Math.sin(th),2.2,rgba(HCOL(hh.n),alphaFor(hh.n)*d));
+      }
+      const top={camRx:TOP_RX,camRy:0,zScale:0,cx:m.cx,cy:m.cy,scalePx:m.U};
+      dot(ctx,m.cx,m.cy,3.2,rgba('#ff5fd7',0.9*d));
+      drawComposite(ctx,torusProj(top,w,h),d);
+      drawMod9(ctx,m.cx,m.cy,m.U,d);
+      stage4Extras(T,d);
+    }},
+  4:{ dur:5.0,
+    steps:()=>[[0,.3,'Tip the page: the rings lie flat on a plane'],
+               [.3,.66,'Lift each ring off the plane: harmonic n wraps n times through the central pinch'],
+               [.66,1,'The horn torus — top view = mandala, height over time = waveform']],
+    draw(T,tau){
+      const {ctx,w,h}=T, m=mandalaGeom(w,h), cam=TRANS.cam, g5=G5(w,h,cam.zoom);
+      const a=smooth(seg(tau,0,.3)), b=smooth(seg(tau,.3,.66)), c=smooth(seg(tau,.66,1));
+      const o={camRx:lerp(TOP_RX,cam.rx,a), camRy:lerp(0,cam.ry,c), zScale:b,
+               cx:lerp(m.cx,g5.cx,c), cy:lerp(m.cy,g5.cy,c), scalePx:lerp(m.U,g5.scale,c)};
+      drawTorus(T,{...o, wireAlpha:b, label:false});
+      drawComposite(ctx,torusProj({...o,zScale:0},w,h),1-b);   // the outline stays on the plane, fading as the rings rise
+      drawMod9(ctx,m.cx,m.cy,m.U,1-a*1.5);
+      stage4Extras(T,1-a*1.5);
+      withAlpha(ctx,c,()=>label(ctx,'◦ central pinch = the vortex',10,h-9,{font:'10px "Cascadia Code",Consolas,monospace',col:rgba('#ff5fd7',0.75)}));
+      stage5Insets(T,c,(1-c)*40);
+    }},
 };
 function drawStage(T){
-  T.ctx.clearRect(0,0,T.w,T.h);
-  if(TRANS.active){ MORPHS[TRANS.a](T,clamp(TRANS.tau,0,1)); return; }
-  [stage1,stage2,stage3,stage4,stage5][S.rung-1](T);
+  const ctx=T.ctx;
+  ctx.clearRect(0,0,T.w,T.h);
+  ctx.globalAlpha=1-0.85*XF.a;                    // crossfade under the previous frame's snapshot
+  if(TRANS.active) MORPHS[TRANS.a].draw(T,clamp(TRANS.tau,0,1));
+  else [stage1,stage2,stage3,stage4,stage5][S.rung-1](T);
+  ctx.globalAlpha=1;
+  if(XF.a>0&&XF.cv){
+    ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.globalAlpha=XF.a; ctx.drawImage(XF.cv,0,0); ctx.restore();
+  }
 }
+
+/* ================= guided mode: transition state machine ================= */
+const TRANS={active:false,a:1,dir:1,tau:0,target:1,final:1,hold:false,rate:1,
+             cam:{rx:-1.02,ry:0,zoom:1}};
+const curRung = () => TRANS.active?TRANS.target:S.rung;
+function startMorph(from,to,rate){
+  TRANS.active=true; TRANS.hold=false; TRANS.rate=rate;
+  TRANS.a=Math.min(from,to); TRANS.dir=to>from?1:-1;
+  TRANS.tau=TRANS.dir>0?0:1; TRANS.target=to;
+  /* rung 3 is entered/left through a fixed sub-step: 2↔3 meets 3·1, 3↔4 meets 3·4 */
+  const need=TRANS.a===2?1:TRANS.a===3?4:0;
+  if(need&&S.sub!==need){ if(S.rung===3) snapStage(); S.sub=need; }
+  if(TRANS.a===2&&TRANS.dir>0) resetDet();
+  if(need===4){ DEMO.user=false; WIND.active=false; }
+  if(TRANS.a===4){
+    if(TRANS.dir>0) view.ry=0;               // the torus opens facing the way the mandala lay
+    TRANS.cam={rx:view.rx,ry:view.ry,zoom:view.zoom};
+  }
+}
+function finishMorph(){ TRANS.active=false; TRANS.hold=false; S.rung=TRANS.target; }
+function goRung(r){
+  r=clamp(r,1,5);
+  if(TRANS.active) finishMorph();
+  TRANS.final=r;
+  if(r!==S.rung){
+    const step=r>S.rung?1:-1, chain=Math.abs(r-S.rung)>1;
+    startMorph(S.rung,S.rung+step, chain?3:(step>0?1:2));   // Prev rewinds at 2×, jumps chain at 3×
+  }
+  syncGuided();
+}
+function goSub(s){
+  s=clamp(s,1,5);
+  if(TRANS.active) finishMorph();
+  if(S.rung!==3){ S.sub=s; goRung(3); return; }
+  if(s!==S.sub){
+    snapStage(); S.sub=s;
+    if(s<=3) resetDet();
+    if(s===4){ DEMO.user=false; WIND.active=false; }
+    if(s===5){ FFTV.step=0; FFTV.acc=0; FFTV.kacc=0; FFTV.k=0; FFTV.kAuto=true; FFTV.playing=true; }
+  }
+  syncGuided();
+}
+/* Next/Prev walk the sub-steps of rung 3; 3·5 is an optional side trip after 3·4 */
+function stepNext(){
+  if(TRANS.active) finishMorph();
+  const r=S.rung;
+  if(r===3&&S.sub<4) return goSub(S.sub+1);
+  r<5?goRung(r+1):setMode('dash');
+}
+function stepPrev(){
+  if(TRANS.active) finishMorph();
+  const r=S.rung;
+  if(r===3&&S.sub===5) return goSub(4);
+  if(r===3&&S.sub>1) return goSub(S.sub-1);
+  if(r>1) goRung(r-1);
+}
+function replayMorph(){
+  if(TRANS.active&&TRANS.hold){ TRANS.hold=false; return; }   // ▶ continue after scrubbing
+  if(TRANS.active) finishMorph();
+  if(S.rung<2) return;
+  TRANS.final=S.rung; startMorph(S.rung-1,S.rung,1);
+  syncGuided();
+}
+function advanceMorph(dt){
+  if(!TRANS.active||TRANS.hold) return;
+  TRANS.tau+=TRANS.dir*TRANS.rate*dt/MORPHS[TRANS.a].dur;
+  if((TRANS.dir>0&&TRANS.tau>=1)||(TRANS.dir<0&&TRANS.tau<=0)){
+    finishMorph();
+    if(TRANS.final!==S.rung) startMorph(S.rung,S.rung+(TRANS.final>S.rung?1:-1),3);
+    syncGuided();
+  }
+}
+
+/* ================= guided mode: lesson content ================= */
+const SUBS=['Multiply & add','Two tests','Every sample is an arrow','Sweep: the spectrum','Why the FFT is fast'];
+const RUNGS=[null,
+ {t:'1 · Frequency — a rotation rate',
+  idea:'A frequency counts how many times something repeats each second. The cleanest picture of repeating is a point riding a circle: <b>f</b> revolutions every second.',
+  look:['Angle around the circle is the <b>phase</b>; revolutions per second is the <b>frequency</b>.',
+        'One revolution is one cycle, lasting the period <code>T = 1/f</code>. Double f and T halves.',
+        'The rotation is shown at its <b>true rate</b>. Above a few hertz a 60 fps screen can only strobe it (the wagon-wheel effect), exactly as a camera would.'],
+  tries:[['1 Hz — slow enough to watch at true rate',()=>setF(1,1)],
+         ['3 Hz — three turns a second',()=>setF(3,1)],
+         ['A440 at true rate (it strobes)',()=>setF(440,1)],
+         ['Slow A440 down to 1 rev/s',()=>setF(440,'slow')]],
+  more:'<p>Every other view on this page is this one rotation, dressed differently.</p><p class="dim">The Time-dilation slider (and the <i>1 rev/s</i> button under the stage) is an explicit, labelled slow-motion control, down to 1/100k× — the clock is never slowed behind your back. During a transition the signal clock is held still; the 1→2 transition replays one cycle in labelled slow motion.</p>',
+  c:'angle = phase · spin rate = frequency'},
+ {t:'2 · Waveform — rotation unrolled into time',
+  idea:'Track only the <b>height</b> of the spinning point and let time run sideways: a sine wave. Stack more spinners tip-to-tail and their summed height draws any repeating shape.',
+  look:['The dashed line carries the tip\'s height straight across to the pen. The wave is nothing but that height over one period.',
+        'Harmonic n spins n times per cycle (2f, 3f, …) and wears the same colour in every view.',
+        'Hover a harmonic row on the right to spotlight its spinner and its own sine.'],
+  tries:[['Sine — one spinner',()=>applyPreset('sine')],
+         ['Square — odd harmonics at 1/n',()=>applyPreset('square')],
+         ['Saw — every harmonic at 1/n',()=>applyPreset('saw')],
+         ['Triangle — odd at 1/n², alternating',()=>applyPreset('tri')],
+         ['Slow to 1 rev/s',()=>setSpeedSlow()]],
+  more:'<p>A square wave needs only odd harmonics, at amplitudes 1, ⅓, ⅕…; a sawtooth uses every harmonic at 1/n; a triangle uses odd harmonics at 1/n² with alternating phase. The ripples near the square wave\'s corners are the Gibbs overshoot from stopping at a finite number of harmonics.</p><p class="dim">The spinners and the wave share one scale (normalised so the whole chain fits the circle), which is why the pen sits exactly level with the tip. Adding sines is synthesis; the next rung asks the harder question — how do you get the recipe <i>back</i> out of the mixture?</p>',
+  c:'spinners (left) draw the wave (right) — phase-locked'},
+ {subs:[
+  {t:'3 · FFT — detecting a wave inside a mixture',
+   idea:'Pick one test frequency. Multiply each sample of the recording by the test wave at the same moment, then add up the products. That total is the detector.',
+   look:['Where signal and test wave agree in sign — both up or both down — the product is positive (orange). Where they disagree it is negative (cyan).',
+         'At a matching frequency nearly every product is positive, so the running total climbs.',
+         'At a different whole-number frequency the positives and negatives balance exactly over the record, and the total comes back to zero.'],
+   tries:[['Test k = 1 (matches)',()=>setDetK(1)],
+          ['Test k = 2',()=>setDetK(2)],
+          ['Test k = 3',()=>setDetK(3)],
+          ['Pure sine',()=>applyPreset('sine')],
+          ['Two tones: 1× + 3×',()=>setHarms([{n:1,amp:1,ph:0},{n:3,amp:0.6,ph:0}])]],
+   predict:['With a pure sine, test at k = 2. Which products cancel?',
+     'Each orange product in one part of the record is matched by an equal cyan one elsewhere — the sine fits 1 cycle, the test fits 2, so they agree half the time and disagree half the time. The total is exactly 0.'],
+   more:'<p>One period is recorded as N = 32 samples, and every test wave completes a whole number of cycles in that record, so mismatches cancel exactly. (A test that doesn\'t fit a whole number of cycles leaks a little — you will see that as ripples in 3·4.)</p><p class="dim">Dividing the total by N/2 turns it into an amplitude, because sin² averages to ½. Use ◀ ▶ under the stage to step one sample at a time.</p>',
+   c:'signal × test wave, sample by sample → one running total'},
+  {t:'3 · FFT — why two tests: phase',
+   idea:'Now shift the signal\'s phase. The sine test can drop to zero even though the frequency is still there — so add a second, <b>cosine</b> test. The two totals together form one arrow.',
+   look:['At phase 90° the sine total is zero, yet the cosine total has the full strength: one comparison alone confuses "wrong phase" with "absent".',
+         'Plot the cosine total across and the sine total up: the arrow\'s <b>length</b> is the amplitude, its <b>angle</b> is the phase.',
+         'Slide the phase and the arrow turns while its length stays put. Frequency and phase are separate properties.'],
+   tries:[['Phase 0°',()=>setFundPh(0)],
+          ['Phase 45°',()=>setFundPh(45)],
+          ['Phase 90°',()=>setFundPh(90)],
+          ['Phase 180°',()=>setFundPh(180)],
+          ['Test k = 1',()=>setDetK(1)],
+          ['Test k = 3',()=>setDetK(3)]],
+   predict:['Why can the sine total be zero when the frequency is present?',
+     'Because the signal is a quarter-cycle out of step with the sine test: its products are positive half the time and negative the other half. The cosine test is in step instead, and catches it.'],
+   more:'<p>Written compactly, the two totals are one complex number: <code>X_k = Σ x[n]·e^(−i2πkn/N) = C − i·S</code>. The real part is the cosine total, the imaginary part is minus the sine total. It is not an "imaginary signal" — just both measurements in one package, giving magnitude |X_k| and phase arg X_k.</p><p class="dim">Sign convention: these plots draw up = +S (the conjugate of X_k), so the sine total reads directly. Drag the 1× phase slider on the right for a continuous turn.</p>',
+   c:'two tests, sine and cosine → one arrow: length = amplitude, angle = phase'},
+  {t:'3 · FFT — every sample is an arrow',
+   idea:'Each sample contributes one small arrow: its value sets the arrow\'s signed length, the test frequency sets its angle. Add the arrows tip-to-tail and you land on exactly the arrow from 3·2.',
+   look:['A negative sample simply reverses its arrow (cyan points backwards along the dashed test direction).',
+         'At a match the reversed cyan arrows point the same way as the orange ones and the chain marches outward; at a mismatch the chain curls back to where it started.',
+         'The across and up parts of each small arrow are the cosine and sine products from 3·2 — this "winding" picture is the same calculation.'],
+   tries:[['Test k = 1',()=>setDetK(1)],
+          ['Test k = 2',()=>setDetK(2)],
+          ['Delay the signal ⅛ period',()=>delaySignal(1/8)],
+          ['Square',()=>applyPreset('square')],
+          ['Pure sine',()=>applyPreset('sine')]],
+   predict:['If I delay the signal in time, what happens to the result arrow?',
+     'It turns — by k × the delay as a fraction of a full turn — and keeps its length. A delay is only a phase change at each frequency. Try “Delay the signal ⅛ period”.'],
+   more:'<p>Every sample is weighted equally: the result is the sum (or average) of N sample arrows, not the balance point of a drawn curve. The faint curve shows where the arrow tips would land between samples; the continuous winding in 3·4 is this picture with the samples packed infinitely close.</p>',
+   c:'sample value × rotating test direction; tip-to-tail sum = the detector\'s arrow'},
+  {t:'3 · FFT — sweep every rate: the spectrum',
+   idea:'Run the detector at every test rate: wind the wave around the circle at a trial rate and watch the average of its sample arrows. Whenever the rate hits a harmonic it jumps out — each jump is a spectrum bar.',
+   look:['Orange samples point along the winding, cyan ones are reversed. At most rates they balance and the gold arrow stays home.',
+         'When the rate hits a harmonic, both colours pile onto one side and the gold arrow (2 × the average) reaches out to that harmonic\'s amplitude.',
+         'Slide the frequency: the comb of bars glides along the Hz axis. The recipe keeps its shape; f only decides where it lives.'],
+   tries:[['Sweep 0.2 → 12×',()=>startSweep()],
+          ['Wind at 1× (locks)',()=>setWind(1)],
+          ['Wind at 2.5× (balances)',()=>setWind(2.5)],
+          ['Wind at 3×',()=>setWind(3)],
+          ['Square wave',()=>applyPreset('square')],
+          ['Let it hunt on its own',()=>{DEMO.user=false;WIND.active=false;}],
+          ['Optional: why is the FFT fast? →',()=>goSub(5),'lore']],
+   predict:['The winding rate sits at 2.5×. Why is the gold arrow small but not exactly zero?',
+     '2.5 cycles don\'t fit a whole number of times into the record, so the cancellation is imperfect — that is the leakage that makes the small ripples between the peaks.'],
+   more:'<p>The bars come from a genuine radix-2 FFT of the sampled wave — 1024 samples spanning exactly one period — so bin k <i>is</i> harmonic k with no leakage, and the spectrum recovers exactly the recipe you dialled in. Nothing is echoed back by shortcut.</p><p class="dim">The circle winds 8 periods, so mismatched rates cancel cleanly and matches pile up hard. Left alone, the winding rate hunts up and down, lingering at each harmonic — grab the slider to steer.</p>',
+   c:'① the wave · ② wound at a trial rate · ③ |average arrow| vs rate · ④ the spectrum'},
+  {t:'3 · FFT — why the FFT is fast (optional)',
+   idea:'Everything so far defines the transform, the DFT. The FFT is not a different transform — it is a shortcut for computing all N detections without repeating work.',
+   look:['Split the samples into even (blue) and odd (orange). Each half gets its own half-size transform, E and O.',
+         'Twist each O[k] by the twiddle Wᵏ, then make <b>two</b> outputs from the same pair: <code>X[k] = E[k] + Wᵏ·O[k]</code> and <code>X[k+N/2] = E[k] − Wᵏ·O[k]</code>.',
+         'Nothing is recomputed. Do the same split inside each half and the work falls from N² to (N/2)·log₂N.'],
+   tries:[['Start over',()=>goSubStep(0)],
+          ['Show the butterfly',()=>goSubStep(4)],
+          ['Square',()=>applyPreset('square')],
+          ['← Back to the spectrum',()=>goSub(4)]],
+   predict:['Which results did we reuse instead of recalculating?',
+     'E[k] and Wᵏ·O[k]: each pair is computed once and used for two outputs, X[k] and X[k+4]. And E and O only need k = 0…3, because a 4-point transform repeats every 4.'],
+   more:'<p><code>W_N^k = e^(−i2πk/N)</code>. W<sup>k+N/2</sup> = −Wᵏ (half a turn further), which is where the subtraction comes from. The outputs here are computed both ways and are identical to the direct 8-point DFT.</p><p class="dim">This page\'s own spectrum is a 1024-point radix-2 FFT: 5,120 butterflies instead of 1,048,576 direct products. ◀ ▶ under the stage step through the five stages; the k buttons pick which pair is highlighted.</p>',
+   c:'split · half-size transforms · twiddle · one pair → two outputs'}]},
+ {t:'4 · Mandala — the spectrum in polar space',
+  idea:'Bend each spectrum bar into a ring around one centre and let it ripple: harmonic n becomes a ring with <b>n petals</b>. Average the rings, weighted by amplitude, and you have the mandala.',
+  look:['Petal count = harmonic number: fold-symmetry is frequency ratio, drawn in space.',
+        'Each harmonic\'s phase rotates its petals.',
+        'The bold outline is <code>r(θ) = R₀ + Σ aₙ·cos(nθ + φₙ)</code> — a spectrum you can look at.'],
+  tries:[['Square — odd petal counts only',()=>applyPreset('square')],
+         ['Saw — every petal count',()=>applyPreset('saw')],
+         ['Organ',()=>applyPreset('organ')],
+         ['mod-9 overlay (lore)',()=>setMod9(!S.mod9),'lore']],
+  more:'<p>Each ring is <code>r = R₀·(1 + cos(nθ + φₙ))</code>; the outline is their weighted average, with weights aₙ/Σa listed bottom-left. The dots riding each ring move at the fundamental rate, one lap per cycle — the same flow the torus carries next.</p><p class="dim">The mod-9 overlay joins the digital roots of n, 2n, 3n… around a nine-point circle: base-10 arithmetic, not wave physics (see the lore note below).</p>',
+  c:'petal count = harmonic number'},
+ {t:'5 · Horn torus — one motion, four shadows',
+  idea:'Lift each petal ring off the page and it wraps around a <b>horn torus</b> — a torus whose tube radius equals its ring radius, so the hole pinches to a single point: the vortex.',
+  look:['The fundamental carries the flow once around the axis (toroidal); harmonic n threads it n times through the central pinch per lap — a (1, n) winding.',
+        'Straight down from above, the windings are exactly the mandala\'s rings (top inset).',
+        'A particle on winding n bobs with height sin(n·2πft + φₙ), that harmonic\'s own sine. Weight the heights and add them: the waveform (lower inset). Its FFT is the spectrum.'],
+  tries:[['Square',()=>applyPreset('square')],
+         ['Organ',()=>applyPreset('organ')],
+         ['Look straight down',()=>{view.rx=-Math.PI/2;}],
+         ['Look edge-on',()=>{view.rx=0;}],
+         ['Reset view',()=>{view.rx=-1.02;view.zoom=1;}]],
+  more:'<p><b>One motion, four shadows</b> — that is the ladder. The insets are computed re-projections of the same curves, not separate drawings.</p><p class="dim">Drag the torus to orbit, wheel to zoom. Free Play (top right) drives all five views at once.</p>',
+  c:'drag to orbit · wheel zooms · insets are computed re-projections'},
+];
+const lessonOf = r => RUNGS[r].subs ? RUNGS[r].subs[S.sub-1] : RUNGS[r];
 function buildStepper(){
-  const names=['Frequency','Waveform','FFT / Spectrum','Mandala','Horn Torus'];
   const box=$('gStepper'); box.innerHTML='';
-  names.forEach((nm,i)=>{
+  NAMES.forEach((nm,i)=>{
     const d=document.createElement('div');
     d.className='step';
     d.innerHTML='<span class="num">'+(i+1)+'</span>'+nm;
@@ -1167,16 +1960,124 @@ function buildStepper(){
     box.appendChild(d);
   });
 }
+let shownLesson='';
+function renderLesson(r){
+  const R=lessonOf(r);
+  $('gTitle').textContent=R.t;
+  const sb=$('gSubs'); sb.innerHTML='';
+  if(r===3) SUBS.forEach((nm,i)=>{
+    const d=document.createElement('div');
+    d.className=(i+1===S.sub?'cur':i+1<S.sub&&S.sub!==5?'done':'');
+    d.innerHTML='<b>3·'+(i+1)+'</b><span></span>'+(i===4?'<i>optional</i>':'');
+    d.children[1].textContent=nm;
+    d.addEventListener('click',()=>goSub(i+1));
+    sb.appendChild(d);
+  });
+  sb.style.display=r===3?'':'none';
+  $('gIdea').innerHTML=R.idea;
+  $('gLook').innerHTML=R.look.map(x=>'<li>'+x+'</li>').join('');
+  const box=$('gTry'); box.innerHTML='';
+  for(const [lbl,fn,cls] of R.tries){
+    const b=document.createElement('button'); b.textContent=lbl;
+    if(cls) b.className=cls;
+    b.addEventListener('click',fn); box.appendChild(b);
+  }
+  const pr=$('gPredict');
+  pr.style.display=R.predict?'':'none'; pr.open=false;
+  if(R.predict){ pr.firstChild.innerHTML='<b>Predict:</b> '; pr.firstChild.append(R.predict[0]); pr.lastChild.textContent=R.predict[1]; }
+  $('gMoreBody').innerHTML=R.more;
+  shownLesson=r+'.'+S.sub;
+}
+function syncCtl(){
+  const r=curRung(), keys=S.mode==='dash'?['dash']:r===3?['3','3.'+S.sub]:[String(r)];
+  document.querySelectorAll('#ctlPanel [data-show]').forEach(el=>{
+    el.style.display=el.dataset.show.split(' ').some(k=>keys.includes(k))?'':'none';
+  });
+}
 function syncGuided(){
-  const r=TRANS.active?TRANS.target:S.rung;
-  if(r===3) DEMO.user=false;               // (re)entering the FFT rung restarts the hunt
+  const r=curRung(), sub=S.sub;
   [...$('gStepper').children].forEach((d,i)=>{
     d.classList.toggle('cur',i+1===r);
     d.classList.toggle('done',i+1<r);
   });
-  const R=RUNGS[r];
-  $('gTitle').textContent=R.t; $('gText').textContent=R.x;
-  $('gLink').textContent=R.l; $('gCaption').textContent=R.c;
+  if(r+'.'+sub!==shownLesson) renderLesson(r);
+  let prev, next;
+  if(r===3){
+    prev=sub===1?'← '+NAMES[1]:sub===5?'← 3·4':'← 3·'+(sub-1);
+    next=sub<4?'Next: 3·'+(sub+1)+' '+SUBS[sub]+' →':'Next: '+NAMES[3]+' →';
+  } else {
+    prev=r>1?'← '+NAMES[r-2]:'←';
+    next=r<5?'Next: '+NAMES[r]+' →':'Free Play →';
+  }
+  $('btnPrev').disabled=r===1; $('btnPrev').textContent=prev; $('btnNext').textContent=next;
+  syncCtl();
+  const hash='#rung='+r+(r===3?'.'+sub:'');
+  if(S.mode==='guided'&&location.hash!==hash) try{ history.replaceState(null,'',hash); }catch(e){}
+  BAR.key='';                                       // force the stage bar to redraw
+}
+/* narration line + transition scrubber, updated only when their text changes */
+const BAR={key:''};
+function updateStageBar(){
+  const r=curRung(), act=TRANS.active;
+  let narr, live=false, stepn='';
+  if(act){
+    const st=MORPHS[TRANS.a].steps(), tau=clamp(TRANS.tau,0,1);
+    let i=st.findIndex(s=>tau<=s[1]); if(i<0) i=st.length-1;
+    narr=st[i][2]; stepn=(i+1)+'/'+st.length; live=true;
+  } else if(r===3&&S.sub===5){ narr=FFT_STEPS[FFTV.step]; stepn=(FFTV.step+1)+'/5'; live=true; }
+  else narr=lessonOf(r).c;
+  const a=act?TRANS.a:r-1;
+  const lbl=a>=1?NAMES[a-1]+' → '+NAMES[a]+(act?(TRANS.hold?' · held':TRANS.dir<0?' · rewinding':' · playing'):' · drag to replay a moment')
+                :'rung 1 has no transition in';
+  const key=narr+'|'+stepn+'|'+lbl+'|'+(act&&TRANS.hold)+'|'+(a>=1);
+  if(key!==BAR.key){
+    BAR.key=key;
+    const n=$('narr');
+    n.className='narr'+(live?' live':'');
+    n.innerHTML=(stepn?'<span class="stepn">▶ '+stepn+'</span>':'')+'<span></span>';
+    n.lastChild.textContent=narr;
+    $('scrubLbl').textContent=lbl;
+    $('btnReplay').textContent=act&&TRANS.hold?'▶ continue':'↻ replay';
+    $('btnReplay').disabled=!act&&r===1;
+    $('scrub').disabled=!act&&r===1;
+  }
+  const v=act?Math.round(clamp(TRANS.tau,0,1)*1000):(r===1?0:1000);
+  if(+$('scrub').value!==v&&!SCRUB.dragging) $('scrub').value=v;
+  updateDetbar();
+}
+/* sample-stepping bar for 3·1–3·3 (and stage-stepping for 3·5) */
+const DBAR={key:'',chips:''};
+function updateDetbar(){
+  const show=S.mode==='guided'&&!TRANS.active&&S.rung===3&&S.sub!==4, fv=S.sub===5;
+  const bar=$('detbar');
+  if(!show){ if(bar.style.display!=='none') bar.style.display='none'; return; }
+  if(bar.style.display==='none') bar.style.display='';
+  const chips=fv?'fft':'det';
+  if(DBAR.chips!==chips){
+    DBAR.chips=chips;
+    const box=$('kChips'); box.innerHTML='';
+    const ks=fv?[0,1,2,3]:[1,2,3,4,5,6,7,8,9,10];
+    for(const k of ks){ const b=document.createElement('button'); b.textContent=k; b.dataset.k=k; box.appendChild(b); }
+    $('kLbl').textContent=fv?'pair k':'test k';
+  }
+  const cur=fv?FFTV.k:DET.k, playing=fv?FFTV.playing:DET.playing;
+  const lbl=fv?'stage '+(FFTV.step+1)+' / 5'+(FFTV.step>=3?' · X['+FFTV.k+'], X['+(FFTV.k+4)+']':'')
+              :'sample '+DET.m+' / '+ND+(DET.m>=ND?' · done':DET.playing?' · adding…':' · paused');
+  const key=lbl+'|'+cur+'|'+playing;
+  if(key===DBAR.key) return;
+  DBAR.key=key;
+  $('detLbl').textContent=lbl;
+  $('detPlay').textContent=playing?'⏸':'▶';
+  [...$('kChips').children].forEach(b=>b.classList.toggle('on',+b.dataset.k===cur));
+}
+const SCRUB={dragging:false};
+function onScrub(v){
+  if(!TRANS.active){
+    if(S.rung<2) return;
+    TRANS.final=S.rung; startMorph(S.rung-1,S.rung,1);
+  }
+  TRANS.hold=true; TRANS.tau=v;
+  syncGuided();
 }
 
 /* ================= mode switching & canvas setup ================= */
@@ -1196,6 +2097,9 @@ function setMode(m){
   $(m==='guided'?'guidedCtlSlot':'dashCtlSlot').appendChild($('ctlPanel'));
   $('tabGuided').classList.toggle('on',m==='guided');
   $('tabDash').classList.toggle('on',m==='dash');
+  if(m==='dash'){ if(TRANS.active) finishMorph(); try{ history.replaceState(null,'','#free'); }catch(e){} }
+  else syncGuided();
+  syncCtl();
   requestAnimationFrame(setupAll);
 }
 
@@ -1211,6 +2115,41 @@ const WIND={active:false,t:0};
 /* guided rung-3 self-running demo: the winding rate hunts up and down,
    lingering near harmonics so the lock/jump moment plays out repeatedly */
 const DEMO={dir:1,user:false};
+function applyPreset(name){
+  S.harmonics=PRESETS[name]();
+  [...$('wfRow').children].forEach(x=>x.classList.toggle('on',x.dataset.wf===name));
+  renderHarm(); markDirty();
+}
+function setSpeed(s){
+  S.speed=clamp(s,1e-5,1);
+  $('speed').value=Math.round(1000*(Math.log10(S.speed)/5+1));
+  refreshLabels();
+}
+function setSpeedSlow(){ setSpeed(1/S.f); }
+function setF(f,speed){
+  S.f=clamp(f,FMIN,FMAX); syncFreqUI(); markDirty();
+  if(speed==='slow') setSpeedSlow(); else if(speed) setSpeed(speed);
+}
+function refreshWind(){ $('windF').value=Math.round(S.windF*100); refreshLabels(); }
+function setWind(x){ S.windF=x; WIND.active=false; DEMO.user=true; refreshWind(); }
+function startSweep(){ WIND.active=true; WIND.t=0; DEMO.user=false; }
+function setMod9(on){ S.mod9=on; $('mod9').checked=on; }
+/* rung-3 detector actions */
+function setDetK(k){ DET.k=k; resetDet(); }
+function setHarms(list){
+  S.harmonics=list; [...$('wfRow').children].forEach(x=>x.classList.remove('on'));
+  renderHarm(); markDirty();
+}
+function showDetDone(){ DET.m=ND; DET.playing=false; }
+function setFundPh(d){
+  const f=S.harmonics.find(h=>h.n===1); if(!f) return;
+  f.ph=d*Math.PI/180; renderHarm(); markDirty(); showDetDone();
+}
+function delaySignal(fr){                // x(t − τ): harmonic n's phase falls by 2π·n·τ
+  for(const h of S.harmonics) h.ph=((h.ph-TAU*h.n*fr)%TAU+TAU)%TAU;
+  renderHarm(); markDirty(); showDetDone();
+}
+function goSubStep(s){ if(s!==FFTV.step) snapStage(); FFTV.step=clamp(s,0,4); FFTV.acc=0; FFTV.playing=s<4; }
 function renderHarm(){
   const box=$('harmRows'); box.innerHTML='';
   for(const hh of [...S.harmonics].sort((a,b)=>a.n-b.n)){
@@ -1250,8 +2189,16 @@ function refreshLabels(){
   $('freqVal').textContent=eng(S.f,'Hz');
   $('speedVal').textContent=dilLabel();
   $('windFVal').textContent=S.windF.toFixed(2)+' ×f';
+  $('tSlow').textContent=dilLabel();
+  $('rateReal').classList.toggle('on',S.speed>=0.995);
+  $('rateSlow').classList.toggle('on',Math.abs(S.speed*S.f-1)<0.01&&S.speed<0.995);
 }
-function togglePause(){ S.paused=!S.paused; $('btnPause').textContent=S.paused?'▶ play':'⏸ pause'; }
+function togglePause(){
+  S.paused=!S.paused;
+  $('btnPause').textContent=S.paused?'▶ play':'⏸ pause';
+  $('btnPause2').textContent=S.paused?'▶':'⏸';
+  $('btnPause2').classList.toggle('on',S.paused);
+}
 function orbitify(cv,activeFn){
   let drag=null;
   cv.addEventListener('pointerdown',e=>{
@@ -1285,10 +2232,7 @@ function wire(){
     S.f=+b.dataset.f; syncFreqUI(); markDirty();
   });
   $('wfRow').addEventListener('click',e=>{
-    const b=e.target.closest('button'); if(!b) return;
-    S.harmonics=PRESETS[b.dataset.wf]();
-    [...$('wfRow').children].forEach(x=>x.classList.toggle('on',x===b));
-    renderHarm(); markDirty();
+    const b=e.target.closest('button'); if(b) applyPreset(b.dataset.wf);
   });
   $('addHarm').addEventListener('click',()=>{
     if(S.harmonics.length>=8) return;
@@ -1298,16 +2242,34 @@ function wire(){
   });
   $('speed').addEventListener('input',e=>{ S.speed=Math.pow(10,5*(+e.target.value/1000-1)); refreshLabels(); });
   $('btnPause').addEventListener('click',togglePause);
+  $('btnPause2').addEventListener('click',togglePause);
+  $('rateReal').addEventListener('click',()=>setSpeed(1));
+  $('rateSlow').addEventListener('click',setSpeedSlow);
   $('windF').addEventListener('input',e=>{ S.windF=+e.target.value/100; WIND.active=false; DEMO.user=true; refreshLabels(); });
-  $('btnSweep').addEventListener('click',()=>{ WIND.active=true; WIND.t=0; DEMO.user=false; });
+  $('btnSweep').addEventListener('click',startSweep);
   $('mod9').addEventListener('change',e=>S.mod9=e.target.checked);
   $('autoRot').addEventListener('change',e=>S.autoRot=e.target.checked);
   $('tabGuided').addEventListener('click',()=>setMode('guided'));
   $('tabDash').addEventListener('click',()=>setMode('dash'));
-  $('btnPrev').addEventListener('click',()=>goRung((TRANS.active?TRANS.target:S.rung)-1));
-  $('btnNext').addEventListener('click',()=>goRung((TRANS.active?TRANS.target:S.rung)+1));
-  $('docOpenAll').addEventListener('click',()=>document.querySelectorAll('details.doc').forEach(d=>d.open=true));
-  $('docCloseAll').addEventListener('click',()=>document.querySelectorAll('details.doc').forEach(d=>d.open=false));
+  $('btnPrev').addEventListener('click',stepPrev);
+  $('btnNext').addEventListener('click',stepNext);
+  /* sample / stage stepping under the stage */
+  const fv=()=>S.sub===5;
+  $('detRestart').addEventListener('click',()=>{ fv()?(goSubStep(0),FFTV.playing=true):resetDet(); });
+  $('detPrev').addEventListener('click',()=>{ if(fv()) goSubStep(FFTV.step-1); else { DET.m=Math.max(0,DET.m-1); DET.playing=false; } });
+  $('detNext').addEventListener('click',()=>{ if(fv()) goSubStep(FFTV.step+1); else { DET.m=Math.min(ND,DET.m+1); DET.playing=false; } });
+  $('detPlay').addEventListener('click',()=>{
+    if(fv()){ if(FFTV.step>=4&&!FFTV.playing) goSubStep(0); FFTV.playing=!FFTV.playing; }
+    else if(DET.m>=ND) resetDet(); else DET.playing=!DET.playing;
+  });
+  $('kChips').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    if(fv()){ FFTV.k=+b.dataset.k; FFTV.kAuto=false; } else setDetK(+b.dataset.k);
+  });
+  $('btnReplay').addEventListener('click',replayMorph);
+  const sc=$('scrub');
+  sc.addEventListener('input',e=>{ SCRUB.dragging=true; onScrub(+e.target.value/1000); });
+  sc.addEventListener('change',()=>{ SCRUB.dragging=false; });
   /* spectrum hover → spotlight that harmonic in every view */
   const spec=$('dSpec');
   spec.addEventListener('mousemove',e=>{
@@ -1326,17 +2288,21 @@ function wire(){
     const r=$('ladder').getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
     for(const nd of LHIT)
       if(Math.hypot(x-nd.x,y-nd.y)<nd.r){
-        setMode('guided'); TRANS.active=false; S.rung=nd.rung; syncGuided(); break;
+        if(TRANS.active) finishMorph();
+        S.rung=nd.rung; TRANS.final=nd.rung; setMode('guided'); break;
       }
   });
   orbitify($('dTorus'),()=>S.mode==='dash');
   orbitify($('gStage'),()=>S.mode==='guided'&&S.rung===5&&!TRANS.active);
-  $('gStage').addEventListener('click',()=>{ if(TRANS.active) TRANS.tau=TRANS.dir>0?1:0; });
+  /* click the stage mid-transition to skip to its end */
+  $('gStage').addEventListener('click',()=>{ if(TRANS.active){ TRANS.hold=false; TRANS.tau=TRANS.dir>0?1:0; } });
   window.addEventListener('keydown',e=>{
     if(e.target.tagName==='INPUT') return;
     if(e.code==='Space'){ e.preventDefault(); togglePause(); }
-    else if(S.mode==='guided'&&e.key==='ArrowRight') goRung((TRANS.active?TRANS.target:S.rung)+1);
-    else if(S.mode==='guided'&&e.key==='ArrowLeft') goRung((TRANS.active?TRANS.target:S.rung)-1);
+    else if(S.mode!=='guided') return;
+    else if(e.key==='ArrowRight') stepNext();
+    else if(e.key==='ArrowLeft') stepPrev();
+    else if(e.key==='r'||e.key==='R') replayMorph();
   });
 }
 
@@ -1344,7 +2310,7 @@ function wire(){
 function saveState(){
   try{
     localStorage.setItem('freqLadder.v1',JSON.stringify({
-      f:S.f,harmonics:S.harmonics,speed:S.speed,mode:S.mode,rung:S.rung,
+      f:S.f,harmonics:S.harmonics,speed:S.speed,mode:S.mode,rung:curRung(),sub:S.sub,
       mod9:S.mod9,autoRot:S.autoRot,windF:S.windF}));
   }catch(e){}
 }
@@ -1352,7 +2318,8 @@ function loadState(){
   try{
     const s=JSON.parse(localStorage.getItem('freqLadder.v1')||'null');
     if(!s) return;
-    for(const k of ['f','speed','rung','mod9','autoRot','windF']) if(k in s) S[k]=s[k];
+    for(const k of ['f','speed','rung','sub','mod9','autoRot','windF']) if(k in s) S[k]=s[k];
+    S.sub=clamp(Math.round(S.sub)||1,1,5);
     if(s.mode==='dash') S.mode='dash';
     S.rung=clamp(Math.round(S.rung)||1,1,5);
     S.f=clamp(S.f,FMIN,FMAX);
@@ -1363,6 +2330,12 @@ function loadState(){
     if(!S.harmonics.some(h=>h.n===1)) S.harmonics.unshift({n:1,amp:1,ph:0});
   }catch(e){}
 }
+/* deep links: #rung=3 (or #rung=3.2 for a rung-3 sub-step) opens that rung (handy for pointing a class at one step), #free opens Free Play */
+function readHash(){
+  const m=/rung=([1-5])(?:\.([1-5]))?/.exec(location.hash);
+  if(m){ S.mode='guided'; S.rung=+m[1]; if(m[2]) S.sub=+m[2]; }
+  else if(/free/.test(location.hash)) S.mode='dash';
+}
 window.addEventListener('beforeunload',saveState);
 
 /* ================= main loop ================= */
@@ -1371,17 +2344,30 @@ function loop(t){
   const dt=Math.min(0.05,(t-lastT)/1000)||0.016; lastT=t;
   if(CACHE.dirty) recompute();
   WCLK.t+=dt;
-  if(!S.paused){
+  XF.a=Math.max(0,XF.a-dt/0.45);
+  if(S.mode==='guided'&&S.rung===3&&!TRANS.active){
+    if(S.sub<=3&&DET.playing){                     // add one sample at a time
+      DET.acc+=dt*DET.rate;
+      while(DET.acc>=1&&DET.m<ND){ DET.acc-=1; DET.m++; }
+      if(DET.m>=ND){ DET.playing=false; DET.acc=0; }
+    }
+    if(S.sub===5){
+      if(FFTV.playing&&FFTV.step<4){ FFTV.acc+=dt; if(FFTV.acc>=FFT_DUR[FFTV.step]){ snapStage(); FFTV.step++; FFTV.acc=0; if(FFTV.step===4) FFTV.playing=false; } }
+      if(FFTV.kAuto&&FFTV.step>=3){ FFTV.kacc+=dt; if(FFTV.kacc>=2.4){ FFTV.kacc=0; FFTV.k=(FFTV.k+1)%4; } }
+    }
+  }
+  const morphing=S.mode==='guided'&&TRANS.active;
+  if(!S.paused&&!morphing){
     CLK.phi=(CLK.phi+S.f*S.speed*dt)%1e6;      // TRUE rate: f cycles per second
     if(S.autoRot&&(S.mode==='dash'||S.rung===5)) view.ry+=dt*0.22;
   }
+  if(morphing) advanceMorph(dt);
   if(WIND.active){
     WIND.t+=dt;
     S.windF=lerp(SWEEP_LO,SWEEP_HI,smooth(Math.min(1,WIND.t/6)));
-    $('windF').value=Math.round(S.windF*100);
-    refreshLabels();
+    refreshWind();
     if(WIND.t>=6) WIND.active=false;
-  } else if(!S.paused&&S.mode==='guided'&&S.rung===3&&!TRANS.active&&!DEMO.user){
+  } else if(!S.paused&&S.mode==='guided'&&S.rung===3&&S.sub===4&&!TRANS.active&&!DEMO.user){
     const maxN=CACHE.spec.length?CACHE.spec[CACHE.spec.length-1].n:1;
     const hi=Math.min(SWEEP_HI,maxN+0.9);
     let dmin=9; for(const h of CACHE.spec) dmin=Math.min(dmin,Math.abs(S.windF-h.n));
@@ -1389,20 +2375,14 @@ function loop(t){
     S.windF+=DEMO.dir*rate*dt;
     if(S.windF>=hi){S.windF=hi;DEMO.dir=-1;}
     else if(S.windF<=SWEEP_LO){S.windF=SWEEP_LO;DEMO.dir=1;}
-    $('windF').value=Math.round(S.windF*100);
-    refreshLabels();
-  }
-  if(TRANS.active){
-    TRANS.tau+=TRANS.dir*dt/2.2;
-    if((TRANS.dir>0&&TRANS.tau>=1)||(TRANS.dir<0&&TRANS.tau<=0)){
-      TRANS.active=false; S.rung=TRANS.target; syncGuided();
-    }
+    refreshWind();
   }
   if(S.mode==='guided'){
     if(CV.gStage) drawStage(CV.gStage);
+    updateStageBar();
   } else {
     const D=(id,fn,o)=>{ const T=CV[id]; if(!T) return; T.ctx.clearRect(0,0,T.w,T.h); fn(T,o); };
-    D('dPhasor',drawPhasor,{guide:false});
+    D('dPhasor',drawPhasor);
     D('dWave',drawWave);
     D('dSpec',drawSpectrum);
     D('dWind',drawWinding);
@@ -1417,12 +2397,12 @@ function loop(t){
 
 /* ================= init ================= */
 function init(){
-  loadState();
+  loadState(); readHash();
+  TRANS.final=S.rung;
   buildStepper(); buildChips(); renderHarm(); wire(); syncFreqUI();
-  $('speed').value=Math.round(1000*(Math.log10(S.speed)/5+1));
-  $('windF').value=Math.round(S.windF*100);
+  setSpeed(S.speed);
+  refreshWind();
   $('mod9').checked=S.mod9; $('autoRot').checked=S.autoRot;
-  refreshLabels();
   setMode(S.mode); syncGuided();
   recompute();
   requestAnimationFrame(loop);

@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Hymn of the Ogdoad — a wind-blown Helmholtz choir</title>
+<meta name="description" content="An exposé of Helmholtz resonance played by the wind: nine printed pigeon-whistle voices tuned to the Solfeggio tones and hung as a geocentric cosmos, Earth at the centre and the eighth sphere at the top. Live physics, a wind-driven synth and printable STLs.">
+<link rel="canonical" href="https://promethean-theoria.netlify.app/hymn-of-the-ogdoad.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="The Hymn of the Ogdoad — a wind-blown Helmholtz choir">
+<meta property="og:description" content="Nine gourd whistles, one cut-up, and the wind as the only player: the low voices wake in a breath of air, and the eighth sphere sings only in a fresh breeze.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/hymn-of-the-ogdoad.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/hymn-of-the-ogdoad.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — dark-first, in the Theoria family.
+   air = the cavity · jet = the wind's sheet · gold = the spheres · stone = the build
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --ground:   #0B0D12;
+  --ground-2: #11141B;
+  --ground-3: #181C26;
+  --rule:     #262C3A;
+  --rule-soft:#1C212E;
+
+  --ink:   #E8E4D8;
+  --ink-2: #B6B3A8;
+  --muted: #8B92A4;
+  --faint: #5C6376;
+
+  --gold:  #D4B87F;
+  --air:   #6FC7DC;
+  --jet:   #E39A4C;
+  --calc:  #6FBF9A;
+  --model: #B287DE;
+  --rough: #E0596B;
+  --link:  #6FC7DC;
+  --gourd: #D9C7A3;
+  --head:  #4A8BD8;
+
+  --serif: "Palatino Linotype", Palatino, "Iowan Old Style", "Book Antiqua",
+           "URW Palladio L", "Hoefler Text", Georgia, serif;
+  --label: "Bahnschrift SemiCondensed", "Bahnschrift", "DIN Alternate",
+           "Franklin Gothic Medium", "Avenir Next Condensed",
+           "Roboto Condensed", Corbel, "Segoe UI", sans-serif;
+  --mono:  Consolas, "Cascadia Mono", "SF Mono", Menlo, "DejaVu Sans Mono", monospace;
+
+  --measure: 37rem;
+  --wide: 64rem;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#E9E8E2; --ground-2:#F1F0EB; --ground-3:#F8F7F3;
+    --rule:#C4C6BD; --rule-soft:#D8D9D1;
+    --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+    --gold:#8A6E1E; --air:#1F7A93; --jet:#A66312; --calc:#2C7A56; --model:#6E4B9E;
+    --rough:#B03145; --link:#1F7A93; --gourd:#9C7E45; --head:#2F72BC;
+  }
+}
+:root[data-theme="light"]{
+  --ground:#E9E8E2; --ground-2:#F1F0EB; --ground-3:#F8F7F3;
+  --rule:#C4C6BD; --rule-soft:#D8D9D1;
+  --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+  --gold:#8A6E1E; --air:#1F7A93; --jet:#A66312; --calc:#2C7A56; --model:#6E4B9E;
+  --rough:#B03145; --link:#1F7A93; --gourd:#9C7E45; --head:#2F72BC;
+}
+:root[data-theme="dark"]{
+  --ground:#0B0D12; --ground-2:#11141B; --ground-3:#181C26;
+  --rule:#262C3A; --rule-soft:#1C212E;
+  --ink:#E8E4D8; --ink-2:#B6B3A8; --muted:#8B92A4; --faint:#5C6376;
+  --gold:#D4B87F; --air:#6FC7DC; --jet:#E39A4C; --calc:#6FBF9A; --model:#B287DE;
+  --rough:#E0596B; --link:#6FC7DC; --gourd:#D9C7A3; --head:#4A8BD8;
+}
+
+/* ═════════════════════════ BASE ═════════════════════════ */
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *, *::before, *::after{ transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
+}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.7;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+::selection{ background:var(--gold); color:var(--ground); }
+p{ text-wrap:pretty; }
+h1,h2,h3,h4{ font-weight:400; text-wrap:balance; }
+a{ color:var(--link); text-decoration-color:color-mix(in srgb, var(--link) 45%, transparent); text-underline-offset:3px; }
+a:hover{ text-decoration-color:var(--link); }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+button, select, input{ font:inherit; color:inherit; }
+b{ font-weight:400; color:var(--ink); }
+em.t{ font-style:italic; color:var(--gold); }
+
+/* ═════════════════════════ RAIL ═════════════════════════ */
+.rail{
+  position:fixed; left:0; top:0; bottom:0; width:2.9rem; z-index:40;
+  border-right:1px solid var(--rule-soft);
+  background:linear-gradient(to bottom, var(--ground-2), var(--ground));
+  display:flex; flex-direction:column; align-items:stretch;
+  padding:0.8rem 0; gap:0.3rem;
+}
+.rail button{
+  flex:1; border:0; background:transparent; cursor:pointer;
+  position:relative; display:flex; align-items:center; justify-content:center;
+  padding:0; min-height:1.4rem;
+}
+.rail .rn{
+  font-family:var(--mono); font-size:0.56rem; letter-spacing:0.12em;
+  color:var(--faint); writing-mode:vertical-rl; transition:color .25s ease;
+}
+.rail button::after{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:transparent; transition:background .25s ease;
+}
+.rail button:hover .rn{ color:var(--ink-2); }
+.rail button.on .rn{ color:var(--ink); }
+.rail button.on::after{ background:var(--gold); }
+@media (max-width:940px){ .rail{ display:none; } }
+.wrap{ padding-left:2.9rem; padding-bottom:5rem; }
+@media (max-width:940px){ .wrap{ padding-left:0; } }
+
+/* ═════════════════════════ TOP BAR ═════════════════════════ */
+.top{
+  display:flex; justify-content:space-between; align-items:center;
+  max-width:var(--wide); margin:0 auto; padding:1.1rem 1rem 0;
+  font-family:var(--label); font-size:0.72rem; letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+.top a{ color:var(--muted); text-decoration:none; }
+.top a:hover{ color:var(--ink); }
+.pill{
+  border:1px solid var(--rule); background:var(--ground-2); color:var(--muted);
+  font-family:var(--label); font-size:0.66rem; letter-spacing:0.1em;
+  text-transform:uppercase; padding:0.3rem 0.7rem; border-radius:999px; cursor:pointer;
+}
+.pill:hover{ color:var(--ink); border-color:var(--muted); }
+.pill.on{ color:var(--ground); background:var(--gold); border-color:var(--gold); }
+
+/* ═════════════════════════ LAYOUT ═════════════════════════ */
+.col{ max-width:var(--measure); margin:0 auto; padding-left:1rem; padding-right:1rem; }
+.col-w{ max-width:var(--wide); margin:0 auto; padding-left:1rem; padding-right:1rem; }
+.flow{ display:flex; flex-direction:column; gap:1.05rem; }
+section{ padding-top:4.6rem; }
+.eyebrow{
+  font-family:var(--label); text-transform:uppercase; letter-spacing:0.22em;
+  font-size:0.66rem; color:var(--muted);
+}
+h1{ font-size:clamp(2.3rem, 6.4vw, 3.9rem); line-height:1.05; margin-top:0.6rem; letter-spacing:0.01em; }
+h2{ font-size:clamp(1.65rem, 3.8vw, 2.25rem); line-height:1.15; margin-top:0.55rem; }
+h3{ font-size:1.25rem; line-height:1.25; }
+.axline{ font-style:italic; color:var(--gold); font-size:1.15rem; margin-top:0.35rem; }
+.lede{ font-size:1.12rem; line-height:1.62; color:var(--ink-2); }
+.mut{ color:var(--muted); }
+.small{ font-size:0.88rem; }
+hr.sep{ border:0; height:1px; background:var(--rule); margin:3.4rem auto 0; max-width:var(--wide); }
+.two{ display:grid; grid-template-columns:1fr 1fr; gap:1.6rem; align-items:start; }
+@media (max-width:820px){ .two{ grid-template-columns:1fr; } }
+
+/* register chips */
+.reg{
+  display:inline-block; font-family:var(--label); font-size:0.6rem; font-style:normal;
+  letter-spacing:0.09em; text-transform:uppercase; line-height:1;
+  padding:0.24em 0.5em 0.28em; border-radius:4px; border:1px solid;
+  vertical-align:0.16em; white-space:nowrap;
+}
+.reg-calc { background:var(--calc); color:var(--ground); border-color:var(--calc); }
+.reg-model{ color:var(--model); border-color:var(--model); }
+.reg-doc  { color:var(--link); border-color:var(--link); }
+.reg-trad { color:var(--gold); border-color:var(--gold); }
+.reg-claim{ color:var(--muted); border-color:var(--muted); border-style:dashed; font-style:italic; }
+.reglegend{ display:flex; flex-wrap:wrap; gap:0.5rem 1.3rem; margin-top:0.8rem; font-size:0.86rem; color:var(--muted); }
+.reglegend .reg{ margin-right:0.4rem; }
+.regnote{ font-size:0.86rem; color:var(--muted); font-style:italic; }
+.regnote .reg{ margin-right:0.35rem; }
+
+sup.c{ font-family:var(--mono); font-size:0.62em; line-height:0; margin-left:0.1em; }
+sup.c a{ color:var(--muted); text-decoration:none; }
+sup.c a:hover{ color:var(--link); }
+
+.key{
+  padding:0.75rem 1.05rem; border-left:3px solid var(--gold);
+  background:color-mix(in srgb, var(--gold) 7%, transparent);
+  border-radius:0 8px 8px 0; color:var(--ink); font-size:0.98rem;
+}
+.key em{ color:var(--gold); font-style:normal; }
+blockquote{
+  border-left:2px solid var(--gold); padding:0.3rem 0 0.3rem 1rem; color:var(--ink-2);
+  font-style:italic;
+}
+blockquote cite{ display:block; font-style:normal; font-family:var(--label); font-size:0.7rem;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:0.35rem; }
+
+.formula{
+  font-family:var(--serif); font-size:1.35rem; text-align:center; color:var(--ink);
+  padding:0.9rem 0.5rem; border:1px solid var(--rule); border-radius:10px; background:var(--ground-2);
+}
+.formula .v{ font-style:italic; }
+.formula .frac{ display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 0.15em; }
+.formula .frac > span:first-child{ border-bottom:1px solid var(--ink-2); padding:0 0.2em; }
+.formula .sqrt{ border-top:1px solid var(--ink-2); padding:0 0.15em; margin-left:0.05em; }
+
+/* ═════════════════════════ FIGURES ═════════════════════════ */
+.fig{
+  border:1px solid var(--rule); border-radius:12px; background:var(--ground-2);
+  padding:0.9rem 1rem 1rem;
+}
+.fig-h{ font-family:var(--label); font-size:0.66rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.fig canvas, .fig svg{ display:block; width:100%; height:auto; }
+.cap{ font-size:0.86rem; color:var(--muted); margin-top:0.55rem; }
+.ctrls{ display:grid; grid-template-columns:auto 1fr auto; gap:0.35rem 0.8rem; align-items:center; margin-top:0.7rem; font-family:var(--label); font-size:0.78rem; color:var(--ink-2); }
+.ctrls output{ font-family:var(--mono); font-size:0.78rem; color:var(--ink); text-align:right; min-width:6.5rem; }
+input[type=range]{ width:100%; accent-color:var(--gold); }
+select{ background:var(--ground-3); border:1px solid var(--rule); border-radius:6px; padding:0.15rem 0.4rem; }
+.readout{ display:flex; flex-wrap:wrap; gap:0.4rem 1.4rem; margin-top:0.7rem; font-family:var(--mono); font-size:0.82rem; color:var(--ink-2); }
+.readout b{ color:var(--ink); font-family:var(--mono); }
+.btns{ display:flex; flex-wrap:wrap; gap:0.45rem; margin-top:0.7rem; }
+.vbtn{
+  border:1px solid var(--rule); background:var(--ground-3); border-radius:8px; cursor:pointer;
+  padding:0.35rem 0.6rem; font-family:var(--label); font-size:0.74rem; letter-spacing:0.04em; color:var(--ink-2);
+  display:flex; flex-direction:column; align-items:flex-start; line-height:1.25; min-width:5.4rem;
+}
+.vbtn .hz{ font-family:var(--mono); color:var(--ink); font-size:0.84rem; }
+.vbtn:hover{ border-color:var(--gold); color:var(--ink); }
+.vbtn.on{ border-color:var(--gold); background:color-mix(in srgb, var(--gold) 14%, var(--ground-3)); }
+.meter{ height:6px; border-radius:3px; background:var(--rule-soft); overflow:hidden; margin-top:0.25rem; width:100%; }
+.meter > i{ display:block; height:100%; width:0; background:var(--gold); transition:width .12s linear; }
+
+table.t{ width:100%; border-collapse:collapse; font-size:0.86rem; }
+table.t th, table.t td{ padding:0.38rem 0.5rem; border-bottom:1px solid var(--rule-soft); text-align:left; vertical-align:top; }
+table.t th{ font-family:var(--label); font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); font-weight:400; }
+table.t td.n{ font-family:var(--mono); text-align:right; white-space:nowrap; }
+.tscroll{ overflow-x:auto; }
+
+.shots{ display:grid; grid-template-columns:repeat(2, 1fr); gap:0.8rem; align-items:start; }
+@media (max-width:820px){ .shots{ grid-template-columns:1fr; } }
+.shots figure{ border:1px solid var(--rule); border-radius:10px; overflow:hidden; background:#f2f2f0; }
+.shots img{ display:block; width:100%; height:auto; }
+.shots figcaption{ font-size:0.8rem; color:#3c424c; padding:0.4rem 0.6rem; background:#f2f2f0; }
+.wideshot{ border:1px solid var(--rule); border-radius:10px; overflow:hidden; background:#f2f2f0; }
+.wideshot img{ display:block; width:100%; height:auto; }
+
+ol.steps{ padding-left:1.3rem; display:flex; flex-direction:column; gap:0.45rem; }
+ul.dots{ padding-left:1.2rem; display:flex; flex-direction:column; gap:0.3rem; }
+.dl{ display:inline-block; margin-top:0.4rem; padding:0.55rem 1rem; border:1px solid var(--gold); border-radius:8px; color:var(--gold); text-decoration:none; font-family:var(--label); letter-spacing:0.08em; text-transform:uppercase; font-size:0.78rem; }
+.dl:hover{ background:color-mix(in srgb, var(--gold) 12%, transparent); }
+.status{ border:1px dashed var(--model); border-radius:10px; padding:0.7rem 1rem; color:var(--ink-2); font-size:0.92rem; }
+
+.sources{ font-size:0.86rem; color:var(--ink-2); display:flex; flex-direction:column; gap:0.45rem; padding-left:1.4rem; }
+footer{ max-width:var(--wide); margin:4rem auto 0; padding:1.4rem 1rem 0; border-top:1px solid var(--rule); font-size:0.86rem; color:var(--muted); display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+footer a{ color:var(--muted); }
+
+/* hero instrument */
+.hero-grid{ display:grid; grid-template-columns:1.05fr 1fr; gap:1.8rem; align-items:center; margin-top:1.6rem; }
+@media (max-width:880px){ .hero-grid{ grid-template-columns:1fr; } }
+#instr{ cursor:pointer; }
+.windbar{ display:flex; align-items:center; gap:0.6rem; font-family:var(--label); font-size:0.78rem; color:var(--ink-2); margin-top:0.5rem; flex-wrap:wrap; }
+.windbar output{ font-family:var(--mono); color:var(--ink); }
+</style>
+</head>
+<body>
+
+<nav class="rail" aria-label="Sections">
+  <button data-go="hymn"><span class="rn">THE HYMN</span></button>
+  <button data-go="vessel"><span class="rn">I · THE VESSEL</span></button>
+  <button data-go="jet"><span class="rn">II · THE EDGE</span></button>
+  <button data-go="ladder"><span class="rn">III · THE LADDER</span></button>
+  <button data-go="choir"><span class="rn">IV · THE CHOIR</span></button>
+  <button data-go="ascent"><span class="rn">V · THE ASCENT</span></button>
+  <button data-go="build"><span class="rn">VI · THE BUILD</span></button>
+  <button data-go="sources"><span class="rn">SOURCES</span></button>
+</nav>
+
+<div class="wrap">
+<div class="top">
+  <a href="index.html">&larr; Promethean Theoria</a>
+  <button class="pill" id="themeBtn" aria-label="Toggle color theme">Theme</button>
+</div>
+
+<!-- ═════════════════════════ HERO ═════════════════════════ -->
+<header class="col-w" id="hymn" style="padding-top:2.2rem;">
+  <div class="eyebrow">An exposé &middot; Helmholtz resonance &middot; edge tones &middot; the music of the spheres</div>
+  <h1>The Hymn of the Ogdoad</h1>
+  <div class="axline">nine gourd whistles, one cut-up, and the wind as the only player</div>
+
+  <div class="hero-grid">
+    <div class="flow">
+      <p class="lede">
+        A hollow vessel with a narrow mouth holds one note. The air in its mouth is a mass, and the air
+        inside is a spring. Blow a thin sheet of air across the mouth onto a sharp edge, and the sheet
+        flaps in time with that spring, pumping the note louder at each swing. That is a
+        <b>Helmholtz resonator</b> driven by an <b>edge tone</b>. It is the ocarina, the bottle you hum
+        across, and the Chinese <b>pigeon whistle</b> that sings while the bird flies.<sup class="c"><a href="#s1">1</a></sup>
+      </p>
+      <p class="lede">
+        This instrument hangs in the open and lets the wind do the blowing. Nine printed gourds are tuned
+        to the nine Solfeggio tones and hung as a geocentric cosmos. <b>Earth</b> (174 Hz) sits at the
+        centre. Around it a wheel carries the <b>seven planetary spheres</b> and, at the top, the
+        <b>eighth sphere</b> of the fixed stars, the <em class="t">Ogdoad</em>. A tail vane keeps every
+        mouth facing into the wind.
+      </p>
+      <p class="lede">
+        Every voice shares the same whistle cut-up, so each speaks in its own band of wind speed, in order
+        of pitch. A breath of air wakes Earth alone. As the wind rises, it climbs the spheres one by one,
+        and the Ogdoad sings only in a fresh breeze. In the Hermetic <i>Poimandres</i>, the soul climbs
+        the same eight steps and, at the eighth, hears the powers singing.<sup class="c"><a href="#s6">6</a></sup>
+      </p>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>The instrument &middot; front elevation, drawn from the CAD</span><span id="heroState">silent</span></div>
+      <canvas id="instr" width="900" height="900" aria-label="Front elevation of the chandelier. Each gourd glows while it sounds."></canvas>
+      <div class="windbar">
+        <button class="pill" id="windBtn">Let the wind blow</button>
+        <span>mean wind</span>
+        <input type="range" id="heroWind" min="0.5" max="14" step="0.1" value="5" style="flex:1; min-width:8rem;" aria-label="Mean wind speed">
+        <output id="heroWindOut">5.0 m/s</output>
+      </div>
+      <div class="cap">Click a gourd to hear it alone. "Let the wind blow" runs a gusting wind (both sliders also live in &sect;IV) and plays every voice its band admits. Audio starts only when you press a button.</div>
+    </div>
+  </div>
+
+  <div class="key" style="margin-top:1.8rem;">
+    Every claim on this page wears its register:
+    <div class="reglegend">
+      <span><span class="reg reg-calc">Computed</span>solved here from physics and checked against the CAD</span>
+      <span><span class="reg reg-model">Model</span>an engineering estimate, to be checked with a fan and an anemometer</span>
+      <span><span class="reg reg-doc">Documented</span>the historical record</span>
+      <span><span class="reg reg-trad">Tradition</span>what a text says, read as a text</span>
+      <span><span class="reg reg-claim">Modern claim</span>asserted, without evidence</span>
+    </div>
+  </div>
+</header>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ I · THE VESSEL ═════════════════════════ -->
+<section id="vessel" class="col-w">
+  <div class="eyebrow">I &middot; The vessel</div>
+  <h2>A mass of air on a spring of air</h2>
+  <div class="two" style="margin-top:1.2rem;">
+    <div class="flow">
+      <p>
+        Push the air in a bottle's neck inward and you squeeze the air in the body behind it. The
+        squeezed air pushes back, overshoots, and rebounds. The plug of air in the neck is the
+        <b>mass</b>, and the body's air is the <b>spring</b>. Like any mass on a spring, it rings at one
+        frequency:
+      </p>
+      <div class="formula">
+        <span class="v">f</span> =
+        <span class="frac"><span><span class="v">c</span></span><span>2&pi;</span></span>
+        <span class="sqrt"><span class="frac"><span><span class="v">A</span></span><span><span class="v">V</span>&thinsp;<span class="v">L</span>&prime;</span></span></span>
+      </div>
+      <p>
+        Here <i>c</i> is the speed of sound, <i>A</i> the mouth's area, <i>V</i> the cavity's volume and
+        <i>L</i>&prime; the mouth's effective length. A bigger body means a softer spring and a lower
+        note. A wider mouth means a lighter plug and a higher note. The vessel's shape hardly matters, so
+        long as it is small next to the wavelength. That is why a gourd, a sphere and a bottle all obey
+        the same law.<sup class="c"><a href="#s2">2</a></sup>
+        <span class="reg reg-calc">Computed</span>
+      </p>
+      <p>
+        Hermann von Helmholtz worked this out in the 1860s and turned it into a tool. He made graded
+        brass spheres, each with a nipple to put to the ear, and used them to pick single overtones out of
+        a voice or a violin. Each sphere answered only its own note. It is the first acoustic
+        spectrum analyser.<sup class="c"><a href="#s2">2</a></sup> <span class="reg reg-doc">Documented</span>
+      </p>
+      <p>
+        Three details matter for a printed whistle, and this page's solver handles all three:
+      </p>
+      <ul class="dots">
+        <li><b>The mouth is a slit</b>, 2.4 mm along the jet and up to 30 mm across. The air just outside a
+          mouth moves with the plug and adds to <i>L</i>&prime;. For a slit, that end correction is much
+          smaller than for a round hole of the same area, so it is integrated over the actual rectangle,
+          then trimmed by a factor fitted to a 3-D simulation of the real head.</li>
+        <li><b>The neck counts as mass too.</b> Between gourd and head sits a 10&ndash;12 mm neck bore, and
+          its air has to move with the plug in the window. Count it only as volume, as the textbook formula
+          does, and these voices come out 2.4&ndash;3.7 semitones flat. The solver instead treats the
+          gourd's interior as a one-dimensional acoustic line, in which every thin slice is both mass and
+          spring. That counts the bore, the waist between the bulbs and the gourd's own length (up to
+          0.6 radians of phase in Earth). A finite-element model of each printed air space then checks
+          the result.</li>
+        <li><b>The note moves with the weather.</b> <i>f</i> is proportional to <i>c</i>, and <i>c</i> grows
+          with the square root of absolute temperature. An outdoor choir tuned at 20 &deg;C sits about 45
+          cents flat at 5 &deg;C and about 43 cents sharp at 35 &deg;C, every voice by the same amount.</li>
+      </ul>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>Helmholtz bench</span><span id="benchSlow">slowed</span></div>
+      <canvas id="bench" width="800" height="560" aria-label="A gourd whose neck plug of air oscillates while the cavity air compresses and expands."></canvas>
+      <div class="ctrls">
+        <label for="bV">cavity volume</label><input type="range" id="bV" min="0.6" max="3.3" step="0.005" value="2.0"><output id="bVo"></output>
+        <label for="bB">mouth width <i>b</i></label><input type="range" id="bB" min="4" max="40" step="0.1" value="15"><output id="bBo"></output>
+        <label for="bT">air temperature</label><input type="range" id="bT" min="-10" max="40" step="1" value="20"><output id="bTo"></output>
+      </div>
+      <div class="readout" id="benchRead"></div>
+      <div class="btns"><button class="pill" id="benchPlay">Hear it</button></div>
+      <div class="cap">The mouth keeps the shared 2.4 mm cut-up and 1.2 mm neck. The plug's motion is
+        shown slowed so the eye can follow it. The readout compares the slit's end correction with
+        that of a round hole of equal area.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ II · THE EDGE ═════════════════════════ -->
+<section id="jet" class="col-w">
+  <div class="eyebrow">II &middot; The jet and the edge</div>
+  <h2>A sheet of wind, flapping on a knife</h2>
+  <div class="two" style="margin-top:1.2rem;">
+    <div class="flow">
+      <p>
+        A resonator only rings when something keeps pushing it in time. The whistle head turns the wind
+        into that push. A bellmouth gathers the wind, and a <b>windway</b> 0.7 mm high squeezes it into a
+        flat <b>jet</b>. The jet crosses the 2.4 mm <b>window</b> (the vessel's mouth) and splits on a
+        30&deg; <b>labium</b>.
+      </p>
+      <p>
+        A jet is unstable. The smallest sideways nudge at the windway grows as it travels, so the sheet
+        arrives at the edge waving. When the cavity breathes out through the window, it nudges the jet
+        outward. A moment later the jet arrives on the outside of the edge and stops feeding the cavity.
+        When the cavity breathes in, the jet tips inside and pours air into it. If the trip across the
+        window takes the right fraction of a cycle, every push lands in step and the note builds.
+        <span class="reg reg-calc">Computed</span> geometry, <span class="reg reg-model">Model</span> timing.
+      </p>
+      <p>
+        The ripples on a jet travel at about half its speed. The trip's timing is therefore set by one
+        number, the jet's <b>Strouhal number</b>, <i>St</i> = <i>f&thinsp;W</i>&thinsp;/&thinsp;<i>U</i>.
+        Here <i>W</i> is the 2.4 mm window and <i>U</i> the jet speed. Recorders and ocarinas speak best
+        near <i>St</i> &asymp; 0.15&ndash;0.25.<sup class="c"><a href="#s3">3</a></sup> If the jet is too
+        slow, it is late and nothing sounds. If it is too fast, it skips into hiss. This page models the
+        speaking band as 0.10 &lt; <i>St</i> &lt; 0.40, with the best response at 0.22.
+        <span class="reg reg-model">Model</span>
+      </p>
+      <p>
+        The jet speed itself comes from the wind. The intake faces the wind, so the windway is fed by the
+        wind's stagnation pressure and the jet leaves at nearly wind speed, taken here as 85&nbsp;%. The
+        head's tall block stands just ahead of the window and shelters it. The jet then crosses the window
+        through slower air, so the shear that makes it wave is not washed out by the passing breeze.
+        <span class="reg reg-model">Model</span>
+      </p>
+      <p>
+        Pigeon whistles work exactly this way. Strapped between a pigeon's tail feathers, a gourd or bamboo
+        body with several mouths sings at flight speed, about 15&ndash;20 m/s. Beijing's flocks once filled
+        the sky with them, and the whistle-makers signed their work. The craft is now listed as municipal
+        intangible cultural heritage.<sup class="c"><a href="#s1">1</a></sup> <span class="reg reg-doc">Documented</span>
+      </p>
+    </div>
+    <div class="flow">
+      <div class="fig">
+        <div class="fig-h"><span>The jet across the window</span><span id="jetSlow">slowed</span></div>
+        <canvas id="jetc" width="800" height="430" aria-label="A jet leaves the windway, waves across the window and splits on the labium."></canvas>
+        <div class="ctrls">
+          <label for="jV">voice</label><select id="jV"></select><span></span>
+          <label for="jW">wind</label><input type="range" id="jW" min="0.5" max="30" step="0.1" value="5"><output id="jWo"></output>
+        </div>
+        <div class="readout" id="jetRead"></div>
+        <div class="meter" style="margin-top:0.6rem;"><i id="jetGain"></i></div>
+        <div class="cap">The waving sheet is drawn at the jet's real wavelength along the window: crests
+          travel at half the jet speed. The bar shows the model's drive strength. Above it, the
+          readout gives the trip across the window in cycles of the note.</div>
+      </div>
+      <div class="fig">
+        <div class="fig-h"><span>The whistle head, cut on its mid-plane</span><span id="secName"></span></div>
+        <svg id="sect" viewBox="0 0 800 330" aria-label="Section of the whistle head"></svg>
+        <div class="cap">Drawn from the same polygons the printer is sent. The head prints lying on its
+          side, so this whole profile (windway, window, labium) lies in the bed plane and comes out crisp.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ III · THE LADDER ═════════════════════════ -->
+<section id="ladder" class="col-w">
+  <div class="eyebrow">III &middot; The ladder of winds</div>
+  <h2>One cut-up, nine bands, an ascent in order</h2>
+  <div class="flow" style="margin-top:1.2rem; max-width:var(--measure);">
+    <p>
+      Hold <i>St</i> = <i>f&thinsp;W</i>/<i>U</i> fixed and give every voice the same window <i>W</i>. A
+      voice's speaking band then slides up the wind scale in proportion to its pitch. Earth at 174 Hz wakes
+      in about 1.2 m/s, which barely moves smoke. The Ogdoad at 963 Hz needs 6.8 m/s before it starts and
+      sings best near 12. Nobody arranged the order: the ascent falls out of the physics.
+      <span class="reg reg-model">Model</span>
+    </p>
+    <p>
+      Each band spans a factor of four in wind speed, so neighbours overlap. In any given wind a few
+      adjacent spheres sound together, and the group drifts upward as the wind strengthens and back down
+      as it eases. Gusts walk the hymn up and down the ladder.
+    </p>
+  </div>
+  <div class="fig" style="margin-top:1.2rem;">
+    <div class="fig-h"><span>Speaking bands over wind speed (log scale), with the Beaufort scale</span><span id="ladRead"></span></div>
+    <svg id="lad" viewBox="0 0 1000 470" aria-label="Nine horizontal bands, one per voice, rising with pitch along the wind-speed axis"></svg>
+    <div class="ctrls">
+      <label for="lW">wind</label><input type="range" id="lW" min="-0.3" max="1.5" step="0.005" value="0.7"><output id="lWo"></output>
+    </div>
+    <div class="cap">Each bar runs from onset (<i>St</i> = 0.40) to overblow (<i>St</i> = 0.10), and
+      the dot marks the best response (<i>St</i> = 0.22). Bar brightness is the model's drive at the
+      wind under the cursor. These edges are estimates. The real ones are what the first windy day is
+      for (&sect;VI).</div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ IV · THE CHOIR ═════════════════════════ -->
+<section id="choir" class="col-w">
+  <div class="eyebrow">IV &middot; The choir</div>
+  <h2>Every tone, and how they sit together</h2>
+  <div class="two" style="margin-top:1.2rem;">
+    <div class="flow">
+      <p>
+        Play each voice alone, or let a gusting wind play them all. A Helmholtz voice is close to a pure
+        sine: the cavity has no harmonic overtones, and its next mode is far above. What colours it is the
+        rush of the jet, so each voice here is a sine plus a little breath noise filtered around its pitch.
+        The synth also lets each pitch rise slightly as the wind rises past its best speed, as a
+        vessel flute does when overblown. <span class="reg reg-model">Model</span>
+      </p>
+      <div class="fig">
+        <div class="fig-h"><span>The nine voices</span><span id="choirState">silent</span></div>
+        <div class="btns" id="voiceBtns"></div>
+        <div class="ctrls" style="margin-top:1rem;">
+          <label for="cW">mean wind</label><input type="range" id="cW" min="0.5" max="14" step="0.1" value="5"><output id="cWo"></output>
+          <label for="cG">gustiness</label><input type="range" id="cG" min="0" max="0.6" step="0.01" value="0.3"><output id="cGo"></output>
+          <label for="cVol">volume</label><input type="range" id="cVol" min="0" max="1" step="0.01" value="0.6"><output id="cVolo"></output>
+        </div>
+        <div class="btns"><button class="pill" id="windBtn2">Let the wind blow</button><button class="pill" id="allBtn">Play all nine in turn</button></div>
+        <div class="readout" id="choirRead"></div>
+      </div>
+    </div>
+    <div class="flow">
+      <p>
+        Pure tones clash only when they are close. Two sines beat at their difference frequency. Once the
+        beating gets faster than about 15 per second it turns into roughness, and it fades again once the
+        tones are more than a critical band apart. The ratios that matter for rich tones (fifths, thirds)
+        hardly matter for sines. Plomp and Levelt measured this curve in 1965.<sup class="c"><a href="#s4">4</a></sup>
+        <span class="reg reg-doc">Documented</span>
+      </p>
+      <p>
+        So the Solfeggio set, which is not a pentatonic scale, mostly sits well on a choir of sines. Its
+        steps are spaced about 111 Hz apart, which is beyond the worst roughness. The one real clash is
+        <b>396 against 417</b>, which beat 21 times a second, the roughest possible spacing. On the ladder
+        they are also neighbours, so in a 3&ndash;10 m/s wind Mercury and Venus will burr together.
+        <span class="reg reg-calc">Computed</span>
+      </p>
+      <div class="fig">
+        <div class="fig-h"><span>Pure-tone roughness, every pair</span><span id="roughRead">hover a cell</span></div>
+        <svg id="rough" viewBox="0 0 520 470" aria-label="A nine by nine roughness matrix; the 396 and 417 pair is the only bright cell."></svg>
+        <div class="btns"><button class="pill" id="beatBtn">Hear 396 + 417</button><button class="pill" id="fourthBtn">Hear 396 + 528 (4:3)</button></div>
+        <div class="cap">Plomp&ndash;Levelt roughness in Sethares' parameterisation, scaled so that 1 is the
+          roughest possible pair. Click a cell to hear its two voices together.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ V · THE ASCENT ═════════════════════════ -->
+<section id="ascent" class="col-w">
+  <div class="eyebrow">V &middot; The ascent</div>
+  <h2>Seven zones, then the Eighth</h2>
+  <div class="two" style="margin-top:1.2rem;">
+    <div class="flow">
+      <p>
+        The <i>Poimandres</i>, the first treatise of the Greek <i>Corpus Hermeticum</i> (probably
+        written in Roman Egypt in the first centuries AD), describes what happens to a knowing soul at
+        death. It rises through the seven planetary zones of the <i>Harmony</i>. At each zone it gives
+        back one of the energies that bound it, from growth and waning at the Moon to ensnaring falsehood
+        at Saturn. Then:<sup class="c"><a href="#s6">6</a></sup> <span class="reg reg-trad">Tradition</span>
+      </p>
+      <blockquote>
+        &hellip; he cometh to that Nature which belongs unto the Eighth, and there with those-that-are
+        hymneth the Father.
+        <cite>Corpus Hermeticum I.26, tr. G.R.S. Mead, 1906</cite>
+      </blockquote>
+      <p>
+        A Nag Hammadi tractate, <i>The Discourse on the Eighth and Ninth</i>, has a teacher lead a pupil
+        into the same Ogdoad, where the pupil too hears silent hymns.<sup class="c"><a href="#s7">7</a></sup>
+        Older still is the Pythagorean idea that each planetary sphere sounds a note as it turns: the
+        music of the spheres.<sup class="c"><a href="#s8">8</a></sup> <span class="reg reg-trad">Tradition</span>
+      </p>
+      <p>
+        The chandelier hangs that cosmos literally. Earth is the big gourd at the centre. The wheel's eight
+        rays are the Moon, Mercury, Venus, the Sun, Mars, Jupiter and Saturn, in the Chaldean order the
+        treatise climbs, then the Ogdoad. Three things line up with the treatise: the rays climb the wheel
+        in four tiers, pitch rises with height, and the wind wakes them in that same order. The pairs are
+        split left and right so the wheel hangs level, and so the climb zig-zags across the axis like the
+        two serpents on Hermes' caduceus.
+        <span class="reg reg-calc">Computed</span> balance.
+      </p>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>The climb, as it hangs</span><span>front view</span></div>
+      <svg id="cad" viewBox="0 0 560 560" aria-label="The wheel with its eight rays and the zig-zag path of the ascent"></svg>
+      <div class="cap">The gold path joins the spheres in the order the wind wakes them. The arrow at
+        the top is the hanging line, which the crown's comb of holes puts directly above the centre of mass.</div>
+    </div>
+  </div>
+  <div class="tscroll" style="margin-top:1.4rem;">
+    <table class="t" id="ascTable"></table>
+  </div>
+
+  <div class="flow" style="margin-top:1.8rem; max-width:var(--measure);">
+    <h3>About the Solfeggio numbers</h3>
+    <p>
+      The nine frequencies are modern. The six core tones (396, 417, 528, 639, 741, 852 Hz) were put
+      forward in the 1970s&ndash;90s by Joseph Puleo, who said he decoded them from verse numbers in the
+      Book of Numbers, and popularised by Leonard Horowitz. 174, 285 and 963 were added later. The
+      names borrow the syllables <i>ut, re, mi, fa, sol, la</i> from Guido of Arezzo's eleventh-century
+      teaching hymn <i>Ut queant laxis</i>. That hymn is real, but it carries no frequencies, and nothing
+      links these numbers to Gregorian chant.<sup class="c"><a href="#s5">5</a></sup>
+      <span class="reg reg-doc">Documented</span>
+    </p>
+    <p>
+      Claims that these tones heal, repair DNA or carry a special power are <span class="reg reg-claim">Modern claim</span>
+      and nothing more. The instrument uses them because they were asked for, and because nine of them
+      fit nine spheres. The physics on this page would work identically for any nine pitches.
+    </p>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ VI · THE BUILD ═════════════════════════ -->
+<section id="build" class="col-w">
+  <div class="eyebrow">VI &middot; The build</div>
+  <h2>Twenty-four parts, PETG, one M3 bolt and a swivel</h2>
+  <div class="status" style="margin-top:1.2rem;">
+    <b>Status:</b> designed and checked in CAD on 2026-10-20. Every cavity's built volume matches its
+    design to within 0.1 cents of pitch. No two parts come within 3 mm of each other unless they are
+    meant to mate. Every STL is watertight, single-bodied and fits a 320 mm bed. Nothing has been
+    printed or heard yet: the wind bands in &sect;III are the model's until the first windy day says otherwise.
+  </div>
+  <div class="shots" style="margin-top:1.2rem;">
+    <figure><img src="assets/ogdoad/three-quarter.webp" alt="Three-quarter render: the big Earth gourd at the centre of an eight-spoked wheel of gourd whistles, a dove-tail vane on a boom behind and a plumb-bob below" loading="lazy"><figcaption>Three-quarter, from upwind.</figcaption></figure>
+    <figure><img src="assets/ogdoad/front.webp" alt="Front view of the wheel of nine gourds" loading="lazy"><figcaption>Front: what the wind sees.</figcaption></figure>
+    <figure><img src="assets/ogdoad/side.webp" alt="Side view showing Earth in front of the wheel and the vane behind" loading="lazy"><figcaption>Side: Earth ahead of the hub, the vane behind.</figcaption></figure>
+    <figure><img src="assets/ogdoad/head-section.webp" alt="Section drawing of a whistle head" loading="lazy"><figcaption>A whistle head, in section.</figcaption></figure>
+  </div>
+
+  <div class="two" style="margin-top:1.6rem;">
+    <div class="flow">
+      <h3>The parts</h3>
+      <div class="tscroll"><table class="t" id="partsTable"></table></div>
+      <p class="small mut">Also needed: an M3&times;20 bolt and nut (crown), a ball-bearing fishing swivel and
+        cord, a steel split ring (bob), dry sand or steel shot, and epoxy or a gap-filling CA.</p>
+      <a class="dl" href="stl/ogdoad_wind_chandelier.zip" download>Download all STLs (zip)</a>
+    </div>
+    <div class="flow">
+      <h3>Print</h3>
+      <ul class="dots">
+        <li><b>Gourds</b> print upright with no supports. Every surface stays within 45&deg; of vertical,
+          including the inside: 45&deg; cones close each bulb. Print them with 3 perimeters and no infill
+          gaps, because <b>the cavity must be airtight</b>. A leak lowers the note's Q, and a big one kills it.</li>
+        <li><b>Heads</b> print on their side, with the flat of the D-socket on top. Use a 0.4 mm nozzle and 0.12 mm
+          layers, and slow the outer walls so the 0.7 mm windway stays open and the labium stays sharp.</li>
+        <li>The <b>wheel</b> prints rear face down, and the <b>vane fin</b> prints flat. The <b>plumb-bob</b>
+          prints on its flat top, point up.</li>
+      </ul>
+      <h3>Assemble</h3>
+      <ol class="steps">
+        <li>Glue each head onto its gourd's neck. The D-flat lets it go on only with the intake facing
+          upwind, and the glue seals the joint.</li>
+        <li>Glue the eight planets onto the wheel's foot pegs. Each peg is offset, so a gourd fits only
+          the right way round. Their angles are in the table in &sect;V.</li>
+        <li>Push Earth's rear boss onto the hub's front peg. Push the boom into the hub's rear socket and
+          the fin's sleeve onto the boom.</li>
+        <li>Bolt the crown over the top lug. Hang the swivel from the comb hole at <b id="hangHole">+6 mm</b>,
+          toward the vane, which the CAD puts above the centre of mass. Move one hole either way until the
+          wheel hangs plumb.</li>
+        <li>Fill the bob with sand (~0.4 kg) or steel shot (~1.1 kg), plug it, and hang it about 190 mm
+          below the bottom lug. It steadies the wheel against the wind's backward push.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="two" style="margin-top:1.6rem;">
+    <div class="flow">
+      <h3>Tune</h3>
+      <p>
+        Test each voice indoors before assembly. Blow across its intake with a hair-dryer on cool, or with
+        a desk fan, and read the pitch with any tuner app. The solver puts each voice on pitch, but a
+        printed gourd's real volume, wall stiffness and the jet's own loading can shift it by tens of
+        cents.
+      </p>
+      <ul class="dots">
+        <li><b>Flat?</b> Raise the pitch by shrinking the cavity. Drop in plasticine or a few glass beads
+          through the mouth before gluing the head: 1&nbsp;% less volume raises it about 9 cents. Check
+          the neck bore too. Printed 0.15 mm undersize, it costs the small voices about 12 cents, so ream
+          it to size first.</li>
+        <li><b>Sharp?</b> Lower it by narrowing the window: a strip of tape across one end of the slot.
+          1&nbsp;% less width lowers it about 4 cents, so this is a fine trim, not a coarse one.</li>
+        <li>Tune at the temperature it will live in, or accept the shared drift from &sect;I.</li>
+      </ul>
+    </div>
+    <div class="flow">
+      <h3>Hang, and listen</h3>
+      <ul class="dots">
+        <li>Hang it in open air on a swivel, clear of walls, ideally under an eave. The top mouths face
+          up and will fill with rain, which detunes them until they dry.</li>
+        <li>In wind, the drag pushes the wheel back on its cord. The bob keeps the tilt to roughly 20&deg;
+          at 10 m/s. The bellmouths still take the wind at that angle.</li>
+        <li>Take a pocket anemometer outside on a windy day and note when each voice starts and stops.
+          Those numbers replace the model's band edges in &sect;III, and they are worth sending back.</li>
+      </ul>
+      <p class="small mut">
+        Generator: <code>projects/ogdoad_wind_chandelier/</code>. <code>voices.py</code> solves the
+        acoustics, and <code>chandelier.py</code> builds, measures, checks and exports the parts. Change a
+        constant and rerun. Everything on this page is computed from the same <code>voices.json</code>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═════════════════════════ SOURCES ═════════════════════════ -->
+<section id="sources" class="col">
+  <div class="eyebrow">Sources</div>
+  <h2>Where it comes from</h2>
+  <ol class="sources" style="margin-top:1rem;">
+    <li id="s1">Pigeon whistles (<i>geling</i>): <a href="https://en.wikipedia.org/wiki/Pigeon_whistle">Wikipedia, &ldquo;Pigeon whistle&rdquo;</a>;
+      <a href="https://sites.duke.edu/dumic/instruments/woodwinds/southern-and-eastern-asia/pigeon-whistle">Duke University Musical Instrument Collections</a>;
+      <a href="https://www.penn.museum/collections/object/91298">Penn Museum gourd pigeon whistle</a>;
+      <a href="https://kuow.org/stories/a-small-lineage-of-artisans-is-reviving-the-ancient-art-of-pigeon-whistles-in-beijing">NPR/KUOW on Beijing's whistle-makers</a>;
+      <a href="https://www.chinadaily.com.cn/a/202605/28/WS6a1795bba310d6866eb4b1a7_3.html">China Daily on the heritage listing</a>.</li>
+    <li id="s2">H. von Helmholtz, <i>Die Lehre von den Tonempfindungen</i> (1863); tr. A.J. Ellis, <i>On the Sensations of Tone</i> (1875). The resonators are described in its Part I.
+      L.E. Kinsler et al., <i>Fundamentals of Acoustics</i>, for the lumped resonator and the radiation-mass end correction.</li>
+    <li id="s3">N.H. Fletcher &amp; T.D. Rossing, <i>The Physics of Musical Instruments</i> (2nd ed., Springer 1998), ch. 16&ndash;17, on jet drive and the jet-delay condition;
+      J.W. Coltman, &ldquo;Jet drive mechanisms in edge tones and organ pipes,&rdquo; <i>JASA</i> 60 (1976).</li>
+    <li id="s4">R. Plomp &amp; W.J.M. Levelt, &ldquo;Tonal consonance and critical bandwidth,&rdquo; <i>JASA</i> 38 (1965) 548&ndash;560;
+      W.A. Sethares, <i>Tuning, Timbre, Spectrum, Scale</i> (Springer 2005), for the parameterisation used here.</li>
+    <li id="s5">The Solfeggio claims as their proponents state them: J. Puleo &amp; L. Horowitz, <i>Healing Codes for the Biological Apocalypse</i> (1999).
+      Guido of Arezzo and <i>Ut queant laxis</i>: any history of solmisation, e.g. <a href="https://en.wikipedia.org/wiki/Ut_queant_laxis">Wikipedia, &ldquo;Ut queant laxis&rdquo;</a>.</li>
+    <li id="s6"><i>Corpus Hermeticum</i> I (<i>Poimandres</i>) 24&ndash;26, in G.R.S. Mead, <i>Thrice-Greatest Hermes</i> vol. II (1906):
+      <a href="https://sacred-texts.com/gno/th2/th201.htm">sacred-texts.com</a>; see also <a href="https://en.wikipedia.org/wiki/Poimandres">Wikipedia, &ldquo;Poimandres&rdquo;</a>.</li>
+    <li id="s7"><i>The Discourse on the Eighth and Ninth</i> (Nag Hammadi Codex VI,6), in J.M. Robinson (ed.), <i>The Nag Hammadi Library in English</i>.</li>
+    <li id="s8">On the harmony of the spheres: Plato, <i>Republic</i> X 617b (the Sirens on the spindle's whorls); J. Godwin, <i>Harmony of the Spheres</i> (1993).</li>
+  </ol>
+</section>
+
+<footer>
+  <span>The physics is computed; the cosmos is a reading. Both are marked.</span>
+  <a href="index.html">&larr; back to Promethean Theoria</a>
+</footer>
+</div>
+
+<!-- Data: written by projects/ogdoad_wind_chandelier/sync_page.py from voices.json. Do not edit by hand. -->
+<script id="voices-data" type="application/json">{"c_air":343.21462268256795,"rho":1.204,"eta":0.85,"st":[0.4,0.22,0.1],"W":2.4,"h":0.7,"k_end":[0.96,0.0375],"t_p":1.2,"temp_c":20.0,"voices":[{"freq":174,"name":"Earth","sphere":"centre","solfege":"","R":50.235,"b":26.12208,"V_cm3":629.92444,"V_lower_cm3":458.7459,"V_plen_cm3":0.763555,"A_mm2":62.693,"delta_mm":2.7584,"L_eff_mm":6.69477,"waist_r_mm":21.188,"L_bore_per_m":29.19,"f_model":174.0,"f_single_volume":210.61,"wind":[1.23,2.23,4.91],"mass_g":161.0,"outer":[[21.1,0.0],[37.5,16.6],[41.1,21.1],[44.2,26.1],[46.7,31.4],[48.5,36.9],[49.7,42.7],[50.2,48.5],[50.0,54.3],[49.2,60.1],[47.7,65.8],[45.5,71.2],[42.8,76.3],[39.4,81.1],[35.5,85.5],[24.6,96.5],[23.7,98.7],[23.7,101.1],[24.6,103.2],[25.6,104.4],[28.4,107.5],[30.8,111.0],[32.8,114.7],[34.3,118.6],[35.4,122.6],[36.0,126.8],[36.1,131.0],[35.8,135.2],[34.9,139.3],[33.6,143.3],[31.8,147.1],[29.6,150.7],[27.0,154.0],[15.5,165.6],[15.46,175.63]],"inner":[[27.6939,10.0],[33.819,16.1251],[35.7282,18.1487],[37.5165,20.2799],[39.1778,22.5115],[40.7066,24.8359],[42.0976,27.2453],[43.3462,29.7314],[44.4481,32.286],[45.3997,34.9003],[46.1976,37.5655],[46.8392,40.2726],[47.3223,43.0124],[47.6453,45.7757],[47.807,48.5531],[47.807,51.3351],[47.6453,54.1125],[47.3223,56.8758],[46.8392,59.6156],[46.1976,62.3227],[45.3997,64.9879],[44.4481,67.6022],[43.3462,70.1568],[42.0976,72.6429],[40.7066,75.0523],[39.1778,77.3767],[37.5165,79.6083],[35.7282,81.7395],[33.819,83.7631],[23.6588,93.9233],[22.6097,95.2016],[21.8302,96.66],[21.3501,98.2425],[21.188,99.8882],[21.3501,101.5339],[21.8302,103.1164],[22.6097,104.5748],[23.6588,105.8531],[23.873,106.0673],[25.2207,107.4958],[26.4831,109.0002],[27.6558,110.5755],[28.735,112.2163],[29.7169,113.9171],[30.5983,115.6721],[31.3762,117.4754],[32.0479,119.3208],[32.6111,121.2022],[33.064,123.1131],[33.4051,125.0472],[33.6331,126.9978],[33.7472,128.9584],[33.7472,130.9223],[33.6331,132.8828],[33.4051,134.8334],[33.064,136.7675],[32.6111,138.6784],[32.0479,140.5598],[31.3762,142.4053],[30.5983,144.2086],[29.7169,145.9636],[28.735,147.6643],[27.6558,149.3051],[26.4831,150.8804],[25.2207,152.3848],[23.873,153.8133],[13.861,163.8253],[13.861,175.63]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":17.061,"xh":17.061,"rso":15.461}},{"freq":285,"name":"Moon","sphere":"1st sphere","solfege":"","R":32.001,"b":16.64077,"V_cm3":155.3728,"V_lower_cm3":111.4622,"V_plen_cm3":0.486414,"A_mm2":39.93785,"delta_mm":2.42685,"L_eff_mm":5.95225,"waist_r_mm":13.2072,"L_bore_per_m":55.7,"f_model":285.0,"f_single_volume":358.96,"wind":[2.01,3.66,8.05],"mass_g":57.8,"outer":[[13.4,0.0],[23.9,10.5],[26.2,13.5],[28.2,16.6],[29.7,20.0],[30.9,23.5],[31.7,27.2],[32.0,30.9],[31.9,34.6],[31.3,38.3],[30.4,41.9],[29.0,45.3],[27.2,48.6],[25.1,51.7],[22.6,54.4],[15.7,61.5],[15.1,62.9],[15.1,64.4],[15.7,65.8],[16.3,66.5],[18.1,68.5],[19.6,70.7],[20.9,73.0],[21.9,75.5],[22.6,78.1],[22.9,80.8],[23.0,83.5],[22.8,86.1],[22.3,88.7],[21.4,91.3],[20.3,93.7],[18.9,96.0],[17.2,98.1],[10.7,104.6],[10.72,114.64]],"inner":[[20.861,10.0],[21.3387,10.4776],[22.5433,11.7545],[23.6717,13.0992],[24.7199,14.5072],[25.6845,15.9739],[26.5622,17.4941],[27.35,19.0628],[28.0453,20.6746],[28.6457,22.3242],[29.1492,24.0058],[29.554,25.7139],[29.8588,27.4426],[30.0626,29.1862],[30.1647,30.9386],[30.1647,32.694],[30.0626,34.4464],[29.8588,36.19],[29.554,37.9187],[29.1492,39.6268],[28.6457,41.3085],[28.0453,42.958],[27.35,44.5698],[26.5622,46.1385],[25.6845,47.6588],[24.7199,49.1254],[23.6717,50.5334],[22.5433,51.8781],[21.3387,53.155],[14.8662,59.6274],[14.1618,60.4857],[13.6384,61.465],[13.3161,62.5276],[13.2072,63.6326],[13.3161,64.7377],[13.6384,65.8002],[14.1618,66.7795],[14.8662,67.6378],[15.0027,67.7743],[15.8496,68.672],[16.643,69.6174],[17.38,70.6074],[18.0582,71.6385],[18.6753,72.7074],[19.2292,73.8103],[19.718,74.9435],[20.1401,76.1033],[20.4941,77.2856],[20.7787,78.4865],[20.993,79.702],[21.1363,80.9278],[21.208,82.1599],[21.208,83.3941],[21.1363,84.6262],[20.993,85.852],[20.7787,87.0674],[20.4941,88.2684],[20.1401,89.4507],[19.718,90.6104],[19.2292,91.7437],[18.6753,92.8466],[18.0582,93.9154],[17.38,94.9466],[16.643,95.9365],[15.8496,96.882],[15.0027,97.7797],[9.1204,103.662],[9.1204,114.6416]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":12.32,"xh":12.32,"rso":10.72}},{"freq":396,"name":"Mercury","sphere":"2nd sphere","solfege":"UT","R":23.904,"b":12.42999,"V_cm3":61.2142,"V_lower_cm3":43.0372,"V_plen_cm3":0.363332,"A_mm2":29.83197,"delta_mm":2.2159,"L_eff_mm":5.49067,"waist_r_mm":9.6278,"L_bore_per_m":85.51,"f_model":396.0,"f_single_volume":514.62,"wind":[2.8,5.08,11.18],"mass_g":32.5,"outer":[[10.0,0.0],[17.9,7.9],[19.6,10.1],[21.0,12.4],[22.2,14.9],[23.1,17.6],[23.6,20.3],[23.9,23.1],[23.8,25.9],[23.4,28.6],[22.7,31.3],[21.7,33.9],[20.3,36.3],[18.8,38.6],[16.9,40.7],[11.7,45.9],[11.3,47.0],[11.3,48.1],[11.7,49.1],[12.2,49.7],[13.5,51.2],[14.7,52.8],[15.6,54.6],[16.3,56.4],[16.9,58.4],[17.1,60.3],[17.2,62.3],[17.0,64.3],[16.6,66.3],[16.0,68.2],[15.2,70.0],[14.1,71.7],[12.9,73.3],[8.6,77.6],[8.61,87.56]],"inner":[[17.5462,10.0],[18.2702,10.9726],[18.9832,12.0565],[19.6319,13.1801],[20.2141,14.3395],[20.728,15.5308],[21.1717,16.75],[21.5438,17.9928],[21.843,19.2553],[22.0683,20.533],[22.2189,21.8216],[22.2944,23.1168],[22.2944,24.4142],[22.2189,25.7094],[22.0683,26.998],[21.843,28.2757],[21.5438,29.5382],[21.1717,30.7811],[20.728,32.0002],[20.2141,33.1915],[19.6319,34.3509],[18.9832,35.4745],[18.2702,36.5584],[17.4955,37.5991],[16.6615,38.593],[15.7712,39.5367],[10.9365,44.3713],[10.3808,45.0485],[9.9679,45.821],[9.7136,46.6593],[9.6278,47.531],[9.7136,48.4028],[9.9679,49.241],[10.3808,50.0135],[10.9365,50.6907],[11.0385,50.7926],[11.6616,51.4531],[12.2453,52.1487],[12.7876,52.8771],[13.2866,53.6358],[13.7406,54.4222],[14.1481,55.2337],[14.5078,56.0675],[14.8184,56.9208],[15.0788,57.7907],[15.2882,58.6743],[15.4459,59.5686],[15.5513,60.4705],[15.6041,61.377],[15.6041,62.2851],[15.5513,63.1916],[15.4459,64.0936],[15.2882,64.9878],[15.0788,65.8714],[14.8184,66.7414],[14.5078,67.5947],[14.1481,68.4285],[13.7406,69.2399],[13.2866,70.0264],[12.7876,70.785],[12.2453,71.5134],[11.6616,72.209],[11.0385,72.8695],[7.015,76.893],[7.015,87.5558]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":10.215,"xh":10.215,"rso":8.615}},{"freq":417,"name":"Venus","sphere":"3rd sphere","solfege":"RE","R":22.879,"b":11.89726,"V_cm3":52.90467,"V_lower_cm3":37.04527,"V_plen_cm3":0.34776,"A_mm2":28.55343,"delta_mm":2.18453,"L_eff_mm":5.42275,"waist_r_mm":9.1466,"L_bore_per_m":91.42,"f_model":417.0,"f_single_volume":544.95,"wind":[2.94,5.35,11.77],"mass_g":30.3,"outer":[[9.6,0.0],[17.1,7.5],[18.7,9.6],[20.1,11.9],[21.3,14.3],[22.1,16.8],[22.6,19.4],[22.9,22.1],[22.8,24.7],[22.4,27.4],[21.7,29.9],[20.7,32.4],[19.5,34.8],[17.9,36.9],[16.2,38.9],[11.2,44.0],[10.8,45.0],[10.8,46.0],[11.2,47.0],[11.7,47.5],[12.9,49.0],[14.0,50.5],[14.9,52.2],[15.6,54.0],[16.1,55.9],[16.4,57.8],[16.5,59.7],[16.3,61.6],[15.9,63.4],[15.3,65.3],[14.5,67.0],[13.5,68.6],[12.3,70.1],[8.3,74.1],[8.35,84.13]],"inner":[[17.0278,10.0],[17.431,10.5416],[18.1112,11.5758],[18.7301,12.6478],[19.2856,13.7539],[19.7759,14.8905],[20.1993,16.0537],[20.5543,17.2395],[20.8397,18.4439],[21.0547,19.6629],[21.1984,20.8923],[21.2703,22.1281],[21.2703,23.3659],[21.1984,24.6016],[21.0547,25.831],[20.8397,27.05],[20.5543,28.2545],[20.1993,29.4403],[19.7759,30.6034],[19.2856,31.74],[18.7301,32.8461],[18.1112,33.9181],[17.431,34.9523],[16.6919,35.9452],[15.8962,36.8934],[15.0468,37.7937],[10.4193,42.4212],[9.8789,43.0797],[9.4773,43.831],[9.2301,44.6462],[9.1466,45.4939],[9.2301,46.3417],[9.4773,47.1569],[9.8789,47.9082],[10.4193,48.5667],[10.5169,48.6642],[11.1106,49.2935],[11.6667,49.9563],[12.1834,50.6502],[12.6588,51.3731],[13.0914,52.1223],[13.4796,52.8955],[13.8223,53.6899],[14.1182,54.5029],[14.3663,55.3317],[14.5659,56.1735],[14.7161,57.0255],[14.8165,57.8848],[14.8668,58.7485],[14.8668,59.6137],[14.8165,60.4774],[14.7161,61.3367],[14.5659,62.1887],[14.3663,63.0306],[14.1182,63.8594],[13.8223,64.6724],[13.4796,65.4668],[13.0914,66.2399],[12.6588,66.9892],[12.1834,67.712],[11.6667,68.406],[11.1106,69.0687],[10.5169,69.698],[6.7486,73.4663],[6.7486,84.129]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":9.949,"xh":9.949,"rso":8.349}},{"freq":528,"name":"Sun","sphere":"4th sphere","solfege":"MI","R":19.157,"b":9.96181,"V_cm3":27.90699,"V_lower_cm3":18.77773,"V_plen_cm3":0.291186,"A_mm2":23.90834,"delta_mm":2.05832,"L_eff_mm":5.15138,"waist_r_mm":7.3983,"L_bore_per_m":119.7,"f_model":528.0,"f_single_volume":704.44,"wind":[3.73,6.78,14.91],"mass_g":23.7,"outer":[[9.5,0.0],[14.3,4.9],[15.7,6.6],[16.9,8.5],[17.8,10.5],[18.5,12.6],[19.0,14.8],[19.1,17.0],[19.1,19.3],[18.8,21.5],[18.2,23.6],[17.4,25.7],[16.3,27.6],[15.0,29.5],[13.6,31.1],[9.4,35.4],[9.0,36.2],[9.0,37.1],[9.4,37.9],[9.8,38.4],[10.8,39.5],[11.7,40.9],[12.5,42.3],[13.1,43.8],[13.5,45.3],[13.7,46.9],[13.8,48.5],[13.7,50.1],[13.3,51.7],[12.8,53.2],[12.1,54.6],[11.3,56.0],[10.3,57.3],[7.4,60.2],[7.38,70.23]],"inner":[[15.8257,10.0],[15.9123,10.1725],[16.3169,11.1103],[16.6662,12.07],[16.9591,13.0484],[17.1946,14.0422],[17.3719,15.0479],[17.4905,16.0623],[17.5499,17.0819],[17.5499,18.1032],[17.4905,19.1228],[17.3719,20.1372],[17.1946,21.1429],[16.9591,22.1367],[16.6662,23.1151],[16.3169,24.0748],[15.9123,25.0126],[15.454,25.9253],[14.9433,26.8097],[14.3821,27.663],[13.7722,28.4822],[13.1158,29.2646],[12.4149,30.0075],[8.5403,33.8821],[8.0554,34.4729],[7.6951,35.147],[7.4732,35.8784],[7.3983,36.639],[7.4732,37.3997],[7.6951,38.1311],[8.0554,38.8051],[8.5403,39.3959],[8.6219,39.4776],[9.1087,39.9935],[9.5646,40.5369],[9.9881,41.1058],[10.3779,41.6984],[10.7325,42.3126],[11.0509,42.9465],[11.3318,43.5978],[11.5744,44.2643],[11.7778,44.9437],[11.9414,45.6339],[12.0645,46.3324],[12.1469,47.0369],[12.1881,47.7449],[12.1881,48.4542],[12.1469,49.1623],[12.0645,49.8668],[11.9414,50.5653],[11.7778,51.2554],[11.5744,51.9349],[11.3318,52.6014],[11.0509,53.2527],[10.7325,53.8865],[10.3779,54.5008],[9.9881,55.0934],[9.5646,55.6623],[9.1087,56.2056],[8.6219,56.7215],[5.7809,59.5626],[5.7809,70.2253]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":9.4,"xh":8.981,"rso":7.381}},{"freq":639,"name":"Mars","sphere":"5th sphere","solfege":"FA","R":16.831,"b":8.75236,"V_cm3":16.94777,"V_lower_cm3":10.83426,"V_plen_cm3":0.255834,"A_mm2":21.00566,"delta_mm":1.96737,"L_eff_mm":4.95769,"waist_r_mm":6.3058,"L_bore_per_m":145.38,"f_model":639.0,"f_single_volume":863.69,"wind":[4.51,8.2,18.04],"mass_g":19.9,"outer":[[9.5,0.0],[12.6,3.1],[13.8,4.7],[14.8,6.3],[15.6,8.1],[16.3,9.9],[16.6,11.9],[16.8,13.8],[16.8,15.8],[16.5,17.7],[16.0,19.6],[15.2,21.4],[14.3,23.1],[13.2,24.7],[11.9,26.2],[8.2,29.9],[7.9,30.6],[7.9,31.4],[8.2,32.2],[8.6,32.5],[9.5,33.6],[10.3,34.7],[11.0,36.0],[11.5,37.3],[11.9,38.7],[12.1,40.0],[12.1,41.5],[12.0,42.9],[11.7,44.2],[11.3,45.6],[10.7,46.9],[9.9,48.1],[9.1,49.2],[6.8,51.5],[6.78,61.47]],"inner":[[14.6044,10.0],[14.7125,10.3611],[14.9168,11.2232],[15.0706,12.0958],[15.1735,12.9758],[15.225,13.8603],[15.225,14.7463],[15.1735,15.6308],[15.0706,16.5108],[14.9168,17.3834],[14.7125,18.2455],[14.4584,19.0943],[14.1553,19.9268],[13.8044,20.7404],[13.4068,21.5321],[12.9638,22.2994],[12.4769,23.0397],[11.9478,23.7504],[11.3783,24.4291],[10.7703,25.0736],[7.366,28.4778],[6.9159,29.0263],[6.5814,29.6521],[6.3754,30.3312],[6.3058,31.0374],[6.3754,31.7435],[6.5814,32.4226],[6.9159,33.0484],[7.366,33.5969],[7.4378,33.6687],[7.8577,34.1137],[8.251,34.5825],[8.6164,35.0732],[8.9526,35.5845],[9.2585,36.1143],[9.5331,36.6611],[9.7755,37.2229],[9.9848,37.7979],[10.1602,38.3841],[10.3013,38.9794],[10.4076,39.582],[10.4786,40.1897],[10.5142,40.8006],[10.5142,41.4124],[10.4786,42.0233],[10.4076,42.631],[10.3013,43.2336],[10.1602,43.8289],[9.9848,44.4151],[9.7755,44.9901],[9.5331,45.5519],[9.2585,46.0987],[8.9526,46.6285],[8.6164,47.1398],[8.251,47.6305],[7.8577,48.0993],[7.4378,48.5443],[5.1762,50.8059],[5.1762,61.4687]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":9.4,"xh":8.376,"rso":6.776}},{"freq":741,"name":"Jupiter","sphere":"6th sphere","solfege":"SOL","R":15.359,"b":7.98681,"V_cm3":11.67192,"V_lower_cm3":7.05854,"V_plen_cm3":0.233456,"A_mm2":19.16834,"delta_mm":1.90366,"L_eff_mm":4.82294,"waist_r_mm":5.6143,"L_bore_per_m":166.03,"f_model":741.0,"f_single_volume":1007.98,"wind":[5.23,9.51,20.92],"mass_g":17.6,"outer":[[9.5,0.0],[11.5,2.0],[12.6,3.4],[13.5,4.9],[14.3,6.5],[14.8,8.2],[15.2,10.0],[15.3,11.8],[15.3,13.6],[15.0,15.3],[14.6,17.1],[13.9,18.7],[13.1,20.3],[12.1,21.8],[10.9,23.1],[7.5,26.5],[7.2,27.1],[7.2,27.9],[7.5,28.5],[7.8,28.9],[8.7,29.8],[9.4,30.9],[10.0,32.0],[10.5,33.2],[10.8,34.4],[11.0,35.7],[11.1,37.0],[10.9,38.3],[10.7,39.5],[10.3,40.8],[9.7,41.9],[9.1,43.0],[8.3,44.0],[6.4,45.9],[6.4,55.92]],"inner":[[13.5739,10.0],[13.614,10.2271],[13.7069,11.0221],[13.7534,11.8211],[13.7534,12.6214],[13.7069,13.4205],[13.614,14.2154],[13.475,15.0036],[13.2904,15.7824],[13.0609,16.5492],[12.7871,17.3013],[12.4701,18.0362],[12.1109,18.7514],[11.7107,19.4445],[11.2709,20.1132],[10.793,20.7552],[10.2785,21.3684],[9.7293,21.9505],[6.6228,25.057],[6.1946,25.5787],[5.8764,26.174],[5.6805,26.8199],[5.6143,27.4916],[5.6805,28.1634],[5.8764,28.8093],[6.1946,29.4045],[6.6228,29.9263],[6.6883,29.9918],[7.0659,30.392],[7.4195,30.8135],[7.7481,31.2548],[8.0504,31.7145],[8.3255,32.191],[8.5725,32.6827],[8.7904,33.1879],[8.9786,33.7049],[9.1364,34.232],[9.2632,34.7673],[9.3588,35.3092],[9.4227,35.8557],[9.4547,36.405],[9.4547,36.9552],[9.4227,37.5044],[9.3588,38.0509],[9.2632,38.5928],[9.1364,39.1281],[8.9786,39.6552],[8.7904,40.1723],[8.5725,40.6775],[8.3255,41.1691],[8.0504,41.6456],[7.7481,42.1053],[7.4195,42.5467],[7.0659,42.9681],[6.6883,43.3683],[4.8,45.2566],[4.8,55.9194]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":9.4,"xh":8.0,"rso":6.4}},{"freq":852,"name":"Saturn","sphere":"7th sphere","solfege":"LA","R":14.329,"b":7.45097,"V_cm3":8.74399,"V_lower_cm3":4.94814,"V_plen_cm3":0.217794,"A_mm2":17.88232,"delta_mm":1.85569,"L_eff_mm":4.72197,"waist_r_mm":5.1303,"L_bore_per_m":161.98,"f_model":852.0,"f_single_volume":1136.79,"wind":[6.01,10.93,24.06],"mass_g":16.1,"outer":[[9.5,0.0],[10.7,1.2],[11.7,2.5],[12.6,4.0],[13.3,5.5],[13.8,7.1],[14.2,8.7],[14.3,10.3],[14.3,12.0],[14.0,13.7],[13.6,15.3],[13.0,16.8],[12.2,18.3],[11.2,19.6],[10.1,20.9],[7.0,24.1],[6.8,24.7],[6.8,25.4],[7.0,26.0],[7.3,26.3],[8.1,27.2],[8.8,28.2],[9.3,29.2],[9.8,30.3],[10.1,31.5],[10.3,32.7],[10.3,33.9],[10.2,35.1],[10.0,36.2],[9.6,37.4],[9.1,38.5],[8.4,39.5],[7.7,40.4],[6.4,41.8],[6.4,51.77]],"inner":[[12.7005,10.0],[12.7234,10.3937],[12.7234,11.1342],[12.6803,11.8733],[12.5944,12.6088],[12.4658,13.3379],[12.2951,14.0584],[12.0827,14.7677],[11.8295,15.4635],[11.5362,16.1434],[11.2039,16.805],[10.8337,17.4463],[10.4268,18.0649],[9.9847,18.6588],[9.5087,19.226],[9.0006,19.7646],[6.1026,22.6626],[5.6897,23.1656],[5.383,23.7395],[5.1941,24.3622],[5.1303,25.0098],[5.1941,25.6574],[5.383,26.2801],[5.6897,26.854],[6.1026,27.357],[6.1637,27.4181],[6.5116,27.7869],[6.8375,28.1754],[7.1403,28.5821],[7.4189,29.0057],[7.6725,29.4448],[7.9,29.8979],[8.1009,30.3635],[8.2743,30.84],[8.4197,31.3257],[8.5366,31.8191],[8.6247,32.3185],[8.6836,32.8221],[8.713,33.3283],[8.713,33.8353],[8.6836,34.3415],[8.6247,34.8451],[8.5366,35.3445],[8.4197,35.8378],[8.2743,36.3236],[8.1009,36.8001],[7.9,37.2656],[7.6725,37.7187],[7.4189,38.1579],[7.1403,38.5815],[6.8375,38.9882],[6.5116,39.3766],[6.1637,39.7454],[4.8,41.1091],[4.8,51.7718]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":9.4,"xh":8.0,"rso":6.4}},{"freq":963,"name":"Ogdoad","sphere":"8th sphere (fixed stars)","solfege":"SI","R":13.52,"b":7.03066,"V_cm3":6.82371,"V_lower_cm3":3.58177,"V_plen_cm3":0.205508,"A_mm2":16.87358,"delta_mm":1.81583,"L_eff_mm":4.63842,"waist_r_mm":4.7507,"L_bore_per_m":158.29,"f_model":963.0,"f_single_volume":1261.23,"wind":[6.8,12.36,27.19],"mass_g":15.0,"outer":[[9.5,0.0],[10.1,0.6],[11.1,1.9],[11.9,3.2],[12.6,4.6],[13.1,6.1],[13.4,7.7],[13.5,9.2],[13.5,10.8],[13.2,12.3],[12.8,13.9],[12.2,15.3],[11.5,16.7],[10.6,18.0],[9.6,19.2],[6.6,22.2],[6.4,22.8],[6.4,23.4],[6.6,24.0],[6.9,24.3],[7.6,25.1],[8.3,26.0],[8.8,27.0],[9.2,28.1],[9.5,29.2],[9.7,30.3],[9.7,31.4],[9.6,32.6],[9.4,33.7],[9.1,34.8],[8.6,35.8],[8.0,36.7],[7.3,37.6],[6.4,38.5],[6.4,48.52]],"inner":[[11.9136,10.0],[11.8751,10.6598],[11.7946,11.3485],[11.6742,12.0314],[11.5143,12.7061],[11.3154,13.3704],[11.0783,14.022],[10.8036,14.6587],[10.4924,15.2783],[10.1457,15.8789],[9.7647,16.4582],[9.3506,17.0144],[8.9049,17.5456],[8.4291,18.0499],[5.6945,20.7845],[5.2937,21.2728],[4.9959,21.83],[4.8126,22.4345],[4.7507,23.0631],[4.8126,23.6918],[4.9959,24.2963],[5.2937,24.8534],[5.6945,25.3418],[5.7521,25.3994],[6.0769,25.7436],[6.381,26.1061],[6.6636,26.4856],[6.9236,26.881],[7.1602,27.2908],[7.3726,27.7137],[7.56,28.1482],[7.7219,28.5928],[7.8576,29.0461],[7.9667,29.5066],[8.0489,29.9726],[8.1038,30.4426],[8.1313,30.915],[8.1313,31.3882],[8.1038,31.8605],[8.0489,32.3305],[7.9667,32.7965],[7.8576,33.257],[7.7219,33.7103],[7.56,34.155],[7.3726,34.5895],[7.1602,35.0123],[6.9236,35.4221],[6.6636,35.8175],[6.381,36.197],[6.0769,36.5595],[5.7521,36.9037],[4.8,37.8558],[4.8,48.5186]],"head":{"z_pc":2.0,"z_f":3.2,"z_r":3.9,"z_tip":3.445,"y0":-1.2,"yL":1.2,"y_ww0":-9.2,"y_front":-13.1,"z_bt":10.3,"y_rear":9.2,"z_ramp":5.589,"ys":9.4,"xh":8.0,"rso":6.4}}],"layout":{"R_f":105.0,"hub_y0":-15.0,"frame_t":10.0,"ring_r":98.0,"boom_free":220.0,"earth_y":-81.23477324860667,"earth_z0":-49.944092866501904,"angles":{"Moon":247.5,"Mercury":292.5,"Venus":337.5,"Sun":202.5,"Mars":22.5,"Jupiter":157.5,"Saturn":67.5,"Ogdoad":112.5},"climb":["Moon","Mercury","Venus","Sun","Mars","Jupiter","Saturn","Ogdoad"],"mass_g":699.0,"cg":[-0.9,15.5,-2.5],"hang_hole_y":18.0,"envelope":[363,542,536]}}</script>
+
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════
+   DATA + PHYSICS (mirrors voices.py)
+   ═══════════════════════════════════════════════════════════════ */
+const D = JSON.parse(document.getElementById("voices-data").textContent);
+const VO = D.voices;
+const LAY = D.layout;
+const ST_ON = D.st[0], ST_OPT = D.st[1], ST_OFF = D.st[2];
+const RHO = D.rho;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const NOTE = ["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"];
+function noteOf(f){
+  const m = 69 + 12 * Math.log2(f / 440), n = Math.round(m);
+  return `${NOTE[(n % 12 + 12) % 12]}${Math.floor(n / 12) - 1} ${(100 * (m - n)) >= 0 ? "+" : "−"}${Math.abs(100 * (m - n)).toFixed(0)}¢`;
+}
+function cAir(T){ return 331.3 * Math.sqrt(1 + T / 273.15); }
+
+/* rectangle self-potential, closed form: J = ∫∫ dA dA' / |r - r'| */
+function rectJ(a, b){
+  return 2 / 3 * (a ** 3 + b ** 3 - (a * a + b * b) ** 1.5)
+       + 2 * a * a * b * Math.asinh(b / a) + 2 * a * b * b * Math.asinh(a / b);
+}
+function endCorr(W, b){ return rectJ(W, b) / (2 * Math.PI * W * b); }      // mm, one side
+
+/* the gourd as a 1-D acoustic line (plane-wave slices of the revolved inner profile, rigid
+   floor), the head's plenum as a compliance, the window as a mass: mirrors voices.py */
+function lineAdmittance(inner, f, c, n = 600){
+  const z0 = inner[0][1], z1 = inner[inner.length - 1][1];
+  const rAt = z => { let i = 1; while (i < inner.length - 1 && inner[i][1] < z) i++;
+    const [ra, za] = inner[i - 1], [rb, zb] = inner[i]; return zb === za ? rb : ra + (rb - ra) * (z - za) / (zb - za); };
+  const k = 2 * Math.PI * f / c;
+  let pr = 1, pi = 0, ur = 0, ui = 0, zPrev = z0, rPrev = rAt(z0);
+  for (let s = 1; s <= n; s++){
+    const z = z0 + (z1 - z0) * s / n, r = rAt(z);
+    const A = Math.PI * ((rPrev + r) / 2) ** 2 * 1e-6, L = (z - zPrev) * 1e-3;
+    const Z0 = RHO * c / A, cs = Math.cos(k * L), sn = Math.sin(k * L);
+    // p' = cs p - j Z0 sn U ;  U' = -j sn/Z0 p + cs U
+    const npr = cs * pr + Z0 * sn * ui, npi = cs * pi - Z0 * sn * ur;
+    const nur = sn / Z0 * pi + cs * ur, nui = -sn / Z0 * pr + cs * ui;
+    pr = npr; pi = npi; ur = nur; ui = nui; zPrev = z; rPrev = r;
+  }
+  const den = pr * pr + pi * pi;                     // Y = -U / p
+  return [-(ur * pr + ui * pi) / den, -(ui * pr - ur * pi) / den];
+}
+function mouthLength(b){ return D.t_p + (D.k_end[0] + D.k_end[1] * Math.log(b / 10)) * 2 * endCorr(D.W, b); }
+function voiceFreq(v, c){
+  const Am = D.W * v.b * 1e-6, Lm = mouthLength(v.b) * 1e-3, Vp = v.V_plen_cm3 * 1e-6;
+  const X = f => {
+    const w = 2 * Math.PI * f, [yr, yi0] = lineAdmittance(v.inner, f, c), yi = yi0 + w * Vp / (RHO * c * c);
+    const den = yr * yr + yi * yi;                   // 1/Y = (yr - j yi)/|Y|^2
+    return w * RHO * Lm / Am - yi / den;
+  };
+  let lo = 0.25 * v.freq, hi = 1.6 * v.freq, xlo = X(lo);
+  for (let i = 0; i < 60; i++){ const m = (lo + hi) / 2, xm = X(m); if ((xm > 0) === (xlo > 0)){ lo = m; xlo = xm; } else hi = m; }
+  return (lo + hi) / 2;
+}
+function singleFreq(V_cm3, b, c){
+  const A = D.W * b * 1e-6, L = mouthLength(b) * 1e-3;
+  return c / (2 * Math.PI) * Math.sqrt(A / (V_cm3 * 1e-6 * L));
+}
+/* jet drive model */
+function windBand(f){ const k = f * D.W * 1e-3 / D.eta; return [k / ST_ON, k / ST_OPT, k / ST_OFF]; }
+function drive(f, wind){
+  if (wind <= 0) return 0;
+  const St = f * D.W * 1e-3 / (D.eta * wind);
+  const x = Math.log(St / ST_OPT);
+  const w = St > ST_OPT ? Math.log(ST_ON / ST_OPT) : Math.log(ST_OPT / ST_OFF);
+  return Math.max(0, 1 - (x / w) ** 2);
+}
+function roughness(f1, f2){
+  const lo = Math.min(f1, f2), hi = Math.max(f1, f2), s = 0.24 / (0.021 * lo + 19);
+  const x = s * (hi - lo);
+  return (Math.exp(-3.5 * x) - Math.exp(-5.75 * x)) / 0.18095;
+}
+const BEAUFORT = [[0,"calm"],[0.5,"light air"],[1.6,"light breeze"],[3.4,"gentle breeze"],[5.5,"moderate breeze"],[8,"fresh breeze"],[10.8,"strong breeze"],[13.9,"near gale"],[17.2,"gale"],[20.8,"strong gale"],[24.5,"storm"]];
+function beaufort(w){ let k = 0; for (let i = 0; i < BEAUFORT.length; i++) if (w >= BEAUFORT[i][0]) k = i; return [k, BEAUFORT[k][1]]; }
+const COLORS = ["#C9A65A","#B9C4D6","#9FB7C9","#E2A6B8","#F0C24F","#D9664F","#D8A06A","#A7957A","#A9C6F2"];
+
+/* ═══════════════════════════════════════════════════════════════
+   AUDIO — a sine + band-passed breath per voice, gated by the wind model
+   ═══════════════════════════════════════════════════════════════ */
+const AU = { ctx: null, master: null, v: [], level: 0.6 };
+function audio(){
+  if (AU.ctx) { if (AU.ctx.state === "suspended") AU.ctx.resume(); return AU; }
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -18; comp.ratio.value = 4;
+  const master = ctx.createGain(); master.gain.value = AU.level;
+  master.connect(comp); comp.connect(ctx.destination);
+  const nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), ch = nb.getChannelData(0);
+  for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource(); noise.buffer = nb; noise.loop = true; noise.start();
+  AU.v = VO.map(v => {
+    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = v.freq;
+    const g = ctx.createGain(); g.gain.value = 0;
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = v.freq; bp.Q.value = 9;
+    const gn = ctx.createGain(); gn.gain.value = 0;
+    osc.connect(g); g.connect(master); noise.connect(bp); bp.connect(gn); gn.connect(master);
+    osc.start();
+    return { osc, g, gn, f: v.freq };
+  });
+  Object.assign(AU, { ctx, master });
+  return AU;
+}
+/* per-voice loudness: low tones are heard more weakly, so give them a little more */
+const VLEV = VO.map(v => 0.16 * Math.pow(528 / v.freq, 0.25));
+function setVoice(i, amp, cents, tc = 0.12){
+  const a = audio(), t = a.ctx.currentTime, s = a.v[i];
+  s.g.gain.setTargetAtTime(amp * VLEV[i], t, tc);
+  s.gn.gain.setTargetAtTime(amp * VLEV[i] * 0.9, t, tc);
+  s.osc.frequency.setTargetAtTime(s.f * Math.pow(2, (cents || 0) / 1200), t, tc);
+}
+const AMP = new Array(VO.length).fill(0);       // what each voice is doing now (for drawing)
+const pluck = new Array(VO.length).fill(0);     // manual-play envelopes (seconds left)
+function playVoice(i, dur = 2.6){ audio(); pluck[i] = dur; }
+
+/* gusting wind: mean * exp(sigma * X), X = slow + fast Ornstein-Uhlenbeck, unit variance */
+const WIND = { on: false, mean: 5, gust: 0.3, x1: 0, x2: 0, now: 5 };
+function stepWind(dt){
+  const r = () => { let u = 0; for (let k = 0; k < 6; k++) u += Math.random(); return (u - 3) / Math.SQRT1_2 / 1.0; };
+  const ou = (x, tau) => x - x * dt / tau + Math.sqrt(2 * dt / tau) * r() * 0.7071;
+  WIND.x1 = ou(WIND.x1, 4.0); WIND.x2 = ou(WIND.x2, 0.6);
+  const X = 0.8 * WIND.x1 + 0.6 * WIND.x2;
+  WIND.now = WIND.mean * Math.exp(WIND.gust * X - WIND.gust * WIND.gust / 2);
+}
+let lastT = performance.now();
+function audioTick(){
+  const now = performance.now(), dt = Math.min(0.2, (now - lastT) / 1000); lastT = now;
+  if (WIND.on) stepWind(dt);
+  const active = WIND.on || pluck.some(p => p > 0);
+  for (let i = 0; i < VO.length; i++){
+    let a = 0, cents = 0;
+    if (WIND.on){
+      const f = VO[i].freq, U = D.eta * WIND.now, Uopt = f * D.W * 1e-3 / ST_OPT;
+      a = drive(f, WIND.now) * clamp(Math.sqrt(U / Uopt), 0.3, 1.4);
+      cents = clamp(28 * Math.log(U / Uopt) / Math.log(4), -25, 30);
+    }
+    if (pluck[i] > 0){
+      const tl = pluck[i]; pluck[i] = Math.max(0, tl - dt);
+      a = Math.max(a, Math.min(1, (2.6 - tl) / 0.12, tl / 0.5));
+    }
+    AMP[i] = a;
+    if (AU.ctx) setVoice(i, a, cents);
+  }
+  updateMeters(active);
+}
+setInterval(audioTick, 50);
+
+/* ═══════════════════════════════════════════════════════════════
+   THEME + RAIL
+   ═══════════════════════════════════════════════════════════════ */
+(function(){
+  const root = document.documentElement, btn = document.getElementById("themeBtn");
+  let saved = null; try { saved = localStorage.getItem("theoria-theme"); } catch(e) {}
+  if (saved) root.setAttribute("data-theme", saved);
+  btn.addEventListener("click", () => {
+    const dark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theoria-theme", next); } catch(e) {}
+    redrawStatic();
+  });
+  const btns = [...document.querySelectorAll(".rail button")];
+  btns.forEach(b => b.addEventListener("click", () => document.getElementById(b.dataset.go).scrollIntoView()));
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) btns.forEach(b => b.classList.toggle("on", b.dataset.go === e.target.id));
+  }), { rootMargin: "-45% 0px -50% 0px" });
+  btns.forEach(b => io.observe(document.getElementById(b.dataset.go)));
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   GEOMETRY of the chandelier (front elevation, mm; x right, z up)
+   ═══════════════════════════════════════════════════════════════ */
+function voiceOutline(i){
+  const v = VO[i], o = v.outer, ang = LAY.angles[v.name];
+  const pts = o.map(p => [p[0], p[1]]).concat(o.slice().reverse().map(p => [-p[0], p[1]]));
+  const ztop = o[o.length - 1][1], h = v.head;
+  const head = [[-h.xh, ztop - 8], [h.xh, ztop - 8], [h.xh, ztop + h.z_bt], [-h.xh, ztop + h.z_bt]];
+  if (ang === undefined){                               // Earth: vertical, foot at earth_z0
+    const z0 = LAY.earth_z0;
+    const T = p => [p[0], p[1] + z0];
+    return { body: pts.map(T), head: head.map(T), centre: T([0, v.outer[0][1] + ztop * 0.42]) };
+  }
+  const t = ang * Math.PI / 180, zx = Math.cos(t), zz = Math.sin(t), xx = Math.sin(t), xz = -Math.cos(t);
+  const T = p => [p[0] * xx + (LAY.R_f + p[1]) * zx, p[0] * xz + (LAY.R_f + p[1]) * zz];
+  return { body: pts.map(T), head: head.map(T), centre: T([0, ztop * 0.42]) };
+}
+let OUT = [];
+function geom(){ OUT = VO.map((_, i) => voiceOutline(i)); }
+
+function drawInstrument(cv, opt = {}){
+  const g = cv.getContext("2d"), W = cv.width, H = cv.height;
+  g.clearRect(0, 0, W, H);
+  const span = opt.span || 560, s = W / span;
+  const ox = W / 2, oz = H / 2 + (opt.dz || 10) * s;
+  const P = p => [ox + p[0] * s, oz - p[1] * s];
+  const poly = (pts, fill, stroke, lw = 1.2) => {
+    g.beginPath(); pts.forEach((p, k) => { const q = P(p); k ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); });
+    g.closePath(); if (fill){ g.fillStyle = fill; g.fill(); } if (stroke){ g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); }
+  };
+  const gold = css("--gold"), faint = css("--faint"), gourd = css("--gourd"), head = css("--head"), ink = css("--ink");
+  // hang line + crown
+  g.strokeStyle = faint; g.lineWidth = 1; g.setLineDash([4, 4]);
+  g.beginPath(); let q = P([0, LAY.R_f + 40]); g.moveTo(q[0], q[1]); q = P([0, 280]); g.lineTo(q[0], q[1]); g.stroke();
+  g.setLineDash([]);
+  // wheel
+  g.strokeStyle = gold; g.lineWidth = 7 * s * 0.9;
+  g.beginPath(); g.arc(ox, oz, LAY.ring_r * s, 0, 2 * Math.PI); g.stroke();
+  g.lineWidth = 9 * s * 0.8;
+  for (const v of VO.slice(1)){
+    const t = LAY.angles[v.name] * Math.PI / 180;
+    g.beginPath(); q = P([24 * Math.cos(t), 24 * Math.sin(t)]); g.moveTo(q[0], q[1]);
+    q = P([LAY.R_f * Math.cos(t), LAY.R_f * Math.sin(t)]); g.lineTo(q[0], q[1]); g.stroke();
+  }
+  // crown + pendant lug
+  poly([[-8, LAY.ring_r], [8, LAY.ring_r], [8, LAY.R_f + 26], [-8, LAY.R_f + 26]], gold);
+  poly([[-8, -LAY.ring_r], [8, -LAY.ring_r], [8, -LAY.R_f - 6], [-8, -LAY.R_f - 6]], gold);
+  // voices: planets first, Earth on top (it hangs in front)
+  const order = VO.map((_, i) => i).slice(1).concat([0]);
+  for (const i of order){
+    const o = OUT[i], a = opt.amp ? opt.amp[i] : 0;
+    if (a > 0.02){
+      const c = P(o.centre);
+      const rg = g.createRadialGradient(c[0], c[1], 0, c[0], c[1], (VO[i].R * 2.2 + 30) * s);
+      rg.addColorStop(0, COLORS[i] + "CC"); rg.addColorStop(1, COLORS[i] + "00");
+      g.globalAlpha = Math.min(1, a); g.fillStyle = rg;
+      g.beginPath(); g.arc(c[0], c[1], (VO[i].R * 2.2 + 30) * s, 0, 2 * Math.PI); g.fill(); g.globalAlpha = 1;
+    }
+    poly(o.body, gourd, a > 0.02 ? COLORS[i] : "rgba(0,0,0,0.25)", a > 0.02 ? 2 : 0.8);
+    poly(o.head, head);
+    if (opt.labels){
+      const c = P(o.centre);
+      g.fillStyle = "#1a1a1a"; g.font = `${Math.max(10, 11 * s * 1.6)}px ${css("--label")}`;
+      g.textAlign = "center"; g.fillText(VO[i].freq, c[0], c[1] + 4);
+    }
+  }
+}
+
+/* hit test for clicks on the hero */
+function inPoly(p, pts){
+  let c = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++){
+    const [xi, yi] = pts[i], [xj, yj] = pts[j];
+    if (((yi > p[1]) !== (yj > p[1])) && (p[0] < (xj - xi) * (p[1] - yi) / (yj - yi) + xi)) c = !c;
+  }
+  return c;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════════════ */
+const instr = document.getElementById("instr");
+const heroWind = document.getElementById("heroWind"), heroWindOut = document.getElementById("heroWindOut");
+const windBtns = [document.getElementById("windBtn"), document.getElementById("windBtn2")];
+function setMeanWind(w){
+  WIND.mean = +w;
+  heroWind.value = w; document.getElementById("cW").value = w;
+  const txt = `${(+w).toFixed(1)} m/s`;
+  heroWindOut.textContent = txt; document.getElementById("cWo").textContent = txt;
+}
+heroWind.addEventListener("input", e => setMeanWind(e.target.value));
+function toggleWind(){
+  audio(); WIND.on = !WIND.on; if (WIND.on) WIND.now = WIND.mean;
+  windBtns.forEach(b => { b.classList.toggle("on", WIND.on); b.textContent = WIND.on ? "Still the wind" : "Let the wind blow"; });
+}
+windBtns.forEach(b => b.addEventListener("click", toggleWind));
+instr.addEventListener("click", e => {
+  const r = instr.getBoundingClientRect();
+  const span = 560, s = instr.width / span;
+  const x = ((e.clientX - r.left) * instr.width / r.width - instr.width / 2) / s;
+  const z = -((e.clientY - r.top) * instr.height / r.height - instr.height / 2 - 10 * s) / s;
+  for (const i of [0, 1, 2, 3, 4, 5, 6, 7, 8]){
+    if (inPoly([x, z], OUT[i].body) || inPoly([x, z], OUT[i].head)){ playVoice(i); break; }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   I · HELMHOLTZ BENCH
+   ═══════════════════════════════════════════════════════════════ */
+const bench = { V: 100, b: 15, T: 20, f: 400, phase: 0, playing: 0 };
+function benchUpdate(){
+  bench.V = Math.pow(10, +document.getElementById("bV").value);
+  bench.b = +document.getElementById("bB").value;
+  bench.T = +document.getElementById("bT").value;
+  const c = cAir(bench.T);
+  bench.f = singleFreq(bench.V, bench.b, c);
+  document.getElementById("bVo").textContent = bench.V < 100 ? `${bench.V.toFixed(1)} cm³` : `${bench.V.toFixed(0)} cm³`;
+  document.getElementById("bBo").textContent = `${bench.b.toFixed(1)} mm`;
+  document.getElementById("bTo").textContent = `${bench.T} °C`;
+  const d = endCorr(D.W, bench.b), dc = 0.849 * Math.sqrt(D.W * bench.b / Math.PI);
+  let near = 0; VO.forEach((v, i) => { if (Math.abs(Math.log(v.freq / bench.f)) < Math.abs(Math.log(VO[near].freq / bench.f))) near = i; });
+  document.getElementById("benchRead").innerHTML =
+    `<span>f = <b>${bench.f.toFixed(1)} Hz</b></span><span>${noteOf(bench.f)}</span>` +
+    `<span>c = ${c.toFixed(1)} m/s</span><span>end corr. ${d.toFixed(2)} mm/side (round hole ${dc.toFixed(2)})</span>` +
+    `<span>nearest voice: ${VO[near].name} ${VO[near].freq} Hz</span>`;
+  if (AU.ctx && bench.playing > 0) AU.bench.frequency.setTargetAtTime(bench.f, AU.ctx.currentTime, 0.05);
+}
+["bV", "bB", "bT"].forEach(id => document.getElementById(id).addEventListener("input", benchUpdate));
+document.getElementById("benchPlay").addEventListener("click", () => {
+  const a = audio();
+  if (!a.bench){
+    a.bench = a.ctx.createOscillator(); a.bench.type = "sine";
+    a.benchG = a.ctx.createGain(); a.benchG.gain.value = 0;
+    a.bench.connect(a.benchG); a.benchG.connect(a.master); a.bench.start();
+  }
+  a.bench.frequency.setValueAtTime(bench.f, a.ctx.currentTime);
+  const t = a.ctx.currentTime;
+  a.benchG.gain.cancelScheduledValues(t);
+  a.benchG.gain.setValueAtTime(a.benchG.gain.value, t);
+  a.benchG.gain.linearRampToValueAtTime(0.18, t + 0.08);
+  a.benchG.gain.setTargetAtTime(0, t + 1.6, 0.25);
+  bench.playing = 2.2;
+});
+function drawBench(dt){
+  const cv = document.getElementById("bench"), g = cv.getContext("2d"), W = cv.width, H = cv.height;
+  g.clearRect(0, 0, W, H);
+  const fv = 0.9;                                           // shown at 0.9 Hz
+  document.getElementById("benchSlow").textContent = `slowed ${Math.round(bench.f / fv)}×`;
+  bench.phase += 2 * Math.PI * fv * dt;
+  const x = Math.sin(bench.phase);                          // plug displacement (inward +)
+  const R = 70 + 120 * (Math.log10(bench.V) - 0.6) / 2.7;   // drawn bulb radius
+  const cx = W / 2, cy = H * 0.62, nw = 8 + bench.b * 2.6, nh = 70;
+  // cavity, shaded by pressure (plug in -> compressed)
+  const air = css("--air"), jet = css("--jet"), ink2 = css("--ink-2");
+  g.save();
+  g.beginPath(); g.arc(cx, cy, R, 0, 2 * Math.PI); g.closePath();
+  g.fillStyle = air; g.globalAlpha = 0.18 + 0.22 * (x * 0.5 + 0.5); g.fill(); g.globalAlpha = 1;
+  g.lineWidth = 4; g.strokeStyle = ink2; g.stroke();
+  // compression rings
+  for (let k = 1; k <= 4; k++){
+    g.beginPath(); g.arc(cx, cy, R * (k / 5) * (1 - 0.05 * x), 0, 2 * Math.PI);
+    g.strokeStyle = air; g.globalAlpha = 0.25; g.lineWidth = 1.2; g.stroke(); g.globalAlpha = 1;
+  }
+  // neck
+  const top = cy - R - nh + 10;
+  g.fillStyle = css("--ground-2");
+  g.fillRect(cx - nw / 2, top, nw, nh);
+  g.strokeStyle = ink2; g.lineWidth = 4;
+  g.beginPath(); g.moveTo(cx - nw / 2, cy - R * Math.cos(Math.asin(Math.min(1, nw / 2 / R))) ); g.lineTo(cx - nw / 2, top);
+  g.moveTo(cx + nw / 2, cy - R * Math.cos(Math.asin(Math.min(1, nw / 2 / R)))); g.lineTo(cx + nw / 2, top); g.stroke();
+  // plug of air in the neck
+  const py = top + 10 + 22 * (x * 0.5 + 0.5);
+  g.fillStyle = jet; g.globalAlpha = 0.85; g.fillRect(cx - nw / 2 + 3, py, nw - 6, 30); g.globalAlpha = 1;
+  g.fillStyle = ink2; g.font = `15px ${css("--label")}`; g.textAlign = "left";
+  g.fillText("mass: the plug of air in the mouth", cx + nw / 2 + 14, py + 18);
+  g.fillText("spring: the air in the body", cx + R * 0.72 + 12, cy + R * 0.72 + 10);
+  g.restore();
+  if (bench.playing > 0) bench.playing -= dt;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   II · JET
+   ═══════════════════════════════════════════════════════════════ */
+const jet = { i: 4, wind: 5, t: 0 };
+function jetUpdate(){
+  jet.i = +document.getElementById("jV").value;
+  jet.wind = +document.getElementById("jW").value;
+  const f = VO[jet.i].freq, U = D.eta * jet.wind, St = f * D.W * 1e-3 / U;
+  const cyc = St / 0.5;                       // W / (0.5 U) * f
+  const dr = drive(f, jet.wind);
+  const [on, opt, off] = windBand(f);
+  document.getElementById("jWo").textContent = `${jet.wind.toFixed(1)} m/s`;
+  const state = jet.wind < on ? "too slow: silent" : jet.wind > off ? "too fast: hiss" : dr > 0.75 ? "speaking strongly" : "speaking";
+  document.getElementById("jetRead").innerHTML =
+    `<span>jet U = <b>${U.toFixed(1)} m/s</b></span><span>St = <b>${St.toFixed(3)}</b></span>` +
+    `<span>trip across the window = ${cyc.toFixed(2)} cycles</span><span>${state}</span>`;
+  document.getElementById("jetGain").style.width = `${(100 * dr).toFixed(0)}%`;
+  document.getElementById("jetGain").style.background = dr > 0 ? css("--gold") : css("--faint");
+}
+document.getElementById("jW").addEventListener("input", jetUpdate);
+document.getElementById("jV").addEventListener("change", () => { jetUpdate(); drawSection(); });
+function drawJet(dt){
+  const cv = document.getElementById("jetc"), g = cv.getContext("2d"), W = cv.width, H = cv.height;
+  g.clearRect(0, 0, W, H);
+  const f = VO[jet.i].freq, U = D.eta * jet.wind;
+  const fv = 0.7; jet.t += dt;
+  document.getElementById("jetSlow").textContent = `slowed ${Math.round(f / fv)}×`;
+  const sc = 80;                                   // px per mm
+  const x0 = 250, y0 = 190, Wpx = D.W * sc, hpx = D.h * sc;
+  const ink2 = css("--ink-2"), headc = css("--head"), jetc = css("--jet"), air = css("--air");
+  g.fillStyle = headc;
+  // block above the windway, floor below it
+  g.fillRect(0, y0 - hpx / 2 - 120, x0, 120);
+  g.fillRect(0, y0 + hpx / 2, x0, 26);
+  // labium wedge
+  const tipx = x0 + Wpx, tipy = y0 + hpx / 2 - 0.35 * hpx;
+  g.beginPath(); g.moveTo(tipx, tipy); g.lineTo(W, tipy - (W - tipx) * Math.tan(15 * Math.PI / 180));
+  g.lineTo(W, tipy + (W - tipx) * Math.tan(15 * Math.PI / 180)); g.closePath(); g.fill();
+  // cavity below the window
+  g.fillStyle = air; g.globalAlpha = 0.16; g.fillRect(x0 - 40, y0 + hpx / 2 + 26, W - x0 + 40, H); g.globalAlpha = 1;
+  // jet sheet: wave convected at 0.5 U, amplitude growing exponentially across the window
+  const ph = 2 * Math.PI * fv * jet.t;
+  const lam = 0.5 * U / f * 1000 * sc;             // wavelength in px
+  const dr = drive(f, jet.wind);
+  g.fillStyle = jetc; g.globalAlpha = 0.85;
+  g.beginPath();
+  const N = 80, ys = [];
+  for (let k = 0; k <= N; k++){
+    const xx = x0 - 30 + (Wpx + 60) * k / N, s = Math.max(0, xx - x0);
+    const amp = (0.06 + 0.9 * (Math.exp(2.2 * s / Wpx) - 1) / (Math.exp(2.2) - 1)) * hpx * (0.4 + 0.9 * dr);
+    ys.push(y0 + amp * Math.sin(ph - 2 * Math.PI * s / lam));
+  }
+  for (let k = 0; k <= N; k++){ const xx = x0 - 30 + (Wpx + 60) * k / N; k ? g.lineTo(xx, ys[k] - hpx / 2) : g.moveTo(xx, ys[k] - hpx / 2); }
+  for (let k = N; k >= 0; k--){ const xx = x0 - 30 + (Wpx + 60) * k / N; g.lineTo(xx, ys[k] + hpx / 2); }
+  g.closePath(); g.fill(); g.globalAlpha = 1;
+  // windway arrows
+  g.strokeStyle = jetc; g.lineWidth = 2;
+  for (let k = 0; k < 3; k++){ const xx = 40 + k * 70 + (jet.t * 60) % 70; g.beginPath(); g.moveTo(xx, y0); g.lineTo(xx + 26, y0); g.stroke(); }
+  // labels
+  g.fillStyle = ink2; g.font = `15px ${css("--label")}`; g.textAlign = "center";
+  g.fillText("windway", x0 / 2, y0 + hpx / 2 + 48);
+  g.fillText(`window ${D.W} mm`, x0 + Wpx / 2, y0 - hpx / 2 - 126);
+  g.fillText("labium", tipx + 120, tipy - 46);
+  g.fillText("cavity (via the plenum)", x0 + Wpx / 2 + 40, H - 24);
+  g.strokeStyle = css("--faint"); g.setLineDash([3, 4]); g.lineWidth = 1;
+  g.beginPath(); g.moveTo(x0, y0 - hpx / 2 - 118); g.lineTo(x0, H); g.moveTo(tipx, y0 - hpx / 2 - 118); g.lineTo(tipx, H); g.stroke(); g.setLineDash([]);
+}
+
+/* head section from the stored stations (Earth by default; follows the jet voice) */
+function drawSection(){
+  const v = VO[jet.i], h = v.head, svg = document.getElementById("sect");
+  document.getElementById("secName").textContent = `${v.name} · ${v.freq} Hz · b = ${v.b.toFixed(1)} mm`;
+  const R = 2.5, Rn = 3.9, SP = 8;
+  const yf = Math.min(h.y_front, -h.ys), yw0 = yf + Rn, y0 = h.y0, yL = h.yL;
+  const yr = Math.max(h.y_rear, h.ys), zr = h.z_r, zf = h.z_f;
+  const zramp = h.z_tip + (yr - yL) * Math.tan(15 * Math.PI / 180);
+  const arc = (cy, cz, r, a0, a1, n = 12) => Array.from({ length: n }, (_, k) => {
+    const a = (a0 + (a1 - a0) * k / (n - 1)) * Math.PI / 180; return [cy + r * Math.cos(a), cz + r * Math.sin(a)]; });
+  const ext = [[yf, 0], [yr, 0], [yr, zramp], [yL, h.z_tip], [yL, zf], [y0, zf], [y0, h.z_bt]].concat(arc(yw0, zr + R, Rn, 90, 180));
+  const skirt = [[-h.ys, -SP], [h.ys, -SP], [h.ys, zf], [-h.ys, zf]];
+  const ww = [[yf - 1, zf - R]].concat(arc(yw0, zf - R, R, 180, 90), [[y0 + 0.3, zf], [y0 + 0.3, zr]], arc(yw0, zr + R, R, 270, 180), [[yf - 1, zr + R]]);
+  const tdown = Math.tan(15 * Math.PI / 180), ypf = y0 - 2, ypr = yL + 7;
+  const zu = Math.max(h.z_tip - (ypr - yL) * tdown, 0.6);
+  const pl = [[ypf, 0], [ypr, 0], [ypr, zu], [yL, h.z_tip], [yL, zf], [y0, zf], [y0, h.z_pc], [ypf, h.z_pc]];
+  const rs = h.rso + 0.15, rb = h.rso - 1.6;
+  const sock = [[-rs, -SP - 0.01], [rs, -SP - 0.01], [rs, 0], [-rs, 0]];
+  const neck = [[-h.rso, -SP - 9], [h.rso, -SP - 9], [h.rso, 0], [-h.rso, 0]];
+  const bore = [[-rb, -SP - 10], [rb, -SP - 10], [rb, 0.01], [-rb, 0.01]];
+  const ymin = yf - 9, ymax = yr + 3, zmin = -SP - 9, zmax = h.z_bt + 4;
+  const sc = Math.min(800 / (ymax - ymin), 330 / (zmax - zmin));
+  const offx = (800 - (ymax - ymin) * sc) / 2, offz = (330 - (zmax - zmin) * sc) / 2;
+  const X = y => offx + (y - ymin) * sc, Z = z => 330 - offz - (z - zmin) * sc;
+  const path = (pts, fill) => `<polygon points="${pts.map(p => `${X(p[0]).toFixed(1)},${Z(p[1]).toFixed(1)}`).join(" ")}" fill="${fill}"/>`;
+  const bg = css("--ground-2"), head = css("--head"), gourd = css("--gourd"), ink2 = css("--ink-2"), jetc = css("--jet");
+  let s = path(skirt, head) + path(ext, head) + path(sock, bg) + path(neck, gourd) + path(bore, bg) + path(ww, bg) + path(pl, bg);
+  s += `<line x1="${X(yf - 8)}" y1="${Z((zf + zr) / 2)}" x2="${X(y0 - 0.3)}" y2="${Z((zf + zr) / 2)}" stroke="${jetc}" stroke-width="2" marker-end="url(#ah)"/>`;
+  s = `<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="${jetc}"/></marker></defs>` + s;
+  const lab = (y, z, t, a = "middle") => `<text x="${X(y)}" y="${Z(z)}" fill="${ink2}" font-size="13" font-family="${css("--label")}" text-anchor="${a}">${t}</text>`;
+  s += lab(yf - 8, zr + 1.2, "wind", "start") + lab((y0 + yL) / 2, h.z_bt + 1.6, `window ${D.W} mm`) +
+       lab(yL + 3, h.z_tip + 2.6, "labium", "start") + lab((yw0 + y0) / 2, zr + 0.9, `windway ${D.h} mm`) +
+       lab((ypf + ypr) / 2, 0.6, "plenum") + lab(0, -SP - 4.5, "neck bore → cavity");
+  svg.innerHTML = s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   III · LADDER
+   ═══════════════════════════════════════════════════════════════ */
+const lad = { w: 5 };
+function drawLadder(){
+  const svg = document.getElementById("lad"), W = 1000, H = 470;
+  const L = 130, Rr = 20, T = 40, B = 60;
+  const wmin = 0.5, wmax = 32;
+  const X = w => L + (W - L - Rr) * Math.log(w / wmin) / Math.log(wmax / wmin);
+  const rowH = (H - T - B) / VO.length;
+  const ink2 = css("--ink-2"), faint = css("--faint"), rule = css("--rule-soft"), gold = css("--gold");
+  let s = "";
+  // Beaufort bands
+  for (let k = 1; k < BEAUFORT.length; k++){
+    const a = Math.max(BEAUFORT[k][0], wmin), b = k + 1 < BEAUFORT.length ? BEAUFORT[k + 1][0] : wmax;
+    if (a >= wmax) break;
+    s += `<rect x="${X(a)}" y="${T - 22}" width="${X(Math.min(b, wmax)) - X(a)}" height="${H - T - B + 22}" fill="${k % 2 ? rule : "none"}" opacity="0.55"/>`;
+    s += `<text x="${(X(a) + X(Math.min(b, wmax))) / 2}" y="${T - 8}" font-size="11" fill="${faint}" text-anchor="middle" font-family="${css("--label")}">${k}</text>`;
+  }
+  // axis
+  for (const w of [0.5, 1, 2, 3, 5, 7, 10, 15, 20, 30]){
+    s += `<line x1="${X(w)}" y1="${H - B}" x2="${X(w)}" y2="${H - B + 5}" stroke="${faint}"/>`;
+    s += `<text x="${X(w)}" y="${H - B + 20}" font-size="12" fill="${ink2}" text-anchor="middle" font-family="${css("--mono")}">${w}</text>`;
+  }
+  s += `<text x="${(L + W - Rr) / 2}" y="${H - 14}" font-size="12" fill="${ink2}" text-anchor="middle" font-family="${css("--label")}">wind speed, m/s   (top: Beaufort force)</text>`;
+  VO.forEach((v, i) => {
+    const [on, opt, off] = windBand(v.freq), y = T + rowH * (VO.length - 1 - i) + rowH * 0.2, hh = rowH * 0.6;
+    const d = drive(v.freq, lad.w);
+    s += `<text x="${L - 10}" y="${y + hh * 0.72}" font-size="13" fill="${ink2}" text-anchor="end" font-family="${css("--label")}">${v.name} ${v.freq}</text>`;
+    s += `<rect x="${X(on)}" y="${y}" width="${X(Math.min(off, wmax)) - X(on)}" height="${hh}" rx="4" fill="${COLORS[i]}" opacity="${0.25 + 0.75 * d}"/>`;
+    s += `<circle cx="${X(opt)}" cy="${y + hh / 2}" r="4" fill="${css("--ground")}" stroke="${COLORS[i]}" stroke-width="2"/>`;
+  });
+  s += `<line x1="${X(lad.w)}" y1="${T - 22}" x2="${X(lad.w)}" y2="${H - B}" stroke="${gold}" stroke-width="2"/>`;
+  svg.innerHTML = s;
+  const [k, name] = beaufort(lad.w);
+  const sing = VO.filter(v => drive(v.freq, lad.w) > 0).map(v => v.name);
+  document.getElementById("ladRead").textContent = `${lad.w.toFixed(1)} m/s · Beaufort ${k}, ${name} · ${sing.length ? sing.join(", ") : "silence"}`;
+}
+document.getElementById("lW").addEventListener("input", e => {
+  lad.w = Math.pow(10, +e.target.value);
+  document.getElementById("lWo").textContent = `${lad.w.toFixed(1)} m/s`;
+  drawLadder();
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   IV · CHOIR
+   ═══════════════════════════════════════════════════════════════ */
+const vbtns = document.getElementById("voiceBtns");
+VO.forEach((v, i) => {
+  const b = document.createElement("button");
+  b.className = "vbtn";
+  b.innerHTML = `<span>${v.name}${v.solfege ? " · " + v.solfege : ""}</span><span class="hz">${v.freq} Hz</span><span class="meter"><i></i></span>`;
+  b.addEventListener("click", () => playVoice(i));
+  vbtns.appendChild(b);
+  const o = document.createElement("option"); o.value = i; o.textContent = `${v.name} · ${v.freq} Hz`;
+  document.getElementById("jV").appendChild(o);
+});
+document.getElementById("jV").value = 4;
+document.getElementById("cW").addEventListener("input", e => setMeanWind(e.target.value));
+document.getElementById("cG").addEventListener("input", e => { WIND.gust = +e.target.value; document.getElementById("cGo").textContent = `${Math.round(100 * WIND.gust)} %`; });
+document.getElementById("cVol").addEventListener("input", e => {
+  AU.level = +e.target.value; document.getElementById("cVolo").textContent = `${Math.round(100 * AU.level)} %`;
+  if (AU.ctx) AU.master.gain.setTargetAtTime(AU.level, AU.ctx.currentTime, 0.05);
+});
+document.getElementById("allBtn").addEventListener("click", () => {
+  audio(); VO.forEach((_, i) => setTimeout(() => playVoice(i, 1.6), i * 900));
+});
+function playPair(i, j){ playVoice(i, 3.4); playVoice(j, 3.4); }
+document.getElementById("beatBtn").addEventListener("click", () => playPair(2, 3));
+document.getElementById("fourthBtn").addEventListener("click", () => playPair(2, 4));
+function updateMeters(active){
+  [...vbtns.children].forEach((b, i) => {
+    b.querySelector(".meter i").style.width = `${Math.round(100 * Math.min(1, AMP[i]))}%`;
+    b.classList.toggle("on", AMP[i] > 0.05);
+  });
+  const sing = VO.filter((_, i) => AMP[i] > 0.05).map(v => v.name);
+  const st = !active ? "silent" : sing.length ? sing.join(" · ") : "listening";
+  document.getElementById("choirState").textContent = st;
+  document.getElementById("heroState").textContent = WIND.on ? `${WIND.now.toFixed(1)} m/s · ${beaufort(WIND.now)[1]}` : st;
+  document.getElementById("choirRead").innerHTML = WIND.on
+    ? `<span>wind now <b>${WIND.now.toFixed(1)} m/s</b></span><span>Beaufort ${beaufort(WIND.now)[0]}</span><span>${sing.length} voice${sing.length === 1 ? "" : "s"} speaking</span>` : "";
+}
+function drawRough(){
+  const svg = document.getElementById("rough"), n = VO.length, L = 80, T = 20, cs = 46;
+  const ink2 = css("--ink-2"), rough = css("--rough");
+  let s = "";
+  VO.forEach((a, i) => VO.forEach((b, j) => {
+    const r = i === j ? 0 : roughness(a.freq, b.freq);
+    s += `<rect class="rc" data-i="${i}" data-j="${j}" x="${L + j * cs}" y="${T + i * cs}" width="${cs - 2}" height="${cs - 2}" rx="4" fill="${i === j ? css("--rule-soft") : rough}" fill-opacity="${i === j ? 1 : (0.06 + 0.94 * r).toFixed(3)}" style="cursor:pointer"/>`;
+    if (i !== j && r > 0.15) s += `<text x="${L + j * cs + cs / 2 - 1}" y="${T + i * cs + cs / 2 + 4}" font-size="11" text-anchor="middle" fill="${r > 0.6 ? "#fff" : ink2}" font-family="${css("--mono")}" pointer-events="none">${r.toFixed(2)}</text>`;
+  }));
+  VO.forEach((v, i) => {
+    s += `<text x="${L - 8}" y="${T + i * cs + cs / 2 + 4}" font-size="12" text-anchor="end" fill="${ink2}" font-family="${css("--mono")}">${v.freq}</text>`;
+    s += `<text x="${L + i * cs + cs / 2}" y="${T + n * cs + 16}" font-size="12" text-anchor="middle" fill="${ink2}" font-family="${css("--mono")}">${v.freq}</text>`;
+  });
+  svg.innerHTML = s;
+  svg.querySelectorAll(".rc").forEach(r => {
+    const i = +r.dataset.i, j = +r.dataset.j;
+    r.addEventListener("mouseenter", () => {
+      document.getElementById("roughRead").textContent = i === j ? `${VO[i].name}` :
+        `${VO[i].freq} + ${VO[j].freq}: beats ${Math.abs(VO[i].freq - VO[j].freq)}/s · roughness ${roughness(VO[i].freq, VO[j].freq).toFixed(2)}`;
+    });
+    r.addEventListener("click", () => i === j ? playVoice(i) : playPair(i, j));
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   V · ASCENT
+   ═══════════════════════════════════════════════════════════════ */
+const POIM = {
+  Earth: "the body, given back to change",
+  Moon: "growth and waning",
+  Mercury: "the device of evils",
+  Venus: "the guile of the desires",
+  Sun: "domineering arrogance",
+  Mars: "unholy daring and rash audacity",
+  Jupiter: "striving for wealth by evil means",
+  Saturn: "ensnaring falsehood",
+  Ogdoad: "none — here the soul hymns with the powers",
+};
+function drawCad(){
+  const svg = document.getElementById("cad"), S = 560, c = S / 2 + 10, sc = 0.95;
+  const P = (x, z) => [S / 2 + x * sc, c - z * sc];
+  const gold = css("--gold"), faint = css("--faint"), gourd = css("--gourd"), ink2 = css("--ink-2"), head = css("--head");
+  let s = `<circle cx="${S / 2}" cy="${c}" r="${LAY.ring_r * sc}" fill="none" stroke="${faint}" stroke-width="3"/>`;
+  const pts = {};
+  VO.forEach((v, i) => {
+    const o = OUT[i];
+    s += `<polygon points="${o.body.map(p => P(p[0], p[1]).map(x => x.toFixed(1)).join(",")).join(" ")}" fill="${gourd}" opacity="${i === 0 ? 0.45 : 0.85}"/>`;
+    s += `<polygon points="${o.head.map(p => P(p[0], p[1]).map(x => x.toFixed(1)).join(",")).join(" ")}" fill="${head}" opacity="${i === 0 ? 0.45 : 1}"/>`;
+    pts[v.name] = P(o.centre[0], o.centre[1]);
+  });
+  const path = ["Earth"].concat(LAY.climb).map(n => pts[n]);
+  s += `<polyline points="${path.map(p => p.map(x => x.toFixed(1)).join(",")).join(" ")}" fill="none" stroke="${gold}" stroke-width="2.5" stroke-linejoin="round"/>`;
+  ["Earth"].concat(LAY.climb).forEach((n, k) => {
+    const p = pts[n];
+    s += `<circle cx="${p[0]}" cy="${p[1]}" r="11" fill="${css("--ground-2")}" stroke="${gold}" stroke-width="2"/>`;
+    s += `<text x="${p[0]}" y="${p[1] + 4}" font-size="11" text-anchor="middle" fill="${ink2}" font-family="${css("--mono")}">${k}</text>`;
+  });
+  const t = P(0, LAY.R_f + 40);
+  s += `<line x1="${t[0]}" y1="${t[1]}" x2="${t[0]}" y2="4" stroke="${ink2}" stroke-dasharray="4 4"/>`;
+  svg.innerHTML = s;
+}
+function fillAscTable(){
+  const rows = ["Earth"].concat(LAY.climb).map((n, k) => {
+    const v = VO.find(x => x.name === n), [on, opt] = windBand(v.freq);
+    const ang = LAY.angles[n];
+    const pos = ang === undefined ? "centre, in front of the hub" : `${ang.toFixed(1)}° (${Math.cos(ang * Math.PI / 180) < 0 ? "left" : "right"})`;
+    return `<tr><td class="n">${k}</td><td>${n}${v.solfege ? " · " + v.solfege : ""}</td><td class="mut">${v.sphere}</td><td class="n">${v.freq} Hz</td><td class="n">${on.toFixed(1)} / ${opt.toFixed(1)}</td><td>${pos}</td><td class="mut"><i>${POIM[n]}</i></td></tr>`;
+  });
+  document.getElementById("ascTable").innerHTML =
+    `<tr><th>#</th><th>Voice</th><th>Sphere</th><th>Tone</th><th>Wind on / best, m/s</th><th>On the wheel</th><th>Given back (Poimandres I.25)</th></tr>` + rows.join("");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VI · PARTS
+   ═══════════════════════════════════════════════════════════════ */
+function fillParts(){
+  const rows = VO.map((v, i) => {
+    const H = v.outer[v.outer.length - 1][1];
+    return `<tr><td>${v.name} gourd + head</td><td class="n">${v.freq} Hz</td><td class="n">Ø${(2 * v.R).toFixed(0)} × ${H.toFixed(0)}</td><td class="n">${v.V_cm3.toFixed(1)} cm³</td><td class="n">${v.b.toFixed(1)} mm</td><td class="n">${v.mass_g.toFixed(0)} g</td></tr>`;
+  });
+  rows.push(`<tr><td>Wheel (hub, spokes, ring, pegs, lugs)</td><td></td><td class="n">Ø${(2 * LAY.R_f).toFixed(0)}</td><td></td><td></td><td class="n">≈185 g</td></tr>`);
+  rows.push(`<tr><td>Crown, boom, dove-tail fin, plumb-bob + stopper</td><td></td><td></td><td></td><td></td><td class="n">≈205 g</td></tr>`);
+  document.getElementById("partsTable").innerHTML =
+    `<tr><th>Part</th><th>Tone</th><th>Size, mm</th><th>Cavity</th><th>Window b</th><th>PETG</th></tr>` + rows.join("") +
+    `<tr><td><b>Printed total</b></td><td></td><td class="n" colspan="2">${LAY.envelope[0]} w × ${LAY.envelope[2]} h</td><td></td><td class="n"><b>≈${LAY.mass_g} g</b></td></tr>`;
+  document.getElementById("hangHole").textContent = `${LAY.hang_hole_y >= 0 ? "+" : ""}${LAY.hang_hole_y} mm`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOOP + INIT
+   ═══════════════════════════════════════════════════════════════ */
+function redrawStatic(){ drawSection(); drawLadder(); drawRough(); drawCad(); jetUpdate(); }
+let lastF = performance.now();
+function frame(now){
+  const dt = Math.min(0.1, (now - lastF) / 1000); lastF = now;
+  drawInstrument(instr, { amp: AMP });
+  drawBench(dt); drawJet(dt);
+  if (WIND.on){ lad.w = WIND.now; drawLadder(); }
+  requestAnimationFrame(frame);
+}
+function init(){
+  geom();
+  setMeanWind(5);
+  document.getElementById("cGo").textContent = "30 %";
+  document.getElementById("cVolo").textContent = "60 %";
+  lad.w = Math.pow(10, 0.7); document.getElementById("lWo").textContent = `${lad.w.toFixed(1)} m/s`;
+  benchUpdate(); fillAscTable(); fillParts(); redrawStatic();
+  drawInstrument(instr, { amp: AMP });
+  requestAnimationFrame(frame);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SELF-TEST — window.__selfTest(): the page's physics against voices.py
+   ═══════════════════════════════════════════════════════════════ */
+window.__selfTest = function(){
+  const res = [];
+  const ok = (name, cond, info = "") => res.push({ name, pass: !!cond, info });
+  ok("data loaded", VO.length === 9 && LAY && LAY.angles, `${VO.length} voices`);
+  // closed-form rectangle potential vs the square's known value 8a^3(ln(1+√2) - (√2-1)/3)/2
+  const Jsq = rectJ(1, 1), Jex = 4 * (Math.log(1 + Math.SQRT2) - (Math.SQRT2 - 1) / 3);
+  ok("rect J(1,1) closed form", Math.abs(Jsq / Jex - 1) < 1e-12, `${Jsq.toFixed(6)} vs ${Jex.toFixed(6)}`);
+  ok("circle-like end corr (square ≈ 0.8 of equal-area circle)", Math.abs(endCorr(10, 10) / (0.849 * Math.sqrt(100 / Math.PI)) - 0.988) < 0.02, endCorr(10, 10).toFixed(3));
+  VO.forEach(v => {
+    const d = endCorr(D.W, v.b);
+    ok(`${v.name} end correction matches voices.py`, Math.abs(d - v.delta_mm) < 1e-3, `${d.toFixed(4)} vs ${v.delta_mm}`);
+    const f = voiceFreq(v, D.c_air);
+    const cents = 1200 * Math.log2(f / v.freq);
+    ok(`${v.name} line-model pitch = ${v.freq} Hz`, Math.abs(cents) < 0.5, `${f.toFixed(3)} Hz (${cents.toFixed(3)} ¢)`);
+    ok(`${v.name} model pitch in json`, Math.abs(v.f_model - v.freq) < 0.01, `${v.f_model}`);
+    const [on, opt, off] = windBand(v.freq);
+    ok(`${v.name} wind band matches json`, Math.abs(on - v.wind[0]) < 0.01 && Math.abs(opt - v.wind[1]) < 0.01 && Math.abs(off - v.wind[2]) < 0.01, `${on.toFixed(2)}/${opt.toFixed(2)}/${off.toFixed(2)}`);
+    ok(`${v.name} drive peaks at St_opt`, Math.abs(drive(v.freq, opt) - 1) < 1e-9 && drive(v.freq, on * 0.99) === 0 && drive(v.freq, off * 1.01) === 0);
+  });
+  ok("bands ascend with pitch", VO.every((v, i) => i === 0 || windBand(v.freq)[0] > windBand(VO[i - 1].freq)[0]));
+  const r = roughness(396, 417);
+  ok("396/417 is the roughest pair", VO.every((a, i) => VO.every((b, j) => i >= j || roughness(a.freq, b.freq) <= r + 1e-12)), r.toFixed(3));
+  ok("roughness peak normalised to 1", Math.abs(Math.max(...Array.from({ length: 2000 }, (_, k) => roughness(500, 500 + k * 0.1))) - 1) < 1e-3);
+  const tc = 1200 * Math.log2(cAir(5) / cAir(20));
+  ok("temperature: 5 °C is ~45 ¢ flat", Math.abs(tc + 45.5) < 1, tc.toFixed(1) + " ¢");
+  ok("Earth ray absent from the wheel", LAY.angles.Earth === undefined);
+  ok("eight rays, 45° apart", Object.keys(LAY.angles).length === 8 &&
+    Object.values(LAY.angles).map(a => ((a - 22.5) % 45 + 45) % 45).every(x => Math.abs(x) < 1e-9 || Math.abs(x - 45) < 1e-9));
+  ok("climb ascends by tier", LAY.climb.every((n, k) => k < 2 || Math.sin(LAY.angles[n] * Math.PI / 180) >= Math.sin(LAY.angles[LAY.climb[k - 2]] * Math.PI / 180) - 1e-9));
+  ok("hit test finds Earth at the centre", inPoly(OUT[0].centre, OUT[0].body));
+  const pass = res.filter(x => x.pass).length, fail = res.length - pass;
+  return { pass, fail, failures: res.filter(x => !x.pass), results: res };
+};
+
+if (VO && VO.length) init();
+</script>
+</body>
+</html>

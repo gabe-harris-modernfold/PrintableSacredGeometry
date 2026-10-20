@@ -102,12 +102,50 @@
   .docbar button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
     border-radius:7px;padding:6px 12px;font-size:12px;cursor:pointer}
   .docbar button:hover{border-color:var(--accA);color:var(--txt)}
+
+  /* Rodin math → hardware teaching stations */
+  .steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--dim);margin-bottom:12px}
+  .steps a{color:var(--txt);text-decoration:none;background:var(--panel2);border:1px solid var(--line);
+    border-radius:20px;padding:4px 11px}
+  .steps a:hover{border-color:var(--accA)}
+  .steps a b{color:var(--accA);margin-right:5px}
+  .learn{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .lcard.wide{grid-column:span 2}
+  @media(max-width:1180px){.learn{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.learn{grid-template-columns:1fr}.lcard.wide{grid-column:auto}}
+  .lcard{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;
+    display:flex;flex-direction:column;gap:9px;min-width:0;scroll-margin-top:12px}
+  .lcard h3{font-size:14px;font-weight:600;display:flex;gap:9px;align-items:center}
+  .lcard h3 .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;
+    background:var(--accA);color:#141414;font-size:12px;font-weight:700;flex:none}
+  .lcard canvas{background:#0a1120}
+  .lcard p{font-size:12.8px;line-height:1.55}
+  .lread{font-family:var(--mono);font-size:13px;color:var(--txt);min-height:1.5em;text-align:center}
+  .lread .eqv{color:var(--accA);font-weight:600}
+  .verdict{font-size:12.3px;line-height:1.5;color:var(--good)}
+  .verdict.bad{color:var(--warn)}
+  .hw{border-left:3px solid var(--accA);background:#141d31;padding:8px 10px;border-radius:0 7px 7px 0;
+    font-size:12.5px;line-height:1.5;margin-top:auto}
+  .hw>b:first-child{color:var(--accA);display:block;font-size:10px;text-transform:uppercase;letter-spacing:.9px;margin-bottom:2px}
+  .chips{display:flex;flex-wrap:wrap;gap:3px;font-family:var(--mono);font-size:11.5px;align-items:center}
+  .chips span{padding:2px 6px;border-radius:5px;background:#131c30;color:var(--dim)}
+  .chips span.g{color:#ffd166}
+  .chips span.done{color:var(--txt)} .chips span.done.g{color:#ffd166}
+  .chips span.on{background:var(--accA);color:#141414}
+  .chips i{color:#3d4b6b;font-style:normal}
+  .skipctl{display:flex;gap:10px;align-items:center}
+  .skipctl input{flex:1}
+  .skipctl b{font-family:var(--mono);color:var(--txt);min-width:62px}
+  .iconbtn{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:7px;
+    padding:5px 10px;font-size:12px;cursor:pointer}
+  .iconbtn:hover{border-color:var(--accA)}
 </style>
 </head>
 <body>
 
 <header>
   <h1>⚛ Bifilar Rodin Coil — Digital Twin</h1>
+  <a href="#learn" class="iconbtn" style="text-decoration:none">Learn the Rodin math ↓</a>
   <span class="sub">12-pole · 150° skip ({12/5} star) · counter-wound bifilar · live circuit + Biot–Savart field model
     &nbsp;|&nbsp; source: <span style="font-family:var(--mono)">bifilar-rodin-coil-digital-twin-math.pplx.md</span></span>
 </header>
@@ -183,41 +221,21 @@
       <div class="hint">0.30 — 2.50 mm copper</div>
     </div>
 
-    <div class="ctl">
-      <label>Coupling k (A↔B) <b id="kVal"></b></label>
-      <input type="range" id="coupling" min="5" max="99" value="95">
-      <div class="hint" id="kHint">computing from geometry (Neumann formula)…</div>
-    </div>
+    <div class="hint" id="kHint" style="margin-top:-6px">computing A↔B coupling from geometry (Neumann formula)…</div>
 
+    <h2 style="margin-top:16px">3-D View</h2>
     <div class="ctl">
-      <label>Core µᵣ <b id="murVal"></b></label>
-      <input type="range" id="mur" min="1" max="100" value="1">
-      <div class="hint">1 = air core · scales circuit L only; the field map is always air-core</div>
+      <div class="btnrow" id="viewRow">
+        <button data-view="both" class="on">Coil + field</button>
+        <button data-view="coil">Coil</button>
+        <button data-view="field">Field</button>
+      </div>
     </div>
-
-    <h2 style="margin-top:16px">Display Layers</h2>
-    <div class="ctl" style="display:flex;flex-direction:column;gap:7px">
-      <label style="justify-content:flex-start;gap:8px">
-        <input type="checkbox" id="autoRot" checked> auto-rotate 3D view
+    <div class="ctl" style="display:flex;justify-content:space-between;align-items:center">
+      <label style="justify-content:flex-start;gap:8px;margin:0">
+        <input type="checkbox" id="autoRot" checked> auto-rotate
       </label>
-      <label style="justify-content:flex-start;gap:8px">
-        <input type="checkbox" id="showCoil" checked> coil windings (off = field only)
-      </label>
-      <label style="justify-content:flex-start;gap:8px">
-        <input type="checkbox" id="showWindB" checked> <span style="color:var(--accB)">winding B (blue)</span>
-      </label>
-      <label style="justify-content:flex-start;gap:8px">
-        <input type="checkbox" id="showFlux" checked> magnetic field lines (all)
-      </label>
-      <label style="justify-content:flex-start;gap:8px">
-        <input type="checkbox" id="lineOuter" checked> <span style="color:var(--good)">outer field lines (green)</span>
-      </label>
-      <label style="justify-content:flex-start;gap:8px">
-        <input type="checkbox" id="lineCenter" checked> <span style="color:#ffd166">aperture arcs (gold)</span>
-      </label>
-      <label style="justify-content:flex-start;gap:8px">
-        <input type="checkbox" id="lineAxis" checked> <span style="color:#ff5fd7">centre axis line (magenta)</span>
-      </label>
+      <div class="docbar" style="margin:0"><button id="resetAll">Reset to defaults</button></div>
     </div>
   </section>
 
@@ -260,7 +278,7 @@
       <div class="tile"><div class="k">Peak axial pull → centre</div><div class="v" id="mFpk" style="color:#ff5fd7">—</div></div>
       <div class="tile"><div class="k">B core (Biot–Savart)</div><div class="v a" id="mBcore">—</div></div>
       <div class="tile"><div class="k">B peak (field map)</div><div class="v a" id="mBpk">—</div></div>
-      <div class="tile"><div class="k">B_max Faraday V/4.44fNAₑ</div><div class="v b" id="mBmax">—</div></div>
+      <div class="tile"><div class="k">Coupling k (Neumann)</div><div class="v b" id="mK">—</div></div>
       <div class="tile"><div class="k">Wire / winding</div><div class="v" id="mLen">—</div></div>
     </div>
 
@@ -293,6 +311,105 @@
     </section>
   </div>
 
+  <!-- ============ RODIN MATH → HARDWARE ============ -->
+  <section class="panel full" id="learn">
+    <h2>Rodin Math → Hardware — how a number pattern becomes a wound coil</h2>
+    <nav class="steps">
+      <a href="#ln1"><b>1</b>The nine-clock</a> →
+      <a href="#ln2"><b>2</b>Twelve notches</a> →
+      <a href="#ln3"><b>3</b>Onto the donut</a> →
+      <a href="#ln4"><b>4</b>Pitch shapes the field</a> →
+      <a href="#ln5"><b>5</b>Two wires, one switch</a>
+    </nav>
+    <div class="learn">
+
+      <div class="lcard" id="ln1">
+        <h3><span class="num">1</span>The nine-clock</h3>
+        <canvas id="lnVbm" height="260"></canvas>
+        <div class="lread" id="vbmRead"></div>
+        <div class="btnrow" id="multRow">
+          <button data-m="2" class="on">×2 double</button>
+          <button data-m="5">×5 halve</button>
+          <button data-m="4">×4</button>
+          <button data-m="3">×3</button>
+        </div>
+        <div class="verdict" id="vbmVerdict"></div>
+        <p>Add a number's digits until a single digit is left (16 → 1+6 = 7). Every number then lands on one of
+          nine points. Keep doubling and you circle <b>1 → 2 → 4 → 8 → 7 → 5</b> forever. Halving runs the same loop
+          backwards. 3 and 6 bounce off each other, and 9 never moves: the <span style="color:#ffd166">3-6-9 axis</span>.</p>
+        <div class="hw"><b>On the hardware</b>The nine-clock never touches the copper. What carries over is its rule:
+          <i>a step that shares no factor with the clock reaches every point in one loop.</i> 3, 6 and 9 share a 3 with
+          nine, so the loop can't reach them. The coil's twelve notches use the same rule to choose the skip.</div>
+      </div>
+
+      <div class="lcard" id="ln2">
+        <h3><span class="num">2</span>Twelve notches, skip five</h3>
+        <canvas id="lnClock" height="260"></canvas>
+        <div class="skipctl">
+          <span style="font-size:12px;color:var(--dim)">Skip</span>
+          <input type="range" id="lnSkip" min="1" max="11" value="5">
+          <b id="lnSkipVal">5</b>
+          <button class="iconbtn" id="lnPlay" title="pause / play the winding">❚❚</button>
+        </div>
+        <div class="chips" id="lnChips"></div>
+        <div class="verdict" id="lnVerdict"></div>
+        <p>Number twelve notches around the former. The wire leaves notch 1, jumps forward five notches (150°) and
+          keeps going. Five shares no factor with twelve, so it visits every notch once before coming home.</p>
+        <div class="hw"><b>On the hardware</b>This decides whether one length of wire can wind the whole coil. Only skips
+          1, 5, 7 and 11 do. Skip 5 (or its mirror, 7) throws each wrap almost straight across the ring. Drag the
+          slider to see skips 2, 3, 4 and 6 strand notches and need several wires.</div>
+      </div>
+
+      <div class="lcard" id="ln3">
+        <h3><span class="num">3</span>Onto the donut</h3>
+        <canvas id="lnFlat" height="150"></canvas>
+        <canvas id="lnTorus" height="190"></canvas>
+        <div class="verdict" id="lnPitch" style="color:var(--txt)"></div>
+        <p>Cut the donut open and lay it flat: left↔right goes <b>around the ring</b>, up↕down goes <b>through the
+          hole</b>. The winding becomes straight diagonal lines. With skip <span class="skipEcho">5</span> the wire passes
+          through the hole 12 times while travelling around the ring <span class="skipEcho">5</span> times.</p>
+        <div class="hw"><b>On the hardware</b>The notch numbers are just the places where the wire crosses the
+          outer rim, the dots on both drawings. The skip also sets the <i>pitch</i>, how steeply the wire leans
+          across the surface, and that pitch is what step 4 turns into field.</div>
+      </div>
+
+      <div class="lcard" id="ln4">
+        <h3><span class="num">4</span>Pitch shapes the field</h3>
+        <canvas id="lnField" height="250"></canvas>
+        <div class="verdict" id="lnFieldRead" style="color:var(--txt)"></div>
+        <p>Every centimetre of wire does two jobs at once. The part that wraps <b>through the hole</b> drives field
+          around inside the donut, where it stays <span style="color:var(--good)">trapped</span>. The part that
+          travels <b>around the ring</b> acts like a hoop and pushes field <span style="color:#ff5fd7">through the
+          hole</span>. The trapped field counts only passes through the hole, always 12 here, so it's the same for every
+          skip. Each extra trip around the ring adds the same amount of field through the hole.</p>
+        <div class="hw"><b>On the hardware</b>Bars are computed by Biot–Savart from the real wire path for each skip,
+          then scaled to the twin's present drive. At skip 5 the field through the hole roughly equals the trapped
+          field. A bigger skip buys more aperture field, but every extra trip around the ring costs wire, and wire is
+          resistance. Watch the wire length in the readout.</div>
+      </div>
+
+      <div class="lcard wide" id="ln5">
+        <h3><span class="num">5</span>Two wires, one switch</h3>
+        <canvas id="lnBif" height="232"></canvas>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <div class="btnrow" id="bifRow" style="flex:1;min-width:220px">
+            <button data-mode="aiding">Series aiding (A + B)</button>
+            <button data-mode="opposing" class="on">Series opposing (A − B)</button>
+          </div>
+          <button class="iconbtn" id="bifTwin">Show this in the twin ↑</button>
+        </div>
+        <p>Winding B uses the same notches but travels around the ring the <b>other way</b>. On the clock that's skip 7,
+          the same star traced backwards. Both wires still wrap through the hole the same way. Each wire is therefore
+          half <i>wrap</i> and half <i>hoop</i>, and the way you join the two ends decides which half survives.</p>
+        <div class="hw"><b>On the hardware</b>Join them <b>aiding</b> and the wraps add while the hoops cancel: all the
+          field is trapped inside the donut and there are no poles. Join them <b>opposing</b> and the wraps cancel while
+          the hoops add: the coil grows a north and a south pole through its centre. It's the same copper; only the
+          connection changes. The bars come from Biot–Savart over both real wire paths.</div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ============ EQUATIONS ============ -->
   <section class="panel full">
     <h2>Model Equations (from the study document)</h2>
@@ -300,11 +417,10 @@
       <b>Geometry:</b> x=(R+a·cosθ)cosφ, y=(R+a·cosθ)sinφ, z=a·sinθ · winding: φ=s·10π, θ=s·24π ({12/5}: 12 poloidal wraps / 5 toroidal circuits) &nbsp;·&nbsp;
       <b>Skin depth:</b> δ=√(ρ/π f μ₀) &nbsp;·&nbsp;
       <b>Dowell:</b> R_AC/R_DC = Δ(sinh2Δ+sin2Δ)/(cosh2Δ−cos2Δ) + ⅔(M²−1)·Δ(sinhΔ−sinΔ)/(coshΔ+cosΔ), Δ=(√π/2)(d/δ)<br>
-      <b>Inductance:</b> L=µᵣµ₀N²(R−√(R²−a²)) · series aiding L=2L₁(1+k), opposing 2L₁(1−k), anti-parallel L₁(1−k)/2 · k from Neumann M=µ₀/4π ∮∮ dl_A·dl_B/r &nbsp;·&nbsp;
+      <b>Inductance:</b> L=µ₀N²(R−√(R²−a²)) · series aiding L=2L₁(1+k), opposing 2L₁(1−k), anti-parallel L₁(1−k)/2 · k from Neumann M=µ₀/4π ∮∮ dl_A·dl_B/r &nbsp;·&nbsp;
       <b>Impedance:</b> Z=R_AC+jωL, I=V/|Z| &nbsp;·&nbsp;
       <b>Power:</b> P=I²R_AC, Q=I²ωL, S=V·I, pf=R_AC/|Z|<br>
       <b>PWM harmonics:</b> v(t)=DV + Σ 2V/(nπ)·sin(nπD)·cos(nωt), each harmonic sees Z(nf) &nbsp;·&nbsp;
-      <b>Flux:</b> B_max=V/(4.44 f N Aₑ) &nbsp;·&nbsp;
       <b>Field-per-watt:</b> B=µ₀N√(P/R_AC)/(2πr) &nbsp;·&nbsp;
       <b>Biot–Savart:</b> B(r)=µ₀I/4π · Σ dl×(r−r′)/|r−r′|³<br>
       <b>Vortex (two-phase):</b> B(t)=B_A·i(ωt)+B_B·i(ωt−φ) → rotating aperture field (max at φ=90°), test-magnet sync speed 60·f RPM;
@@ -420,11 +536,15 @@
       <details class="doc">
         <summary><span class="chev">▶</span> Frequency, wattage &amp; the drive circuit <span class="tag math">math</span></summary>
         <div class="body">
-          <p>The 3-D view's brightness, line weight, and flux-dot speed all scale with the <b>real RMS current</b>,
-          which comes from a full AC circuit solve:</p>
+          <p>The dots flowing along the wires move at a speed set by the <b>real RMS current</b>. The field's
+          brightness, line weight and flux-dot speed (3-D view and heatmap alike) follow the
+          <b>ampere-turns N·I</b>, because that is what sets |B|, so adding turns brightens the field even though
+          the current per turn falls. Both come from a full AC circuit solve:</p>
           <span class="fx">Z(f) = R_AC(f) + jωL &nbsp;&nbsp; I = V / |Z| &nbsp;&nbsp; P = I²·R_AC</span>
           <p>In wattage mode the app <b>inverts this</b> — it solves for the drive voltage that hits your target
-          power exactly (P ∝ V², so one unit-solve scales analytically).</p>
+          power exactly (P ∝ V², so one unit-solve scales analytically). Because P = I²·R_AC, the current then
+          depends only on R_AC: inductance shifts the voltage, phase and power factor, but not the field.
+          Switch to <b>Voltage</b> mode to watch the coil's reactance choke the current as frequency rises.</p>
           <p><b>R_AC(f)</b> rises with frequency via skin and proximity effects, using the full Dowell equation:</p>
           <span class="fx">δ = √(ρ/πfµ₀) &nbsp;&nbsp; R_AC/R_DC = F_R(Δ), &nbsp; Δ = (√π/2)(d/δ)</span>
           <p>Non-sine waveforms are decomposed into a Fourier series and <b>each harmonic sees its own Z(nf)</b>,
@@ -474,9 +594,10 @@
       <details class="doc">
         <summary><span class="chev">▶</span> Vortex-Based Mathematics: lore vs. physics <span class="tag caveat">caveat</span></summary>
         <div class="body">
-          <p>The winding <i>path</i> genuinely follows the VBM 1-2-4-8-7-5 doubling sequence mapped onto the 12
-          poles — and that geometry is exactly what produces the diagonal, semi-open field behaviour. So the
-          <b>geometry from VBM is real and is fully modeled here.</b></p>
+          <p>The winding <i>path</i> is clock arithmetic: a skip-5 walk around twelve notches. It obeys the same rule
+          as VBM's 1-2-4-8-7-5 doubling circuit on the nine-point wheel (see <a href="#learn">Rodin Math → Hardware</a>),
+          and that geometry is exactly what produces the diagonal, semi-open field behaviour. So the
+          <b>winding geometry is real and is fully modeled here.</b></p>
           <p class="warn">However: the claim that the "3-6-9 gap" is a special magnetic channel does <b>not</b> enter
           the field equations anywhere. Everything the simulation shows — the aperture concentration, the vortex,
           the poles — emerges from Biot–Savart over the copper alone. The center concentrates flux because it's a
@@ -499,8 +620,9 @@
           </ul>
           <p><b>Cross-section glyphs:</b> ⊙ = field out of the plane, ⊗ = into the plane (the toroidal core flux a
           2-D slice can't show with arrows).</p>
-          <p>Each layer has its own toggle under <b>Display Layers</b>, including turning off winding B (blue) or the
-          coil entirely to see the pure field. The center ⊕ probe and its B₀/force readouts stay live regardless.</p>
+          <p>The <b>3-D View</b> buttons show the coil and field together, the windings alone, or the field alone.
+          To see one conductor by itself, choose the <b>Single winding A</b> connection. The centre B₀ and
+          force readout tiles stay live in every view.</p>
         </div>
       </details>
 
@@ -521,14 +643,21 @@ const GEO = (()=> {                  // D = 9.95 cm outer, 2.9 cm aperture
 const WRAPS = 12, CIRCUITS = 5;      // {12/5} star: 12 poloidal wraps per 5 toroidal circuits
 
 /* ================= UI state ================= */
-const S = {
+const DEFAULTS = {
   waveform:'sine', driveMode:'power',
   f:1e4, Ptarget:10, V:24, duty:0.5,
-  conn:'opposing', N:36, d:1.0e-3, k:0.95, mur:1, autoRot:true, showFlux:true, showCoil:true,
-  showWindB:true, lineOuter:true, lineCenter:true, lineAxis:true, linScale:false, vphase:90
+  conn:'opposing', N:36, d:1.0e-3, autoRot:true, view:'both', linScale:false, vphase:90
 };
-/* computed results */
-const C = { Vdrive:24, ready:false };
+const S = {...DEFAULTS};
+/* computed results — k is the Neumann coupling, set once from the wire geometry */
+const C = { Vdrive:24, ready:false, k:0.1 };
+
+/* drive-responsive display levels, both log-scaled to 0..1:
+   currentLevel — charge-flow dots on the wires (I_rms, 1 mA → 0, ~30 A → 1)
+   fieldLevel   — everything that draws the field (ampere-turns N·I, 1 → 0, ~3000 → 1),
+                  so adding turns brightens the field even as the current per turn falls */
+function currentLevel(){ return Math.max(0,Math.min(1,(Math.log10(Math.max(C.Irms,1e-3))+1.5)/3)); }
+function fieldLevel(){ return Math.max(0,Math.min(1,Math.log10(Math.max(S.N*C.Irms*C.mp.branch,1))/3.5)); }
 
 /* ================= winding paths ================= */
 function torusPt(phi, theta, aScale){
@@ -583,16 +712,16 @@ function dowellFR(f, layers){                 // R_AC/R_DC
   return Math.max(1, skin+prox);
 }
 function modeParams(){
-  const L1 = S.mur*MU0*S.N*S.N*(GEO.R - Math.sqrt(GEO.R*GEO.R - GEO.a*GEO.a));
+  const L1 = MU0*S.N*S.N*(GEO.R - Math.sqrt(GEO.R*GEO.R - GEO.a*GEO.a));
   switch(S.conn){
-    case 'single':   return {cR:1,   L:L1,               layers:1, branch:1,   Ntot:S.N,   cB:0};
-    case 'aiding':   return {cR:2,   L:2*L1*(1+S.k),     layers:2, branch:1,   Ntot:2*S.N, cB:+1};
-    case 'opposing': return {cR:2,   L:2*L1*(1-S.k),     layers:2, branch:1,   Ntot:2*S.N, cB:-1};
-    case 'anti':     return {cR:0.5, L:L1*(1-S.k)/2,     layers:2, branch:0.5, Ntot:S.N,   cB:-1};
+    case 'single':   return {cR:1,   L:L1,               layers:1, branch:1,   cB:0};
+    case 'aiding':   return {cR:2,   L:2*L1*(1+C.k),     layers:2, branch:1,   cB:+1};
+    case 'opposing': return {cR:2,   L:2*L1*(1-C.k),     layers:2, branch:1,   cB:-1};
+    case 'anti':     return {cR:0.5, L:L1*(1-C.k)/2,     layers:2, branch:0.5, cB:-1};
     /* two-phase vortex drive: windings driven independently, phase-shifted by φ.
        Mutual coupling neglected (Neumann k≈0.1 → ~10% effect). cB is the field
        snapshot weight of winding B at the instant winding A peaks: cos φ. */
-    case 'vortex':   return {cR:1,   L:L1,               layers:2, branch:1,   Ntot:S.N,
+    case 'vortex':   return {cR:1,   L:L1,               layers:2, branch:1,
                              cB:Math.cos(S.vphase*Math.PI/180), vortex:true};
   }
 }
@@ -656,6 +785,17 @@ function solve(V){
           Rac: Reff(S.f,mp), Rdc: RdcEff, L: mp.L};
 }
 
+/* vortex drive: winding B's current is i(ωt − φ) — the same waveform shifted by φ.
+   iArr spans two periods, so one period is iArr.length/2 samples. */
+function phaseShiftSamples(){ return Math.round(S.vphase/360*C.iArr.length/2); }
+/* normalised instantaneous winding currents at animation phase cyc ∈ [0,1) */
+function phaseCurrents(cyc){
+  const NS=C.iArr.length, k=Math.floor(cyc*NS)%NS, iA=C.iArr[k]/C.Ipk;
+  if(!C.mp.vortex) return {iA, iB:iA*C.mp.cB, field:Math.abs(iA)};
+  const iB=C.iArr[((k-phaseShiftSamples())%NS+NS)%NS]/C.Ipk;
+  return {iA, iB, field:Math.sqrt((iA*iA+iB*iB)/2)};   // quadrature → steady |B|
+}
+
 function recompute(){
   C.wireLen = LEN_PER_WRAP*S.N;
   C.Rdc1 = RHO*C.wireLen/(Math.PI*(S.d/2)*(S.d/2));
@@ -668,7 +808,6 @@ function recompute(){
   Object.assign(C, solve(V));
   C.delta = skinDepth(S.f);
   C.FR = dowellFR(S.f, C.mp.layers);
-  C.Bfaraday = C.Vrms/(4.44*S.f*C.mp.Ntot*GEO.Ae);
   updateReadouts(); drawScope(0); drawBode(); recolorField();
 }
 
@@ -696,7 +835,7 @@ function updateReadouts(){
   $('mRdc').textContent  = eng(C.Rdc,'Ω');
   $('mSkin').textContent = eng(C.delta,'m');
   $('mFR').textContent   = '×'+C.FR.toFixed(2);
-  $('mBmax').textContent = eng(C.Bfaraday,'T');
+  $('mK').textContent    = C.k.toFixed(3);
   $('mLen').textContent  = eng(C.wireLen,'m',3)+' · '+eng(C.Rdc1,'Ω',3);
   if(typeof FLUX!=='undefined' && FLUX.Bc){
     const s=(S.N/WRAPS)*C.Irms*C.mp.branch;
@@ -717,11 +856,13 @@ function updateReadouts(){
 }
 
 /* ================= canvas helpers ================= */
-function setupCanvas(id){
+function setupCanvas(id, maxAspect){
   const c=$(id), dpr=window.devicePixelRatio||1;
   const w=c.clientWidth, hAttr=parseInt(c.getAttribute('height'));
-  /* below 520px wide, scale height with width so plots keep their designed aspect */
-  const h=Math.min(hAttr, Math.max(90, Math.round(hAttr*w/520)));
+  /* below 520px wide, scale height with width so plots keep their designed aspect;
+     maxAspect instead keeps the design height unless it would exceed w·maxAspect */
+  const h=maxAspect ? Math.min(hAttr, Math.round(w*maxAspect))
+                    : Math.min(hAttr, Math.max(90, Math.round(hAttr*w/520)));
   c.width=w*dpr; c.height=h*dpr; c.style.height=h+'px';
   const ctx=c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   return {c,ctx,w,h};
@@ -743,24 +884,31 @@ function drawScope(cursor){                    // cursor ∈ [0,1) over the 2 di
   ctx.strokeRect(pad,4,w-pad-8,h-8);
 
   const NS=C.vArr.length;
-  const trace=(arr,pk,y0,color)=>{
+  const trace=(arr,pk,y0,color,shift=0)=>{
     ctx.strokeStyle=color; ctx.lineWidth=1.8; ctx.beginPath();
     for(let k=0;k<NS;k++){
       const x=pad+(w-pad-8)*k/(NS-1);
-      const y=y0 - (arr[k]/pk)*(half/2-10);
+      const y=y0 - (arr[((k-shift)%NS+NS)%NS]/pk)*(half/2-10);
       k?ctx.lineTo(x,y):ctx.moveTo(x,y);
     }
     ctx.stroke();
   };
   trace(C.vArr,C.Vpk,half/2,'#ffd166');
-  trace(C.iArr,C.Ipk,half+half/2,'#4fc3f7');
+  /* vortex: both phase currents, coloured like their windings (A orange, B blue dashed) */
+  const vortex=!!C.mp.vortex, iCol=vortex?'#ffa14f':'#4fc3f7';
+  if(vortex){ ctx.setLineDash([5,4]);
+    trace(C.iArr,C.Ipk,half+half/2,'#4fc3f7',phaseShiftSamples()); ctx.setLineDash([]); }
+  trace(C.iArr,C.Ipk,half+half/2,iCol);
 
   ctx.fillStyle='#ffd166'; ctx.font='11px Consolas,monospace';
   ctx.fillText('v(t)  pk '+eng(C.Vpk,'V',3), pad+6, 16);
-  ctx.fillStyle='#4fc3f7';
-  ctx.fillText('i(t)  pk '+eng(C.Ipk,'A',3), pad+6, half+14);
-  ctx.fillStyle='#7f8db0';
-  ctx.fillText('T = '+eng(1/S.f,'s',3)+'/div×4', w-150, h-10);
+  ctx.fillStyle=iCol;
+  ctx.fillText((vortex?'i_A(t)':'i(t)')+'  pk '+eng(C.Ipk,'A',3), pad+6, half+14);
+  if(vortex){ ctx.fillStyle='#4fc3f7';
+    ctx.fillText('i_B(t) lags '+S.vphase+'°', pad+150, half+14); }
+  ctx.fillStyle='#7f8db0'; ctx.textAlign='right';
+  ctx.fillText('1 div = T/4 = '+eng(1/(4*S.f),'s',3), w-12, h-10);
+  ctx.textAlign='left';
 
   /* animated sweep cursor */
   const cx=pad+(w-pad-8)*cursor;
@@ -1022,9 +1170,7 @@ function drawField(){
     center:{s:'rgba(255,209,102,.85)', f:'rgba(255,209,102,.95)', lw:1.3},
     outer: {s:'rgba(228,242,255,.55)', f:'rgba(228,242,255,.85)', lw:1}
   };
-  const clsOn={axis:S.lineAxis, center:S.lineCenter, outer:S.lineOuter};
   for(const L of STREAM.lines){
-    if(!clsOn[L.cls]) continue;
     const ln=L.pts, c=SCOL[L.cls]||SCOL.outer;
     ctx2.strokeStyle=c.s; ctx2.lineWidth=c.lw;
     ctx2.beginPath();
@@ -1110,7 +1256,7 @@ function drawField(){
   ctx2.textAlign='right'; ctx2.fillStyle='#9fb3d9';
   ctx2.fillText(eng(C.P,'W',3)+' · '+eng(C.Irms,'A',3)+' rms · '+eng(S.f,'Hz',3)+' '+S.waveform, plotW-8, h-22);
   ctx2.fillStyle='#6fe3a0';
-  ctx2.fillText('B_pk '+eng(Bpk,'T',3)+' · brightness ∝ I', plotW-8, h-8);
+  ctx2.fillText('B_pk '+eng(Bpk,'T',3)+' · brightness ∝ N·I', plotW-8, h-8);
   ctx2.textAlign='left';
   ctx2.restore();
 
@@ -1130,8 +1276,7 @@ function drawField(){
 function compositeField(iNorm){
   if(!field || !FIELD.done || !field.heatL) return;
   const {ctx,w,h}=field;
-  const tI=Math.max(0,Math.min(1,(Math.log10(Math.max(C.Irms,1e-3))+1.5)/3));
-  const a=Math.max(0.10,(0.30+0.70*tI)*(0.55+0.45*Math.abs(iNorm)));
+  const a=Math.max(0.10,(0.30+0.70*fieldLevel())*(0.55+0.45*Math.abs(iNorm)));
   ctx.clearRect(0,0,w,h);
   ctx.globalAlpha=a;  ctx.drawImage(field.heatL,0,0,w,h);
   ctx.globalAlpha=1;  ctx.drawImage(field.lineL,0,0,w,h);
@@ -1305,8 +1450,9 @@ function computeFluxLines(){
 /* ================= 3D view ================= */
 const view={rx:-1.05, ry:0.55, zoom:0.8};
 let c3d, flowA=0, flowB=0;
-function draw3D(iNorm, dt, cyc){
+function draw3D(cur, dt, cyc){
   const {ctx,w,h}=c3d; ctx.clearRect(0,0,w,h);
+  const showCoil=S.view!=='field', showFlux=S.view!=='coil';
   if(S.autoRot) view.ry += dt*0.25;
   const scale=Math.min(w,h)*7.6*view.zoom;
   const cy=Math.cos(view.ry), sy=Math.sin(view.ry);
@@ -1319,7 +1465,7 @@ function draw3D(iNorm, dt, cyc){
   };
   const items=[];
   /* faint torus wireframe */
-  if(S.showCoil)
+  if(showCoil)
   for(let r=0;r<18;r++){
     const phi=r/18*2*Math.PI; let prev=null;
     for(let t=0;t<=24;t++){
@@ -1353,39 +1499,34 @@ function draw3D(iNorm, dt, cyc){
     }
   };
   const COL_A=[255,161,79], COL_B=[79,195,247];
-  const dirB=C.mp.cB;
-  /* drive-responsive intensity: log-scaled RMS current (1 mA → 0, ~30 A → 1)
-     and instantaneous pulse following the drive waveform i(t) */
-  const tI=Math.max(0,Math.min(1,(Math.log10(Math.max(C.Irms,1e-3))+1.5)/3));
-  const pulse=0.55+0.45*Math.abs(iNorm);
-  flowA=(flowA + dt*(0.10+0.80*tI)*iNorm)%1;
-  flowB=(flowB + dt*(0.10+0.80*tI)*iNorm*dirB)%1;
-  if(S.showCoil){
-    wind(pathA, COL_A, iNorm);
-    if(S.showWindB){
-      if(S.conn!=='single') wind(pathB, COL_B, iNorm*dirB);
-      else { let prev=null; for(const q of pathB){const p=proj(q);
-          if(prev)items.push({d:(p.d+prev.d)/2,a:prev,b:p,col:'rgba(79,195,247,.10)',lw:1.2}); prev=p;} }
-    }
+  /* wire dots move with each winding's own current (B follows i(ωt−φ) in vortex mode);
+     the field brightens with ampere-turns and pulses with the drive waveform */
+  const tI=currentLevel(), tB=fieldLevel();
+  const pulse=0.55+0.45*cur.field;
+  flowA=(flowA + dt*(0.10+0.80*tI)*cur.iA)%1;
+  flowB=(flowB + dt*(0.10+0.80*tI)*cur.iB)%1;
+  if(showCoil){
+    wind(pathA, COL_A, cur.iA);
+    if(S.conn!=='single') wind(pathB, COL_B, cur.iB);
+    else { let prev=null; for(const q of pathB){const p=proj(q);         // unpowered: ghosted
+        if(prev)items.push({d:(p.d+prev.d)/2,a:prev,b:p,col:'rgba(79,195,247,.10)',lw:1.2}); prev=p;} }
   }
 
-  /* magnetic field lines — brightness, weight, dot speed & density all track the drive.
+  /* magnetic field lines — brightness, weight, dot speed & density all track N·I.
      Colour by class: magenta = through the exact centre (N–S midpoint),
      gold = threading the aperture, green = outer arcs & core flux. */
-  if(S.showFlux && FLUX.lines.length){
-    FLUX.phase=(FLUX.phase + dt*(0.10+0.90*tI)*Math.max(0.15,Math.abs(iNorm)))%1;
-    const laN = (S.showCoil?0.40:0.80)*(0.30+0.70*tI)*pulse;
-    const lw = (S.showCoil?1.2:1.7)*(0.7+0.8*tI);
-    const dr = (S.showCoil?1.8:2.3)*(0.8+0.5*tI);
-    const gap = Math.round(34-16*tI);               // more flux dots at higher current
+  if(showFlux && FLUX.lines.length){
+    FLUX.phase=(FLUX.phase + dt*(0.10+0.90*tB)*Math.max(0.15,cur.field))%1;
+    const laN = (showCoil?0.40:0.80)*(0.30+0.70*tB)*pulse;
+    const lw = (showCoil?1.2:1.7)*(0.7+0.8*tB);
+    const dr = (showCoil?1.8:2.3)*(0.8+0.5*tB);
+    const gap = Math.round(34-16*tB);               // more flux dots in a stronger field
     const CLS={
       axis:  {rgb:'255,95,215',  la:Math.min(1,laN*1.6), lw:lw+0.8, dr:dr+0.7},
       center:{rgb:'255,209,102', la:Math.min(1,laN*1.25), lw:lw+0.3, dr:dr+0.3},
       outer: {rgb:'111,227,160', la:laN, lw, dr}
     };
-    const clsOn={axis:S.lineAxis, center:S.lineCenter, outer:S.lineOuter};
     for(const L of FLUX.lines){
-      if(!clsOn[L.cls]) continue;
       const c=CLS[L.cls]||CLS.outer, pts=L.pts;
       let prev=null;
       for(let i=0;i<pts.length;i+=2){
@@ -1406,11 +1547,8 @@ function draw3D(iNorm, dt, cyc){
      stacked through the aperture (flared at the faces = the funnel mouths),
      faint guide circles outlining the column, and marker dots that rigidly
      rotate at the pattern's true sync speed ω/m. */
-  if(S.conn==='vortex' && S.showFlux && FLUX.rings.length && C.iArr){
-    const NS=C.iArr.length;
-    const kA=Math.floor((cyc||0)*NS)%NS;
-    const shift=Math.floor(S.vphase/360*(NS/2));      // NS covers two periods
-    const iA=C.iArr[kA]/C.Ipk, iB=C.iArr[((kA-shift)%NS+NS)%NS]/C.Ipk;
+  if(S.conn==='vortex' && showFlux && FLUX.rings.length && C.iArr){
+    const {iA, iB}=cur;
     const th=(cyc||0)*4*Math.PI;                      // electrical angle, 2 periods
     const hm=FLUX.spinHarm||1;
     const rotOff=(FLUX.spinDir||0)*th/hm;             // mechanical pattern angle
@@ -1476,7 +1614,7 @@ function draw3D(iNorm, dt, cyc){
       ctx.moveTo(it.a.X,it.a.Y); ctx.lineTo(it.b.X,it.b.Y); ctx.stroke(); }
   }
   /* centre point (N–S midpoint) crosshair with live B readout */
-  if(S.showFlux && FLUX.Bc){
+  if(showFlux && FLUX.Bc){
     const c0=proj({x:0,y:0,z:0});
     ctx.strokeStyle='#ff5fd7'; ctx.lineWidth=1.3;
     ctx.beginPath(); ctx.arc(c0.X,c0.Y,5.5,0,2*Math.PI); ctx.stroke();
@@ -1491,7 +1629,7 @@ function draw3D(iNorm, dt, cyc){
   }
   /* peak-gradient markers: the "grip" points at ±z_pk where ∇(B²) is steepest.
      Aqua diamonds with arrows pointing back toward centre (the restoring force). */
-  if(S.showFlux && FLUX.probe && FLUX.probe.zPk>0.001){
+  if(showFlux && FLUX.probe && FLUX.probe.zPk>0.001){
     const s=(S.N/WRAPS)*C.Irms*C.mp.branch;
     const sphK=2*Math.PI*Math.pow(0.5e-3,3)/(4e-7*Math.PI);   // 1 mm-steel induced-dipole
     const Fpk=sphK*FLUX.probe.gPk*s*s;
@@ -1518,7 +1656,7 @@ function draw3D(iNorm, dt, cyc){
     grip(-FLUX.probe.zPk, -1, false);
   }
   /* N / S pole markers where the net dipole moment points */
-  if(S.showFlux && FLUX.poles){
+  if(showFlux && FLUX.poles){
     const pole=(zz,txt,col,glow)=>{
       const p=proj({x:0,y:0,z:zz});
       ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(p.X,p.Y,13,0,2*Math.PI); ctx.fill();
@@ -1533,7 +1671,7 @@ function draw3D(iNorm, dt, cyc){
     pole(-FLUX.poles.z,'S','#7bb8ff','rgba(96,165,250,.15)');
   }
   /* vortex mode: spinning test magnet at the centre (the classic ball-magnet demo) */
-  if(S.conn==='vortex' && S.showFlux){
+  if(S.conn==='vortex' && showFlux){
     const th=(cyc||0)*2*2*Math.PI;                 // electrical angle over the 2 shown periods
     const hm=FLUX.spinHarm||1;                     // pattern rotates at ω/m (m pole-pairs)
     const kappa=FLUX.spinDir ? FLUX.spinDir*th/hm : 0.5*Math.sin(th);
@@ -1553,7 +1691,7 @@ function draw3D(iNorm, dt, cyc){
       : 'φ = 0°: fields buck in phase — oscillation only, no net rotation', 10, 20);
     if(S.f>300) ctx.fillText('(sync speed is theoretical — real magnets follow only at low f, ~20–200 Hz)', 10, 35);
   }
-  if(S.showFlux && FLUX.confined && S.conn!=='vortex'){
+  if(showFlux && FLUX.confined && S.conn!=='vortex'){
     ctx.fillStyle='#8fa0c5'; ctx.font='11.5px "Segoe UI",sans-serif'; ctx.textAlign='center';
     ctx.fillText('net dipole ≈ 0 — flux is confined inside the toroidal core (ideal toroid: B outside ≈ 0)', w/2, 18);
     ctx.fillText('switch connection to “opposing” / “anti-parallel” / “single” to expose N–S poles and external arcs', w/2, 34);
@@ -1567,7 +1705,7 @@ function draw3D(iNorm, dt, cyc){
   ctx.fillText(eng(C.P,'W',3)+' · '+eng(C.Irms,'A',3)+' rms · '+eng(S.f,'Hz',3)+' '+S.waveform, w-10, h-24);
   const Bnow=FIELD.done ? FIELD.coreUnit(C.mp.cB)*(S.N/WRAPS)*C.Irms*C.mp.branch : 0;
   ctx.fillStyle='#6fe3a0';
-  ctx.fillText((FIELD.done?('B '+eng(Bnow,'T',3)+' · '):'')+'flux brightness & dot speed ∝ I', w-10, h-10);
+  ctx.fillText((FIELD.done?('B '+eng(Bnow,'T',3)+' · '):'')+'field brightness ∝ N·I', w-10, h-10);
   ctx.textAlign='left';
 }
 
@@ -1604,14 +1742,427 @@ function drawPoles(){
   ctx.fillText('A solid · B dashed (+10°) · 3-6-9-12 gold', 8, h-8);
 }
 
+/* ================= Rodin math → hardware (teaching stations) ================= */
+/* LEARN.u ∈ [0,1) is the shared winding clock: stations 2 and 3 place the wire
+   from notch to notch in lock-step, so a notch lights on the clock at the moment
+   the bead crosses the rim on the donut. */
+const LEARN = { mult:2, s:5, mode:'opposing', playing:true, u:0, visible:true,
+                FS:null, BIF:null, cv:{}, lastStep:-1, lastVbm:'' };
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const dr9=n=>((n-1)%9)+1;                         // casting out nines (digit root), n ≥ 1
+const LOOPCOL=['#ffa14f','#4fc3f7','#6fe3a0','#ff5fd7','#c9a8ff','#ffd166'];
+const VERDICT={
+  2:'×2 visits all six of 1·2·4·5·7·8 in one loop. 3, 6 and 9 share a factor with nine, so it never reaches them.',
+  5:'×5 is halving on the nine-clock (5 × 2 = 10 → 1): the same six-number loop, run backwards.',
+  4:'×4 splits the six into two triangles, 1·4·7 and 2·8·5. A step can be fine and still not reach everything.',
+  3:'×3 shares nine\'s factor: every number falls into 3 → 9 or 6 → 9, then sits at 9 forever.'};
+
+/* wire path for skip s on 12 notches: g = gcd(12,s) separate loops, each with
+   12/g wraps through the hole and s/g trips around the ring (s = 5 → pathA) */
+function skipLoops(s, ptsPerWrap){
+  const g=gcd(12,s), loops=[];
+  for(let r=0;r<g;r++){
+    const n=(12/g)*ptsPerWrap, pts=[];
+    for(let i=0;i<=n;i++){
+      const u=i/n;
+      pts.push(torusPt(r*Math.PI/6 + (s/g)*2*Math.PI*u, (12/g)*2*Math.PI*u, 1));
+    }
+    loops.push(pts);
+  }
+  return loops;
+}
+/* Biot–Savart field per amp (12 wraps) for every skip 1..11: the trapped field is
+   the part circulating around the ring on the core centreline (mean B·φ̂: the
+   hoop's vertical field passing through the tube doesn't count), the aperture
+   field is |B| at the centre of the hole; plus wire per wrap */
+function learnPrecompute(){
+  const k0=MU0/(4*Math.PI), FS=[];
+  const bsAt=(segs,x,y,z)=>{
+    let bx=0,by=0,bz=0;
+    for(const g of segs){
+      const rx=x-g[0], ry=y-g[1], rz=z-g[2], r2=rx*rx+ry*ry+rz*rz+4e-6, inv=1/(r2*Math.sqrt(r2));
+      bx+=(g[4]*rz-g[5]*ry)*inv; by+=(g[5]*rx-g[3]*rz)*inv; bz+=(g[3]*ry-g[4]*rx)*inv;
+    }
+    return [bx*k0,by*k0,bz*k0];
+  };
+  const trapped=fn=>{ let t=0;
+    for(let i=0;i<24;i++){ const f=i/24*2*Math.PI, b=fn(GEO.R*Math.cos(f),GEO.R*Math.sin(f));
+      t+=(-b[0]*Math.sin(f)+b[1]*Math.cos(f))/24; }
+    return Math.abs(t); };
+  for(let s=1;s<=11;s++){
+    const segs=[]; let len=0;
+    for(const p of skipLoops(s,48))
+      for(let i=1;i<p.length;i++){
+        const a=p[i-1], b=p[i];
+        segs.push([(a.x+b.x)/2,(a.y+b.y)/2,(a.z+b.z)/2, b.x-a.x,b.y-a.y,b.z-a.z]);
+        len+=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z);
+      }
+    FS[s]={core:trapped((x,y)=>bsAt(segs,x,y,0)), centre:Math.hypot(...bsAt(segs,0,0,0)), lenWrap:len/12};
+  }
+  LEARN.FS=FS;
+  /* the bifilar pair from the twin itself: A alone, aiding (A+B), opposing (A−B) */
+  const both=(wA,wB)=>{
+    const c=evalB3W(0,0,0,wA,wB);
+    return {centre:Math.hypot(c[0],c[1],c[2])*k0,
+            core:trapped((x,y)=>evalB3W(x,y,0,wA,wB).map(v=>v*k0))};
+  };
+  LEARN.BIF={single:both(1,0), aiding:both(1,1), opposing:both(1,-1)};
+}
+/* live scale: one winding of the twin's N turns carrying its present I_rms */
+function learnScale(){ return (S.N/WRAPS)*C.Irms; }
+
+function arrowHead(ctx,x,y,ang,sz,col){
+  ctx.fillStyle=col; ctx.beginPath();
+  ctx.moveTo(x+sz*Math.cos(ang),y+sz*Math.sin(ang));
+  ctx.lineTo(x+sz*Math.cos(ang+2.5),y+sz*Math.sin(ang+2.5));
+  ctx.lineTo(x+sz*Math.cos(ang-2.5),y+sz*Math.sin(ang-2.5));
+  ctx.closePath(); ctx.fill();
+}
+
+/* ---- station 1: the nine-clock ---- */
+function drawVbm(T){
+  const {ctx,w,h}=LEARN.cv.vbm; ctx.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2, r=Math.min(w,h)/2-24, m=LEARN.mult;
+  const pos=n=>{ const a=-Math.PI/2+(n%9)*2*Math.PI/9; return {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)}; };
+  const nxt=n=>dr9(n*m);
+  /* the loop starting from 1 is animated; every other arrow is drawn faint */
+  const seq=[1];
+  while(seq.length<10){ const n=nxt(seq[seq.length-1]); seq.push(n); if(seq.indexOf(n)<seq.length-1) break; }
+  const onSeq=new Set(); for(let i=1;i<seq.length;i++) onSeq.add(seq[i-1]+'>'+seq[i]);
+  ctx.strokeStyle='#1f2b45'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI); ctx.stroke();
+  const edge=(a,b,col,lw,frac=1,dash)=>{
+    if(a===b) return;
+    const p=pos(a), q=pos(b), ex=p.x+(q.x-p.x)*frac, ey=p.y+(q.y-p.y)*frac;
+    ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.setLineDash(dash||[]);
+    ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(ex,ey); ctx.stroke(); ctx.setLineDash([]);
+    if(frac>0.6){ const t=0.6, ax=p.x+(q.x-p.x)*t, ay=p.y+(q.y-p.y)*t;
+      arrowHead(ctx,ax,ay,Math.atan2(q.y-p.y,q.x-p.x),5,col); }
+  };
+  for(let n=1;n<=9;n++){
+    const b=nxt(n); if(onSeq.has(n+'>'+b)) continue;
+    edge(n,b, n%3===0||b%3===0 ? 'rgba(255,209,102,.55)' : 'rgba(79,195,247,.45)', 1.3, 1, n%3===0?[4,4]:null);
+  }
+  const E=seq.length-1, stepT=1.0, k=Math.floor(T/stepT)%(E+1), fr=(T/stepT)%1;
+  for(let i=0;i<E;i++) edge(seq[i],seq[i+1],'rgba(255,161,79,.22)',1.4);
+  for(let i=0;i<Math.min(k,E);i++) edge(seq[i],seq[i+1],'#ffa14f',2.4);
+  if(k<E) edge(seq[k],seq[k+1],'#ffa14f',2.4,fr);
+  /* nodes */
+  const cur = k<E ? seq[k] : seq[E];
+  ctx.font='bold 13px "Segoe UI",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(let n=1;n<=9;n++){
+    const p=pos(n), tri=n%3===0, hot=n===cur;
+    ctx.fillStyle=hot?'#ffa14f':'#0e1524'; ctx.beginPath(); ctx.arc(p.x,p.y,12,0,2*Math.PI); ctx.fill();
+    ctx.strokeStyle=tri?'#ffd166':'#4a5c86'; ctx.lineWidth=1.4; ctx.stroke();
+    ctx.fillStyle=hot?'#141414':(tri?'#ffd166':'#dbe4f5'); ctx.fillText(n,p.x,p.y+0.5);
+  }
+  if(k<E){ const p=pos(seq[k]), q=pos(seq[k+1]);
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(p.x+(q.x-p.x)*fr,p.y+(q.y-p.y)*fr,3.2,0,2*Math.PI); ctx.fill(); }
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  /* the arithmetic of the current hop, written out */
+  const a=seq[Math.min(k,E-1)], prod=a*m;
+  let txt=a+' × '+m+' = '+prod, v=prod;
+  while(v>9){ const d=String(v).split(''); v=d.reduce((s,c)=>s+(+c),0); txt+=' → '+d.join('+')+' = '+v; }
+  const html=txt.replace(/(\d+)$/,'<span class="eqv">$1</span>');
+  if(html!==LEARN.lastVbm){ $('vbmRead').innerHTML=html; LEARN.lastVbm=html; }
+}
+
+/* ---- station 2: twelve notches ---- */
+function notchXY(p,cx,cy,r){ const a=-Math.PI/2+p*Math.PI/6; return {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)}; }
+function drawClock(){
+  const {ctx,w,h}=LEARN.cv.clock; ctx.clearRect(0,0,w,h);
+  const s=LEARN.s, g=gcd(12,s), n=12/g, cx=w/2, cy=h/2, r=Math.min(w,h)/2-26;
+  const pos=p=>notchXY(p,cx,cy,r);
+  ctx.strokeStyle='#1f2b45'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI); ctx.stroke();
+  const prog=LEARN.u*n, k=Math.floor(prog), fr=prog-k;
+  for(let L=0;L<g;L++){
+    const col=LOOPCOL[L%LOOPCOL.length];
+    for(let j=0;j<n;j++){
+      const a=pos((L+s*j)%12), b=pos((L+s*(j+1))%12);
+      const done=j<k, now=j===k, f=now?fr:1;
+      ctx.strokeStyle=done||now?col:col+'38'; ctx.lineWidth=done||now?2.2:1.2;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f); ctx.stroke();
+      if(now){ ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f,3.2,0,2*Math.PI); ctx.fill(); }
+    }
+  }
+  const visited=new Set(); for(let L=0;L<g;L++) for(let j=0;j<=k;j++) visited.add((L+s*j)%12);
+  ctx.font='bold 12px "Segoe UI",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(let p=0;p<12;p++){
+    const q=pos(p), tri=(p+1)%3===0, hot=p===(s*k)%12, lab=notchXY(p,cx,cy,r+15);
+    ctx.fillStyle=hot?'#ffa14f':(visited.has(p)?'#2a3a5f':'#0e1524');
+    ctx.beginPath(); ctx.arc(q.x,q.y,hot?6:4.5,0,2*Math.PI); ctx.fill();
+    ctx.strokeStyle=tri?'#ffd166':'#4a5c86'; ctx.lineWidth=1.2; ctx.stroke();
+    ctx.fillStyle=tri?'#ffd166':'#dbe4f5'; ctx.fillText(p+1,lab.x,lab.y);
+  }
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  ctx.fillStyle='#7f8db0'; ctx.font='10.5px Consolas,monospace';
+  ctx.fillText('wrap '+Math.min(k+1,n)+' / '+n, 6, h-6);
+  if(k!==LEARN.lastStep){ LEARN.lastStep=k; learnChips(k); }
+}
+function learnChips(k){
+  const s=LEARN.s, g=gcd(12,s), n=12/g;
+  let html='';
+  for(let j=0;j<=n;j++){
+    const p=(s*j)%12+1, cls=[(p%3===0)?'g':'', j<k?'done':'', j===k?'on':''].join(' ');
+    html+=(j?'<i>→</i>':'')+'<span class="'+cls+'">'+p+'</span>';
+  }
+  $('lnChips').innerHTML=html;
+}
+function learnVerdict(){
+  const s=LEARN.s, g=gcd(12,s), el=$('lnVerdict');
+  if(g===1){
+    el.className='verdict';
+    el.textContent='One continuous wire: all 12 notches, home after 12 wraps. Every third wrap lands on a gold 3-6-9-12 notch.'
+      +(s>6?' (Skip '+s+' is the mirror image of skip '+(12-s)+'.)':'');
+  } else {
+    el.className='verdict bad';
+    el.textContent='Skip '+s+' shares a factor with 12, so the wire closes after only '+(12/g)+' notches. Covering the ring takes '
+      +g+' separate wires (one colour each).';
+  }
+  document.querySelectorAll('.skipEcho').forEach(e=>e.textContent=s);
+  /* pitch: angle the wire leans away from a plain toroid wrap, measured at the outer rim */
+  const lean=Math.atan((s/12)*(GEO.R+GEO.a)/GEO.a)*180/Math.PI;
+  $('lnPitch').textContent='Skip '+s+': 12 passes through the hole, '+s+' trip'+(s>1?'s':'')+' around the ring. At the rim the wire leans '
+    +lean.toFixed(0)+'° away from a plain toroid wrap.';
+}
+
+/* ---- station 3: the flattened donut and the 3-D donut ---- */
+function drawFlat(){
+  const {ctx,w,h}=LEARN.cv.flat; ctx.clearRect(0,0,w,h);
+  const s=LEARN.s, g=gcd(12,s), x0=38, x1=w-8, y0=18, y1=h-8;
+  const X=f=>x0+(x1-x0)*f, Y=f=>y0+(y1-y0)*f;
+  ctx.font='9.5px Consolas,monospace'; ctx.fillStyle='#7f8db0'; ctx.strokeStyle='#1c2740'; ctx.lineWidth=1;
+  [['rim',0],['top',.25],['hole',.5],['base',.75],['rim',1]].forEach(([t,f])=>{
+    ctx.beginPath(); ctx.moveTo(x0,Y(f)); ctx.lineTo(x1,Y(f)); ctx.stroke(); ctx.fillText(t,4,Y(f)+3); });
+  ctx.strokeStyle='#2a3a5f'; ctx.strokeRect(x0,y0,x1-x0,y1-y0);
+  /* the path, split wherever it wraps off an edge (the edges are glued) */
+  for(let L=0;L<g;L++){
+    const col=LOOPCOL[L%LOOPCOL.length], N=600;
+    let prev=null;
+    for(let i=0;i<=N;i++){
+      const u=i/N, fx=((L/12 + (s/g)*u)%1+1)%1, fy=((12/g)*u)%1, cur={fx,fy,u};
+      if(prev && Math.abs(fx-prev.fx)<0.5 && Math.abs(fy-prev.fy)<0.5){
+        ctx.strokeStyle=u<=LEARN.u?col:col+'40'; ctx.lineWidth=u<=LEARN.u?1.8:1;
+        ctx.beginPath(); ctx.moveTo(X(prev.fx),Y(prev.fy)); ctx.lineTo(X(fx),Y(fy)); ctx.stroke();
+      }
+      prev=cur;
+    }
+    const u=LEARN.u, bx=((L/12+(s/g)*u)%1+1)%1, by=((12/g)*u)%1;
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(bx),Y(by),3.2,0,2*Math.PI); ctx.fill();
+  }
+  /* notch numbers along the rim, lit as the wire crosses them */
+  const n=12/g, k=Math.floor(LEARN.u*n);
+  const lit=new Set(); for(let L=0;L<g;L++) for(let j=0;j<=k;j++) lit.add((L+s*j)%12);
+  ctx.textAlign='center'; ctx.font='bold 10px "Segoe UI",sans-serif';
+  for(let p=0;p<12;p++){
+    const x=X(p/12), on=lit.has(p);
+    ctx.fillStyle=on?'#ffa14f':'#3d4b6b';
+    ctx.beginPath(); ctx.arc(x,y0,on?3.5:2.5,0,2*Math.PI); ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y1,on?3.5:2.5,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle=(p+1)%3===0?'#ffd166':(on?'#dbe4f5':'#5a6a8f'); ctx.fillText(p+1,x,y0-6);
+  }
+  ctx.textAlign='left';
+  ctx.fillStyle='#7f8db0'; ctx.font='9.5px Consolas,monospace';
+  ctx.fillText('around the ring →', x1-96, y1-4);
+}
+function drawTorus(T){
+  const {ctx,w,h}=LEARN.cv.torus; ctx.clearRect(0,0,w,h);
+  const s=LEARN.s, g=gcd(12,s), ry=0.35*Math.sin(T*0.25), rx=-0.95, sc=Math.min(w*0.8,h*1.25)*6.2;
+  const cyy=Math.cos(ry), syy=Math.sin(ry), cxx=Math.cos(rx), sxx=Math.sin(rx);
+  const P=p=>{ const x1=p.x*cyy-p.y*syy, y1=p.x*syy+p.y*cyy, y2=y1*cxx-p.z*sxx, z2=y1*sxx+p.z*cxx;
+    return {X:w/2+x1*sc, Y:h/2-z2*sc+4, d:y2}; };
+  /* this projection draws +y toward the bottom of the screen, so φ = −90° + p·30°
+     puts notch 1 at the top and counts clockwise, matching the notch clock */
+  const tp=(phi,theta,a=1)=>torusPt(-Math.PI/2+phi,theta,a);
+  const shade=d=>Math.max(.2,Math.min(1,0.55+d/0.09));
+  ctx.lineWidth=1;
+  for(let r=0;r<16;r++){ let pv=null; const f=r/16*2*Math.PI;
+    for(let t=0;t<=20;t++){ const q=P(tp(f,t/20*2*Math.PI));
+      if(pv){ ctx.strokeStyle='rgba(90,110,160,'+(0.16*shade(q.d)).toFixed(3)+')';
+        ctx.beginPath(); ctx.moveTo(pv.X,pv.Y); ctx.lineTo(q.X,q.Y); ctx.stroke(); } pv=q; } }
+  for(let L=0;L<g;L++){
+    const col=LOOPCOL[L%LOOPCOL.length], N=(12/g)*40;
+    const rgb=[parseInt(col.slice(1,3),16),parseInt(col.slice(3,5),16),parseInt(col.slice(5,7),16)].join(',');
+    let pv=null;
+    for(let i=0;i<=N;i++){
+      const u=i/N, q=P(tp(L*Math.PI/6+(s/g)*2*Math.PI*u,(12/g)*2*Math.PI*u));
+      if(pv){ const on=u<=LEARN.u;
+        ctx.strokeStyle='rgba('+rgb+','+((on?1:0.22)*shade(q.d)).toFixed(3)+')'; ctx.lineWidth=on?1.8:1;
+        ctx.beginPath(); ctx.moveTo(pv.X,pv.Y); ctx.lineTo(q.X,q.Y); ctx.stroke(); }
+      pv=q;
+    }
+    const u=LEARN.u, b=P(tp(L*Math.PI/6+(s/g)*2*Math.PI*u,(12/g)*2*Math.PI*u));
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(b.X,b.Y,3.4,0,2*Math.PI); ctx.fill();
+  }
+  const n=12/g, k=Math.floor(LEARN.u*n);
+  const lit=new Set(); for(let L=0;L<g;L++) for(let j=0;j<=k;j++) lit.add((L+s*j)%12);
+  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.font='bold 10px "Segoe UI",sans-serif';
+  for(let p=0;p<12;p++){
+    const on=lit.has(p), q=P(tp(p*Math.PI/6,0)), lab=P(tp(p*Math.PI/6,0,1.5));
+    ctx.fillStyle=on?'#ffa14f':'#3d4b6b'; ctx.beginPath(); ctx.arc(q.X,q.Y,on?3.5:2.5,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle=(p+1)%3===0?'#ffd166':(on?'#dbe4f5':'#5a6a8f'); ctx.fillText(p+1,lab.X,lab.Y);
+  }
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
+
+/* ---- station 4: pitch → trapped vs aperture field, every skip ---- */
+function drawFieldChart(){
+  const {ctx,w,h}=LEARN.cv.field; ctx.clearRect(0,0,w,h);
+  if(!LEARN.FS) return;
+  const FS=LEARN.FS, sc=learnScale(), padL=46, padB=30, padT=26, padR=6;
+  let ymax=0; for(let s=1;s<=11;s++) ymax=Math.max(ymax,FS[s].core,FS[s].centre);
+  ymax*=1.12*sc;
+  const gw=(w-padL-padR)/11, Yv=v=>h-padB-(h-padB-padT)*v/ymax;
+  ctx.strokeStyle='#1c2740'; ctx.fillStyle='#7f8db0'; ctx.font='10px Consolas,monospace'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){ const v=ymax*i/4, y=Yv(v);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke(); ctx.fillText(eng(v,'T',3),2,y+3); }
+  for(let s=1;s<=11;s++){
+    const x=padL+gw*(s-1), g=gcd(12,s), sel=s===LEARN.s;
+    if(sel){ ctx.fillStyle='rgba(255,161,79,.12)'; ctx.fillRect(x+1,padT-4,gw-2,h-padB-padT+4); }
+    const bw=gw*0.32, a=g===1?1:0.35;
+    ctx.globalAlpha=a;
+    ctx.fillStyle='#6fe3a0'; ctx.fillRect(x+gw*0.15,Yv(FS[s].core*sc),bw,h-padB-Yv(FS[s].core*sc));
+    ctx.fillStyle='#ff5fd7'; ctx.fillRect(x+gw*0.15+bw+1,Yv(FS[s].centre*sc),bw,h-padB-Yv(FS[s].centre*sc));
+    ctx.globalAlpha=1;
+    ctx.textAlign='center'; ctx.fillStyle=sel?'#ffa14f':'#9fb3d9'; ctx.font=(sel?'bold ':'')+'11px Consolas,monospace';
+    ctx.fillText(s, x+gw/2, h-padB+13);
+    ctx.font='9px Consolas,monospace'; ctx.fillStyle='#5a6a8f';
+    if(g>1) ctx.fillText(gw>46?g+' wires':g+'w', x+gw/2, h-padB+24);
+    if(s===5){ ctx.fillStyle='#ffa14f'; ctx.fillText('Rodin', x+gw/2, h-padB+24); }
+    ctx.textAlign='left';
+  }
+  ctx.font='10.5px "Segoe UI",sans-serif';
+  ctx.fillStyle='#6fe3a0'; ctx.fillRect(padL,6,10,8); ctx.fillText('trapped in the donut', padL+14, 14);
+  ctx.fillStyle='#ff5fd7'; ctx.fillRect(padL+138,6,10,8); ctx.fillText('through the hole', padL+152, 14);
+  ctx.fillStyle='#7f8db0'; ctx.textAlign='right'; ctx.fillText('skip →', w-padR, h-4); ctx.textAlign='left';
+  const f=FS[LEARN.s];
+  $('lnFieldRead').innerHTML='Skip '+LEARN.s+' at the twin\'s present drive ('+S.N+' turns, '+eng(C.Irms,'A',3)+'): '
+    +'<span style="color:#6fe3a0">trapped '+eng(f.core*sc,'T',3)+'</span> · '
+    +'<span style="color:#ff5fd7">through the hole '+eng(f.centre*sc,'T',3)+'</span> · '
+    +'wire per winding '+eng(f.lenWrap*S.N,'m',3);
+}
+
+/* ---- station 5: the bifilar pair split into wrap + hoop ---- */
+function bifRing(ctx,cx,cy,r,o){
+  const ri=r*0.46, rm=(r+ri)/2;
+  ctx.fillStyle='rgba(120,140,190,.10)';
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI); ctx.arc(cx,cy,ri,0,2*Math.PI,true); ctx.fill();
+  ctx.strokeStyle='rgba(150,170,220,.35)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,ri,0,2*Math.PI); ctx.stroke();
+  if(o.core){                                         // trapped flux circulating inside the body
+    const col='rgba(111,227,160,'+(0.35+0.5*o.core)+')';
+    ctx.strokeStyle=col; ctx.lineWidth=2+3*o.core;
+    ctx.beginPath(); ctx.arc(cx,cy,rm,0,2*Math.PI); ctx.stroke();
+    for(let k=0;k<4;k++){ const a=k*Math.PI/2+o.T*0.6;
+      arrowHead(ctx,cx+rm*Math.cos(a),cy+rm*Math.sin(a),a+Math.PI/2,5+2*o.core,col); }
+  }
+  /* wraps seen from above: radial runs across the top face */
+  const wa=Math.abs(o.wraps), wcol=wa?o.col:'rgba(127,141,176,.45)';
+  for(let k=0;k<12;k++){
+    const a=k*Math.PI/6+Math.PI/12, c=Math.cos(a), s=Math.sin(a);
+    const p0={x:cx+ri*1.12*c,y:cy+ri*1.12*s}, p1={x:cx+r*0.92*c,y:cy+r*0.92*s};
+    ctx.strokeStyle=wcol; ctx.lineWidth=wa?0.9+0.7*wa:1;
+    if(!wa) ctx.setLineDash([2,3]);
+    ctx.beginPath(); ctx.moveTo(p0.x,p0.y); ctx.lineTo(p1.x,p1.y); ctx.stroke(); ctx.setLineDash([]);
+    if(wa) arrowHead(ctx,(p0.x+p1.x)/2+c*3,(p0.y+p1.y)/2+s*3,a,3.5+wa,wcol);
+  }
+  /* hoop: net travel around the ring */
+  const ca=Math.abs(o.circ), rr=r+9, ccol=ca?o.col:'rgba(127,141,176,.45)', dir=Math.sign(o.circ)||1;
+  ctx.strokeStyle=ccol; ctx.lineWidth=ca?1+1.2*ca:1; if(!ca) ctx.setLineDash([3,4]);
+  const a0=-Math.PI/2+0.35, a1=a0+2*Math.PI-0.7;
+  ctx.beginPath(); ctx.arc(cx,cy,rr,a0,a1); ctx.stroke(); ctx.setLineDash([]);
+  if(ca){ const ae=dir>0?a1:a0; arrowHead(ctx,cx+rr*Math.cos(ae),cy+rr*Math.sin(ae),ae+dir*Math.PI/2,4+2*ca,ccol); }
+  /* the hole: a pole only when the hoops add */
+  if(o.dip){
+    ctx.fillStyle='rgba(255,95,215,.18)'; ctx.beginPath(); ctx.arc(cx,cy,ri*0.8,0,2*Math.PI); ctx.fill();
+    ctx.strokeStyle='#ff5fd7'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(cx,cy,8,0,2*Math.PI); ctx.stroke();
+    ctx.fillStyle='#ff5fd7'; ctx.beginPath(); ctx.arc(cx,cy,2.4,0,2*Math.PI); ctx.fill();
+    ctx.font='bold 11px "Segoe UI",sans-serif'; ctx.textAlign='center'; ctx.fillText('N ↑',cx,cy-12);
+  }
+  ctx.fillStyle='#dbe4f5'; ctx.font='11.5px "Segoe UI",sans-serif'; ctx.textAlign='center';
+  ctx.fillText(o.label,cx,cy+r+24);
+  if(o.sub){ ctx.fillStyle='#7f8db0'; ctx.font='10.5px "Segoe UI",sans-serif';
+    [].concat(o.sub).forEach((t,i)=>ctx.fillText(t,cx,cy+r+38+i*13)); }
+  ctx.textAlign='left';
+}
+function drawBif(T){
+  const {ctx,w,h}=LEARN.cv.bif; ctx.clearRect(0,0,w,h);
+  const mode=LEARN.mode, aid=mode==='aiding', narrow=w<480;   // phone: two-line captions, short labels
+  const r=Math.max(24,Math.min(w/6-16,52)), cy=r+16, xs=[w/6,w/2,5*w/6];
+  bifRing(ctx,xs[0],cy,r,{wraps:1,circ:1,col:'#ffa14f',label:'Winding A',
+    sub:narrow?['wraps','+ hoop →']:'wraps + hoop →',T});
+  bifRing(ctx,xs[1],cy,r,{wraps:1,circ:-1,col:'#4fc3f7',label:'Winding B',
+    sub:narrow?['wraps','+ hoop ←']:'wraps + hoop ← (counter-wound)',T});
+  bifRing(ctx,xs[2],cy,r,aid
+    ? {wraps:2,circ:0,core:1,col:'#6fe3a0',label:narrow?'A + B':'Aiding: A + B',
+       sub:narrow?['wraps add','hoops cancel']:'wraps add · hoops cancel',T}
+    : {wraps:0,circ:2,dip:1,col:'#ff5fd7',label:narrow?'A − B':'Opposing: A − B',
+       sub:narrow?['wraps cancel','hoops add']:'wraps cancel · hoops add',T});
+  ctx.fillStyle='#dbe4f5'; ctx.font='bold 22px "Segoe UI",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(aid?'+':'−',(xs[0]+xs[1])/2,cy); ctx.fillText('=',(xs[1]+xs[2])/2,cy);
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  /* Biot–Savart bars for the chosen connection; tick = one winding alone */
+  if(!LEARN.BIF) return;
+  const sc=learnScale(), B=LEARN.BIF, res=B[mode], top=cy+r+(narrow?62:52);
+  const vmax=Math.max(B.aiding.core,B.opposing.core,B.aiding.centre,B.opposing.centre)*sc*1.05;
+  const x0=narrow?62:Math.min(150,w*0.3), x1=w-(narrow?70:90), bh=12;
+  [[narrow?'trapped':'trapped in the donut','core','#6fe3a0'],
+   [narrow?'hole':'through the hole','centre','#ff5fd7']].forEach(([lab,key,col],i)=>{
+    const y=top+i*24, v=res[key]*sc, v1=B.single[key]*sc;
+    ctx.fillStyle='#9fb3d9'; ctx.font='11px "Segoe UI",sans-serif'; ctx.fillText(lab,8,y+10);
+    ctx.fillStyle='#131c30'; ctx.fillRect(x0,y,x1-x0,bh);
+    ctx.fillStyle=col; ctx.fillRect(x0,y,(x1-x0)*Math.min(1,v/vmax),bh);
+    const tx=x0+(x1-x0)*Math.min(1,v1/vmax);
+    ctx.strokeStyle='#dbe4f5'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(tx,y-3); ctx.lineTo(tx,y+bh+3); ctx.stroke();
+    ctx.fillStyle='#dbe4f5'; ctx.font='11px Consolas,monospace'; ctx.fillText(eng(v,'T',3),x1+8,y+10);
+  });
+  ctx.fillStyle='#7f8db0'; ctx.font='10px "Segoe UI",sans-serif';
+  ctx.fillText(narrow?'tick = one winding alone':'white tick = one winding on its own · at the twin\'s present drive', x0, top+56);
+}
+
+function learnSetup(){
+  const L=LEARN.cv;
+  L.vbm=setupCanvas('lnVbm',0.95); L.clock=setupCanvas('lnClock',0.95);
+  L.flat=setupCanvas('lnFlat',0.5); L.torus=setupCanvas('lnTorus',0.6);
+  L.field=setupCanvas('lnField',0.8); L.bif=setupCanvas('lnBif',0.9);
+}
+function drawLearn(dt,T){
+  if(LEARN.playing) LEARN.u=(LEARN.u+dt/(1.0*12/gcd(12,LEARN.s)))%1;   // one wrap per second
+  drawVbm(T); drawClock(); drawFlat(); drawTorus(T); drawFieldChart(); drawBif(T);
+}
+function learnWire(){
+  $('multRow').addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    LEARN.mult=+b.dataset.m; [...$('multRow').children].forEach(x=>x.classList.toggle('on',x===b));
+    $('vbmVerdict').textContent=VERDICT[LEARN.mult];
+  });
+  $('lnSkip').addEventListener('input', e=>{
+    LEARN.s=+e.target.value; LEARN.u=0; LEARN.lastStep=-1;
+    $('lnSkipVal').textContent=LEARN.s+(LEARN.s===5?' ★':''); learnVerdict();
+  });
+  $('lnPlay').addEventListener('click', ()=>{
+    LEARN.playing=!LEARN.playing; $('lnPlay').textContent=LEARN.playing?'❚❚':'▶'; });
+  $('bifRow').addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    LEARN.mode=b.dataset.mode; [...$('bifRow').children].forEach(x=>x.classList.toggle('on',x===b));
+  });
+  $('bifTwin').addEventListener('click', ()=>{
+    $('conn').value=LEARN.mode; $('conn').dispatchEvent(new Event('change'));
+    if(S.view==='coil'){ S.view='both'; syncUI(); }
+    $('c3d').scrollIntoView({behavior:'smooth',block:'center'});
+  });
+  $('vbmVerdict').textContent=VERDICT[LEARN.mult];
+  $('lnSkipVal').textContent='5 ★'; learnVerdict();
+  if('IntersectionObserver' in window)
+    new IntersectionObserver(es=>{ LEARN.visible=es[0].isIntersecting; }).observe($('learn'));
+}
+
 /* ================= UI wiring ================= */
 function logMap(v, lo, hi){ return Math.pow(10, lo + (hi-lo)*v/1000); }
 function refreshLabels(){
   $('freqVal').textContent  = eng(S.f,'Hz');
   $('turnsVal').textContent = S.N+' t';
   $('diaVal').textContent   = (S.d*1000).toFixed(2)+' mm';
-  $('kVal').textContent     = S.k.toFixed(2);
-  $('murVal').textContent   = S.mur;
   $('dutyVal').textContent  = Math.round(S.duty*100)+'%';
   $('vphaseVal').textContent = S.vphase+'°';
   if(S.driveMode==='power'){
@@ -1634,8 +2185,6 @@ function wire(){
   $('duty').addEventListener('input', e=>{ S.duty=+e.target.value/100; refreshLabels(); recompute(); });
   $('turns').addEventListener('input', e=>{ S.N=+e.target.value; refreshLabels(); recompute(); });
   $('dia').addEventListener('input', e=>{ S.d=+e.target.value/100*1e-3; refreshLabels(); recompute(); });
-  $('coupling').addEventListener('input', e=>{ S.k=+e.target.value/100; refreshLabels(); recompute(); });
-  $('mur').addEventListener('input', e=>{ S.mur=+e.target.value; refreshLabels(); recompute(); });
   $('conn').addEventListener('change', e=>{ S.conn=e.target.value;
     $('vphaseCtl').style.display = S.conn==='vortex' ? '' : 'none';
     recompute(); computeFluxLines(); });
@@ -1644,12 +2193,15 @@ function wire(){
     refreshLabels(); recompute(); updateSpinDir();
     clearTimeout(vpT); vpT=setTimeout(computeFluxLines, 400); });
   $('autoRot').addEventListener('change', e=>{ S.autoRot=e.target.checked; });
-  $('showFlux').addEventListener('change', e=>{ S.showFlux=e.target.checked;
-    if(S.showFlux && !FLUX.lines.length) computeFluxLines(); });
-  $('showCoil').addEventListener('change', e=>{ S.showCoil=e.target.checked; });
-  $('showWindB').addEventListener('change', e=>{ S.showWindB=e.target.checked; });
-  for(const id of ['lineOuter','lineCenter','lineAxis'])
-    $(id).addEventListener('change', e=>{ S[id]=e.target.checked; drawField(); });
+  $('viewRow').addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    S.view=b.dataset.view; syncUI();
+  });
+  $('resetAll').addEventListener('click', ()=>{
+    const prevConn=S.conn;
+    Object.assign(S, DEFAULTS); syncUI(); refreshLabels(); recompute();
+    if(S.conn!==prevConn) computeFluxLines();
+  });
   $('linScale').addEventListener('change', e=>{ S.linScale=e.target.checked; recolorField(); });
   $('docOpenAll').addEventListener('click', ()=>document.querySelectorAll('details.doc').forEach(d=>d.open=true));
   $('docCloseAll').addEventListener('click', ()=>document.querySelectorAll('details.doc').forEach(d=>d.open=false));
@@ -1691,21 +2243,26 @@ let poles, lastT=0;
 function loop(t){
   const dt=Math.min(0.05,(t-lastT)/1000)||0.016; lastT=t;
   const cyc=(t/1000 % 4)/4;                        // 2 electrical periods per 4 s of wall time
-  const k=Math.floor(cyc*C.iArr.length)%C.iArr.length;
-  const iNorm=C.iArr[k]/C.Ipk;
-  draw3D(iNorm, dt, cyc);
+  const cur=phaseCurrents(cyc);
+  draw3D(cur, dt, cyc);
   drawScope(cyc);
-  compositeField(iNorm);          // heatmap brightness follows i(t) & I_rms
+  compositeField(cur.field);      // heatmap brightness follows i(t) & N·I
+  if(LEARN.visible) drawLearn(dt, t/1000);
   requestAnimationFrame(loop);
 }
 
-/* ---- settings persistence: the sim reopens exactly where you left it ---- */
-function saveState(){ try{ localStorage.setItem('rodinSim', JSON.stringify(S)); }catch(e){} }
+/* ---- settings persistence: the sim reopens exactly where you left it.
+   v2 key: v1 also stored a manual k / core µr that would silently override the
+   Neumann coupling, so old saves are ignored. Values are type-checked on load. ---- */
+const STORE_KEY='rodinSim2';
+function saveState(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} }
 function loadState(){
   try{
-    const s=JSON.parse(localStorage.getItem('rodinSim')||'null');
+    const s=JSON.parse(localStorage.getItem(STORE_KEY)||'null');
     if(!s) return;
-    for(const k of Object.keys(S)) if(k in s) S[k]=s[k];
+    for(const k of Object.keys(DEFAULTS))
+      if(k in s && typeof s[k]===typeof DEFAULTS[k] && (typeof s[k]!=='number' || isFinite(s[k]))) S[k]=s[k];
+    if(!['both','coil','field'].includes(S.view)) S.view='both';
   }catch(e){}
 }
 function syncUI(){
@@ -1717,15 +2274,13 @@ function syncUI(){
   $('vphase').value=S.vphase;
   $('turns').value=S.N;
   $('dia').value=Math.round(S.d*1e5);
-  $('coupling').value=Math.round(S.k*100);
-  $('mur').value=S.mur;
   $('conn').value=S.conn;
   $('dutyCtl').style.display   = S.waveform==='pwm'  ? '' : 'none';
   $('vphaseCtl').style.display = S.conn==='vortex'   ? '' : 'none';
   [...$('wfRow').children].forEach(b=>b.classList.toggle('on', b.dataset.wf===S.waveform));
   [...$('driveRow').children].forEach(b=>b.classList.toggle('on', b.dataset.dm===S.driveMode));
-  for(const id of ['autoRot','showCoil','showWindB','showFlux','lineOuter','lineCenter','lineAxis','linScale'])
-    $(id).checked=!!S[id];
+  [...$('viewRow').children].forEach(b=>b.classList.toggle('on', b.dataset.view===S.view));
+  for(const id of ['autoRot','linScale']) $(id).checked=!!S[id];
 }
 window.addEventListener('beforeunload', saveState);
 
@@ -1741,11 +2296,10 @@ function init(){
   FIELD.BB=new Float32Array(FIELD.nx*FIELD.nz*3);
   buildSegments();
   const nm=neumannK();                       // doc's Neumann double integral → geometric k
-  C.kNeumann=nm.k; C.Mneumann=nm.M;
-  S.k=nm.k;
-  $('coupling').value=Math.round(nm.k*100);
-  $('kHint').textContent='Neumann ∮∮ dl·dl/r over both paths → k = '
-    +nm.k.toFixed(3)+' (M = '+eng(Math.abs(nm.M),'H',3)+' per 12 wraps) · slider = manual override';
+  C.k=nm.k; C.Mneumann=nm.M;
+  $('kHint').textContent='A↔B coupling k = '+nm.k.toFixed(3)+', computed from the wire paths '
+    +'(Neumann ∮∮ dl·dl/r, M = '+eng(Math.abs(nm.M),'H',3)+' per 12 wraps)';
+  learnPrecompute(); learnSetup(); learnWire();
   loadState(); syncUI();                     // restore last session's settings
   wire(); refreshLabels(); recompute(); drawPoles(); drawField();
   computeFluxLines();
@@ -1756,7 +2310,7 @@ function init(){
     bode=setupCanvas('bode'); poles=setupCanvas('poles'); field=setupCanvas('field');
     field.oc=document.createElement('canvas'); field.oc.width=FIELD.nx; field.oc.height=FIELD.nz;
     field.octx=field.oc.getContext('2d'); field.img=field.octx.createImageData(FIELD.nx,FIELD.nz);
-    drawBode(); drawPoles(); recolorField();
+    learnSetup(); drawBode(); drawPoles(); recolorField();
   });
 }
 init();
