@@ -25,6 +25,7 @@
   --spec:#7A5EA8; --spec-fill:rgba(122,94,168,.09);
   --quartz:rgba(120,150,170,.10); --quartz-line:#8FA6B5;
   --good:#2F7D4F; --warnc:#9A6A00;
+  --coneL:#C0392B; --coneM:#2E8B57; --coneS:#4B4BC4; --rod:#6F7780; --heat:#C2410C; --ir:#8E3B5B; --uv:#6A3FB5;
   --serif:Charter,'Sitka Text',Cambria,Georgia,serif;
   --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
   --mono:'Cascadia Code',Consolas,'SF Mono','Roboto Mono',monospace;
@@ -37,6 +38,7 @@
   --spec:#9379C6; --spec-fill:rgba(147,121,198,.11);
   --quartz:rgba(130,165,190,.10); --quartz-line:#5E7684;
   --good:#4FA872; --warnc:#C79A2E;
+  --coneL:#E46A5C; --coneM:#5CBF85; --coneS:#8C8CF0; --rod:#9AA5AE; --heat:#F07B3F; --ir:#C9729A; --uv:#A98BEA;
 }}
 :root[data-theme="dark"]{
   --paper:#14171A; --panel:#1B1F23; --ink:#E6E9EB; --ink2:#9AA5AE; --line:#2E343A; --hair:#242A2F;
@@ -46,6 +48,7 @@
   --spec:#9379C6; --spec-fill:rgba(147,121,198,.11);
   --quartz:rgba(130,165,190,.10); --quartz-line:#5E7684;
   --good:#4FA872; --warnc:#C79A2E;
+  --coneL:#E46A5C; --coneM:#5CBF85; --coneS:#8C8CF0; --rod:#9AA5AE; --heat:#F07B3F; --ir:#C9729A; --uv:#A98BEA;
 }
 :root[data-theme="light"]{
   --paper:#FBFBF9; --panel:#F3F3EF; --ink:#20242A; --ink2:#5A626C; --line:#DCDFDE; --hair:#E8EAE7;
@@ -55,6 +58,7 @@
   --spec:#7A5EA8; --spec-fill:rgba(122,94,168,.09);
   --quartz:rgba(120,150,170,.10); --quartz-line:#8FA6B5;
   --good:#2F7D4F; --warnc:#9A6A00;
+  --coneL:#C0392B; --coneM:#2E8B57; --coneS:#4B4BC4; --rod:#6F7780; --heat:#C2410C; --ir:#8E3B5B; --uv:#6A3FB5;
 }
 html{background:var(--paper)}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.58;-webkit-text-size-adjust:100%}
@@ -110,7 +114,7 @@ details.adv .ctl{border:0;padding:7px 0 0;background:transparent}
 .rgroup .row{display:flex;justify-content:space-between;gap:10px;padding:2.5px 0;border-bottom:1px solid var(--hair)}
 .rgroup .row:last-child{border-bottom:0}
 .rgroup dt{color:var(--ink2);margin:0}
-.rgroup dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap;font-size:12px}
+.rgroup dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);font-size:12px;text-align:right;overflow-wrap:anywhere}
 .rgroup dd.hot{color:var(--beam)}
 .rgroup dd.warn{color:var(--warnc)}
 #status{font-family:var(--sans);font-size:12.5px;color:var(--warnc);margin-top:8px;min-height:18px}
@@ -139,6 +143,48 @@ details.adv .ctl{border:0;padding:7px 0 0;background:transparent}
 #cmp tr.rherm td{font-style:italic;background:var(--herm-fill)}
 #cmp tr.rspec td{background:var(--spec-fill)}
 #cmp .v{font-family:var(--mono);font-size:.9em;color:var(--beam)}
+/* ---- the full journey (lower sections) ---- */
+#deep{margin-top:40px;border-top:1.5px solid var(--ink2);padding-top:10px}
+h2.sec{font-family:var(--serif);font-weight:600;font-size:clamp(22px,3vw,30px);margin:10px 0 4px}
+h3.sub{font-family:var(--serif);font-weight:600;font-size:21px;margin:34px 0 6px;display:flex;gap:10px;align-items:baseline}
+h3.sub .num{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--paper);background:var(--beam);border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px;transform:translateY(-2px)}
+.secsub{color:var(--ink2);max-width:86ch;margin:2px 0 10px;font-size:15px}
+.condgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:10px;margin:12px 0 4px;font-family:var(--sans);font-size:13px}
+.condgrid fieldset{border:1px solid var(--line);border-radius:7px;background:var(--panel);padding:6px 11px 8px;margin:0;min-width:0}
+.condgrid legend{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink2);font-weight:600;padding:0 4px}
+.condgrid label.r{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;font-size:12px;margin-top:3px}
+.condgrid output{font-family:var(--mono);font-weight:400;color:var(--beam);font-size:12px}
+.condgrid input[type=range]{width:100%;margin:3px 0 0;accent-color:var(--beam)}
+.condgrid select{width:100%;font-family:var(--sans);font-size:12.5px;padding:3px 4px;margin-top:3px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:5px}
+.condgrid .ck{display:flex;gap:7px;align-items:center;font-size:12px;margin-top:6px}
+.condgrid .hint{font-size:10.5px;color:var(--ink2);display:block;margin-top:3px;font-weight:400}
+.condnote{font-family:var(--sans);font-size:11.5px;color:var(--ink2);margin:4px 0 0}
+.figpad{border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow-x:auto;position:relative}
+.figpad canvas{display:block}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:12px}
+.budget{margin-top:14px;font-family:var(--sans);font-size:12px}
+.budget .bt{font-weight:600;font-size:12.5px;margin:10px 0 4px;color:var(--ink)}
+.budget .bt span{font-weight:400;color:var(--ink2)}
+.bar{display:flex;height:22px;border-radius:5px;overflow:hidden;border:1px solid var(--line);background:var(--hair)}
+.bar i{display:block;height:100%;min-width:0;border-right:1px solid var(--paper)}
+.bleg{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:5px;color:var(--ink2)}
+.bleg b{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.bleg .v{font-family:var(--mono);color:var(--ink);font-size:11.5px}
+.swatches{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-family:var(--sans);font-size:11.5px;color:var(--ink2)}
+.sw{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:6px;padding:4px 9px 4px 4px;background:var(--panel)}
+.sw i{display:block;width:30px;height:22px;border-radius:4px;border:1px solid var(--line)}
+#ledger{margin-top:12px;overflow-x:auto}
+#ledger table{border-collapse:collapse;width:100%;font-size:13.5px}
+#ledger th{font-family:var(--sans);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);text-align:left;font-weight:600;padding:7px 10px;border-bottom:1.5px solid var(--ink2)}
+#ledger td{padding:7px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+#ledger tr.grp td{font-family:var(--sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--beam);padding-top:14px;border-bottom:1px solid var(--line)}
+#ledger td:first-child{font-weight:600;font-family:var(--sans);font-size:12.5px;min-width:150px}
+#ledger td.num{font-family:var(--mono);font-size:12px;color:var(--beam);white-space:nowrap}
+#ledger td.seen{color:var(--good)}
+.tip{position:absolute;pointer-events:none;font-family:var(--sans);font-size:11px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;box-shadow:0 2px 8px rgba(0,0,0,.12);white-space:nowrap;display:none;z-index:3}
+.tip .k{color:var(--ink2)} .tip .v{font-family:var(--mono)}
+@media (max-width:900px){.duo{grid-template-columns:1fr}}
 footer{margin-top:34px;border-top:1.5px solid var(--ink2);padding:13px 0 8px;font-size:13px;color:var(--ink2);font-family:var(--sans)}
 @media (max-width:900px){.simrow{flex-direction:column}.controls{flex-direction:row;flex-wrap:wrap}.controls>*{flex:1 1 180px}}
 </style>
@@ -150,13 +196,14 @@ footer{margin-top:34px;border-top:1.5px solid var(--ink2);padding:13px 0 8px;fon
   <div class="eyebrow">single-file simulation · <b>physics computed, interpretation labeled</b></div>
   <h1>Photon in Quartz</h1>
   <p class="sub">A lens focuses sodium light into a clear quartz crystal; an observer watches. Everything drawn in ink and amber — source to retina — is computed live from the declared model below and is checkable in the console as <code>window.__derived</code>. The two optional layers narrate the same numbers symbolically: they are labeled, off by default, and never feed a value back.</p>
-  <p class="model"><b>SOURCE</b> — two declared modes, toggled in the controls. <b>Sunlight</b> (default): an extended, incoherent, unpolarized disk of angular diameter 0.533° at infinity, 1 kW/m², broadband — the lens images it to a disk Ø f·θ☉, and single-λ readouts evaluate its 589 nm component. <b>Laboratory</b>: a monochromatic point-like emitter at λ = 589 nm (ν ≈ 508.99 THz, hν ≈ 2.105 eV), waist w₀ = 50 µm — the coherent idealization whose Gaussian focusing Self's equation drives.</p>
+  <p class="model"><b>SOURCE</b> — two declared modes, toggled in the controls. <b>Sunlight</b> (default): an extended, incoherent, unpolarized disk of angular diameter 0.533° at infinity, broadband, its direct-beam power computed through the atmosphere you set below (≈ 0.9 kW/m² on a clear day) — the lens images it to a disk Ø f·θ☉, and single-λ readouts evaluate its 589 nm component. <b>Laboratory</b>: a monochromatic point-like emitter at λ = 589 nm (ν ≈ 508.99 THz, hν ≈ 2.105 eV), waist w₀ = 50 µm — the coherent idealization whose Gaussian focusing Self's equation drives.</p>
   <p class="model"><b>QUARTZ</b> — a positive uniaxial crystal, n₀ = 1.5443, nₑ = 1.5534 at 589 nm (dispersion not modeled); the optic axis lies at angle θ in the drawing plane (hatch marks in the block). Media change λ and phase velocity, never ν. Birefringence vanishes at θ = 0°.</p>
-  <p class="model"><b>MARKERS &amp; OBSERVER</b> — the animated ticks are wave-front phase markers moving at c/n, not photons; the observer is the Emsley reduced eye (P = 60 D, n′ = 4/3, axial 22.22 mm), accommodating as needed, pupil Ø 4 mm at L = 250 mm.</p>
+  <p class="model"><b>MARKERS &amp; OBSERVER</b> — the animated ticks are wave-front phase markers moving at c/n, not photons; the observer is the Navarro schematic eye (four refracting surfaces, dispersive media, a crystalline lens that reshapes as it accommodates; axial 23.92 mm), accommodating within the amplitude its age allows, pupil Ø 4 mm at L = 250 mm.</p>
+  <p class="model"><b>THE FULL JOURNEY</b> — <a href="#deep">below the bench</a>, the same model is followed across the whole solar spectrum: atmosphere (sun elevation, temperature, pressure, humidity, haze), the magnifier glass, the crystal's surfaces, colour centres, lattice phonons and heat, and the eye's tear film, cornea, lens, vitreous, macular pigment and cone pigments, ending in a ledger of everything that happens but is never seen.</p>
   <div class="chips">
     <span class="chip"><span class="dot" style="background:var(--beam)"></span>beam / o-ray · λ = 589 nm</span>
     <span class="chip"><span class="dot" style="background:var(--eray)"></span>e-ray — color for identity only</span>
-    <span class="chip">observer: Emsley reduced eye · 60 D</span>
+    <span class="chip">observer: Navarro schematic eye · 4 surfaces</span>
     <span class="chip"><span class="dot" style="background:var(--herm)"></span>Hermetic layer — off by default</span>
     <span class="chip"><span class="dot" style="background:var(--spec)"></span>bio-energetic layer — off by default</span>
   </div>
@@ -168,7 +215,7 @@ footer{margin-top:34px;border-top:1.5px solid var(--ink2);padding:13px 0 8px;fon
       <div class="figscroll" id="scroller">
         <div class="stack" id="stack">
           <canvas id="cvBg" aria-hidden="true"></canvas>
-          <canvas id="cvStatic" class="ovl" role="img" aria-label="Optical bench, horizontally to scale: source, vesica lens, quartz crystal with o and e rays, exit interference strip, and reduced eye with retinal inset. All values computed."></canvas>
+          <canvas id="cvStatic" class="ovl" role="img" aria-label="Optical bench, horizontally to scale: source, vesica lens, quartz crystal with o and e rays, exit interference strip, and the Navarro schematic eye with retinal inset. All values computed."></canvas>
           <canvas id="cvAnim" class="ovl" aria-hidden="true"></canvas>
           <!-- Removed by the engine at boot. If you can read this on the page,
                the embedded script did not run — see the message for why. -->
@@ -232,7 +279,7 @@ footer{margin-top:34px;border-top:1.5px solid var(--ink2);padding:13px 0 8px;fon
     <div class="rgroup"><h4>Crystal</h4><dl id="roCrys"></dl></div>
     <div class="rgroup"><h4>Wave — frequency &amp; phase</h4><dl id="roWave"></dl></div>
     <div class="rgroup"><h4>Retardation &amp; exit strip</h4><dl id="roRet"></dl></div>
-    <div class="rgroup"><h4>Observer — reduced eye</h4><dl id="roObs"></dl></div>
+    <div class="rgroup"><h4>Observer — Navarro eye</h4><dl id="roObs"></dl></div>
   </section>
   <div id="status" role="status"></div>
 
@@ -264,6 +311,93 @@ footer{margin-top:34px;border-top:1.5px solid var(--ink2);padding:13px 0 8px;fon
       </tbody>
     </table>
   </section>
+
+  <section id="deep" aria-label="The full journey">
+    <div class="eyebrow">going deeper · <b>every number computed from the same model</b></div>
+    <h2 class="sec">The full journey — and what the eye never sees</h2>
+    <p class="secsub">The bench above follows one wavelength. Below, the same light is followed across the whole solar spectrum (280–4000 nm): through the atmosphere you set, the magnifier glass, the crystal's surfaces, colour centres and lattice, and the eye's tear film, cornea, lens, vitreous, macular pigment and cone pigments. These conditions feed the bench too: the air's index, the sunlight's power, the crystal's optical rotation and the observer's accommodation.</p>
+
+    <div class="condgrid" id="condPanel" aria-label="Conditions">
+      <fieldset><legend>Weather</legend>
+        <label class="r" for="inTair">air temperature <output id="outTair">20 °C</output></label>
+        <input type="range" id="inTair" min="-20" max="45" step="1" value="20">
+        <label class="r" for="inPair">pressure <output id="outPair">1013 hPa</output></label>
+        <input type="range" id="inPair" min="850" max="1050" step="1" value="1013">
+        <label class="r" for="inRh">relative humidity <output id="outRh">50 %</output></label>
+        <input type="range" id="inRh" min="0" max="98" step="1" value="50">
+        <label class="r" for="inVis">dry visibility <output id="outVis">40 km</output></label>
+        <input type="range" id="inVis" min="3" max="150" step="1" value="40">
+      </fieldset>
+      <fieldset><legend>Sun</legend>
+        <label class="r" for="inElev">sun elevation <output id="outElev">60°</output></label>
+        <input type="range" id="inElev" min="2" max="90" step="1" value="60">
+        <span class="hint" id="elevNote"></span>
+      </fieldset>
+      <fieldset><legend>Observer</legend>
+        <label class="r" for="inAge">age <output id="outAge">30 y</output></label>
+        <input type="range" id="inAge" min="8" max="85" step="1" value="30">
+        <label class="ck"><input type="checkbox" id="inAphakic"> aphakic — no crystalline lens</label>
+        <span class="hint">age sets lens yellowing and accommodation amplitude</span>
+      </fieldset>
+      <fieldset><legend>Crystal</legend>
+        <label class="r" for="inVariety">variety</label>
+        <select id="inVariety"><option value="clear">clear rock crystal</option><option value="smoky">smoky (Al centres)</option><option value="amethyst">amethyst (Fe⁴⁺)</option><option value="citrine">citrine (Fe³⁺)</option></select>
+        <label class="r" for="inSurface">surface</label>
+        <select id="inSurface"><option value="clean">clean, optical polish</option><option value="handled" selected>natural, handled</option><option value="dusty">dusty / weathered</option><option value="inclusion">dark inclusion at the focus</option></select>
+        <label class="r" for="inHand">handedness</label>
+        <select id="inHand"><option value="right">right-handed (dextrorotatory)</option><option value="left">left-handed (laevorotatory)</option></select>
+      </fieldset>
+    </div>
+    <p class="condnote" id="condNote"></p>
+
+    <h3 class="sub"><span class="num">1</span>Sun → air → glass → quartz → eye, wavelength by wavelength</h3>
+    <p class="secsub">Top: the sunlight's spectrum above the air and in the direct beam at the ground, with the absorption bands named. Bottom: the fraction surviving after each medium, with the cone and rod pigments' absorption overlaid. Hover for values.</p>
+    <div class="figpad" id="specPad"><canvas id="cvSpec" role="img" aria-label="Spectral chart: solar spectrum above and below the atmosphere, and cumulative transmittance through magnifier, crystal and each ocular medium, with photoreceptor absorption curves."></canvas><div class="tip" id="specTip"></div></div>
+    <div class="budget" id="budget"></div>
+    <div class="rgrid">
+      <div class="rgroup"><h4>Atmosphere &amp; room air</h4><dl id="roAtm"></dl></div>
+      <div class="rgroup"><h4>Magnifier &amp; crystal transmission</h4><dl id="roChain"></dl></div>
+      <div class="rgroup"><h4>What reaches the retina</h4><dl id="roBands"></dl></div>
+    </div>
+    <div class="narr phys" style="margin-top:12px"><span class="nh">Physics — computed</span><span id="narrSpec1"></span></div>
+    <div class="narr herm" data-layer="herm" hidden><span class="nh">Interpretive — Hermetic · symbolic, computes nothing</span><span id="hermSpec1"></span></div>
+    <div class="narr spec" data-layer="spec" hidden><span class="nh">Speculative — bio-energetic · not a physical claim</span><span id="specSpec1"></span></div>
+
+    <h3 class="sub"><span class="num">2</span>Inside the crystal — polarization without absorption, phonons, heat</h3>
+    <p class="secsub">Left: the SiO₄ lattice under the light field. Every site sways and re-radiates; nothing is kept. Rarely, light is absorbed (surface film, colour centre, inclusion) or Raman-scattered, and the energy leaves as phonons: lattice vibrations, which is to say heat. Right: the scattered spectrum those phonons write.</p>
+    <div class="duo">
+      <div class="figpad"><canvas id="cvLat" role="img" aria-label="Animated lattice: SiO4 chains polarized by the light wave, with absorption and Raman events releasing phonons."></canvas></div>
+      <div class="figpad"><canvas id="cvRaman" role="img" aria-label="Computed Raman and Brillouin spectrum of alpha-quartz: Stokes and anti-Stokes lines weighted by thermal phonon populations."></canvas></div>
+    </div>
+    <div class="figpad" style="margin-top:12px"><canvas id="cvPol" role="img" aria-label="Interference colours between crossed polarizers versus plate thickness, computed with dispersion and optical activity."></canvas></div>
+    <div class="swatches" id="polSwatches"></div>
+    <div class="rgrid">
+      <div class="rgroup"><h4>Heat — where the absorbed light goes</h4><dl id="roHeat"></dl></div>
+      <div class="rgroup"><h4>Phonons &amp; inelastic light</h4><dl id="roPhonon"></dl></div>
+      <div class="rgroup"><h4>Polarization the eye cannot see</h4><dl id="roPol"></dl></div>
+    </div>
+    <div class="narr phys" style="margin-top:12px"><span class="nh">Physics — computed</span><span id="narrSpec2"></span></div>
+    <div class="narr herm" data-layer="herm" hidden><span class="nh">Interpretive — Hermetic · symbolic, computes nothing</span><span id="hermSpec2"></span></div>
+    <div class="narr spec" data-layer="spec" hidden><span class="nh">Speculative — bio-energetic · not a physical claim</span><span id="specSpec2"></span></div>
+
+    <h3 class="sub"><span class="num">3</span>The eye — four surfaces, five filters, three pigments</h3>
+    <p class="secsub">The Navarro schematic eye at this accommodation, to scale, with blue, green and red rays traced through every surface. Each medium is labeled with what it is made of and what it removes. The inset shows the retina's layers in the order light crosses them: backwards, through the wiring, to the pigment.</p>
+    <div class="figpad"><canvas id="cvEye" role="img" aria-label="Navarro schematic eye cross-section with chromatic ray traces, media chemistry labels, Purkinje reflections and a retinal layer inset."></canvas></div>
+    <div class="rgrid">
+      <div class="rgroup"><h4>Optics of the eye</h4><dl id="roEyeOpt"></dl></div>
+      <div class="rgroup"><h4>Filters &amp; chemistry</h4><dl id="roEyeChem"></dl></div>
+      <div class="rgroup"><h4>At the cones</h4><dl id="roRetina"></dl></div>
+    </div>
+    <div class="narr phys" style="margin-top:12px"><span class="nh">Physics — computed</span><span id="narrSpec3"></span></div>
+    <div class="narr herm" data-layer="herm" hidden><span class="nh">Interpretive — Hermetic · symbolic, computes nothing</span><span id="hermSpec3"></span></div>
+    <div class="narr spec" data-layer="spec" hidden><span class="nh">Speculative — bio-energetic · not a physical claim</span><span id="specSpec3"></span></div>
+
+    <h3 class="sub"><span class="num">4</span>What the eye never sees</h3>
+    <p class="secsub">Everything below happens on this bench at these settings, with its computed size. The right-hand columns say why perception misses it and what instrument would catch it.</p>
+    <div id="ledger"></div>
+    <div class="narr herm" data-layer="herm" hidden style="margin-top:12px"><span class="nh">Interpretive — Hermetic · symbolic, computes nothing</span><span id="hermSpec4"></span></div>
+    <div class="narr spec" data-layer="spec" hidden><span class="nh">Speculative — bio-energetic · not a physical claim</span><span id="specSpec4"></span></div>
+  </section>
 </main>
 
 <footer>
@@ -294,27 +428,22 @@ const PHY = Object.freeze({
   W0: 0.05,             // mm  (source waist 50 µm)
   NO: 1.5443, NE: 1.5534,
   GAP: 45,              // mm  lens → crystal front face
-  P_EYE: 60,            // D   Emsley reduced eye
-  N_EYE: 4/3,
   DLAM_NA: 0.5974e-6,   // mm  Na-D doublet splitting (589.0/589.6) — model-note only
   C_LATTICE: 5.405e-7,  // mm — α-quartz c lattice constant (0.5405 nm)
-  E_GAP: 8.9,           // eV — quartz band gap (approx.) — why it is transparent
-  N_AIR: 1.000273,      // air index at 589 nm, 15 °C, 1 atm — the model rounds it to 1
-  BETA_R: 8.8e-9,       // per mm — Rayleigh extinction of air at 589 nm, sea level
-  N_LOSCHMIDT: 2.55e16, // molecules per mm³ of air (15 °C, 1 atm)
+  E_GAP: 8.9,           // eV — quartz band gap (approx.) — why the pure lattice is transparent
   SUN_TH: 0.00930842,   // rad — solar angular diameter 0.533°
-  SUN_IRR: 1000,        // W/m² — clear-day surface irradiance (AM1.5)
+  SUN_IRR: 1000,        // W/m² — fallback irradiance when no atmosphere is computed (self-test reference)
   SUN_LENS_X: 90,       // mm — lens position on the bench in sun mode (object at ∞)
-  F_EYE: 1000/60,       // 16.667 mm (air-equivalent focal length)
-  AXIAL: (4/3)*(1000/60),  // 22.222 mm
   CONE: 0.0025,         // mm  foveal cone pitch (documented psychophysics)
-  ACC_AMP: 10,          // D   young-adult accommodation amplitude
   EX: 50,               // fixed, labeled o/e exaggeration (walk-off AND marker lag)
   ZR: Math.PI*0.05*0.05/589e-6
 });
 /* DEFAULTS pin the plan's reference lab source — every original assert runs on it.
    The UI starts in sun mode (the real magnifying-glass scenario). */
-const DEFAULTS = Object.freeze({f:45, s:150, alpha:45, d:40, theta:45, L:250, pupil:4, D:30, src:'point'});
+const DEFAULTS = Object.freeze({f:45, s:150, alpha:45, d:40, theta:45, L:250, pupil:4, D:30, src:'point',
+  /* conditions — weather, sun, observer, crystal (lower panel; they feed the bench too) */
+  tAir:20, pAir:1013, rh:50, vis:40, elev:60, age:30, aphakic:false,
+  variety:'clear', surface:'handled', hand:'right'});
 
 function neTheta(deg){
   const t = deg*Math.PI/180, c = Math.cos(t), si = Math.sin(t);
@@ -329,7 +458,7 @@ function walkoff(deg){
 function wof(z, zw, w0, zr){ return w0*Math.sqrt(1 + ((z-zw)/zr)**2); }
 
 function computePhysics(st){
-  const {LAM, W0, NO, GAP, P_EYE, N_EYE, F_EYE, AXIAL, CONE} = PHY, zR = PHY.ZR;
+  const {LAM, W0, NO, GAP, CONE} = PHY, zR = PHY.ZR;
   const {f, s, alpha, d, theta, L, pupil} = st;
   const src = st.src || 'point', D = st.D || 30;
   const sun = src === 'sun';
@@ -382,17 +511,22 @@ function computePhysics(st){
      Stokes on the (e, o) basis; S3ccw > 0 ⇔ E rotates counterclockwise viewed
      toward the source — the same sense the exit inset draws. */
   const deltaM = ((dphi % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
-  const Ae = Math.sqrt(Ie), Ao = Math.sqrt(Io);
-  const S1 = Ie - Io;
-  const S2 = 2*Ae*Ao*Math.cos(deltaM);
-  const S3ccw = 2*Ae*Ao*Math.sin(deltaM);
+  /* quartz is chiral: along the optic axis it rotates the plane by ρ = 21.7°/mm
+     at 589 nm (Lowry). Off-axis the circular retardance δC = 2ρd·G(θ) joins the
+     linear δL = Δφ as one elliptical retarder; the gyration falls as
+     G = cos²θ + (g₁₁/g₃₃)·sin²θ with g₁₁/g₃₃ = −0.54 (Bruhat & Weil) — negligible
+     at θ = 45° (δC/δL ≈ 0.2 %), dominant within a few degrees of the axis. */
+  const hand = st.hand === 'left' ? -1 : 1;
+  const rho589 = rotPower(589);                        // °/mm
+  const rotDeg = hand*rho589*d*gyr(theta);         // azimuth turn if δL were 0
+  const dC = 2*rotDeg*Math.PI/180;
+  const [S1, S2, S3ccw] = rotateStokes(alpha, dphi, dC);
   const psiDeg = 0.5*Math.atan2(S2, S1)*180/Math.PI;   // major axis, from the axis plane
   const ba = Math.tan(0.5*Math.asin(Math.min(1, Math.abs(S3ccw))));  // minor/major
   const rotCCW = S3ccw > 0;
   let polState;
-  if (neT - NO < 1e-9)                 polState = 'linear — unchanged (θ = 0°)';
-  else if (Ie < 1e-6 || Io < 1e-6)     polState = 'linear — single ray (α 0°/90°)';
-  else if (Math.abs(S3ccw) < 0.05)     polState = 'linear (Δφ ≈ mπ)';
+  if (neT - NO < 1e-9)                 polState = Math.abs(rotDeg) > 1e-9 ? `linear — rotated ${Math.abs(rotDeg).toFixed(0)}° ${hand > 0 ? 'clockwise' : 'counter-clockwise'} by optical activity (θ = 0°)` : 'linear — unchanged (θ = 0°)';
+  else if (Math.abs(S3ccw) < 0.05)     polState = (Ie < 1e-6 || Io < 1e-6) ? 'linear — single ray (α 0°/90°)' : 'linear (Δφ ≈ mπ)';
   else if (Math.abs(S3ccw) > 0.995)    polState = 'circular';
   else                                 polState = 'elliptical';
   if (sun) polState = 'unpolarized — incoherent o/e pair';   // no fixed phase, no ellipse
@@ -400,7 +534,8 @@ function computePhysics(st){
   /* sun mode — extended-source photometry & coherence (geometric, not Gaussian) */
   const dSun = f*PHY.SUN_TH;                        // solar image diameter, mm
   const conc = (D/dSun)**2;                         // concentration ratio
-  const powerW = PHY.SUN_IRR*Math.PI*(D/2000)**2;   // collected power, W
+  const irr = st.dni ?? PHY.SUN_IRR;                // W/m² direct beam — computed by the atmosphere model when supplied
+  const powerW = irr*Math.PI*(D/2000)**2;           // collected power, W
   const photonRate = powerW/3.6e-19;                // ≈ /s at ⟨hν⟩ ≈ 2.25 eV
   const cohUm = 0.16*LAM/(PHY.SUN_TH/2)*1e3;        // van Cittert–Zernike (γ = 0.88), µm
   const etendueMax = 1/Math.sin(PHY.SUN_TH/2)**2;   // concentration ceiling, any lens
@@ -412,19 +547,24 @@ function computePhysics(st){
   const omega = 2*Math.PI*nu;                  // rad/s
   const periodFs = 1e15/nu;                    // fs
   const ephot = PHY.EV_NM/(LAM*1e6);           // eV (a property of the line — markers stay phase fronts)
-  const lamO = LAM/NO, lamE = LAM/neT, lamVit = LAM/N_EYE;   // in-medium wavelengths, mm
+  const lamO = LAM/NO, lamE = LAM/neT, lamVit = LAM/navN('vitreous', LAM*1e6);   // in-medium wavelengths, mm
   const cyclesO = d*NO/LAM, cyclesE = d*neT/LAM;             // wavelengths across the block
   /* quantum picture in the lattice: hν ≪ band gap → no absorption, only virtual
      polarization of the SiO₄ helices; each unit cell along the path re-radiates
      in sequence — the summed phase delay IS the refractive index */
   const cellsAlong = d/PHY.C_LATTICE;          // unit cells traversed (c-axis constant)
   const transitO = d*NO/PHY.C;                 // o-wave transit time, s
-  /* the air in the gap — not quite nothing. n_air = 1.000273 (the model rounds
-     it to 1, hiding ≈21λ of path); random molecular positions make its
+  /* the air in the gap — not quite nothing. Its index (Edlén / Birch–Downs, from
+     the declared temperature, pressure and humidity) is ≈1.000272; the optics
+     rounds it to 1, hiding ≈21λ of path. Random molecular positions make its
      re-radiation incoherent → Rayleigh side-scatter, ≈4×10⁻⁷ over g. */
-  const airOPD = GAP*(PHY.N_AIR - 1);          // optical path the rounding hides, mm
+  const tAir = st.tAir ?? 20, pAir = st.pAir ?? 1013.25, rh = st.rh ?? 50;
+  const nAir = airIndex(LAM*1e6, tAir, pAir, rh);
+  const airOPD = GAP*(nAir - 1);               // optical path the rounding hides, mm
   const airLam = airOPD/LAM;                   // …in wavelengths
-  const airScatter = PHY.BETA_R*GAP;           // Rayleigh fraction lost in the gap
+  const betaR = rayleighBeta(LAM*1e6, tAir, pAir, rh)/1000;   // per mm
+  const airScatter = betaR*GAP;                // Rayleigh fraction lost in the gap
+  const nDens = airNumberDensity(tAir, pAir)*1e-9;            // molecules per mm³
   let airVol = 0;                              // beam volume in the gap, mm³
   for (let k2 = 0; k2 < 32; k2++){
     const z2 = xLens + GAP*(k2 + 0.5)/32;
@@ -433,40 +573,54 @@ function computePhysics(st){
       : wof(z2, airWaist, w0p, zRp);
     airVol += Math.PI*wg*wg*(GAP/32);
   }
-  const airMol = PHY.N_LOSCHMIDT*airVol;       // molecules the beam threads in g
-  // observer — Emsley reduced eye
+  const airMol = nDens*airVol;                 // molecules the beam threads in g
+  /* observer — Navarro schematic eye: cornea (2 surfaces), aqueous, a
+     crystalline lens whose radii, thickness and index follow the accommodation
+     A, vitreous; every medium dispersive. Paraxial ABCD trace, the Gaussian beam
+     carried through the same matrices; the eye accommodates to put the apparent
+     source on the retina at λ_ref (589 nm line; 555 nm luminance peak for
+     sunlight), within the amplitude its age allows (Hofstetter). */
   const zBehind = d - depthO;                 // o-waist → exit face (inside crystal); <0 = waist past exit
   const zApp = zBehind/NO;                    // apparent depth behind exit face (the n× rule in reverse)
   const obj = L + zApp;                       // the eye's object distance
   const objOK = obj > 5;
-  const acc = objOK ? 1000/obj : NaN;
-  const accFlag = objOK && acc > PHY.ACC_AMP;
+  const age = st.age ?? 30, ampAcc = ampAccommodation(age);
+  const lamRef = sun ? 555 : 589;
+  const accSol = objOK ? navAccommodate(lamRef, obj, ampAcc) : {A: 0, clamped: null};
+  const acc = objOK ? accSol.A : NaN;
+  const accDemand = objOK ? 1000/obj : NaN;    // object vergence at the cornea, D
+  const accFlag = objOK && accSol.clamped === 'near';
+  const eye = navToRetina(LAM*1e6, objOK ? acc : 0);
+  const F_EYE = eye.Feq, N_VIT = eye.n.v;
   const dTheta = objOK ? sep/obj : NaN;
   const arcmin = dTheta*3437.7468;
-  const dRet = dTheta*F_EYE;                  // retinal separation, mm (image inverted)
+  const Mobj = objOK ? mmul(eye.M, mT(obj)) : null;   // apparent-object plane → retina
+  const magRet = objOK ? Mobj[0][0] : NaN;            // negative: the image is inverted
+  const dRet = objOK ? Math.abs(magRet)*sep : NaN;    // retinal separation, mm
   const cones = dRet/CONE;
   const aP = pupil/2;
   const hCornea = dSun/2 + (D/2)/f*Math.abs(obj);   // sun-cone half-height at the cornea
   const wCorn = sun ? hCornea : wof(Math.abs(obj), 0, w0p, zRp);
   const trans = sun ? Math.min(1, (aP/hCornea)**2)
                     : 1 - Math.exp(-2*aP*aP/(wCorn*wCorn));
-  const fAcc = objOK ? 1000/(P_EYE + acc) : F_EYE;
-  const mgEye = objOK ? fAcc/Math.hypot(obj - fAcc, zRp) : NaN;
-  const wRet = mgEye*w0p;
-  /* sun: pure vergence relay of the geometric image; point: Gaussian relay */
-  const s2Eye = objOK ? (sun ? 1/(1/fAcc - 1/obj)
-                             : 1/(1/fAcc - 1/(obj + zRp*zRp/(obj - fAcc)))) : NaN;
-  const retMiss = objOK ? Math.abs(N_EYE*s2Eye - AXIAL) : NaN;
-  const dSunRet = objOK ? (dSun/obj)*F_EYE : NaN;   // retinal solar-disk diameter
+  /* Gaussian beam: q = obj + i·zR′ at the cornea (diverging from the apparent
+     waist), through the eye's ABCD to the retina */
+  let wRet = NaN, waistMiss = NaN;
+  if (objOK){
+    const [qr, qi] = qThrough(eye.M, obj, zRp);
+    wRet = Math.sqrt(LAM*(qr*qr + qi*qi)/(Math.PI*N_VIT*qi));
+    waistMiss = qr;                              // retina's distance past the waist, mm in vitreous
+  }
+  const defocusRef = objOK ? navDefocus(lamRef, acc, obj) : NaN;   // D, 0 unless accommodation ran out
+  const retMiss = objOK ? (sun ? Math.abs(defocusRef)*F_EYE*F_EYE*N_VIT/1000 : Math.abs(waistMiss)) : NaN;
+  const dSunRet = objOK ? Math.abs(magRet)*dSun : NaN;    // retinal solar-disk diameter
   const sunArcmin = objOK ? (dSun/obj)*3437.7468 : NaN;
-  /* crystalline-lens anatomy (DRAWN, Gullstrand-style; the vergence chain stays
-     the one Emsley surface). Accommodation bulges the anterior face:
-     rA ≈ 10 mm relaxed → ≈ 5.3 mm at the full ~10 D amplitude. Tilt 0° in this
-     model — plane ⊥ axis, the same orientation as the vesica objective. */
-  const accEff = objOK ? Math.min(Math.max(acc, 0), 10) : 0;
-  const lensRA = 10 - 0.47*accEff;                  // anterior radius, mm
-  const lensRP = 6.0;                               // posterior radius, mm (magnitude)
-  const lensT = 3.6 + 0.05*accEff;                  // thickness, mm
+  /* longitudinal chromatic aberration at this accommodation */
+  const lca = objOK ? navDefocus(450, acc, obj) - navDefocus(650, acc, obj) : NaN;
+  const defocusAt = l => objOK ? navDefocus(l, acc, obj) : NaN;
+  const blurUm = l => pupil*Math.abs(defocusAt(l))*F_EYE;   // geometric blur Ø on the retina, µm
+  const eyeG = navGeom(objOK ? acc : 0);
+  const lensRA = eyeG.R3, lensRP = Math.abs(eyeG.R4), lensT = eyeG.t3;
   const wDiff = LAM/(Math.PI*aP/F_EYE);       // diffraction-limited retinal spot
   const Mclass = 250/f;
   return {f, s, alpha, d, theta, L, pupil, src, D, zR, sGeo, m, s2, mG, w0p, zRp, thDiv, focalShift,
@@ -474,11 +628,606 @@ function computePhysics(st){
     lensRA, lensRP, lensT,
     xLens, xFront, xBack, xCornea, airWaist, Io, Ie, neT, rho, rhoDeg, sep,
     depthO, depthE, zwIn, dphi, opd, order, lagExit, wLens, iMax, dphiAt, fringeSpread,
-    deltaM, stokes: [S1, S2, S3ccw], psiDeg, ba, rotCCW, polState, visNaD,
+    deltaM, stokes: [S1, S2, S3ccw], psiDeg, ba, rotCCW, polState, visNaD, rho589, rotDeg, hand,
     nu, omega, periodFs, ephot, lamO, lamE, lamVit, cyclesO, cyclesE, cellsAlong, transitO,
-    airOPD, airLam, airScatter, airMol,
-    zBehind, zApp, obj, objOK, acc, accFlag, dTheta, arcmin, dRet, cones,
-    wCorn, trans, fAcc, mgEye, wRet, s2Eye, retMiss, wDiff, Mclass};
+    nAir, airOPD, airLam, airScatter, airMol, irr,
+    zBehind, zApp, obj, objOK, age, ampAcc, lamRef, acc, accDemand, accFlag, accClamp: accSol.clamped,
+    dTheta, arcmin, magRet, dRet, cones, F_EYE, N_VIT, eyeP: eye.P, eyeG, eyeN: eye.n,
+    wCorn, trans, wRet, waistMiss, defocusRef, retMiss, lca, defocusAt, blurUm, wDiff, Mclass};
+}
+
+/* ================================================================
+   SPECTRAL ENGINE — sunlight from the top of the atmosphere to the cone
+   outer segments, wavelength by wavelength. Pure functions only: every
+   curve on the lower charts and every number in the ledger comes from
+   here. Tabulated data are cited inline; schematic pieces say so.
+   ================================================================ */
+const SPX = Object.freeze({
+  T_SUN: 5772,                // K — solar effective temperature
+  RS_AU2: 2.16268e-5,         // (R☉ / 1 AU)²
+  H: 6.62607015e-34, KB: 1.380649e-23, CL: 2.99792458e8,
+  O3_DU: 300,                 // Dobson units — mid-latitude ozone column
+  DU_MOL: 2.6867e16,          // molecules/cm² per DU
+  H_VAP: 2000,                // m — water-vapour scale height
+  H_AER: 1200,                // m — aerosol scale height
+  ANG_ALPHA: 1.3,             // Ångström exponent (continental aerosol)
+  HANEL_G: 0.35,              // hygroscopic-growth exponent (Hänel-type)
+  KING: 1.048,                // King correction, air depolarisation
+  LENS_T: 5,                  // mm — magnifier centre thickness (declared)
+  BLOCK_HALF: 20,             // mm — crystal half-width (declared; heat sink radius)
+  K_QZ: 8.0,                  // W/m·K — √(k∥·k⊥) = √(10.4·6.2), α-quartz 300 K
+  RHO_QZ: 2648, CP_QZ: 736,   // kg/m³, J/kg·K (296 K)
+  E_QZ: 76.5e9, CTE_QZ: 13.55e-6, NU_QZ: 0.17,  // Young's modulus ⊥c, ⊥c expansion, Poisson
+  SIGMA_T: 50e6,              // Pa — practical tensile strength (surface-flaw limited)
+  T_DRAPER: 798, T_ALPHA_BETA: 846,   // K — visible-glow onset; α→β quartz (573 °C)
+  D11: 0.30e-12,              // m/V — quartz SHG coefficient
+  V_SOUND: 6000,              // m/s — longitudinal sound (≈ 5.7–6.4 by axis)
+  RAMAN_PER_CM: 1e-6,         // total spontaneous Raman fraction per cm (order of magnitude)
+  P_LAB: 1e-6,                // W — declared lab-source power (eye-safe)
+  QE_ISO: 0.67,               // photoisomerisation quantum efficiency
+  CONE_AP: 3.1,               // µm² — foveal cone inner-segment aperture (Ø ≈ 2 µm)
+  CONE_HALF_BLEACH: 1e6,      // isomerisations/s per cone at 50 % equilibrium bleach (≈)
+  MP_PEAK: 0.35,              // macular-pigment optical density at 460 nm (typical fovea)
+  LMS_MOSAIC: [0.62, 0.31, 0.07]
+});
+
+/* wavelength grid, nm: 1 nm where the eye and the Fraunhofer lines live,
+   coarser in the infrared */
+const LG = (() => {
+  const a = [];
+  for (let l = 280; l <= 1000; l += 1) a.push(l);
+  for (let l = 1005; l <= 2600; l += 5) a.push(l);
+  for (let l = 2620; l <= 4000; l += 20) a.push(l);
+  return Float64Array.from(a);
+})();
+const LGW = (() => {            // trapezoid weights (nm)
+  const w = new Float64Array(LG.length);
+  for (let i = 0; i < LG.length - 1; i++){ const h = LG[i+1] - LG[i]; w[i] += h/2; w[i+1] += h/2; }
+  return w;
+})();
+const iOf = l => { let lo = 0, hi = LG.length - 1;
+  while (hi - lo > 1){ const m = (lo + hi) >> 1; if (LG[m] <= l) lo = m; else hi = m; } return lo; };
+function integ(arr, l0 = 0, l1 = 1e9, weight){
+  let s = 0;
+  for (let i = 0; i < LG.length; i++){ if (LG[i] < l0 || LG[i] > l1) continue;
+    s += arr[i]*(weight ? weight[i] : 1)*LGW[i]; }
+  return s;
+}
+const mapL = fn => { const a = new Float64Array(LG.length); for (let i = 0; i < LG.length; i++) a[i] = fn(LG[i], i); return a; };
+const gauss = (l, c, fwhm) => Math.exp(-4*Math.LN2*((l - c)/fwhm)**2);
+/* log-linear interpolation in a [[λ, value], …] table (values > 0) */
+function tlog(tab, l){
+  if (l <= tab[0][0]) return tab[0][1];
+  for (let k = 1; k < tab.length; k++){
+    if (l <= tab[k][0]){
+      const [l0, v0] = tab[k-1], [l1, v1] = tab[k], t = (l - l0)/(l1 - l0);
+      return Math.exp(Math.log(v0) + t*(Math.log(v1) - Math.log(v0)));
+    }
+  }
+  return tab[tab.length - 1][1];
+}
+function tlin(tab, l){
+  if (l <= tab[0][0]) return tab[0][1];
+  for (let k = 1; k < tab.length; k++)
+    if (l <= tab[k][0]){ const [l0, v0] = tab[k-1], [l1, v1] = tab[k]; return v0 + (v1 - v0)*(l - l0)/(l1 - l0); }
+  return tab[tab.length - 1][1];
+}
+
+/* ---------- the Sun above the air ---------- */
+/* 5772 K blackbody scaled to 1 AU (∫ ≈ 1361 W/m²), reshaped to the measured
+   extraterrestrial spectrum, with the strongest Fraunhofer lines removed by
+   their equivalent widths (Moore, Minnaert & Houtgast). The Na-D pair sits
+   exactly on the page's 589 nm line. */
+const FRAUNHOFER = [   // [λ nm, equivalent width nm, label]
+  [393.37, 2.02, 'Ca II K'], [396.85, 1.54, 'Ca II H'], [410.17, 0.31, 'Hδ'], [434.05, 0.29, 'Hγ'],
+  [486.13, 0.37, 'Hβ'], [516.73, 0.09, 'Mg b₄'], [517.27, 0.126, 'Mg b₂'], [518.36, 0.126, 'Mg b₁'], [527.04, 0.05, 'Fe E'],
+  [589.00, 0.075, 'Na D₂'], [589.59, 0.056, 'Na D₁'], [656.28, 0.40, 'Hα'], [854.21, 0.37, 'Ca II IR'], [866.21, 0.29, 'Ca II IR']
+];
+const NA_D_CORE = 0.045;       // Na D₂ line-centre residual flux (Kurucz 2005 Kitt Peak atlas); D₁ 0.053
+function planckSun(l){
+  const lm = l*1e-9, {H, CL, KB, T_SUN, RS_AU2} = SPX;
+  const B = 2*H*CL*CL/lm**5/(Math.exp(H*CL/(lm*KB*T_SUN)) - 1);     // W/m²/sr/m
+  return Math.PI*B*RS_AU2*1e-9;                                      // W/m²/nm
+}
+/* real-Sun / blackbody ratio — 10 nm means of the ASTM G173 extraterrestrial
+   column (Gueymard) over the 5772 K curve: line blanketing pulls the UV below
+   a blackbody, the visible sits above it */
+const SUN_SHAPE = [[280, 0.60],[300, 0.646],[320, 0.721],[350, 0.804],[380, 0.753],[400, 0.919],[450, 1.15],
+  [500, 1.083],[600, 1.067],[700, 1.03],[800, 0.995],[1000, 1.014],[1300, 1.0],[4000, 1.0]];
+const solarShape = l => tlin(SUN_SHAPE, l);
+function solarTOA(){
+  const E = mapL(l => planckSun(l)*solarShape(l));
+  for (const [lc, ew] of FRAUNHOFER){
+    const sig = lc < 400 ? 0.9 : 0;          // Ca H/K have broad wings; the rest fit inside one bin
+    if (sig){
+      for (let i = iOf(lc - 4); i <= iOf(lc + 4) + 1; i++){
+        const g = Math.exp(-0.5*((LG[i] - lc)/sig)**2)/(sig*Math.sqrt(2*Math.PI));
+        E[i] *= Math.max(0.08, 1 - ew*g);
+      }
+    } else {
+      const i = Math.abs(LG[iOf(lc)] - lc) <= Math.abs(LG[iOf(lc) + 1] - lc) ? iOf(lc) : iOf(lc) + 1;
+      E[i] *= 1 - ew/LGW[i];
+    }
+  }
+  return E;
+}
+
+/* ---------- the air: index, scattering, absorption ---------- */
+function esat(tC){ return 611.21*Math.exp((18.678 - tC/234.5)*(tC/(257.14 + tC))); }   // Pa — Buck 1981
+/* refractive index of moist air — Edlén 1966 as revised by Birch & Downs 1993/94 */
+function airIndex(lNm, tC, pHPa, rhPct){
+  const s2 = (1000/lNm)**2, p = pHPa*100, f = (rhPct/100)*esat(tC);
+  const ns = (8342.54 + 2406147/(130 - s2) + 15998/(38.9 - s2))*1e-8;
+  const ntp = ns*p*(1 + 1e-8*(0.601 - 0.00972*tC)*p)/(96095.43*(1 + 0.003661*tC));
+  return 1 + ntp - f*(3.7345 - 0.0401*s2)*1e-10;
+}
+function airNumberDensity(tC, pHPa){ return pHPa*100/(SPX.KB*(tC + 273.15)); }   // molecules/m³
+/* molecular (Rayleigh) extinction coefficient, per metre, from the index itself */
+function rayleighBeta(lNm, tC, pHPa, rhPct){
+  const n = airIndex(lNm, tC, pHPa, rhPct), N = airNumberDensity(tC, pHPa);
+  const lm = lNm*1e-9, L = (n*n - 1)/(n*n + 2);
+  return 24*Math.PI**3/(lm**4*N)*L*L*SPX.KING;
+}
+function airMass(elevDeg){                                 // Kasten & Young 1989
+  const z = 90 - elevDeg;
+  return 1/(Math.cos(z*Math.PI/180) + 0.50572*(96.07995 - z)**-1.6364);
+}
+function tauRayleigh(lNm, pHPa){                           // vertical optical depth, Hansen–Travis form
+  const u = lNm/1000;
+  return 0.008569*u**-4*(1 + 0.0113*u**-2 + 0.00013*u**-4)*pHPa/1013.25;
+}
+/* ozone absorption cross-section, cm² (room temperature; Hartley–Huggins UV,
+   Chappuis visible) — log-interpolated */
+const O3_XS = [[280, 3.9e-18],[290, 1.43e-18],[300, 3.9e-19],[310, 1.0e-19],[320, 3.0e-20],[330, 5e-21],
+  [340, 1.6e-21],[350, 3.5e-22],[360, 6e-23],[380, 1.5e-23],[400, 1.5e-23],[420, 1.0e-22],[450, 3.2e-22],
+  [480, 7e-22],[500, 1.18e-21],[550, 3.31e-21],[580, 4.6e-21],[600, 5.09e-21],[602, 5.15e-21],[620, 4.6e-21],
+  [650, 2.48e-21],[680, 1.6e-21],[700, 8.6e-22],[750, 4e-22],[800, 1.5e-22],[900, 4e-23],[1000, 1e-24],[4000, 1e-24]];
+  /* Serdyuchenko 2014 / JPL-2010 at 293 K (MPI-Mainz spectral atlas) */
+function aerosolTau550(visKm, rhPct){
+  const growth = rhPct <= 30 ? 1 : ((1 - Math.min(rhPct, 98)/100)/0.70)**-SPX.HANEL_G;
+  const bDry = Math.max(0, 3.912/visKm - 0.01162);         // km⁻¹, Koschmieder minus Rayleigh
+  return {tau: bDry*growth*SPX.H_AER/1000, beta: bDry*growth, growth};
+}
+function waterColumnCm(tC, rhPct){                          // precipitable water, cm
+  const e = (rhPct/100)*esat(tC), rhoV = e/(461.5*(tC + 273.15));   // kg/m³
+  return rhoV*SPX.H_VAP/10;                                 // kg/m² = mm → cm
+}
+/* band model — gas absorption bands as Gaussians whose optical depth grows
+   with absorber path as (u)^0.55 (strong-line regime). Depths are
+   calibrated to the dips in the ASTM G173 direct-normal reference spectrum
+   (w ≈ 1.42 cm, AM 1.5); the band shapes are schematic. */
+const H2O_BANDS = [[593, 6, 0.03],[651, 6, 0.02],[700, 5, 0.04],[722, 12, 0.26],[822, 16, 0.43],
+  [935, 32, 1.77],[1135, 34, 3.5],[1380, 80, 8],[1870, 110, 10],[2700, 260, 14]];
+const O2_BANDS = [[628, 3, 0.05],[687, 3, 0.33],[761, 5, 2.04],[1268, 10, 0.3]];
+function gasTau(lNm, wCm, m, pHPa){
+  let tw = 0, to = 0;
+  for (const [c, fw, k] of H2O_BANDS) if (Math.abs(lNm - c) < 2.5*fw) tw += k*gauss(lNm, c, fw);
+  for (const [c, fw, k] of O2_BANDS)  if (Math.abs(lNm - c) < 2.5*fw) to += k*gauss(lNm, c, fw);
+  return {h2o: tw*(wCm*m/2.13)**0.55, o2: to*((pHPa/1013.25)*m/1.5)**0.55};
+}
+
+/* ---------- the magnifier: crown glass (Schott N-BK7) ---------- */
+function nBK7(lNm){
+  const L = (lNm/1000)**2;
+  return Math.sqrt(1 + 1.03961212*L/(L - 0.00600069867) + 0.231792344*L/(L - 0.0200179144) + 1.01046945*L/(L - 103.560653));
+}
+const BK7_TI10 = [[280, 0.005],[290, 0.06],[300, 0.30],[310, 0.57],[320, 0.77],[334, 0.905],[350, 0.967],
+  [365, 0.977],[380, 0.986],[400, 0.992],[500, 0.998],[700, 0.999],[1060, 0.999],[1530, 0.997],[1970, 0.984],
+  [2325, 0.793],[2500, 0.665],[2700, 0.25],[2900, 0.05],[3200, 3e-3],[4000, 1e-4]];
+  /* internal τ, 10 mm — Schott 2017 catalogue to 2.5 µm; beyond, extrapolated */
+const fresnelN = n => ((n - 1)/(n + 1))**2;
+
+/* ---------- quartz: dispersion, optical activity, colour ---------- */
+/* Ghosh 1999 Sellmeier (λ in µm) — used for DISPERSION; anchored so the
+   page's declared 589 nm indices stay exact */
+function sellQ(lNm, e){
+  const L = (lNm/1000)**2;
+  return e ? Math.sqrt(1.28851804 + 1.09509924*L/(L - 1.02101864e-2) + 1.15662475*L/(L - 100))
+           : Math.sqrt(1.28604141 + 1.07044083*L/(L - 1.00585997e-2) + 1.10202242*L/(L - 100));
+}
+const SQ0 = sellQ(589, false), SQE0 = sellQ(589, true);
+const nO = l => PHY.NO + sellQ(l, false) - SQ0;
+const nE = l => PHY.NE + sellQ(l, true) - SQE0;
+/* rotatory power along the optic axis, °/mm — Drude one-term fit
+   ρ = A/(λ² − λ₀²) through Lowry's measured 404.7 … 656.3 nm values */
+const ROT_A = 7.1631, ROT_L0SQ = 0.01751;  // °·µm²/mm, µm² — least-squares fit, residuals ≤ 0.1 %
+function rotPower(lNm){ const L = (lNm/1000)**2; return ROT_A/(L - ROT_L0SQ); }
+const G11_G33 = -0.54;                      // perpendicular / parallel gyration (Bruhat & Weil)
+const gyr = thDeg => { const t = thDeg*Math.PI/180; return Math.cos(t)**2 + G11_G33*Math.sin(t)**2; };
+
+/* absorption coefficient per cm by quartz variety — representative band
+   shapes (real specimens vary ten-fold in strength) */
+const VARIETY = {
+  clear:    {label: 'clear rock crystal', a: l => 0},
+  smoky:    {label: 'smoky (Al-hole centres)', a: l => 0.25*gauss(l, 460, 190) + 0.15*gauss(l, 620, 200) + 0.8*Math.exp((400 - l)/45)},
+  amethyst: {label: 'amethyst (Fe⁴⁺)', a: l => 0.40*gauss(l, 545, 110) + 0.8*gauss(l, 357, 50) + 0.08*gauss(l, 950, 220)},
+  citrine:  {label: 'citrine (Fe³⁺)', a: l => 1.2*Math.exp((400 - l)/55)}
+};
+/* intrinsic infrared: hydroxyl stretch at 2.73 µm and the multiphonon edge
+   that closes quartz beyond ~4 µm — per cm */
+const qzIR = l => 0.6*gauss(l, 2730, 90) + 0.03*Math.exp((l - 3500)/160);
+const SURFACE = {
+  clean:     {label: 'clean, optical polish', A: 0.001},
+  handled:   {label: 'natural, handled (skin oil, dust)', A: 0.03},
+  dusty:     {label: 'dusty / weathered', A: 0.08},
+  inclusion: {label: 'dark inclusion at the focus', A: 0.03, incl: 0.6}
+};
+
+/* ---------- the eye's media and pigments ---------- */
+/* total ocular-media optical density — van de Kraats & van Norren 2007
+   (age a in years): Rayleigh + tryptophan (cornea/lens UV) + young- and
+   old-lens chromophores (kynurenine family) + neutral. Aphakic: lens terms
+   removed. Beyond 700 nm, liquid-water absorption over ≈2.2 cm of
+   aqueous + vitreous (Hale & Querry). */
+function mediaParts(l, age, aphakic){
+  const a2 = age*age;
+  const ray = (0.446 + 0.000031*a2)*(400/l)**4;
+  const tp = 14.19*10.68*Math.exp(-((0.057*(l - 273))**2));
+  const lY = aphakic ? 0 : (0.998 - 0.000063*a2)*2.13*Math.exp(-((0.029*(l - 370))**2));
+  const lO = aphakic ? 0 : (0.059 + 0.000186*a2)*11.95*Math.exp(-((0.021*(l - 325))**2));
+  const l5 = aphakic ? 0 : (0.016 + 0.000132*a2)*1.43*Math.exp(-((0.008*(l - 325))**2));
+  return {ray, tp, lens: lY + lO + l5, neutral: 0.111};
+}
+const WATER_ABS = [[280, 0.002],[400, 0.0002],[500, 0.0003],[600, 0.0023],[700, 0.006],[750, 0.026],[800, 0.02],
+  [820, 0.025],[850, 0.043],[900, 0.068],[950, 0.39],[980, 0.44],[1000, 0.36],[1050, 0.16],[1100, 0.2],[1150, 1.0],
+  [1200, 1.1],[1300, 1.3],[1350, 2.5],[1400, 12],[1450, 31.5],[1500, 24],[1600, 7],[1700, 5],[1800, 8],[1900, 80],
+  [1940, 124],[2000, 69],[2100, 27],[2200, 16],[2300, 22],[2400, 50],[2500, 95],[2600, 150],[2800, 5000],
+  [3000, 11000],[3500, 300],[4000, 120]];   // cm⁻¹, liquid water — Segelstein 1981 / Hale & Querry 1973
+const waterAbs = l => tlog(WATER_ABS, l);
+/* macular pigment (lutein + zeaxanthin) relative density, peak 460 nm */
+const MP_TAB = [[375, 0],[380, 0.04],[400, 0.25],[420, 0.55],[430, 0.75],[440, 0.86],[450, 0.95],[460, 1.0],
+  [470, 0.96],[480, 0.88],[490, 0.77],[500, 0.58],[510, 0.35],[520, 0.17],[530, 0.05],[540, 0.012],[550, 0]];
+  /* Stockman & Rider 2023 template, key points; CIE 170-1 peak density 0.35 */
+const macular = l => tlin(MP_TAB, l);
+/* visual-pigment template — Govardovskii et al. 2000, A1 chromophore */
+function govardovskii(l, lmax){
+  const x = lmax/l, a = 0.8795 + 0.0459*Math.exp(-((lmax - 300)**2)/11940);
+  const alpha = 1/(Math.exp(69.7*(a - x)) + Math.exp(28*(0.922 - x)) + Math.exp(-14.9*(1.104 - x)) + 0.674);
+  const lmb = 189 + 0.315*lmax, bb = -40.5 + 0.195*lmax;
+  return alpha + 0.26*Math.exp(-(((l - lmb)/bb)**2));
+}
+const CONES = [{k: 'L', lmax: 558.9, od: 0.50}, {k: 'M', lmax: 530.3, od: 0.50}, {k: 'S', lmax: 420.7, od: 0.40}];
+const ROD = {k: 'rod', lmax: 498, od: 0.40};
+/* CIE 1931 colour-matching functions — Wyman, Sloan & Shirley 2013 multi-lobe fit */
+function cmf(l){
+  const g = (x, mu, s1, s2) => { const t = (x - mu)/(x < mu ? s1 : s2); return Math.exp(-0.5*t*t); };
+  return [1.056*g(l, 599.8, 37.9, 31.0) + 0.362*g(l, 442.0, 16.0, 26.7) - 0.065*g(l, 501.1, 20.4, 26.2),
+          0.821*g(l, 568.8, 46.9, 40.5) + 0.286*g(l, 530.9, 16.3, 31.1),
+          1.217*g(l, 437.0, 11.8, 36.0) + 0.681*g(l, 459.0, 26.0, 13.8)];
+}
+function spectrumXYZ(E){
+  let X = 0, Y = 0, Z = 0;
+  for (let i = 0; i < LG.length && LG[i] <= 830; i++){
+    if (LG[i] < 360) continue;
+    const [x, y, z] = cmf(LG[i]); X += E[i]*x*LGW[i]; Y += E[i]*y*LGW[i]; Z += E[i]*z*LGW[i];
+  }
+  return [X, Y, Z];
+}
+/* XYZ → display sRGB */
+function xyzToRGB([X, Y, Z], Yref){
+  let r = 3.2406*X - 1.5372*Y - 0.4986*Z, g = -0.9689*X + 1.8758*Y + 0.0415*Z, b = 0.0557*X - 0.2040*Y + 1.0570*Z;
+  const mn = Math.min(r, g, b); if (mn < 0){ r -= mn; g -= mn; b -= mn; }   // desaturate out-of-gamut
+  /* Yref given: brightness relative to a reference white (dark stays dark);
+     otherwise normalised so the brightest channel is full */
+  const mx = Yref ? Math.max(Yref, 1e-30) : Math.max(r, g, b, 1e-12); r /= mx; g /= mx; b /= mx;
+  const gam = v => v <= 0.0031308 ? 12.92*v : 1.055*Math.pow(v, 1/2.4) - 0.055;
+  return [gam(r), gam(g), gam(b)].map(v => Math.round(255*Math.max(0, Math.min(1, v))));
+}
+function xyChrom([X, Y, Z]){ const s = X + Y + Z || 1; return [X/s, Y/s]; }
+
+/* ---------- Raman and Brillouin lines of α-quartz ---------- */
+/* positions cm⁻¹, symmetry, relative unpolarised intensity (464 = 1), FWHM cm⁻¹ */
+const RAMAN_LINES = [[128, 'E', 0.40, 5],[207, 'A₁', 0.30, 22],[265, 'E', 0.10, 7],[356, 'A₁', 0.15, 6],
+  [394, 'E', 0.08, 8],[464, 'A₁', 1.0, 7],[697, 'E', 0.03, 8],[795, 'E', 0.04, 9],[807, 'E', 0.03, 9],
+  [1072, 'E', 0.03, 12],[1085, 'A₁', 0.05, 12],[1160, 'E', 0.04, 12]];
+  /* positions: Scott & Porto 1967; relative intensities approximate (no absolute source) */
+const HC_K = 1.438777;                      // cm·K — second radiation constant
+const bose = (cm, TK) => 1/(Math.exp(HC_K*cm/TK) - 1);
+
+/* ---------- Navarro schematic eye ---------- */
+/* Navarro, Santamaría & Bescós 1985 (JOSA A 2:1273): four refracting
+   surfaces, accommodation-dependent crystalline lens, dispersive media;
+   vitreous length from Escudero-Sanz & Navarro 1999 (emmetropic at 543 nm).
+   Indices tabulated at 365 / 486.1 / 656.3 / 1014 nm, interpolated with a
+   Herzberger-form curve solved through those four points at load. */
+const NAV_L = [365, 486.1, 656.3, 1014];
+const NAV_IDX = {
+  cornea:   [1.3975, 1.3807, 1.37405, 1.3668],
+  aqueous:  [1.3593, 1.3422, 1.3354, 1.3278],
+  lens:     [1.4492, 1.4263, 1.4175, 1.4097],
+  vitreous: [1.3565, 1.3407, 1.3341, 1.3273]};
+function solveLin(M, y){
+  const n = y.length, A = M.map((r, i) => [...r, y[i]]);
+  for (let c = 0; c < n; c++){
+    let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    [A[c], A[p]] = [A[p], A[c]];
+    for (let r = 0; r < n; r++){ if (r === c) continue; const f = A[r][c]/A[c][c];
+      for (let k = c; k <= n; k++) A[r][k] -= f*A[c][k]; }
+  }
+  return A.map((r, i) => r[n]/r[i]);
+}
+const herzRow = l => { const L = (l/1000)**2, q = 1/(L - 0.028); return [1, L, q, q*q]; };
+const NAV_DISP = Object.fromEntries(Object.entries(NAV_IDX).map(([k, ns]) => [k, solveLin(NAV_L.map(herzRow), ns)]));
+function navN(medium, l){ const c = NAV_DISP[medium], r = herzRow(l); return c[0] + c[1]*r[1] + c[2]*r[2] + c[3]*r[3]; }
+const NAV_AXIAL = 0.55 + 3.05 + 4.0 + 16.3203;          // 23.9203 mm, cornea vertex → retina
+function navGeom(A){
+  const la = Math.log(1 + Math.max(0, A));
+  const t2 = 3.05 - 0.05*la, t3 = 4.0 + 0.1*la;
+  return {R1: 7.72, R2: 6.50, R3: 10.2 - 1.75*la, R4: -6.0 + 0.2294*la,
+    Q1: -0.26, Q2: 0, Q3: -3.1316 - 0.34*la, Q4: -1 - 0.125*la,
+    t1: 0.55, t2, t3, t4: NAV_AXIAL - 0.55 - t2 - t3, Rret: -12};
+}
+function navIdx(l, A){
+  return {c: navN('cornea', l), a: navN('aqueous', l), L: navN('lens', l) + 9e-5*(10*A + A*A), v: navN('vitreous', l)};
+}
+const mmul = (P, Q) => [[P[0][0]*Q[0][0] + P[0][1]*Q[1][0], P[0][0]*Q[0][1] + P[0][1]*Q[1][1]],
+                        [P[1][0]*Q[0][0] + P[1][1]*Q[1][0], P[1][0]*Q[0][1] + P[1][1]*Q[1][1]]];
+const mT = t => [[1, t], [0, 1]];
+const mR = (n1, n2, R) => [[1, 0], [-(n2 - n1)/(n2*R), n1/n2]];   // (y, u) with true angles
+/* cornea vertex (air side) → retina, for wavelength l and accommodation A */
+function navToRetina(l, A){
+  const g = navGeom(A), n = navIdx(l, A);
+  let M = mR(1, n.c, g.R1);
+  M = mmul(mR(n.c, n.a, g.R2), mmul(mT(g.t1), M));
+  M = mmul(mR(n.a, n.L, g.R3), mmul(mT(g.t2), M));
+  M = mmul(mR(n.L, n.v, g.R4), mmul(mT(g.t3), M));
+  const P = -n.v*M[1][0]*1000;                         // D — equivalent power
+  return {M: mmul(mT(g.t4), M), Msys: M, g, n, P, Feq: 1000/P};
+}
+/* object distance (mm before the cornea) the eye images sharply at λ */
+function navConjugate(l, A){
+  const {M} = navToRetina(l, A);
+  return -M[0][1]/M[0][0];                             // B' = A·o + B = 0
+}
+/* defocus at λ, in dioptres, for an object at obj mm (positive = focus in front of the retina) */
+function navDefocus(l, A, obj){ return 1000/navConjugate(l, A) - 1000/obj; }
+/* accommodation that focuses λ from obj onto the retina, within [0, amp] */
+function navAccommodate(l, obj, amp){
+  const err = A => navDefocus(l, A, obj);              // ↑ with A (more power → conjugate nearer)
+  if (err(0) >= 0) return {A: 0, clamped: err(0) > 1e-6 ? 'far' : null};
+  if (err(amp) <= 0) return {A: amp, clamped: 'near'};
+  let lo = 0, hi = amp;
+  for (let k = 0; k < 60; k++){ const mid = (lo + hi)/2; if (err(mid) < 0) lo = mid; else hi = mid; }
+  return {A: (lo + hi)/2, clamped: null};
+}
+/* complex Gaussian beam through an ABCD system: q in air at the cornea */
+function qThrough(M, qr, qi){
+  const nr = M[0][0]*qr + M[0][1], ni = M[0][0]*qi;
+  const dr = M[1][0]*qr + M[1][1], di = M[1][0]*qi;
+  const den = dr*dr + di*di;
+  return [(nr*dr + ni*di)/den, (ni*dr - nr*di)/den];
+}
+const ampAccommodation = age => Math.max(0.5, 18.5 - 0.30*age);   // D — Hofstetter mean
+
+/* ---------- the whole chain, one pure function ----------
+   st: the page state (conditions + bench); d: computePhysics(st).
+   Returns spectra (Float64Array on LG), stage transmittances, the power
+   budget, the thermal/phonon model and the ledger quantities. Sunlight
+   runs the full spectrum; the lab source is one 589 nm line of P_LAB. */
+function computeSpectral(st, d){
+  const tC = st.tAir ?? 20, pH = st.pAir ?? 1013.25, rh = st.rh ?? 50, vis = st.vis ?? 40, elev = st.elev ?? 60;
+  const age = st.age ?? 30, aph = !!st.aphakic, hand = st.hand === 'left' ? -1 : 1;
+  const VAR = VARIETY[st.variety] || VARIETY.clear, SURF = SURFACE[st.surface] || SURFACE.handled;
+  const sun = d.src === 'sun', dCm = d.d/10;
+  const m = airMass(elev), aer = aerosolTau550(vis, rh), wCol = waterColumnCm(tC, rh);
+  const i589 = Math.abs(LG[iOf(589)] - 589) < 0.5 ? iOf(589) : iOf(589) + 1;
+  const ones = mapL(() => 1);
+
+  /* --- the atmosphere (direct beam: the only light a magnifier can focus) --- */
+  const toa = solarTOA();
+  const tau = {ray: new Float64Array(LG.length), aer: new Float64Array(LG.length), o3: new Float64Array(LG.length),
+    h2o: new Float64Array(LG.length), o2: new Float64Array(LG.length)};
+  const tAtm = mapL((l, i) => {
+    tau.ray[i] = m*tauRayleigh(l, pH);
+    tau.aer[i] = m*aer.tau*(l/550)**-SPX.ANG_ALPHA;
+    tau.o3[i]  = m*tlog(O3_XS, l)*SPX.O3_DU*SPX.DU_MOL;
+    const g = gasTau(l, wCol, m, pH); tau.h2o[i] = g.h2o; tau.o2[i] = g.o2;
+    return Math.exp(-(tau.ray[i] + tau.aer[i] + tau.o3[i] + tau.h2o[i] + tau.o2[i]));
+  });
+  const ground = mapL((l, i) => toa[i]*tAtm[i]);
+  const dni = integ(ground), toaTot = integ(toa);
+
+  /* --- the bench --- */
+  const pathAir = (PHY.GAP + d.L)/1000;                   // m of room air, lens → cornea, less the crystal
+  const tBenchAir = mapL(l => Math.exp(-(rayleighBeta(l, tC, pH, rh) + aer.beta/1000*(l/550)**-SPX.ANG_ALPHA)*pathAir));
+  const tLensR = mapL(l => (1 - fresnelN(nBK7(l)))**2);
+  const tLensA = mapL(l => Math.pow(tlog(BK7_TI10, l), SPX.LENS_T/10));
+  const tQzR = mapL(l => (1 - fresnelN((nO(l) + nE(l))/2))**2);
+  const tSurf = mapL(() => (1 - SURF.A)**2);
+  const tVar = mapL(l => Math.exp(-VAR.a(l)*dCm));
+  const tQzIR = mapL(l => Math.exp(-qzIR(l)*dCm));
+  const focusIn = d.depthO >= -1e-9 && d.depthO <= d.d + 1e-9;
+  const inclFrac = SURF.incl && focusIn ? SURF.incl : 0;
+  const tIncl = mapL(() => 1 - inclFrac);
+  /* --- the eye's media --- */
+  const parts = Array.from(LG, l => mediaParts(l, age, aph));
+  const tCorR = mapL(l => 1 - fresnelN(navN('aqueous', l)));   // tear film ≈ aqueous index → 1st Purkinje image
+  const tTP   = mapL((l, i) => Math.pow(10, -parts[i].tp));
+  const tLensEye = mapL((l, i) => Math.pow(10, -parts[i].lens));
+  const tScat = mapL((l, i) => Math.pow(10, -(parts[i].ray + parts[i].neutral)));
+  const tWater = mapL(l => Math.exp(-waterAbs(l)*2.2));
+  const tMP = mapL(l => Math.pow(10, -SPX.MP_PEAK*macular(l)));
+  const absCone = CONES.map(c => mapL(l => 1 - Math.pow(10, -c.od*govardovskii(l, c.lmax))));
+  const absRod = mapL(l => 1 - Math.pow(10, -ROD.od*govardovskii(l, ROD.lmax)));
+
+  /* ordered stages: [key, label, transmittance, where the lost light goes] */
+  const stages = [
+    ['atm', 'atmosphere (direct beam)', sun ? tAtm : ones, 'scattered out of the beam, or absorbed by O₃, H₂O, O₂'],
+    ['lensR', 'magnifier surfaces', tLensR, 'Fresnel reflection, 2 faces'],
+    ['lensA', 'magnifier glass', tLensA, 'absorbed — the glass UV edge and IR (O–H, Si–O)'],
+    ['air', 'room air on the bench', tBenchAir, 'Rayleigh + aerosol side-scatter'],
+    ['qzR', 'quartz faces', tQzR, 'Fresnel reflection, 2 faces — the ghost images'],
+    ['qzS', 'quartz surface film', tSurf, 'absorbed in skin oil, dust, residue → heat'],
+    ['qzV', 'quartz colour centres', tVar, 'absorbed by Al / Fe centres → heat'],
+    ['qzIR', 'quartz lattice (IR)', tQzIR, 'absorbed by O–H and Si–O vibrations → phonons directly'],
+    ['incl', 'inclusion at the focus', tIncl, 'absorbed by the inclusion → heat'],
+    ['corR', 'tear film / cornea surface', tCorR, 'reflected — the 1st Purkinje image'],
+    ['tp', 'cornea + lens proteins (tryptophan)', tTP, 'UV-B / UV-C absorbed'],
+    ['lensEye', aph ? 'no crystalline lens (aphakic)' : 'crystalline lens (kynurenines)', tLensEye, 'UV-A and violet absorbed — grows with age'],
+    ['scat', 'media scatter + neutral loss', tScat, 'scattered in cornea, lens and vitreous'],
+    ['water', 'aqueous + vitreous water', tWater, 'near-IR absorbed by O–H overtones'],
+    ['mp', 'macular pigment (lutein, zeaxanthin)', tMP, 'blue absorbed before the foveal cones']
+  ];
+  const K = Object.fromEntries(stages.map((s, k) => [s[0], k]));
+  const cum = [];
+  { let run = ones; for (const s of stages){ const prev = run; run = mapL((l, i) => prev[i]*s[2][i]); cum.push(run); } }
+
+  /* --- power through the chain --- */
+  const apArea = sun ? Math.PI*(d.D/2000)**2 : 0;          // m² of magnifier aperture
+  const base = sun ? mapL((l, i) => toa[i]*apArea) : mapL((l, i) => i === i589 ? SPX.P_LAB/LGW[i] : 0);   // W/nm
+  const Pstart = integ(base);
+  const Pafter = stages.map((_, k) => integ(mapL((l, i) => base[i]*cum[k][i])));
+  const pupilFrac = d.objOK ? d.trans : 0;
+  const lossW = {};
+  for (let k = 0; k < stages.length; k++){
+    const lost = (k ? Pafter[k - 1] : Pstart) - Pafter[k];
+    lossW[stages[k][0]] = k >= K.corR ? lost*pupilFrac : lost;
+  }
+  const atLens = sun ? Pafter[K.atm] : SPX.P_LAB;
+  const Pcrystal = Pafter[K.incl];
+  const Ppupil = Pcrystal*pupilFrac;
+  /* atmosphere loss shared by optical depth (Beer-law partition) */
+  const atmShare = {ray: 0, aer: 0, o3: 0, h2o: 0, o2: 0};
+  if (sun) for (let i = 0; i < LG.length; i++){
+    const tt = tau.ray[i] + tau.aer[i] + tau.o3[i] + tau.h2o[i] + tau.o2[i];
+    const L0 = base[i]*(1 - tAtm[i])*LGW[i];
+    if (tt > 0) for (const k in atmShare) atmShare[k] += L0*tau[k][i]/tt;
+  }
+  const atCornea = mapL((l, i) => base[i]*cum[K.incl][i]*pupilFrac);      // W/nm through the pupil
+  const atRetina = mapL((l, i) => base[i]*cum[K.mp][i]*pupilFrac);
+  const mosaic = SPX.LMS_MOSAIC;
+  const coneAbs = mapL((l, i) => atRetina[i]*(mosaic[0]*absCone[0][i] + mosaic[1]*absCone[1][i] + mosaic[2]*absCone[2][i]));
+  const Pret = integ(atRetina), PconeAbs = integ(coneAbs);
+  const bands = [['UV-B', 280, 315], ['UV-A', 315, 400], ['visible', 400, 700], ['NIR-A', 700, 1400], ['IR-B', 1400, 3000], ['IR-C', 3000, 4000]];
+  const split = E => bands.map(([k, a, b]) => [k, integ(E, a, b - 1e-9)]);
+  const bandsGround = split(mapL((l, i) => sun ? ground[i]*apArea : 0));
+  const bandsCrystal = split(mapL((l, i) => base[i]*cum[K.incl][i]));
+  const bandsCornea = split(atCornea), bandsRetina = split(atRetina);
+
+  /* --- retina: irradiance, isomerisations, bleaching, shot noise --- */
+  const spotR = sun ? Math.max(1e-6, (d.dSunRet || 0)/2) : Math.max(1e-6, d.wRet || 1e-3);   // mm
+  const retArea = sun ? Math.PI*spotR*spotR : Math.PI*spotR*spotR/2;   // Gaussian: peak = 2P/πw²
+  const retIrr = Pret/retArea*100;                                      // W/cm²
+  const photonsUm2 = mapL((l, i) => atRetina[i]/(SPX.H*SPX.CL/(l*1e-9))/(retArea*1e6));   // photons/s/µm²/nm
+  const isoRate = absCone.map(a => integ(photonsUm2, 300, 950, a)*SPX.CONE_AP*SPX.QE_ISO);
+  const bleach = isoRate.map(R => R/(R + SPX.CONE_HALF_BLEACH));
+  const shotN = isoRate.map(R => R*0.010);                               // per 10 ms photopic window
+  /* L, M, S excitation relative to a 32-year-old phakic reference eye */
+  const lmsAt = (ageR, aphR) => CONES.map((c, k) => {
+    let s = 0;
+    for (let i = 0; i < LG.length && LG[i] <= 950; i++){
+      const p = mediaParts(LG[i], ageR, aphR);
+      s += atCornea[i]*Math.pow(10, -(p.ray + p.tp + p.lens + p.neutral))*tWater[i]*tMP[i]*absCone[k][i]*LG[i]*LGW[i];
+    }
+    return s;
+  });
+  const lmsNow = lmsAt(age, aph), lmsRef = lmsAt(32, false);
+  const lmsRel = lmsNow.map((v, k) => lmsRef[k] > 0 ? v/lmsRef[k] : NaN);
+
+  /* --- colour of the light (chromaticity at normalised brightness; the
+     crystal's body colour at true relative brightness) --- */
+  const illum = sun ? mapL((l, i) => toa[i]*cum[K.air][i]) : mapL(l => planckSun(l));
+  const Y0 = spectrumXYZ(illum)[1];
+  const colour = E => xyzToRGB(spectrumXYZ(E));
+  const colours = sun ? {
+    toa: colour(toa), ground: colour(ground),
+    exit: colour(mapL((l, i) => toa[i]*cum[K.incl][i])),
+    retina: colour(mapL((l, i) => toa[i]*cum[K.mp][i]))
+  } : null;
+  const bodyRGB = xyzToRGB(spectrumXYZ(mapL((l, i) => illum[i]*tVar[i])), 1.05*Y0);   // seen through the block
+
+  /* --- polarisation with dispersion: what polarisers would reveal --- */
+  const neThetaL = (l, thDeg) => { const t = thDeg*Math.PI/180, a = nO(l), b = nE(l);
+    return 1/Math.sqrt(Math.cos(t)**2/(a*a) + Math.sin(t)**2/(b*b)); };
+  /* exit Stokes vector on the (e, o) basis for input linear at α: an elliptical
+     retarder — linear retardance δL (birefringence) and circular retardance
+     δC = 2ρt·(cos²θ − 0.54 sin²θ) (optical activity) — composed as one
+     Poincaré-sphere rotation about n = (δL, 0, δC)/δ by δ = √(δL² + δC²) */
+  const exitStokes = (l, tMm, thDeg, alphaDeg) => {
+    const dL = 2*Math.PI*tMm*(neThetaL(l, thDeg) - nO(l))/(l*1e-6);
+    const dC = 2*hand*rotPower(l)*Math.PI/180*tMm*gyr(thDeg);
+    return rotateStokes(alphaDeg, dL, dC);
+  };
+  const polColour = (tMm, crossed) => {
+    const E = mapL((l, i) => {
+      if (l < 360 || l > 830) return 0;
+      const so = exitStokes(l, tMm, d.theta, 45);           // input at 45° → S_in = (0, 1, 0)
+      return illum[i]*0.5*(crossed ? 1 - so[1] : 1 + so[1]);
+    });
+    const xyz = spectrumXYZ(E);
+    return {rgb: xyzToRGB(xyz, 1.05*Y0), Y: xyz[1]/Math.max(1e-12, Y0)};
+  };
+  const dn550 = Math.abs(neThetaL(550, d.theta) - nO(550));
+  const stripMax = Math.min(12, 4*550e-6/Math.max(dn550, 1e-9));     // mm: four orders, or 12 mm of rotation
+  const strip = [];
+  for (let k = 0; k <= 96; k++){ const t = stripMax*k/96; strip.push({t, ...polColour(t, true)}); }
+  const polActual = {crossed: polColour(d.d, true), parallel: polColour(d.d, false)};
+  const rot589 = rotPower(589)*d.d;
+
+  /* --- heat and phonons in the crystal --- */
+  const kq = SPX.K_QZ, kappa = kq/(SPX.RHO_QZ*SPX.CP_QZ);
+  const Pin = Pafter[K.air];                                // W arriving at the front face
+  const Psurf1 = SURF.A*Pafter[K.qzR];
+  const Psurf2 = Math.max(0, lossW.qzS - Psurf1);
+  const Pvar = lossW.qzV, PIR = lossW.qzIR, Pincl = lossW.incl;
+  const PramanW = Pafter[K.qzS]*SPX.RAMAN_PER_CM*dCm;
+  const Pabs = lossW.qzS + Pvar + PIR + Pincl + PramanW*(464/16978);
+  const aIn = Math.max(1e-4, sun ? wBench(d, d.xFront) : crystalW(d, d.xFront))*1e-3;   // m
+  const aOut = Math.max(1e-4, sun ? wBench(d, d.xBack) : crystalW(d, d.xBack))*1e-3;
+  const aF = Math.max(1e-6, sun ? d.dSun/2 : d.w0p)*1e-3;
+  const atFace = d.depthO < 0.5;
+  const dTin = Psurf1/(Math.PI*aIn*kq);                     // uniform disk on a half-space: centre ΔT = P/(π a k)
+  const dTout = Psurf2/(Math.PI*aOut*kq);
+  const dTincl = Pincl/((atFace ? 1 : 2)*Math.PI*aF*kq);    // buried: heat leaves both ways
+  const lineQ = (Pvar + PIR)/(d.d/1000);                    // W/m along the beam
+  const dTbulk = lineQ/(2*Math.PI*kq)*(Math.log(SPX.BLOCK_HALF/1000/aF) + 0.5);
+  const dThot = Math.max(dTin, dTout, dTincl) + dTbulk;
+  const Tamb = tC + 273.15, Thot = Tamb + dThot;
+  const hotWhere = Pincl > 0 && dTincl >= Math.max(dTin, dTout) ? 'the inclusion at the focus'
+    : dTin >= dTout ? 'the entrance face, under the focused light' : 'the exit face';
+  const stress = SPX.E_QZ*SPX.CTE_QZ*dThot/(2*(1 - SPX.NU_QZ));
+  const tauSpot = Math.min(aIn, aF)**2/kappa;
+  const tauBlock = (SPX.BLOCK_HALF/1000)**2/kappa;
+  const massBlock = SPX.RHO_QZ*(2*SPX.BLOCK_HALF/1000)**2*(d.d/1000);
+  const warmRate = Pabs/(massBlock*SPX.CP_QZ);
+  const inQ = mapL((l, i) => base[i]*cum[K.qzS][i]);
+  const eMean = integ(inQ)/Math.max(1e-300, integ(mapL((l, i) => inQ[i]*l*1e-9/(SPX.H*SPX.CL))));   // J per photon
+  const eV = 1.602176634e-19;
+  const absPhot = Pabs/eMean;
+  const optPerPhot = eMean/(0.14382*eV);                    // highest optical phonon, 1160 cm⁻¹ = 0.1438 eV
+  const thermPerPhot = eMean/(SPX.KB*Thot);
+  const ramanPhot = PramanW/eMean;
+  const nu0 = 1e7/589;
+  const asRatio464 = ((nu0 + 464)/(nu0 - 464))**4*Math.exp(-HC_K*464/Thot);
+  const brillGHz = 2*PHY.NO*SPX.V_SOUND/589e-9/1e9;
+  const brillNm = 589*589*brillGHz*1e9/(SPX.CL*1e9);
+  const lc = 589e-9/(4*Math.abs(nO(294.5) - nO(589)));
+  const Ifocus = (sun ? Pafter[K.qzS] : 2*Pafter[K.qzS])/(Math.PI*aF*aF);
+  const etaSHG = 8*Math.PI**2*SPX.D11**2*lc*lc*Ifocus/(PHY.NO**3*8.8541878128e-12*SPX.CL*(589e-9)**2)*(2/Math.PI)**2;
+  const Pshg = etaSHG*Pafter[K.qzS];
+  const forceN = (Pabs + 2*fresnelN(PHY.NO)*Pin)/SPX.CL;
+  const wienNm = 2.897771955e6/Thot;
+
+  return {sun, m, aer, wCol, dni, toaTot, toa, ground, tAtm, tau, atmShare, stages, cum, K,
+    absCone, absRod, base, Pstart, atLens, Pafter, Pcrystal, lossW, Ppupil, pupilFrac,
+    atCornea, atRetina, coneAbs, Pret, PconeAbs,
+    bands, bandsGround, bandsCrystal, bandsCornea, bandsRetina,
+    retIrr, isoRate, bleach, shotN, lmsRel, lmsNow, colours, bodyRGB, illum,
+    strip, stripMax, polActual, rot589, dn550, inclFrac, exitStokes,
+    heat: {Pin, Psurf1, Psurf2, Pvar, PIR, Pincl, PramanW, Pabs, aIn, aOut, aF, atFace,
+      dTin, dTout, dTincl, dTbulk, dThot, Tamb, Thot, hotWhere, stress, tauSpot, tauBlock, warmRate,
+      absPhot, optPerPhot, thermPerPhot, ramanPhot, bose: RAMAN_LINES.map(([cm]) => bose(cm, Thot)),
+      asRatio464, brillGHz, brillNm, lc, Ifocus, etaSHG, Pshg, forceN, wienNm, eMean}};
+}
+/* Poincaré-sphere rotation of linear input at α (from the e-axis) about
+   n ∝ (δL, 0, δC) by |δ| — shared by the bench (589 nm) and the colour strip */
+function rotateStokes(alphaDeg, dL, dC){
+  const dd = Math.hypot(dL, dC);
+  const a2 = 2*alphaDeg*Math.PI/180, s = [Math.cos(a2), Math.sin(a2), 0];
+  if (dd < 1e-15) return s;
+  const nx = dL/dd, nz = dC/dd, c = Math.cos(dd), sn = Math.sin(dd), dot = s[0]*nx + s[2]*nz;
+  const cr = [-nz*s[1], nz*s[0] - nx*s[2], nx*s[1]];       // n × s
+  return [s[0]*c + cr[0]*sn + nx*dot*(1 - c), s[1]*c + cr[1]*sn, s[2]*c + cr[2]*sn + nz*dot*(1 - c)];
 }
 
 /* ================================================================
@@ -498,7 +1247,7 @@ const sci = x => { const e = Math.floor(Math.log10(x)); const m = x/Math.pow(10,
    ================================================================ */
 const state = {...DEFAULTS};
 const layers = {herm: false, spec: false};   // cosmetic + text only — never read by computePhysics
-let DER = computePhysics(state);
+let DER = computePhysics({...state, dni: atmosphereDNI(state)});
 window.__derived = DER;
 window.computePhysics = computePhysics;
 
@@ -516,7 +1265,8 @@ function palette(){
     line:g('--line'), hair:g('--hair'), beam:g('--beam'), beamFill:g('--beam-fill'),
     eray:g('--eray'), erayFill:g('--eray-fill'), herm:g('--herm'), hermFill:g('--herm-fill'),
     spec:g('--spec'), specFill:g('--spec-fill'), quartz:g('--quartz'), quartzLine:g('--quartz-line'),
-    good:g('--good'), warn:g('--warnc')};
+    good:g('--good'), warn:g('--warnc'), coneL:g('--coneL'), coneM:g('--coneM'), coneS:g('--coneS'),
+    rod:g('--rod'), heat:g('--heat'), ir:g('--ir'), uv:g('--uv')};
 }
 
 /* ---------------- layout ---------------- */
@@ -546,7 +1296,7 @@ function layout(){
   const eyeR = 84;
   const breakX = x1 + 12;
   const eyeCx = breakX + 54 + eyeR, eyeCyR = cy;
-  const eyeScale = 2*eyeR/PHY.AXIAL;         // px per mm inside the eye panel
+  const eyeScale = 2*eyeR/NAV_AXIAL;         // px per mm inside the eye panel
   const icx = Math.min(W - 66, eyeCx + eyeR + 58), icy = 404, ir = 50;
   const halfUm = Math.max(1e-9, (d.src === 'sun' ? (d.dSunRet + d.dRet) : d.dRet)*1000/2);
   const zoomUm = Math.min(2.6, 33/halfUm);   // px per µm in the retinal inset (adaptive, labeled)
@@ -600,7 +1350,7 @@ function drawStatic(){
   txt(d.src === 'sun' ? 'COMPUTED PHYSICS MODEL — THE SUN → LENS → QUARTZ → RETINA'
                       : 'COMPUTED PHYSICS MODEL — SOURCE TO RETINA', g.W/2, 23, `600 ${sans(10.5)}`, P.beam, 'center');
   if (d.src === 'sun')
-    txt(`sunlight: θ☉ = 0.533° · broadband · unpolarized · 1 kW/m² · magnifier f = ${d.f} mm, D = ${d.D} mm · single-λ readouts at the 589 nm component`,
+    txt(`sunlight: θ☉ = 0.533° · broadband · unpolarized · ${f0(d.irr)} W/m² direct · magnifier f = ${d.f} mm, D = ${d.D} mm · single-λ readouts at the 589 nm component`,
         g.x0, 44, sans(10), P.ink2);
 
   /* optical axis */
@@ -846,7 +1596,7 @@ function drawStatic(){
   dimLine(c, X(d.xBack), X(d.xCornea), dimY, `L = ${d.L} mm${lHint}`, P, mono);
 
   /* honesty labels — computed, never silent */
-  txt(`air gap: n = 1.000273 (model rounds to 1 — hides ≈${f1(d.airLam)}λ) · dots = molecule motif (≈3.4 nm apart) · flashes = Rayleigh, exaggerated (true ≈ ${sci(d.airScatter)})`,
+  txt(`air gap: n = ${d.nAir.toFixed(6)} (Edlén; model rounds to 1 — hides ≈${f1(d.airLam)}λ) · dots = molecule motif (≈3.4 nm apart) · flashes = Rayleigh, exaggerated (true ≈ ${sci(d.airScatter)})`,
       g.x0, g.H - 44, sans(10), P.ink2);
   txt(`horizontal true scale: 1 px ≈ ${f2(1/hs)} mm · beam widths drawn ×${f0(vs/hs)} vertical (computed, resize-aware)`,
       g.x0, g.H - 30, sans(10.5), P.beam);
@@ -861,70 +1611,41 @@ function drawStatic(){
     if (!Number.isFinite(d.sGeo)) notes.push('s = f: collimated — geometric image at ∞');
     else if (d.sGeo < 0) notes.push(`s < f: virtual image ${neg(f1(Math.abs(d.sGeo)))} mm before the lens — beam diverges`);
   }
-  if (d.neT - PHY.NO < 1e-9) notes.push('θ = 0°: beam along the optic axis — birefringence vanishes, o and e identical');
+  if (d.neT - PHY.NO < 1e-9) notes.push(`θ = 0°: no birefringence — but optical activity turns the plane ${f0(Math.abs(d.rotDeg))}°`);
   if (!d.objOK) notes.push('apparent focus at/beyond the cornea — observer stage suspended');
   if (notes.length) txt(notes.join('  ·  '), g.x1, 57, `600 ${sans(10.5)}`, P.warn, 'right');
   /* sun-mode hazard — honest observer caveat */
   if (d.src === 'sun')
     txt('⚠ image luminance ≈ the solar disk — thought experiment only', g.W - 14, g.H - 30, sans(10), P.warn, 'right');
 
-  /* ---- scale break + reduced eye (enlarged, labeled) ---- */
+  /* ---- scale break + Navarro schematic eye (enlarged, labeled) ---- */
   const bx = g.breakX;
   line(bx - 6, cy - 40, bx + 8, cy - 78, P.ink2, 1.4);
   line(bx + 2, cy - 40, bx + 16, cy - 78, P.ink2, 1.4);
   line(bx - 6, cy + 78, bx + 8, cy + 40, P.ink2, 1.4);
   line(bx + 2, cy + 78, bx + 16, cy + 40, P.ink2, 1.4);
   const {eyeCx, eyeR, eyeScale} = g;
-  txt('OBSERVER — EMSLEY REDUCED EYE', eyeCx, 58, `600 ${sans(10)}`, P.beam, 'center');
+  txt('OBSERVER — NAVARRO SCHEMATIC EYE', eyeCx, 58, `600 ${sans(10)}`, P.beam, 'center');
   txt(`scale break — eye ×${f1(eyeScale/hs)} vs bench (computed)`, eyeCx, 72, sans(10), P.ink2, 'center');
-  c.fillStyle = P.quartz; c.strokeStyle = P.ink2; c.lineWidth = 1.3;
-  c.beginPath(); c.arc(eyeCx, cy, eyeR, 0, 7); c.fill(); c.stroke();
-  c.strokeStyle = P.herm; c.lineWidth = 3;   // retina (right cap)
-  c.beginPath(); c.arc(eyeCx, cy, eyeR, -0.7, 0.7); c.stroke();
   const xV = eyeCx - eyeR, retX = eyeCx + eyeR;
   const es = eyeScale, prE = state.pupil/2*es;
-  /* cornea — true anatomical curvature r = 7.8 mm (drawn; refraction is still
-     computed at the single Emsley surface) */
-  const rC = 7.8*es, phiC = 0.85;
-  c.strokeStyle = P.ink; c.lineWidth = 3;
-  c.beginPath(); c.arc(xV + rC, cy, rC, Math.PI - phiC, Math.PI + phiC); c.stroke();
-  /* crystalline lens — the eye's own vesica: two construction circles, plane
-     ⊥ the axis (the same orientation as the vesica objective), anterior face
-     bulging with the COMPUTED accommodation */
-  const hL = 4.6*es;
-  const phiA = Math.asin(4.6/d.lensRA), phiP = Math.asin(4.6/d.lensRP);
-  const cxA = xV + (3.5 + d.lensRA)*es;             // anterior-arc circle center
-  const cxP = xV + (3.5 + d.lensT - d.lensRP)*es;   // posterior-arc circle center
-  c.save(); c.globalAlpha = 0.22; c.strokeStyle = P.ink2; c.setLineDash([3,4]); c.lineWidth = 0.8;
-  c.beginPath(); c.arc(cxA, cy, d.lensRA*es, 0, 7); c.stroke();
-  c.beginPath(); c.arc(cxP, cy, d.lensRP*es, 0, 7); c.stroke();
-  c.restore();
-  c.save(); c.fillStyle = P.quartz; c.strokeStyle = P.ink; c.lineWidth = 1.3;
-  c.beginPath();
-  c.arc(cxA, cy, d.lensRA*es, Math.PI - phiA, Math.PI + phiA);
-  c.arc(cxP, cy, d.lensRP*es, -phiP, phiP);
-  c.closePath(); c.fill(); c.stroke(); c.restore();
-  /* iris at its anatomical station, just ahead of the lens */
-  const xI = xV + 3.0*es;
-  c.fillStyle = P.ink2;
-  c.fillRect(xI - 2, cy - hL - 2, 4, hL + 2 - prE);
-  c.fillRect(xI - 2, cy + prE, 4, hL + 2 - prE);
+  const eyeGeo = drawNavarroEye(c, xV, cy, es, d, P, {pupil: state.pupil, lw: 1.3});
   if (d.objOK){
-    line(xV + 5, cy - prE, retX - 2, cy, P.beam, 1.2);
-    line(xV + 5, cy + prE, retX - 2, cy, P.beam, 1.2);
-    line(xV + 5, cy - prE + 3, retX - 2, cy - 1, P.eray, 1, [4,3], 0.4 + 0.5*d.Ie);
-    line(xV + 5, cy + prE + 3, retX - 2, cy - 1, P.eray, 1, [4,3], 0.4 + 0.5*d.Ie);
+    line(xV + 2, cy - prE, retX - 2, cy, P.beam, 1.2);
+    line(xV + 2, cy + prE, retX - 2, cy, P.beam, 1.2);
+    line(xV + 2, cy - prE + 3, retX - 2, cy - 1, P.eray, 1, [4,3], 0.4 + 0.5*d.Ie);
+    line(xV + 2, cy + prE + 3, retX - 2, cy - 1, P.eray, 1, [4,3], 0.4 + 0.5*d.Ie);
     c.fillStyle = P.beam; c.beginPath(); c.arc(retX - 2, cy, 2.6, 0, 7); c.fill();
   }
-  txt('vitreous n′ = 4/3', eyeCx + 14, cy + 16, sans(9.5), P.ink2, 'center');
-  txt('crystalline lens — vesica form', xV + 5.3*es, cy + hL + 14, sans(9), P.ink2, 'center');
-  txt('P = 60 D + A — computed as one Emsley surface', eyeCx, cy - eyeR - 20, sans(9.5), P.ink2, 'center');
-  txt(`drawn anatomy: cornea r 7.8 · lens rA ${f1(d.lensRA)} / rP ${f1(d.lensRP)} mm · tilt 0° ⊥ axis (real 2–7°)`,
+  txt(`vitreous n′ ${f3(d.N_VIT)}`, eyeCx + 22, cy + 16, sans(9.5), P.ink2, 'center');
+  txt(`lens n ${f3(d.eyeN.L)}`, eyeGeo.xLens, cy + eyeGeo.hLens + 14, sans(9), P.ink2, 'center');
+  txt(`P = ${f1(d.eyeP)} D at 589 nm — 4 surfaces traced (Navarro 1985)`, eyeCx, cy - eyeR - 20, sans(9.5), P.ink2, 'center');
+  txt(`cornea 7.72 / 6.50 · lens ${f2(d.lensRA)} / −${f2(d.lensRP)} mm, ${f2(d.lensT)} thick · tilt 0°`,
       eyeCx, cy - eyeR - 8, sans(9), P.ink2, 'center');
-  txt(d.objOK ? `accommodation +${f1(d.acc)} D (computed)${d.accFlag ? ' ⚠' : ''}` : 'accommodation — (out of range)',
+  txt(d.objOK ? `accommodation A = ${f2(d.acc)} D (age ${d.age}: amplitude ${f1(d.ampAcc)} D)${d.accFlag ? ' ⚠ presbyopic' : ''}` : 'accommodation — (out of range)',
       eyeCx, cy + eyeR + 16, sans(10), d.accFlag ? P.warn : P.ink2, 'center');
   txt('image inverted', retX + 6, cy - 12, sans(9.5), P.ink2);
-  dimLine(c, xV, retX, cy + eyeR + 32, 'axial 22.22 mm', P, mono);
+  dimLine(c, xV, retX, cy + eyeR + 32, `axial ${f2(NAV_AXIAL)} mm`, P, mono);
 
   /* ---- retinal inset — zoom computed & labeled; separations to scale ---- */
   const {icx, icy, ir, zoomUm} = g;
@@ -1015,7 +1736,7 @@ function drawFringeStrip(c, d, g, P, sans, mono, txt){
   txt(`exit strip — I = sin²2α·sin²(Δφ/2), spans the fan ×${f0(stripScale)} tall (computed)`,
       X(d.xFront), cy + 86 + 31, sans(10), P.ink2);
   txt(`order ≈ ${f0(d.order)} · ${modeLabel}`, X(d.xFront), cy + 86 + 45, sans(10), P.ink2);
-  txt(`lattice: SiO₄ helices ∥ c-axis (motif — real cell 0.540 nm ⇒ ≈${(d.cellsAlong/1e7).toFixed(1)}×10⁷ across d) · glints = virtual polarization, no absorption (hν ≪ gap), ~10¹⁴× slower`,
+  txt(`lattice: SiO₄ helices ∥ c-axis (motif — real cell 0.540 nm ⇒ ≈${(d.cellsAlong/1e7).toFixed(1)}×10⁷ across d) · glints = virtual polarization (pure lattice: no absorption), ~10¹⁴× slower`,
       X(d.xFront), cy + 86 + 59, sans(9.5), P.quartzLine);
 }
 
@@ -1101,21 +1822,22 @@ function drawExitInset(c, d, P, sans, mono, txt){
   c.strokeStyle = P.beam;
   c.beginPath(); c.moveTo(ccx - r - 4, ccy); c.lineTo(ccx + r + 4, ccy); c.stroke();
   c.globalAlpha = 1;
-  /* polarization ellipse: x = o-field (fast), y = e-field (slow, lags by δ) */
-  const Ao = Math.sqrt(d.Io), Ae = Math.sqrt(d.Ie), delta = d.deltaM;
-  const sc = r/Math.max(Ao, Ae, 1e-6);
+  /* polarization ellipse from the exit Stokes vector (birefringence AND
+     optical activity): major axis at ψ from e (vertical) toward o (horizontal),
+     axis ratio b/a, sense from S₃ — drawn x = o-field, y = e-field */
+  const psi = d.psiDeg*Math.PI/180;
+  const ux = Math.sin(psi), uy = Math.cos(psi);          // major-axis unit vector (x = o, y = e, y up)
+  const vx = -uy, vy = ux;                               // +90°, counter-clockwise
+  const bs = (d.rotCCW ? 1 : -1)*d.ba;
   c.strokeStyle = P.ink; c.lineWidth = 2;
   c.beginPath();
   for (let k = 0; k <= 72; k++){
-    const t = 2*Math.PI*k/72;
-    const x = ccx + Ao*Math.cos(t)*sc, y = ccy - Ae*Math.cos(t - delta)*sc;
+    const t = 2*Math.PI*k/72, ex = Math.cos(t)*ux + bs*Math.sin(t)*vx, ey = Math.cos(t)*uy + bs*Math.sin(t)*vy;
+    const x = ccx + ex*r, y = ccy - ey*r;
     k ? c.lineTo(x, y) : c.moveTo(x, y);
   }
   c.stroke();
-  if (Ao > 1e-3 && Ae > 1e-3 && Math.abs(Math.sin(delta)) > 0.05){
-    arrowHead(c, ccx + Ao*sc, ccy - Ae*Math.cos(delta)*sc,
-      Math.sin(delta) > 0 ? -Math.PI/2 : Math.PI/2, P.ink);
-  }
+  if (d.ba > 0.03) arrowHead(c, ccx + ux*r, ccy - uy*r, Math.atan2(-(bs*vy), bs*vx), P.ink);
   /* values column */
   const tx0 = bx + 96;
   txt(`b/a  ${f2(d.ba)}`, tx0, by + 62, mono(9), P.ink);
@@ -1144,6 +1866,51 @@ function dimLine(c, x1, x2, y, label, P, mono){
   arrowHead(c, x1+3, y, Math.PI, P.ink2); arrowHead(c, x2-3, y, 0, P.ink2);
   c.font = mono(10); c.fillStyle = P.ink2; c.textAlign = 'center';
   c.fillText(label, (x1+x2)/2, y - 5); c.restore(); }
+/* the Navarro schematic eye, to scale: aspheric cornea and lens (conic
+   sections with the model's Q values), iris at the lens, retina sphere
+   R 12 mm. Shared by the bench and the eye section. Returns key positions. */
+function conicSag(r, R, Q){ const k = 1 - (1 + Q)*r*r/(R*R); return r*r/(R*(1 + Math.sqrt(Math.max(0, k)))); }
+function drawNavarroEye(c, x0, cy, s, d, P, o = {}){
+  const g = d.eyeG, lw = o.lw || 1.3;
+  const X = z => x0 + z*s, Y = r => cy - r*s;
+  const zC2 = g.t1, zLa = g.t1 + g.t2, zLp = zLa + g.t3, zRet = NAV_AXIAL;
+  /* globe: retina sphere R = 12 mm centred 12 mm in front of the fovea */
+  const gcx = X(zRet - 12), gr = 12*s;
+  c.save();
+  c.fillStyle = o.vitFill || P.quartz; c.strokeStyle = P.ink2; c.lineWidth = lw;
+  c.beginPath(); c.arc(gcx, cy, gr, 0, 2*Math.PI); c.fill();
+  /* sclera from limbus to limbus (the cornea closes the front) */
+  const limb = Math.acos(Math.max(-1, (conicSag(5.6, g.R1, g.Q1) - (zRet - 12))/12));
+  c.beginPath(); c.arc(gcx, cy, gr, -limb, limb); c.stroke();
+  c.strokeStyle = o.retinaCol || P.herm; c.lineWidth = lw*2.2;
+  c.beginPath(); c.arc(gcx, cy, gr, -1.0, 1.0); c.stroke();
+  /* lens: anterior and posterior conics, closed at their equator */
+  const sagA = r => zLa + conicSag(r, g.R3, g.Q3), sagP = r => zLp + conicSag(r, g.R4, g.Q4);
+  let lo = 0, hi = 5.5;
+  for (let k = 0; k < 40; k++){ const m = (lo + hi)/2; if (sagA(m) < sagP(m)) lo = m; else hi = m; }
+  const hLens = lo;
+  c.fillStyle = o.lensFill || P.quartz; c.strokeStyle = P.ink; c.lineWidth = lw;
+  c.beginPath();
+  for (let i = 0; i <= 40; i++){ const r = -hLens + 2*hLens*i/40; const x = X(sagA(r)), y = Y(r); i ? c.lineTo(x, y) : c.moveTo(x, y); }
+  for (let i = 40; i >= 0; i--){ const r = -hLens + 2*hLens*i/40; c.lineTo(X(sagP(r)), Y(r)); }
+  c.closePath(); c.globalAlpha = 0.85; c.fill(); c.globalAlpha = 1; c.stroke();
+  /* cornea: anterior conic Q −0.26, posterior sphere; fill the aqueous chamber */
+  const hC = 5.6;
+  c.fillStyle = o.aqFill || 'transparent';
+  c.beginPath();
+  for (let i = 0; i <= 40; i++){ const r = -hC + 2*hC*i/40; const x = X(conicSag(r, g.R1, g.Q1)), y = Y(r); i ? c.lineTo(x, y) : c.moveTo(x, y); }
+  c.strokeStyle = P.ink; c.lineWidth = lw*2; c.stroke();
+  c.lineWidth = lw*0.9; c.beginPath();
+  for (let i = 0; i <= 40; i++){ const r = -hC*0.98 + 2*hC*0.98*i/40; const x = X(zC2 + conicSag(r, g.R2, 0)), y = Y(r); i ? c.lineTo(x, y) : c.moveTo(x, y); }
+  c.stroke();
+  /* iris, resting on the lens front, aperture = the pupil */
+  const pr = (o.pupil || 4)/2, xI = X(zLa - 0.05), irisR = 6.0;
+  c.fillStyle = P.ink2;
+  c.fillRect(xI - 1.6*lw, Y(irisR), 3.2*lw, (irisR - pr)*s);
+  c.fillRect(xI - 1.6*lw, Y(-pr), 3.2*lw, (irisR - pr)*s);
+  c.restore();
+  return {X, Y, zC2, zLa, zLp, zRet, hLens, xLens: X((zLa + zLp)/2), gcx, gr};
+}
 function glowSpot(c, x, y, r, col, alpha){
   c.save(); c.globalAlpha = Math.min(1, alpha)*0.35;
   c.fillStyle = col; c.beginPath(); c.arc(x, y, r*2.2, 0, 7); c.fill();
@@ -1229,8 +1996,10 @@ function buildLanes(){
     let t = 0; for (const sg of segs){ sg.t0 = t; t += sg.len*sg.n; sg.t1 = t; }
     return {segs, total: t};
   };
-  const eye = {x0: g.eyeCx - g.eyeR, x1: g.eyeCx + g.eyeR, n: PHY.N_EYE,
-    lenMm: PHY.AXIAL, total: PHY.AXIAL*PHY.N_EYE};
+  const eG = d.eyeG, eN = d.eyeN;            // optical path through the Navarro media
+  const eyeOPL = eG.t1*eN.c + eG.t2*eN.a + eG.t3*eN.L + eG.t4*eN.v;
+  const eye = {x0: g.eyeCx - g.eyeR, x1: g.eyeCx + g.eyeR, n: eyeOPL/NAV_AXIAL,
+    lenMm: NAV_AXIAL, total: eyeOPL};
   /* lattice sites inside the beam — anchors for the virtual-polarization glints
      (same helix geometry the static layer draws, same θ rotation) */
   const th = d.theta*Math.PI/180, cosT = Math.cos(th), sinT = Math.sin(th);
@@ -1380,11 +2149,14 @@ function renderAnimFrame(dt){
   }
 }
 window.__animFrame = renderAnimFrame;        // testable without the rAF scheduler
+let latVisible = true;
 function drawAnim(ts){
   const dt = Math.min(0.05, (ts - lastTs)/1000 || 0); lastTs = ts;
   renderAnimFrame(dt);
+  if (latVisible) renderLattice(dt);
   requestAnimationFrame(drawAnim);
 }
+window.__latFrame = dt => renderLattice(dt);   // testable without the rAF scheduler
 
 /* ================================================================
    READOUTS + NARRATION + COMPARISON TABLE — text reads numbers,
@@ -1404,7 +2176,7 @@ function updateReadouts(){
     row(B, 'source', 'the Sun — θ☉ 0.533°, at ∞');
     row(B, 'sun image Ø = f·θ☉', `${f3(d.dSun)} mm`, 'hot');
     row(B, 'cone speed f/D', `f/${f1(d.f/d.D)}`);
-    row(B, 'collected power (1 kW/m²)', `${f2(d.powerW)} W`);
+    row(B, `collected power (${f0(d.irr)} W/m² direct)`, `${f2(d.powerW)} W`);
     row(B, 'concentration', `≈ ${f0(d.conc)}× (limit ≈ ${f0(d.etendueMax)}×)`, 'hot');
     row(B, 'irradiance at the image', `${f2(d.conc/1000)} MW/m²`);
     row(B, 'photons through the lens', `≈ ${(d.photonRate/1e18).toFixed(1)}×10¹⁸ /s`);
@@ -1422,7 +2194,7 @@ function updateReadouts(){
     row(B, "divergence θ′", `${f2(d.thDiv*1000)} mrad`);
     row(B, 'classical magnifier 250/f', `${f1(d.Mclass)}×`);
   }
-  row(B, 'air in the gap (model: n = 1)', `n 1.000273 → +${f1(um(d.airOPD))} µm ≈ ${f1(d.airLam)}λ`);
+  row(B, 'air in the gap (model: n = 1)', `n ${d.nAir.toFixed(6)} → +${f1(um(d.airOPD))} µm ≈ ${f1(d.airLam)}λ`);
   row(B, 'molecules threaded in g', `≈ ${sci(d.airMol)}`);
   row(B, 'Rayleigh loss over g', `≈ ${sci(d.airScatter)} of the power`);
   const focStr = (d.depthO > 0 && d.depthO < d.d)
@@ -1436,7 +2208,8 @@ function updateReadouts(){
   row(C, 'e-front lag at exit', `${f3(d.lagExit)} mm`);
   row(C, 'split I₀ / Iₑ', `${f0(d.Io*100)}% / ${f0(d.Ie*100)}%`);
   row(C, 'lattice (drawn as motif)', 'SiO₄ helices ∥ optic axis');
-  row(C, 'hν vs band gap', `${f3(d.ephot)} ≪ ≈${f1(PHY.E_GAP)} eV — no absorption`);
+  row(C, 'hν vs band gap', `${f3(d.ephot)} ≪ ≈${f1(PHY.E_GAP)} eV — pure lattice transparent`);
+  row(C, `optical rotation along axis (${d.hand > 0 ? 'right' : 'left'}-handed)`, `${f2(d.rho589)}°/mm · ${f0(Math.abs(d.rotDeg))}° here`, Math.abs(d.theta) < 5 ? 'hot' : '');
   row(C, 'unit cells along path', `≈ ${(d.cellsAlong/1e7).toFixed(1)}×10⁷ (c = 0.540 nm)`);
   if (d.src === 'sun') row(W, 'spectrum', 'broadband — rows at 589 nm', 'warn');
   row(W, 'frequency ν = c/λ (invariant)', `${f2(d.nu/1e12)} THz`, 'hot');
@@ -1444,7 +2217,7 @@ function updateReadouts(){
   row(W, 'optical period T = 1/ν', `${f3(d.periodFs)} fs`);
   row(W, 'photon energy hν', `${f3(d.ephot)} eV`);
   row(W, 'λ in vacuum / o / e', `589 / ${f1(d.lamO*1e6)} / ${f1(d.lamE*1e6)} nm`);
-  row(W, "λ in vitreous (n′ = 4/3)", `${f1(d.lamVit*1e6)} nm`);
+  row(W, `λ in vitreous (n′ = ${f4(d.N_VIT)})`, `${f1(d.lamVit*1e6)} nm`);
   row(W, 'cycles across d — o / e', `${Math.round(d.cyclesO).toLocaleString('en-US')} / ${Math.round(d.cyclesE).toLocaleString('en-US')}`);
   row(W, 'transit through d (o-wave)', `${f3(d.transitO*1e9)} ns`);
   row(W, 'Δcycles (= interference order)', `${f1(d.cyclesE - d.cyclesO)} ✓`, 'hot');
@@ -1467,14 +2240,17 @@ function updateReadouts(){
   const ok = d.objOK;
   row(O, 'apparent source z_app', ok ? `${f2(d.zApp)} mm behind exit` : '—');
   row(O, 'object distance L + z_app', ok ? `${f1(d.obj)} mm` : '— (≤ cornea)', ok ? '' : 'warn');
-  row(O, 'accommodation A', ok ? `${f2(d.acc)} D${d.accFlag ? ' ⚠ > 10 D amplitude' : ''}` : '—', d.accFlag ? 'warn' : 'hot');
+  row(O, `accommodation A (Navarro, at ${d.lamRef} nm)`, ok ? `${f2(d.acc)} D${d.accFlag ? ` ⚠ amplitude ${f1(d.ampAcc)} D at age ${d.age}` : ''}` : '—', d.accFlag ? 'warn' : 'hot');
+  row(O, 'eye power · F_eq (589 nm)', `${f2(d.eyeP)} D · ${f2(d.F_EYE)} mm`);
+  row(O, 'chromatic error 450 → 650 nm', ok ? `${f2(d.lca)} D` : '—');
   if (d.src === 'sun'){
     row(O, 'solar disks (o & e)', ok ? `${f1(d.sunArcmin)}′ each · offset ${f2(d.arcmin)}′` : '—', 'hot');
     row(O, 'retinal disks', ok ? `Ø ${f1(um(d.dSunRet))} µm ×2, offset ${f1(um(d.dRet))} µm` : '—');
     row(O, 'cone at the cornea', `half-h ${f1(d.hCornea)} mm vs pupil ${state.pupil} mm`);
     row(O, 'pupil admits', `${(d.trans*100).toFixed(3)}%`);
     row(O, 'image-to-retina miss', ok ? `${f1(um(d.retMiss))} µm (self-test < 10)` : '—', 'hot');
-    row(O, 'crystalline lens (drawn anatomy)', `rA ${f1(d.lensRA)} / rP ${f1(d.lensRP)} mm · 0° tilt`);
+    row(O, 'blur Ø from chromatic error (450 / 650 nm)', ok ? `${f0(d.blurUm(450))} / ${f0(d.blurUm(650))} µm` : '—');
+    row(O, 'crystalline lens (computed)', `rA ${f2(d.lensRA)} / rP ${f2(d.lensRP)} mm · t ${f2(d.lensT)} mm`);
     row(O, 'hazard — luminance ≈ the solar disk; never view a real solar focus', '⚠ thought experiment', 'warn');
   } else {
     row(O, 'o/e subtense Δθ', ok ? `${f2(d.arcmin)} arcmin (acuity ≈ 1′)` : '—', 'hot');
@@ -1483,25 +2259,26 @@ function updateReadouts(){
     row(O, 'pupil admits', `${f0(d.trans*100)}%`);
     row(O, 'retinal spot w_ret', ok ? `${f2(um(d.wRet))} µm (diffr. ${f2(um(d.wDiff))} µm)` : '—');
     row(O, 'waist-to-retina miss', ok ? `${f1(um(d.retMiss))} µm (self-test < 10)` : '—', 'hot');
-    row(O, 'crystalline lens (drawn anatomy)', `rA ${f1(d.lensRA)} / rP ${f1(d.lensRP)} mm · 0° tilt`);
+    row(O, 'crystalline lens (computed)', `rA ${f2(d.lensRA)} / rP ${f2(d.lensRP)} mm · t ${f2(d.lensT)} mm`);
   }
   const notes = [];
   if (d.src === 'sun') notes.push('Sunlight mode: extended incoherent source — Gaussian-beam readouts replaced by the geometric sun image; s and α have no effect.');
   else if (!Number.isFinite(d.sGeo)) notes.push('s = f — collimated: geometric image at ∞, Gaussian waist at the focal plane.');
   else if (d.sGeo < 0) notes.push('s < f — virtual image; the beam diverges after the lens (dashed back-extension drawn).');
-  if (d.neT - PHY.NO < 1e-9) notes.push('θ = 0° — birefringence vanishes: o and e share one index, no walk-off, no retardation.');
+  if (d.neT - PHY.NO < 1e-9) notes.push(`θ = 0° — birefringence vanishes (one index, no walk-off, no retardation), but quartz's optical activity still turns the polarization plane ${f0(Math.abs(d.rotDeg))}° over d.`);
+  if (d.accFlag) notes.push(`Age ${d.age}: accommodation amplitude ${f1(d.ampAcc)} D is less than the ${f2(d.accDemand)} D this distance demands — the image is blurred (presbyopia).`);
   if (!ok) notes.push('Apparent focus at/beyond the cornea — observer readouts suspended (move L, s, or f).');
   $('status').textContent = notes.join(' ');
 }
 const V = x => `<span class="v">${x}</span>`;
 function airNarr(d){
-  return `The ${V(PHY.GAP + ' mm')} of air in between is not quite nothing: n_air = ${V('1.000273')} — this model rounds it to 1, hiding ${V(f1(um(d.airOPD)) + ' µm')} ≈ ${V(f1(d.airLam) + 'λ')} of optical path — and the beam threads ≈ ${V(sci(d.airMol))} molecules there, ` +
+  return `The ${V(PHY.GAP + ' mm')} of air in between is not quite nothing: n_air = ${V(d.nAir.toFixed(6))} (Edlén, from the weather set below) — this model rounds it to 1, hiding ${V(f1(um(d.airOPD)) + ' µm')} ≈ ${V(f1(d.airLam) + 'λ')} of optical path — and the beam threads ≈ ${V(sci(d.airMol))} molecules there, ` +
     `each re-radiating like the quartz cells but from random positions, so only ≈ ${V(sci(d.airScatter))} of the light Rayleigh-scatters sideways (the flashes; the same process needs kilometres of sky to turn blue)` +
     (d.src === 'sun' ? `; near a burning focus, heated air would add schlieren shimmer — not modeled. ` : `. `);
 }
 function quantumNarr(d){
-  return `Beneath the indices sits the quantum picture: each ${V(f2(d.ephot) + ' eV')} photon lies far below quartz's ${V('≈8.9 eV')} band gap, so nothing is absorbed — ` +
-    `the field only polarizes the SiO₄ helices (the matrix drawn in the block, wound around the optic axis) through virtual excitations. ` +
+  return `Beneath the indices sits the quantum picture: each ${V(f2(d.ephot) + ' eV')} photon lies far below quartz's ${V('≈8.9 eV')} band gap and far above its highest lattice vibration (${V('0.14 eV')}), so the <em>pure</em> lattice cannot absorb it — ` +
+    `the field only polarizes the SiO₄ helices (the matrix drawn in the block, wound around the optic axis) through virtual excitations. Real crystals do absorb a little, at surface films, colour centres and inclusions; that energy becomes phonons — heat (computed in section 2 below). ` +
     `The ${V('≈' + (d.cellsAlong/1e7).toFixed(1) + '×10⁷')} unit cells along the path re-radiate in sequence over the ${V(f3(d.transitO*1e9) + ' ns')} transit; ` +
     `their accumulated phase delay <em>is</em> the refractive index, and its direction-dependence along vs across the helices is the birefringence ` +
     `<span class="tag">lattice motif — cell 0.540 nm · glints ~10¹⁴× slower</span>. `;
@@ -1585,6 +2362,755 @@ function updateNarrLayers(d){
 }
 
 /* ================================================================
+   THE FULL JOURNEY — lower sections. Every pixel and number below is
+   read from SPC = computeSpectral(state, DER); nothing here computes
+   physics of its own beyond unit conversion.
+   ================================================================ */
+let SPC = null;
+const fW = w => w >= 1 ? `${f2(w)} W` : w >= 1e-3 ? `${f2(w*1e3)} mW` : w >= 1e-6 ? `${f2(w*1e6)} µW` : w >= 1e-9 ? `${f2(w*1e9)} nW` : w > 0 ? `${sci(w)} W` : '0 W';
+const pct = x => x >= 0.1 ? `${f1(x*100)} %` : x >= 1e-4 ? `${(x*100).toPrecision(2)} %` : x > 0 ? `${sci(x*100)} %` : '0 %';
+const rgbCss = a => `rgb(${a[0]},${a[1]},${a[2]})`;
+/* display colour of a single wavelength (CIE 1931 → sRGB, full brightness) */
+const lamRGB = l => (l < 380 || l > 780) ? null : xyzToRGB(cmf(l));
+/* direct-normal irradiance alone — the bench's sunlight power, computed
+   before the full chain (same functions, same grid) */
+function atmosphereDNI(st){
+  const m = airMass(st.elev ?? 60), aer = aerosolTau550(st.vis ?? 40, st.rh ?? 50);
+  const w = waterColumnCm(st.tAir ?? 20, st.rh ?? 50), pH = st.pAir ?? 1013.25, toa = solarTOA();
+  return integ(mapL((l, i) => {
+    const g = gasTau(l, w, m, pH);
+    return toa[i]*Math.exp(-(m*tauRayleigh(l, pH) + m*aer.tau*(l/550)**-SPX.ANG_ALPHA
+      + m*tlog(O3_XS, l)*SPX.O3_DU*SPX.DU_MOL + g.h2o + g.o2));
+  }));
+}
+function sizeCanvas(cv, W, H){
+  const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); return c;
+}
+const SANS = px => `${px}px "Segoe UI",system-ui,sans-serif`;
+const MONO = px => `${px}px Consolas,"Cascadia Code",monospace`;
+function T(c, s, x, y, font, col, align = 'left'){ c.font = font; c.fillStyle = col; c.textAlign = align; c.fillText(s, x, y); c.textAlign = 'left'; }
+function L(c, x1, y1, x2, y2, col, w = 1, dash = null, a = 1){
+  c.save(); c.globalAlpha = a; c.strokeStyle = col; c.lineWidth = w; if (dash) c.setLineDash(dash);
+  c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); c.restore();
+}
+/* spread label y-positions so they never collide */
+function declutter(items, minGap, lo, hi){
+  items.sort((a, b) => a.y - b.y);
+  for (let k = 1; k < items.length; k++) if (items[k].y - items[k-1].y < minGap) items[k].y = items[k-1].y + minGap;
+  const over = items.length ? items[items.length - 1].y - hi : 0;
+  if (over > 0) for (const it of items) it.y -= over;
+  for (let k = items.length - 2; k >= 0; k--) if (items[k+1].y - items[k].y < minGap) items[k].y = items[k+1].y - minGap;
+  for (const it of items) it.y = Math.max(lo, it.y);
+  return items;
+}
+
+/* ---------------- 1. the spectral chart ---------------- */
+let SPEC_GEO = null, specHoverL = null;
+function drawSpec(){
+  const sp = SPC, d = DER, P = palette(), pad = $('specPad');
+  const W = Math.max(760, Math.floor(pad.clientWidth) - 2), H = 590;
+  const c = sizeCanvas($('cvSpec'), W, H);
+  c.fillStyle = P.panel; c.fillRect(0, 0, W, H);
+  const xl = 62, xr = W - 168, l0 = 280, l1 = 4000;
+  const X = l => xl + (Math.log(l) - Math.log(l0))/(Math.log(l1) - Math.log(l0))*(xr - xl);
+  const lOf = x => Math.exp(Math.log(l0) + (x - xl)/(xr - xl)*(Math.log(l1) - Math.log(l0)));
+  const aT = 34, aB = 222, eMax = 2.3;
+  const YA = e => aB - Math.min(e, eMax)/eMax*(aB - aT);
+  const bT = 292, bB = 550;
+  const YB = t => bB - Math.max(0, Math.min(1, t))*(bB - bT);
+  SPEC_GEO = {X, lOf, xl, xr, aT, aB, bT, bB, W, H};
+  /* grid + axes */
+  c.font = MONO(10);
+  for (const l of [300, 400, 500, 600, 700, 800, 1000, 1500, 2000, 3000, 4000]){
+    L(c, X(l), aT, X(l), bB, P.hair, 1);
+    T(c, l >= 1000 ? `${l/1000} µm` : `${l}`, X(l), bB + 15, MONO(10), P.ink2, 'center');
+  }
+  T(c, 'wavelength (nm, log scale)', (xl + xr)/2, bB + 31, SANS(10.5), P.ink2, 'center');
+  for (let e = 0; e <= 2; e += 0.5){ L(c, xl, YA(e), xr, YA(e), P.hair, 1); T(c, f1(e), xl - 6, YA(e) + 3, MONO(10), P.ink2, 'right'); }
+  for (let t = 0; t <= 1.001; t += 0.25){ L(c, xl, YB(t), xr, YB(t), P.hair, 1); T(c, `${f0(t*100)}%`, xl - 6, YB(t) + 3, MONO(10), P.ink2, 'right'); }
+  c.save(); c.translate(16, (aT + aB)/2); c.rotate(-Math.PI/2);
+  T(c, 'W/m²/nm', 0, 0, SANS(10.5), P.ink2, 'center'); c.restore();
+  c.save(); c.translate(16, (bT + bB)/2); c.rotate(-Math.PI/2);
+  T(c, 'fraction surviving', 0, 0, SANS(10.5), P.ink2, 'center'); c.restore();
+  T(c, 'A · SUNLIGHT — ABOVE THE AIR AND IN THE DIRECT BEAM AT THE GROUND', xl, 20, `600 ${SANS(10.5)}`, P.beam);
+  T(c, 'B · WHAT SURVIVES EACH MEDIUM, CUMULATIVE — AND WHAT THE PHOTOPIGMENTS ABSORB', xl, bT - 14, `600 ${SANS(10.5)}`, P.beam);
+  /* visible band, rendered in its own colours */
+  for (let l = 380; l <= 780; l += 1){ const rgb = lamRGB(l); if (!rgb) continue;
+    c.fillStyle = rgbCss(rgb); c.globalAlpha = 0.9; c.fillRect(X(l), aB + 8, X(l + 1) - X(l) + 0.6, 9); }
+  c.globalAlpha = 1;
+  T(c, 'visible light — the only band any cone answers', X(530), aB + 30, SANS(9.5), P.ink2, 'center');
+  /* panel A — curves */
+  const curve = (arr, col, w, fill, dash) => {
+    c.save(); c.beginPath();
+    for (let i = 0; i < LG.length; i++){ const x = X(LG[i]), y = YA(arr[i]); i ? c.lineTo(x, y) : c.moveTo(x, y); }
+    if (fill){ c.lineTo(X(LG[LG.length - 1]), aB); c.lineTo(X(LG[0]), aB); c.closePath(); c.fillStyle = fill; c.fill(); }
+    else { c.strokeStyle = col; c.lineWidth = w; if (dash) c.setLineDash(dash); c.stroke(); }
+    c.restore();
+  };
+  const ground = sp.ground;
+  curve(ground, null, 0, P.beamFill);
+  curve(ground, P.beam, 1.2);
+  curve(sp.toa, P.ink2, 1, null, [3, 2]);
+  T(c, `above the air — ${f0(sp.toaTot)} W/m² (280–4000 nm)`, xr + 8, YA(sp.toa[iOf(1700)]) - 2, SANS(10), P.ink2);
+  T(c, `direct beam — ${f0(sp.dni)} W/m²`, xr + 8, YA(ground[iOf(1700)]) + 12, SANS(10), P.beam);
+  /* named absorption features */
+  const feat = [['O₃ Hartley–Huggins', 300], ['O₃ Chappuis', 600], ['O₂ B', 687], ['O₂ A', 761], ['H₂O', 935],
+    ['H₂O', 1135], ['H₂O', 1380], ['H₂O', 1870], ['H₂O + CO₂', 2700]];
+  feat.forEach(([nm, l], k) => {
+    const i = iOf(l), y = YA(ground[i]), yl = aB - 5 - (k % 2)*12;
+    L(c, X(l), y + 2, X(l), yl - 9, P.ink2, 0.6, [2, 2]);
+    T(c, nm, X(l), yl, SANS(9), P.ink2, 'center');
+  });
+  for (const [nm, l] of [['Ca K/H', 395], ['Hβ', 486], ['Na D', 589.3], ['Hα', 656.3]]){
+    L(c, X(l), aT + 2, X(l), aT + 10, nm === 'Na D' ? P.warn : P.ink2, 1.2);
+    T(c, nm, X(l), aT, SANS(9), nm === 'Na D' ? P.warn : P.ink2, 'center');
+  }
+  if (!sp.sun){
+    L(c, X(589), aT + 12, X(589), aB, P.beam, 2.4);
+    T(c, `lab source: one line, 589 nm · ${fW(SPX.P_LAB)}`, X(589) + 6, aT + 26, `600 ${SANS(10.5)}`, P.beam);
+  }
+  /* panel B — cumulative transmittance after chosen stages */
+  const K = sp.K, ser = [];
+  if (sp.sun) ser.push({k: K.atm, name: 'after the atmosphere', col: P.ink2});
+  ser.push({k: K.lensA, name: 'after the magnifier', col: P.quartzLine});
+  ser.push({k: K.incl, name: 'leaving the crystal', col: P.beam});
+  ser.push({k: K.tp, name: 'past the cornea', col: P.eray});
+  ser.push({k: K.lensEye, name: d.age && !state.aphakic ? `past the lens (age ${state.age})` : 'no lens (aphakic)', col: P.herm});
+  ser.push({k: K.water, name: 'at the retina', col: P.spec});
+  ser.push({k: K.mp, name: 'at the foveal cones', col: P.good});
+  const norm = sp.sun ? null : sp.cum[K.atm];
+  const cumAt = (k, i) => sp.cum[k][i];
+  /* shaded: removed by the crystalline lens (UV-A) and the no-pigment zone (near-IR) */
+  c.save(); c.globalAlpha = 0.18; c.fillStyle = P.uv; c.beginPath();
+  for (let i = iOf(300); i <= iOf(440); i++) { const x = X(LG[i]), y = YB(cumAt(K.tp, i)); i === iOf(300) ? c.moveTo(x, y) : c.lineTo(x, y); }
+  for (let i = iOf(440); i >= iOf(300); i--) c.lineTo(X(LG[i]), YB(cumAt(K.lensEye, i)));
+  c.closePath(); c.fill(); c.restore();
+  T(c, 'UV-A taken by the lens', X(345), YB(0.92), SANS(9.5), P.uv, 'center');
+  c.save(); c.globalAlpha = 0.16; c.fillStyle = P.ir; c.beginPath();
+  const iA = iOf(720), iB = iOf(1400);
+  c.moveTo(X(LG[iA]), YB(0));
+  for (let i = iA; i <= iB; i++) c.lineTo(X(LG[i]), YB(cumAt(K.water, i)));
+  c.lineTo(X(LG[iB]), YB(0)); c.closePath(); c.fill(); c.restore();
+  T(c, 'reaches the retina — no pigment responds', X(980), YB(0.04), SANS(9.5), P.ir, 'center');
+  /* photopigment absorptance (dashed) */
+  const pig = [{a: sp.absCone[2], col: P.coneS, n: 'S'}, {a: sp.absCone[1], col: P.coneM, n: 'M'},
+               {a: sp.absCone[0], col: P.coneL, n: 'L'}, {a: sp.absRod, col: P.rod, n: 'rod'}];
+  for (const p of pig){
+    c.save(); c.strokeStyle = p.col; c.lineWidth = 1.3; c.setLineDash([5, 3]); c.beginPath();
+    let pk = 0, pl = 0;
+    for (let i = iOf(330); i <= iOf(760); i++){ const x = X(LG[i]), y = YB(p.a[i]); i === iOf(330) ? c.moveTo(x, y) : c.lineTo(x, y);
+      if (p.a[i] > pk){ pk = p.a[i]; pl = LG[i]; } }
+    c.stroke(); c.restore();
+    const dx = {S: 0, M: -16, L: 16, rod: -10}[p.n], dy = p.n === 'rod' ? 12 : -5;
+    T(c, `${p.n} ${f0(pl)}`, X(pl) + dx, YB(pk) + dy, `600 ${SANS(9.5)}`, p.col, 'center');
+  }
+  const labels = [];
+  for (const s of ser){
+    c.save(); c.strokeStyle = s.col; c.lineWidth = 1.6; c.beginPath();
+    for (let i = 0; i < LG.length; i++){ const x = X(LG[i]), y = YB(cumAt(s.k, i)); i ? c.lineTo(x, y) : c.moveTo(x, y); }
+    c.stroke(); c.restore();
+    labels.push({y: YB(cumAt(s.k, iOf(1000))), name: s.name, col: s.col});
+  }
+  for (const lb of declutter(labels, 13, bT + 6, bB - 2)) T(c, lb.name, xr + 8, lb.y + 3, SANS(10), lb.col);
+  T(c, 'curves read at 1 µm →', xr + 8, bT - 2, SANS(9), P.ink2);
+  /* hover crosshair */
+  if (specHoverL){
+    const x = X(specHoverL);
+    L(c, x, aT, x, bB, P.ink, 1, [2, 2], 0.6);
+  }
+}
+function specTooltip(ev){
+  if (!SPEC_GEO || !SPC) return;
+  const r = $('cvSpec').getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, tip = $('specTip');
+  if (x < SPEC_GEO.xl || x > SPEC_GEO.xr || y < SPEC_GEO.aT || y > SPEC_GEO.bB){ tip.style.display = 'none'; specHoverL = null; drawSpec(); return; }
+  const l = SPEC_GEO.lOf(x), i = iOf(l), sp = SPC, K = sp.K;
+  specHoverL = LG[i];
+  const rows = [
+    ['λ', `${LG[i] >= 1000 ? f2(LG[i]/1000) + ' µm' : f0(LG[i]) + ' nm'}`],
+    ['above air', `${f3(sp.toa[i])} W/m²/nm`], ['direct beam', `${f3(sp.ground[i])} W/m²/nm`],
+    ['after magnifier', pct(sp.cum[K.lensA][i])], ['leaving crystal', pct(sp.cum[K.incl][i])],
+    ['past cornea', pct(sp.cum[K.tp][i])], ['past lens', pct(sp.cum[K.lensEye][i])],
+    ['at retina', pct(sp.cum[K.water][i])], ['at foveal cones', pct(sp.cum[K.mp][i])],
+    ['L / M / S absorb', `${f2(sp.absCone[0][i])} / ${f2(sp.absCone[1][i])} / ${f2(sp.absCone[2][i])}`]];
+  tip.innerHTML = rows.map(([k, v]) => `<span class="k">${k}</span> <span class="v">${v}</span>`).join('<br>');
+  tip.style.display = 'block';
+  const pw = $('specPad').clientWidth;
+  tip.style.left = Math.min(x + 14, pw - 210) + 'px'; tip.style.top = Math.max(4, y - 60) + 'px';
+  drawSpec();
+}
+
+/* ---------------- 1b. the power budget (HTML bars) ---------------- */
+function budgetBar(title, total, segs){
+  const tot = segs.reduce((a, s) => a + Math.max(0, s.w), 0) || 1;
+  const bar = segs.map(s => `<i style="width:${(Math.max(0, s.w)/tot*100).toFixed(3)}%;background:${s.col}" title="${s.name}: ${fW(s.w)}"></i>`).join('');
+  const leg = segs.map(s => `<span><b style="background:${s.col}"></b>${s.name} <span class="v">${fW(s.w)} · ${pct(s.w/total)}</span></span>`).join('');
+  return `<div class="bt">${title}</div><div class="bar">${bar}</div><div class="bleg">${leg}</div>`;
+}
+function drawBudget(){
+  const sp = SPC, d = DER, P = palette(), lw = sp.lossW, sh = sp.atmShare;
+  const crysAbs = lw.qzS + lw.qzV + lw.qzIR + lw.incl;
+  const segs1 = [];
+  if (sp.sun){
+    segs1.push({name: 'air scatters it (sky light)', w: sh.ray + sh.aer, col: P.line});
+    segs1.push({name: 'air absorbs it (O₃, H₂O, O₂)', w: sh.o3 + sh.h2o + sh.o2, col: P.ir});
+  }
+  segs1.push({name: 'magnifier reflects', w: lw.lensR, col: P.quartzLine});
+  segs1.push({name: 'magnifier absorbs', w: lw.lensA + lw.air, col: P.herm});
+  segs1.push({name: 'crystal reflects', w: lw.qzR, col: P.eray});
+  segs1.push({name: 'crystal absorbs → heat', w: crysAbs, col: P.heat});
+  segs1.push({name: 'leaves the crystal', w: sp.Pcrystal, col: P.beam});
+  const t1 = sp.sun ? `Sunlight over the ${d.D} mm aperture, above the atmosphere: <span>${fW(sp.Pstart)}</span>`
+                    : `Lab source into the magnifier: <span>${fW(sp.Pstart)}</span>`;
+  const segs2 = [
+    {name: 'tear film reflects', w: lw.corR, col: P.eray},
+    {name: 'cornea absorbs (UV)', w: lw.tp, col: P.uv},
+    {name: state.aphakic ? 'no lens' : 'lens absorbs (UV, violet)', w: lw.lensEye, col: P.herm},
+    {name: 'media scatter', w: lw.scat, col: P.line},
+    {name: 'water absorbs (IR)', w: lw.water, col: P.ir},
+    {name: 'macular pigment absorbs', w: lw.mp, col: P.good},
+    {name: 'cone pigments absorb → vision', w: sp.PconeAbs, col: P.coneL},
+    {name: 'passes to pigment epithelium → heat', w: sp.Pret - sp.PconeAbs, col: P.heat}];
+  $('budget').innerHTML =
+    budgetBar(t1, sp.Pstart, segs1) +
+    `<div class="bt" style="margin-top:12px">…a ${state.pupil} mm pupil at L = ${d.L} mm admits <span>${pct(sp.pupilFrac)} of what leaves the crystal</span></div>` +
+    budgetBar(`Light entering the pupil: <span>${fW(sp.Ppupil)}</span>`, sp.Ppupil || 1, segs2);
+}
+
+/* ---------------- 1c. readouts + narration for section 1 ---------------- */
+function bandOf(arr, k){ return arr.find(b => b[0] === k)[1]; }
+function updateSpecReadouts(){
+  const sp = SPC, d = DER, A = $('roAtm'), C = $('roChain'), B = $('roBands');
+  for (const el of [A, C, B]) el.textContent = '';
+  const nDry = airIndex(589, state.tAir, state.pAir, 0);
+  if (sp.sun){
+    row(A, 'sun elevation → air mass', `${state.elev}° → ${f2(sp.m)}`);
+    row(A, 'direct beam (DNI)', `${f0(sp.dni)} W/m² of ${f0(sp.toaTot)} above`, 'hot');
+    row(A, 'Rayleigh optical depth (550 nm, vertical)', f3(tauRayleigh(550, state.pAir)));
+    row(A, 'aerosol optical depth (550 nm)', `${f3(sp.aer.tau)} · humid growth ×${f2(sp.aer.growth)}`);
+    row(A, 'precipitable water', `${f2(sp.wCol)} cm`);
+    let uvCut = 280; for (let i = 0; i < LG.length; i++) if (sp.tAtm[i] < 0.01) uvCut = LG[i]; else if (LG[i] > 330) break;
+    row(A, 'ozone (300 DU) cuts below', `≈ ${f0(uvCut + 1)} nm`);
+    row(A, 'Na D₂ in sunlight (589.0 nm core)', `${f1(NA_D_CORE*100)} % of continuum — a dark line`, 'warn');
+  } else {
+    row(A, 'lab source', `589 nm line, ${fW(SPX.P_LAB)} — no atmosphere`);
+  }
+  row(A, 'air index n − 1 (589 nm)', `${(d.nAir - 1).toExponential(4)}`);
+  row(A, 'humidity lowers it by', `${((nDry - d.nAir)*1e7).toFixed(2)}×10⁻⁷`);
+  row(A, 'room-air path lens → cornea', `${PHY.GAP + d.L} mm · scatters ${sci(1 - sp.stages[sp.K.air][2][iOf(589)])}`);
+  const K = sp.K, i589 = iOf(589);
+  row(C, 'magnifier n (N-BK7, 589 nm)', f4(nBK7(589.3)));
+  row(C, 'magnifier reflects (2 faces, 589)', pct(1 - sp.stages[K.lensR][2][i589]));
+  let half = 280; for (let i = 0; i < LG.length && LG[i] < 400; i++) if (sp.stages[K.lensA][2][i] < 0.5) half = LG[i];
+  row(C, 'magnifier glass 50 % UV edge', `≈ ${f0(half + 1)} nm (5 mm thick)`);
+  const fF = d.f*(nBK7(589.3) - 1)/(nBK7(486.1) - 1), fC = d.f*(nBK7(589.3) - 1)/(nBK7(656.3) - 1);
+  row(C, 'magnifier colour error f(C) − f(F)', `${f2(fC - fF)} mm — blue focuses first`, 'hot');
+  row(C, 'crystal reflects (2 faces, 589)', pct(1 - sp.stages[K.qzR][2][i589]));
+  row(C, `surface film (${SURFACE[state.surface].label})`, `absorbs ${pct(SURFACE[state.surface].A)} per face`);
+  row(C, `colour centres (${VARIETY[state.variety].label})`, `${pct(1 - sp.stages[K.qzV][2][iOf(450)])} @450 · ${pct(1 - sp.stages[K.qzV][2][iOf(545)])} @545`);
+  if (sp.inclFrac) row(C, 'inclusion at the focus absorbs', pct(sp.inclFrac), 'warn');
+  row(C, 'crystal lets through (589 / 2.73 µm)', `${pct(sp.cum[K.incl][i589]/sp.cum[K.air][i589])} / ${pct(sp.cum[K.incl][iOf(2730)]/Math.max(1e-30, sp.cum[K.air][iOf(2730)]))}`);
+  row(C, 'power leaving the crystal', fW(sp.Pcrystal), 'hot');
+  const vis = bandOf(sp.bandsRetina, 'visible'), nir = bandOf(sp.bandsRetina, 'NIR-A');
+  row(B, 'through the pupil', fW(sp.Ppupil), 'hot');
+  for (const k of ['UV-B', 'UV-A', 'visible', 'NIR-A', 'IR-B'])
+    row(B, `${k}: cornea → retina`, `${fW(bandOf(sp.bandsCornea, k))} → ${fW(bandOf(sp.bandsRetina, k))}`);
+  row(B, 'share of retinal power that is invisible', pct(1 - vis/Math.max(1e-30, sp.Pret)), 'warn');
+  row(B, 'absorbed by cone pigments', `${fW(sp.PconeAbs)} (${pct(sp.PconeAbs/Math.max(1e-30, sp.Pret))})`);
+  row(B, sp.sun ? 'retinal irradiance (solar image)' : 'retinal irradiance (spot peak)', `${f1(sp.retIrr)} W/cm²`, sp.sun ? 'warn' : '');
+}
+
+/* ---------------- 2. inside the crystal ---------------- */
+/* lattice animation — a flattened view across the c-axis: three SiO₄ chains
+   (Si large, bridging O small). Electron clouds sway with the light field
+   (virtual polarization, every site, every cycle — no energy kept). Rare
+   events, at a visible rate but with their TRUE odds printed: absorption in
+   the surface film / colour centres / inclusion (energy → a burst of
+   phonons → warmth), and Raman scattering (one photon in, a redder one out,
+   one optical phonon left behind; anti-Stokes takes one back). */
+let LAT = null;
+function latticeOdds(){
+  const h = SPC.heat, inQ = Math.max(1e-30, SPC.Pafter[SPC.K.qzR]);
+  return {pAbs: h.Pabs/inQ, pRaman: h.PramanW/inQ, asr: h.asRatio464};
+}
+function buildLattice(){
+  const cv = $('cvLat'), W = Math.max(420, Math.floor(cv.parentElement.clientWidth) - 2), H = 330;
+  const atoms = [], rows = [96, 166, 236], sp = 30;
+  rows.forEach((y0, r) => {
+    for (let k = 0, x = 40 + (r % 2)*sp/2; x < W - 26; k++, x += sp){
+      const y = y0 + 9*Math.sin(2*Math.PI*k/3 + r);       // three-fold helix seen side-on
+      atoms.push({x, y, si: true, row: r, k, ph: x*0.05});
+      const yo = y0 + 9*Math.sin(2*Math.PI*(k + 0.5)/3 + r) + (k % 2 ? 7 : -7);
+      atoms.push({x: x + sp/2, y: yo, si: false, row: r, k, ph: (x + sp/2)*0.05});
+    }
+  });
+  const impurities = state.variety === 'clear' ? [] : [atoms[Math.floor(atoms.length*0.55)]];
+  LAT = {W, H, atoms, impurities, events: [], ripples: [], photons: [], t: 0, acc: {abs: 0, ram: 0}, heat: 0};
+  sizeCanvas(cv, W, H);
+}
+function renderLattice(dt){
+  if (!LAT || !SPC) return;
+  const cv = $('cvLat'), c = cv.getContext('2d'), P = palette(), {W, H, atoms} = LAT, h = SPC.heat;
+  const dpr = cv.width/W; c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (playing) LAT.t += dt*state.speed;
+  const t = LAT.t, odds = latticeOdds();
+  c.fillStyle = P.panel; c.fillRect(0, 0, W, H);
+  c.fillStyle = P.quartz; c.fillRect(22, 58, W - 36, 220);
+  /* the entrance face with its surface film, warm in proportion to the computed ΔT */
+  const warm = Math.min(1, Math.log10(1 + h.dTin)/2);
+  const grd = c.createLinearGradient(22, 0, 90, 0);
+  grd.addColorStop(0, P.heat); grd.addColorStop(1, 'transparent');
+  c.save(); c.globalAlpha = 0.15 + 0.6*warm; c.fillStyle = grd; c.fillRect(22, 58, 70, 220); c.restore();
+  L(c, 22, 58, 22, 278, state.surface === 'clean' ? P.quartzLine : P.heat, state.surface === 'clean' ? 1.5 : 3.5);
+  /* light field: travelling cosine, drawn as E-arrows along the top margin */
+  const kx = 2*Math.PI/150, wt = 2.2*t;
+  for (let x = 30; x < W - 20; x += 15){
+    const e = Math.cos(kx*x - wt);
+    L(c, x, 38, x, 38 - 12*e, P.beam, 1.4, null, 0.75);
+  }
+  T(c, 'E-field of the light (λ/n drawn ≈ 150 px; 509 THz drawn ~10¹⁴× slower)', 26, 18, SANS(10), P.beam);
+  /* thermal jiggle amplitude ∝ √T; ripples add a decaying local shake */
+  const Tk = h.Tamb + h.dTbulk, jig = 0.55*Math.sqrt(Tk/295);
+  const rnd = () => Math.random() - 0.5;
+  for (const a of atoms){
+    let shake = 0;
+    for (const r of LAT.ripples){ const dd = Math.hypot(a.x - r.x, a.y - r.y) - r.rad; if (Math.abs(dd) < 10) shake += r.amp*(1 - Math.abs(dd)/10); }
+    const nearFace = Math.max(0, 1 - (a.x - 22)/90)*warm*2.2;
+    const jx = (jig + shake + nearFace)*rnd()*2, jy = (jig + shake + nearFace)*rnd()*2;
+    const e = Math.cos(kx*a.x - wt);
+    if (a.si){
+      c.fillStyle = P.quartzLine; c.globalAlpha = 0.95;
+      c.beginPath(); c.arc(a.x + jx, a.y + jy, 4.2, 0, 7); c.fill();
+    } else {
+      c.fillStyle = P.ink2; c.globalAlpha = 0.8;
+      c.beginPath(); c.arc(a.x + jx, a.y + jy, 2.6, 0, 7); c.fill();
+    }
+    /* electron cloud displaced by the field — virtual polarization */
+    c.globalAlpha = 0.22; c.fillStyle = P.beam;
+    c.beginPath(); c.arc(a.x + jx, a.y + jy - 4.5*e, a.si ? 6.5 : 4.5, 0, 7); c.fill();
+    c.globalAlpha = 1;
+  }
+  for (const im of LAT.impurities){
+    c.strokeStyle = P.heat; c.lineWidth = 1.5; c.beginPath(); c.arc(im.x, im.y, 8, 0, 7); c.stroke();
+    T(c, state.variety === 'amethyst' ? 'Fe⁴⁺' : state.variety === 'citrine' ? 'Fe³⁺' : 'Al centre', im.x, im.y - 12, SANS(9), P.heat, 'center');
+  }
+  /* events — fixed visible cadence, scaled by the computed odds */
+  if (playing){
+    LAT.acc.abs += dt*state.speed*Math.min(2.5, 0.2 + 12*odds.pAbs);
+    LAT.acc.ram += dt*state.speed*0.28;
+    if (LAT.acc.abs >= 1){ LAT.acc.abs = 0;
+      const onImp = LAT.impurities.length && Math.random() < SPC.heat.Pvar/Math.max(1e-30, SPC.heat.Pabs);
+      const site = onImp ? LAT.impurities[0] : {x: 24, y: 70 + Math.random()*190};
+      LAT.photons.push({x: 0, y: site.y, tx: site.x, ty: site.y, col: P.beam, kind: 'in-abs', site, t: 0});
+    }
+    if (LAT.acc.ram >= 1){ LAT.acc.ram = 0;
+      const site = atoms[Math.floor(Math.random()*atoms.length)];
+      LAT.photons.push({x: 0, y: site.y, tx: site.x, ty: site.y, col: P.beam, kind: 'in-ram', site, t: 0});
+    }
+  }
+  const speed = 260;
+  for (const p of LAT.photons){
+    if (!playing) break;
+    p.t += dt*state.speed;
+    const dx = p.tx - p.x, dy = p.ty - p.y, dist = Math.hypot(dx, dy), step = speed*dt*state.speed;
+    if (dist > step){ p.x += dx/dist*step; p.y += dy/dist*step; continue; }
+    p.x = p.tx; p.y = p.ty;
+    if (p.kind === 'in-abs'){
+      p.done = true;
+      LAT.ripples.push({x: p.site.x, y: p.site.y, rad: 0, amp: 2.4, v: 70, life: 2.2, t: 0, col: P.heat, n: 4});
+      LAT.events.push({x: p.site.x, y: p.site.y, txt: `absorbed → ≥${f0(SPC.heat.optPerPhot)} optical phonons → ≈${f0(SPC.heat.thermPerPhot)} thermal`, t: 0, col: P.heat});
+    } else if (p.kind === 'in-ram'){
+      p.done = true;
+      const anti = Math.random() < odds.asr/(1 + odds.asr);
+      const ang = Math.random()*2*Math.PI, col = rgbCss(lamRGB(anti ? 573 : 606) || [255, 120, 0]);
+      LAT.photons.push({x: p.x, y: p.y, tx: p.x + Math.cos(ang)*600, ty: p.y + Math.sin(ang)*600, col, kind: 'out', t: 0});
+      LAT.ripples.push({x: p.x, y: p.y, rad: 0, amp: 1.8, v: 45, life: 1.6, t: 0, col: anti ? P.eray : P.beam, n: 1});
+      LAT.events.push({x: p.x, y: p.y, txt: anti ? 'anti-Stokes: a thermal phonon absorbed → 573 nm out' : 'Raman: one 464 cm⁻¹ phonon left → 606 nm out', t: 0, col: anti ? P.eray : P.beam});
+    } else p.done = true;
+  }
+  LAT.photons = LAT.photons.filter(p => !p.done && p.x > -20 && p.x < W + 20 && p.y > -20 && p.y < H + 20);
+  for (const p of LAT.photons){
+    c.save(); c.fillStyle = p.col; c.shadowColor = p.col; c.shadowBlur = 6;
+    c.beginPath(); c.arc(p.x, p.y, 3.2, 0, 7); c.fill(); c.restore();
+  }
+  for (const r of LAT.ripples){ if (playing){ r.t += dt*state.speed; r.rad = r.v*r.t; r.amp *= Math.pow(0.4, dt*state.speed); }
+    for (let k = 0; k < r.n; k++){
+      c.save(); c.strokeStyle = r.col; c.globalAlpha = Math.max(0, 0.6*(1 - r.t/r.life)); c.lineWidth = 1.2;
+      c.beginPath(); c.arc(r.x, r.y, Math.max(0.1, r.rad - k*9), 0, 7); c.stroke(); c.restore();
+    }
+  }
+  LAT.ripples = LAT.ripples.filter(r => r.t < r.life);
+  for (const e of LAT.events){ if (playing) e.t += dt*state.speed;
+    c.save(); c.globalAlpha = Math.max(0, 1 - e.t/2.6);
+    T(c, e.txt, Math.min(Math.max(e.x, 120), W - 120), Math.max(e.y - 18, 72), `600 ${SANS(10)}`, e.col, 'center'); c.restore(); }
+  LAT.events = LAT.events.filter(e => e.t < 2.6);
+  /* honest odds, always printed */
+  const oneIn = p => p > 0 ? `1 in ${p > 0.5 ? f1(1/p) : Math.round(1/p).toLocaleString('en-US')}` : 'never';
+  T(c, `true odds per photon entering: absorbed ${oneIn(odds.pAbs)} · Raman ${oneIn(odds.pRaman)} · everything else passes, polarizing every site`, 26, 298, SANS(10), P.ink2);
+  T(c, `events drawn at a watchable rate, not their true rate · thermal jiggle ∝ √T (${f0(Tk)} K) · face glow ∝ log ΔT (${f2(h.dTin)} K)`, 26, 313, SANS(10), P.ink2);
+  T(c, 'Si', W - 70, 278 - 6, SANS(9), P.quartzLine); T(c, 'O', W - 48, 278 - 6, SANS(9), P.ink2);
+}
+
+/* Raman / Brillouin spectrum — Stokes ∝ (n+1), anti-Stokes ∝ n, both × ν⁴ */
+function drawRaman(){
+  const cv = $('cvRaman'), W = Math.max(420, Math.floor(cv.parentElement.clientWidth) - 2), H = 330;
+  const c = sizeCanvas(cv, W, H + 14), P = palette(), h = SPC.heat;
+  c.fillStyle = P.panel; c.fillRect(0, 0, W, H + 14);
+  const xl = 46, xr = W - 16, yT = 44, yB = 256, sMax = 1250, lgMin = -3, lgMax = 0.4;
+  const X = s => xl + (s + sMax)/(2*sMax)*(xr - xl);
+  const Y = v => yB - (Math.log10(Math.max(v, 1e-12)) - lgMin)/(lgMax - lgMin)*(yB - yT);
+  const TK = h.Tamb + h.dTbulk, nu0 = 1e7/589;
+  const lines = RAMAN_LINES.map(([cm, sym, rel, fw]) => ({cm, sym, rel, fw,
+    S: rel*(bose(cm, TK) + 1)*((nu0 - cm)/nu0)**4, A: rel*bose(cm, TK)*((nu0 + cm)/nu0)**4}));
+  const norm = lines.find(l => l.cm === 464).S;
+  for (let e = lgMin; e <= 0; e++){ L(c, xl, Y(10**e), xr, Y(10**e), P.hair, 1); T(c, `10${e === 0 ? '⁰' : String(e).split('').map(ch => SUP[ch]).join('')}`, xl - 5, Y(10**e) + 3, MONO(9.5), P.ink2, 'right'); }
+  for (const s of [-1000, -500, 0, 500, 1000]){
+    L(c, X(s), yT, X(s), yB, P.hair, 1);
+    T(c, `${s > 0 ? '+' : ''}${s}`, X(s), yB + 14, MONO(9.5), P.ink2, 'center');
+    T(c, `${f0(1e7/(nu0 - s))}`, X(s), yT - 6, MONO(9.5), P.ink2, 'center');
+  }
+  T(c, 'Raman shift (cm⁻¹) — anti-Stokes ← → Stokes', (xl + xr)/2, yB + 29, SANS(10), P.ink2, 'center');
+  T(c, 'scattered wavelength (nm) for 589 nm light', (xl + xr)/2, yT - 20, SANS(10), P.ink2, 'center');
+  /* spectrum: Lorentzians, coloured by the scattered wavelength */
+  const spec = s => { let v = 0; for (const l of lines){ const g = (l.fw/2)**2;
+      v += l.S*g/((s - l.cm)**2 + g) + l.A*g/((s + l.cm)**2 + g); } return v/norm; };
+  c.save(); c.beginPath(); c.moveTo(X(-sMax), yB);
+  for (let px = X(-sMax); px <= X(sMax); px += 1){ const s = (px - xl)/(xr - xl)*2*sMax - sMax; if (Math.abs(s) < 14) continue; c.lineTo(px, Y(spec(s))); }
+  c.lineTo(X(sMax), yB); c.closePath();
+  const gr = c.createLinearGradient(X(-sMax), 0, X(sMax), 0);
+  for (const s of [-1250, -800, -400, 0, 400, 800, 1250]){ const rgb = lamRGB(1e7/(nu0 - s)); if (rgb) gr.addColorStop((s + sMax)/(2*sMax), rgbCss(rgb)); }
+  c.fillStyle = gr; c.globalAlpha = 0.55; c.fill(); c.globalAlpha = 1;
+  c.strokeStyle = P.ink; c.lineWidth = 1; c.stroke(); c.restore();
+  /* elastic line + Brillouin doublet */
+  L(c, X(0), yB, X(0), yT + 4, P.ink, 2);
+  T(c, '│ at 0: elastic (Rayleigh) light — off scale', xl + 6, yT + 12, SANS(9.5), P.ink);
+  T(c, `  Brillouin ±${f1(h.brillGHz)} GHz (±${f2(h.brillGHz/29.9792458)} cm⁻¹) hides inside it`, xl + 6, yT + 25, SANS(9.5), P.ink2);
+  for (const l of lines.filter(l => [128, 207, 356, 464, 1085].includes(l.cm))){
+    const v = l.S/norm; T(c, `${l.cm}`, X(l.cm), Y(v) - 6, `600 ${SANS(9.5)}`, P.ink, 'center');
+    if (l.cm === 464) T(c, `→ ${f1(1e7/(nu0 - 464))} nm`, X(l.cm) + 22, Y(v) + 4, SANS(9.5), P.ink);
+  }
+  const a464 = lines.find(l => l.cm === 464).A/norm;
+  T(c, `464 anti-Stokes ${f1(1e7/(nu0 + 464))} nm`, X(-464), Y(a464) - 8, SANS(9.5), P.ink, 'center');
+  T(c, `T = ${f0(TK)} K · anti-Stokes/Stokes (464) = ${f3(h.asRatio464)} — the ratio is a thermometer`, xl, H - 22, SANS(10), P.beam);
+  T(c, `relative to the 464 cm⁻¹ Stokes line; line strengths approximate · all Raman ≈ ${sci(SPX.RAMAN_PER_CM)}/cm of the light`, xl, H - 8, SANS(9.5), P.ink2);
+  if (SPC.sun) T(c, 'sunlight: every wavelength makes its own copy — shown for the 589 nm component', xl, H - 36, SANS(9.5), P.warn);
+}
+
+/* interference colours between crossed polarizers vs thickness */
+function drawPol(){
+  const cv = $('cvPol'), W = Math.max(760, Math.floor(cv.parentElement.clientWidth) - 2), H = 140;
+  const c = sizeCanvas(cv, W, H), P = palette(), sp = SPC, d = DER;
+  c.fillStyle = P.panel; c.fillRect(0, 0, W, H);
+  const xl = 20, xr = W - 20, y0 = 40, hh = 46, n = sp.strip.length;
+  for (let k = 0; k < n; k++){
+    const x = xl + k/(n - 1)*(xr - xl), w = (xr - xl)/(n - 1) + 1;
+    c.fillStyle = rgbCss(sp.strip[k].rgb); c.fillRect(x - w/2, y0, w, hh);
+  }
+  c.strokeStyle = P.line; c.strokeRect(xl, y0, xr - xl, hh);
+  const rotOnly = sp.dn550 < 1e-5;
+  T(c, rotOnly
+      ? `BETWEEN CROSSED POLARIZERS — θ = ${d.theta}°: no birefringence, optical rotation alone (rotary dispersion colours)`
+      : `BETWEEN CROSSED POLARIZERS — θ = ${d.theta}°, Δn(550) = ${sp.dn550.toFixed(5)}, white light from this bench, dispersion + optical activity`,
+    xl, 22, `600 ${SANS(10.5)}`, P.beam);
+  for (let k = 0; k <= 8; k++){
+    const t = sp.stripMax*k/8, x = xl + k/8*(xr - xl);
+    L(c, x, y0 + hh, x, y0 + hh + 5, P.ink2, 1);
+    const lab = t < 1 ? `${f0(t*1000)} µm` : `${f1(t)} mm`;
+    const sub = rotOnly ? `${f0(rotPower(550)*t*Math.abs(gyr(d.theta)))}°` : `order ${f1(t*sp.dn550/550e-6)}`;
+    T(c, lab, x, y0 + hh + 17, MONO(9.5), P.ink2, k === 0 ? 'left' : k === 8 ? 'right' : 'center');
+    T(c, sub, x, y0 + hh + 30, MONO(9), P.ink2, k === 0 ? 'left' : k === 8 ? 'right' : 'center');
+  }
+  if (d.d <= sp.stripMax){
+    const x = xl + d.d/sp.stripMax*(xr - xl);
+    L(c, x, y0 - 6, x, y0 + hh + 2, P.ink, 2);
+    T(c, `your block, d = ${d.d} mm`, x, y0 - 9, `600 ${SANS(10)}`, P.ink, 'center');
+  } else {
+    T(c, `your block, d = ${d.d} mm — order ≈ ${f0(d.d*sp.dn550/550e-6)}, far off this strip → colours average to a pale grey-white`,
+      xr, y0 - 9, `600 ${SANS(10)}`, P.ink, 'right');
+  }
+}
+function drawPolSwatches(){
+  const sp = SPC, d = DER;
+  const sw = (rgb, label) => `<span class="sw"><i style="background:${rgbCss(rgb)}"></i>${label}</span>`;
+  let h = sw(sp.bodyRGB, `naked eye, through the block (${VARIETY[state.variety].label})`);
+  h += sw(sp.polActual.crossed.rgb, `crossed polarizers, d = ${d.d} mm (Y ${f2(sp.polActual.crossed.Y)})`);
+  h += sw(sp.polActual.parallel.rgb, `parallel polarizers (Y ${f2(sp.polActual.parallel.Y)})`);
+  if (sp.colours){ h += sw(sp.colours.ground, 'the direct sunbeam'); h += sw(sp.colours.retina, 'what lands on the foveal cones'); }
+  $('polSwatches').innerHTML = h;
+}
+function updateCrystalReadouts(){
+  const sp = SPC, d = DER, h = sp.heat, H = $('roHeat'), Ph = $('roPhonon'), Po = $('roPol');
+  for (const el of [H, Ph, Po]) el.textContent = '';
+  row(H, 'arriving at the front face', fW(h.Pin));
+  row(H, 'absorbed — entrance-face film', fW(h.Psurf1));
+  row(H, 'absorbed — exit-face film', fW(h.Psurf2));
+  if (h.Pvar > 0) row(H, 'absorbed — colour centres', fW(h.Pvar));
+  row(H, 'absorbed — lattice (O–H, Si–O, infrared)', fW(h.PIR));
+  if (h.Pincl > 0) row(H, 'absorbed — inclusion at the focus', fW(h.Pincl), 'warn');
+  row(H, 'total → heat', fW(h.Pabs), 'hot');
+  row(H, `hottest point (${h.hotWhere})`, `+${h.dThot < 0.01 ? h.dThot.toExponential(1) : f2(h.dThot)} K → ${f1(h.Thot - 273.15)} °C`, h.dThot > 50 ? 'warn' : 'hot');
+  row(H, 'local steady state in', h.tauSpot < 1 ? `${f1(h.tauSpot*1000)} ms` : `${f1(h.tauSpot)} s`);
+  row(H, 'whole block warms (before losses)', `${(h.warmRate*3600).toPrecision(2)} K/h · fills in ≈ ${f0(h.tauBlock)} s`);
+  row(H, 'thermal stress vs ~50 MPa strength', `${f1(h.stress/1e6)} MPa`, h.stress > 0.5*SPX.SIGMA_T ? 'warn' : '');
+  row(H, 'visible glow (Draper, 525 °C) / α→β (573 °C)', h.Thot > SPX.T_DRAPER ? '⚠ reached' : `${f0(SPX.T_DRAPER - h.Thot)} K / ${f0(SPX.T_ALPHA_BETA - h.Thot)} K away`);
+  row(Ph, 'absorbed photons', `${sci(h.absPhot)} /s`);
+  row(Ph, 'each becomes, at least', `${f0(h.optPerPhot)} optical phonons (1160 cm⁻¹)`);
+  row(Ph, '…decaying (≈ps) into ≈', `${f0(h.thermPerPhot)} thermal phonons (hν/k_BT)`);
+  row(Ph, 'phonon production ≈', `${sci(h.absPhot*h.thermPerPhot)} /s`, 'hot');
+  row(Ph, 'Raman events (one phonon each)', `${sci(h.ramanPhot)} /s · ${fW(h.PramanW)}`);
+  row(Ph, 'strongest line 464 cm⁻¹ → Stokes / anti-Stokes', `${f1(1e7/(1e7/589 - 464))} / ${f1(1e7/(1e7/589 + 464))} nm`);
+  row(Ph, `thermal occupation n(464) at ${f0(h.Tamb + h.dTbulk)} K`, f3(bose(464, h.Tamb + h.dTbulk)));
+  row(Ph, 'anti-Stokes / Stokes (464)', f3(h.asRatio464));
+  row(Ph, 'Brillouin (sound-wave) shift', `${f1(h.brillGHz)} GHz = ${h.brillNm.toFixed(3)} nm`);
+  row(Ph, 'second harmonic, 294.5 nm (UV-B)', `${sci(h.Pshg)} W`);
+  row(Ph, 'radiation force on the block', `${f2(h.forceN*1e9)} nN`);
+  row(Po, 'optical rotation along the axis, 589 nm', `${f2(rotPower(589))}°/mm (${state.hand}-handed)`);
+  row(Po, '…at 450 / 650 nm', `${f1(rotPower(450))} / ${f1(rotPower(650))}°/mm`);
+  row(Po, 'rotation here (gyration at θ)', `${f0(Math.abs(d.rotDeg))}° · factor ${f3(gyr(d.theta))}`, Math.abs(d.theta) < 5 ? 'hot' : '');
+  row(Po, 'retardation order at 589', f0(d.order));
+  row(Po, 'exit state', d.src === 'sun' ? 'unpolarized — nothing to see' : `${d.polState.split(' — ')[0]} · b/a ${f2(d.ba)}`, 'hot');
+  row(Po, 'between crossed polarizers', `${f0(sp.polActual.crossed.Y*100)} % of white — ${d.d*sp.dn550/550e-6 > 6 ? 'high-order white' : 'coloured'}`);
+}
+
+/* ---------------- 3. the eye ---------------- */
+/* paraxial ray through the Navarro surfaces at λ: returns [[z, y], …] from the
+   cornea to a little past the retina, plus the focus z */
+function navRay(l, A, obj, h0){
+  const g = navGeom(A), n = navIdx(l, A);
+  const zs = [0, g.t1, g.t1 + g.t2, g.t1 + g.t2 + g.t3];
+  const surf = [[1, n.c, g.R1], [n.c, n.a, g.R2], [n.a, n.L, g.R3], [n.L, n.v, g.R4]];
+  let y = h0, u = Number.isFinite(obj) ? h0/obj : 0;
+  const pts = [[0, y]];
+  for (let k = 0; k < 4; k++){
+    if (k){ y += u*(zs[k] - zs[k-1]); pts.push([zs[k], y]); }
+    const [n1, n2, R] = surf[k];
+    u = (n1*u - (n2 - n1)*y/R)/n2;
+  }
+  const zF = zs[3] - y/u;
+  const zEnd = Math.max(NAV_AXIAL + 0.8, Math.min(zF + 0.8, NAV_AXIAL + 3));
+  pts.push([zEnd, y + u*(zEnd - zs[3])]);
+  return {pts, zF, u, y3: y};
+}
+function purkinje(){
+  const n = navIdx(589, DER.objOK ? DER.acc : 0), R = (a, b) => ((b - a)/(b + a))**2;
+  return [R(1, navN('aqueous', 589)), R(n.c, n.a), R(n.a, n.L), R(n.L, n.v)];
+}
+function drawEyeDetail(){
+  const cv = $('cvEye'), W = Math.max(860, Math.floor(cv.parentElement.clientWidth) - 2), H = 520;
+  const c = sizeCanvas(cv, W, H), P = palette(), d = DER, sp = SPC;
+  c.fillStyle = P.panel; c.fillRect(0, 0, W, H);
+  const s = 14, x0 = Math.min(250, Math.round(W*0.2)), cy = 262;
+  const A = d.objOK ? d.acc : 0, obj = d.objOK ? d.obj : 1e9, pr = state.pupil/2;
+  const geo = drawNavarroEye(c, x0, cy, s, d, P, {pupil: state.pupil, lw: 1.5});
+  const {X, Y} = geo;
+  T(c, `NAVARRO SCHEMATIC EYE · to scale (${s} px/mm) · accommodated A = ${f2(A)} D for ${d.lamRef} nm at ${f0(obj)} mm`, 16, 20, `600 ${SANS(10.5)}`, P.beam);
+  /* chromatic ray traces */
+  const cols = [[450, P.coneS], [555, P.coneM], [650, P.coneL]];
+  const foci = [];
+  for (const [l, col] of cols){
+    for (const sg of [1, -1]){
+      const r = navRay(l, A, obj, sg*pr*obj/(obj + geo.zLa));
+      c.save(); c.strokeStyle = col; c.lineWidth = 1.1; c.globalAlpha = 0.85; c.beginPath();
+      c.moveTo(X(-2.5), Y(r.pts[0][1])); r.pts.forEach(([z, y]) => c.lineTo(X(z), Y(y)));
+      c.stroke(); c.restore();
+      if (sg > 0) foci.push({l, col, zF: r.zF});
+    }
+  }
+  /* Purkinje reflections */
+  const pk = purkinje(), pz = [0, geo.zC2, geo.zLa, geo.zLp];
+  pk.forEach((R, k) => {
+    const x = X(pz[k] + (k === 3 ? 0 : 0.0));
+    c.fillStyle = P.ink; c.beginPath(); c.arc(x, Y(-3.2 - k*0.45), 2, 0, 7); c.fill();
+  });
+  T(c, `• Purkinje reflections I–IV (tear film, cornea back, lens front, lens back): ${pk.map(r => pct(r)).join(' · ')}`, 16, 38, SANS(9.5), P.ink2);
+  /* callouts */
+  const ann = (lines, tx, ty, ax, ay, col = P.ink2, align = 'left') => {
+    L(c, ax, ay, align === 'left' ? tx - 4 : tx + 4, ty - 4, P.line, 1);
+    lines.forEach((ln, k) => T(c, ln, tx, ty + k*12.5, k ? SANS(9.5) : `600 ${SANS(10)}`, k ? P.ink2 : col, align));
+  };
+  const n589 = navIdx(589, A);
+  const tTP = k => sp.stages[sp.K.tp][2][iOf(k)], tLe = k => sp.stages[sp.K.lensEye][2][iOf(k)], tW = k => sp.stages[sp.K.water][2][iOf(k)];
+  ann(['Tear film · cornea', `lipid–water–mucin film; collagen n ${f3(n589.c)}`, `tryptophan: passes ${pct(tTP(310))} at 310 nm`],
+      x0 - 26, 84, X(0.2), Y(4.5), P.eray, 'right');
+  ann(['Aqueous humour', `n ${f3(n589.a)} · ascorbate-rich water`], x0 - 26, 156, X(1.8), Y(2.8), P.eray, 'right');
+  ann(['Iris · pupil', `melanin stop, Ø ${state.pupil} mm`, 'paraxial rays traced on axis'], x0 - 26, 360, X(geo.zLa), Y(-5.6), P.ink, 'right');
+  ann([state.aphakic ? 'No crystalline lens (aphakic)' : 'Crystalline lens', state.aphakic ? 'UV now reaches the retina' : `crystallins, n ${f3(n589.L)}; 3-HK glucoside`,
+       state.aphakic ? '' : `& kynurenines: passes ${pct(tLe(400))} at 400 nm, age ${state.age}`],
+      X(geo.zLa) - 40, 462, geo.xLens, Y(-geo.hLens + 0.3), P.herm, 'left');
+  ann(['Vitreous body', `99 % water + collagen II + hyaluronan, n ${f3(n589.v)}`, `passes ${pct(tW(980))} at 980 nm, ${pct(tW(1450))} at 1450 nm`],
+      X(NAV_AXIAL) + 34, 92, X(14), Y(6), P.spec, 'left');
+  ann(['Macula lutea · fovea', 'lutein + zeaxanthin, OD 0.35 at 460 nm', `the cones' yellow filter`], X(NAV_AXIAL) + 34, 160, X(NAV_AXIAL) - 1, cy, P.good, 'left');
+  /* zoom on the foci — longitudinal chromatic aberration made visible */
+  const zx0 = X(NAV_AXIAL) + 34, zy0 = 250, zw = Math.min(250, W - zx0 - 250), zh = 130, zs = 8*s;
+  c.save(); c.fillStyle = P.paper; c.strokeStyle = P.line; rr(c, zx0, zy0, zw, zh, 6); c.fill(); c.stroke();
+  c.beginPath(); rr(c, zx0, zy0, zw, zh, 6); c.clip();
+  const zc = zx0 + zw*0.55, zyc = zy0 + zh/2, ZX = z => zc + (z - NAV_AXIAL)*zs;
+  L(c, ZX(NAV_AXIAL), zy0, ZX(NAV_AXIAL), zy0 + zh, P.herm, 3);
+  for (const f of foci){
+    for (const sg of [1, -1]){
+      const r = navRay(f.l, A, obj, sg*pr*obj/(obj + geo.zLa));
+      const zA = NAV_AXIAL - 1.2, yA = r.y3 + r.u*(zA - (geo.zLp)), zB = NAV_AXIAL + 1.2, yB = r.y3 + r.u*(zB - geo.zLp);
+      L(c, ZX(zA), zyc - yA*zs, ZX(zB), zyc - yB*zs, f.col, 1.3);
+    }
+    c.fillStyle = f.col; c.beginPath(); c.arc(ZX(f.zF), zyc, 3, 0, 7); c.fill();
+  }
+  c.restore();
+  T(c, 'the three foci, ×8 zoom — retina in red-brown', zx0, zy0 - 6, `600 ${SANS(9.5)}`, P.ink);
+  foci.forEach((f, k) => T(c, `${f.l} nm: focus ${f.zF < NAV_AXIAL ? f2(NAV_AXIAL - f.zF) + ' mm before' : f2(f.zF - NAV_AXIAL) + ' mm behind'} the retina`,
+    zx0, zy0 + zh + 15 + k*13, SANS(9.5), f.col));
+  /* retinal layers, in the order light crosses them */
+  const rx = W - 236, ry = 46, rw = 220;
+  T(c, 'RETINA — LIGHT ARRIVES FROM THE VITREOUS ↓', rx, ry - 8, `600 ${SANS(10)}`, P.beam);
+  const layers = [
+    ['inner limiting membrane', 4, P.rod, ''], ['nerve fibre layer', 8, P.rod, 'axons to the optic nerve'],
+    ['ganglion cells', 12, P.rod, 'incl. melanopsin ipRGCs (480 nm): pupil, clock — no image'],
+    ['inner plexiform', 9, P.rod, ''], ['inner nuclear', 12, P.rod, 'bipolar, horizontal, amacrine cells'],
+    ['outer plexiform', 7, P.good, 'Henle fibres hold the macular pigment'],
+    ['outer nuclear', 13, P.rod, 'photoreceptor cell bodies'],
+    ['inner segments', 12, P.quartzLine, 'waveguides — Stiles–Crawford effect'],
+    ['outer segments', 22, P.coneL, `opsin + 11-cis-retinal → all-trans in ~200 fs, QE ${SPX.QE_ISO}`],
+    ['pigment epithelium', 12, P.heat, 'melanin absorbs what the cones miss → heat'],
+    ['choroid', 14, P.herm, 'blood flow carries the heat away']];
+  let yy = ry + 4;
+  for (const [nm, hh, col, note] of layers){
+    c.save(); c.globalAlpha = 0.75; c.fillStyle = col; c.fillRect(rx, yy, 36, hh*1.6); c.restore();
+    T(c, nm, rx + 42, yy + hh*0.8 + 3, `600 ${SANS(9.5)}`, P.ink);
+    if (note) T(c, note, rx + 42, yy + hh*0.8 + 14, SANS(8.5), P.ink2);
+    yy += Math.max(hh*1.6, note ? 26 : 16) + 2;
+  }
+  L(c, rx - 10, ry + 6, rx - 10, yy - 10, P.beam, 2); arrowHead(c, rx - 10, yy - 8, Math.PI/2, P.beam);
+  T(c, 'at the fovea the inner layers are swept aside (the foveal pit)', rx, yy + 10, SANS(9), P.ink2);
+}
+function updateEyeReadouts(){
+  const d = DER, sp = SPC, O = $('roEyeOpt'), Cm = $('roEyeChem'), R = $('roRetina'), g = d.eyeG, ok = d.objOK;
+  for (const el of [O, Cm, R]) el.textContent = '';
+  const n = navIdx(589, ok ? d.acc : 0);
+  row(O, 'radii R₁–R₄ (mm)', `7.72 / 6.50 / ${f2(g.R3)} / ${f2(g.R4)}`);
+  row(O, 'asphericity Q (cornea / lens front / back)', `−0.26 / ${f2(g.Q3)} / ${f2(g.Q4)}`);
+  row(O, 'n at 589: cornea / aqueous / lens / vitreous', `${f3(n.c)} / ${f3(n.a)} / ${f3(n.L)} / ${f3(n.v)}`);
+  row(O, 'power · air-equivalent focal length', `${f2(d.eyeP)} D · ${f2(d.F_EYE)} mm`, 'hot');
+  row(O, 'accommodation A vs vergence demand', ok ? `${f2(d.acc)} vs ${f2(d.accDemand)} D` : '—');
+  row(O, `amplitude at age ${d.age} (Hofstetter mean)`, `${f1(d.ampAcc)} D${d.accFlag ? ' — exceeded' : ''}`, d.accFlag ? 'warn' : '');
+  row(O, 'defocus 450 / 589 / 650 nm', ok ? `${f2(d.defocusAt(450))} / ${f2(d.defocusAt(589))} / ${f2(d.defocusAt(650))} D` : '—');
+  row(O, 'chromatic blur Ø 450 / 650 nm', ok ? `${f0(d.blurUm(450))} / ${f0(d.blurUm(650))} µm` : '—');
+  row(O, 'retinal magnification', ok ? `${f4(d.magRet)} (inverted)` : '—');
+  const pk = purkinje();
+  row(O, 'Purkinje images I / II / III / IV', pk.map(r => pct(r)).join(' / '));
+  const st = k => sp.stages[sp.K[k]][2];
+  row(Cm, 'tear film reflects (589)', pct(1 - st('corR')[iOf(589)]));
+  row(Cm, 'tryptophan (cornea, lens) passes 300 / 310 / 320 nm', `${pct(st('tp')[iOf(300)])} / ${pct(st('tp')[iOf(310)])} / ${pct(st('tp')[iOf(320)])}`);
+  const lensOD = mediaParts(400, state.age, state.aphakic).lens;
+  row(Cm, `lens optical density at 400 nm (age ${state.age})`, state.aphakic ? '0 — no lens' : f2(lensOD), 'hot');
+  row(Cm, 'lens passes 380 / 420 / 450 nm', `${pct(st('lensEye')[iOf(380)])} / ${pct(st('lensEye')[iOf(420)])} / ${pct(st('lensEye')[iOf(450)])}`);
+  row(Cm, 'water passes 980 / 1200 / 1450 nm', `${pct(st('water')[iOf(980)])} / ${pct(st('water')[iOf(1200)])} / ${pct(st('water')[iOf(1450)])}`);
+  row(Cm, 'macular pigment passes 460 nm', pct(st('mp')[iOf(460)]));
+  row(Cm, 'whole media pass 589 nm (direct beam, vdK–vN)', pct(sp.cum[sp.K.mp][iOf(589)]/sp.cum[sp.K.incl][iOf(589)]));
+  row(Cm, 'S-cone signal vs a 32-year-old', `×${f2(sp.lmsRel[2])}`, sp.lmsRel[2] < 0.7 ? 'warn' : '');
+  row(R, sp.sun ? 'retinal irradiance (solar image)' : 'retinal irradiance (spot peak)', `${f1(sp.retIrr)} W/cm²`, 'hot');
+  row(R, 'isomerisations per cone L / M / S', sp.isoRate.map(x => sci(Math.max(x, 1e-30))).join(' / ') + ' /s');
+  row(R, 'pigment bleached at equilibrium (L)', pct(sp.bleach[0]), sp.bleach[0] > 0.5 ? 'warn' : '');
+  row(R, 'photons caught per L cone in 10 ms', sci(Math.max(1e-30, sp.shotN[0])));
+  row(R, 'shot noise σ/N (L, 10 ms)', sp.shotN[0] > 0 ? pct(1/Math.sqrt(sp.shotN[0])) : '—');
+  const tot = sp.lmsNow.reduce((a, b) => a + b, 0) || 1;
+  row(R, 'L : M : S excitation', sp.lmsNow.map(v => f2(v/tot)).join(' : '));
+  row(R, 'the spectrum becomes', 'three numbers (metamerism)');
+  row(R, 'afterimage expected', sp.bleach[0] > 0.5 ? 'yes — pigment bleached' : 'no', sp.bleach[0] > 0.5 ? 'warn' : '');
+}
+
+/* ---------------- 4. the ledger ---------------- */
+function drawLedger(){
+  const d = DER, sp = SPC, h = sp.heat, K = sp.K, i589 = iOf(589);
+  const uvA = bandOf(sp.bandsCornea, 'UV-A'), uvAret = bandOf(sp.bandsRetina, 'UV-A');
+  const nirRet = bandOf(sp.bandsRetina, 'NIR-A');
+  const rows = [
+    ['grp', 'In the air'],
+    ['Sky light — the scattered beam', sp.sun ? fW(sp.atmShare.ray + sp.atmShare.aer) : '— (lab)', 'scattered sideways; you see it as blue sky, never in the focused image', 'pyrheliometer vs pyranometer', false],
+    ['Optical path of the air', `n − 1 = ${(d.nAir - 1).toExponential(3)} → ${f1(d.airLam)}λ hidden in g`, 'no sense of phase or path length', 'interferometer', false],
+    ['Gas absorption bands', sp.sun ? fW(sp.atmShare.o3 + sp.atmShare.h2o + sp.atmShare.o2) : '—', 'mostly infrared; visible bands too narrow for three broad cones', 'spectrometer', false],
+    ['The 589 nm line is dark in sunlight', `Na D₂ core ${f1(NA_D_CORE*100)} % of continuum`, 'the eye has no spectral resolution — three channels, each ~100 nm wide', 'spectroscope, R ≳ 1000', false],
+    ['grp', 'In the crystal'],
+    ['Ultraviolet the quartz lets through', `${fW(uvA)} of UV-A into the eye → ${fW(uvAret)} at the retina`, state.aphakic ? 'no lens — reaches the retina; S cones respond weakly' : 'absorbed by your crystalline lens (and UV-B by the cornea)', 'UV meter, fluorescent card', false],
+    ['Optical rotation', `${f0(Math.abs(d.rotDeg))}° here · ${f2(rotPower(589))}°/mm on axis`, 'no receptor senses the polarization azimuth', 'two polarizers', false],
+    ['Retardation and exit polarization', d.src === 'sun' ? `order ≈ ${f0(d.order)} · unpolarized` : `order ≈ ${f0(d.order)} · ${d.polState.split(' — ')[0]}`, 'only Haidinger\'s brushes (faint, macular) betray polarization', 'polarizer + wave plate', false],
+    ['Heat — phonons', `${fW(h.Pabs)} → +${f2(h.dThot)} K · ${sci(h.absPhot*h.thermPerPhot)} phonons/s`, 'felt by touch, not seen; the warm spot radiates at λmax ≈ ' + f1(h.wienNm/1000) + ' µm', 'thermal camera, thermocouple', false],
+    ['Thermal glow', `peak ${f1(h.wienNm/1000)} µm; visible needs > 525 °C`, h.Thot > SPX.T_DRAPER ? 'REACHED — the spot would glow red' : `${f0(SPX.T_DRAPER - h.Thot)} K short of the Draper point`, 'mid-IR camera', h.Thot > SPX.T_DRAPER],
+    ['Raman light', `${fW(h.PramanW)} at 606 / 573 nm`, '≈10⁶× fainter than the 589 glare beside it', 'Raman spectrometer + notch filter', false],
+    ['Brillouin light', `${f1(h.brillGHz)} GHz = ${h.brillNm.toFixed(3)} nm shift`, 'far inside any colour difference the eye can detect', 'Fabry–Pérot interferometer', false],
+    ['Second harmonic', `${sci(h.Pshg)} W at 294.5 nm`, 'UV-B — the cornea absorbs it even if it were bright', 'photomultiplier, UV filter', false],
+    ['Photon pressure', `${f2(h.forceN*1e9)} nN on the block`, '≈10⁶× below the touch threshold', 'torsion balance', false],
+    ['Ghost reflections', `${pct(fresnelN(PHY.NO)**2)} of the light, doubled`, 'SEEN — the faint second images in a bright crystal', '—', true],
+    ['grp', 'In the light itself'],
+    ['The oscillation', `${f1(d.nu/1e12)} THz, period ${f2(d.periodFs)} fs`, `cones integrate over ~10 ms — ≈${sci(d.nu*0.01)} cycles averaged`, 'no detector follows it directly; heterodyne', false],
+    ['Transit through the block', `${f3(d.transitO*1e9)} ns`, 'perception time-resolves ~10 ms at best', 'streak camera', false],
+    ['Coherence', d.src === 'sun' ? `transverse ≈ ${f0(d.cohUm)} µm at the lens` : 'coherent line — fixed phase', 'cones register intensity only', 'interferometer', false],
+    ['Photon granularity', sp.shotN[0] > 0 ? `σ/N = ${pct(1/Math.sqrt(sp.shotN[0]))} per L cone per 10 ms` : '—', 'at this flux the noise is far below perception; near threshold (~10 photons) it is what you see', 'photon counter', false],
+    ['grp', 'In the eye'],
+    ['Near-infrared on the retina', `${fW(nirRet)} = ${pct(nirRet/Math.max(1e-30, sp.Pret))} of the retinal power`, 'reaches the retina, but no pigment absorbs it → heat in the pigment epithelium', 'IR viewer', false],
+    ['The lens filter itself', `OD ${f2(mediaParts(400, state.age, state.aphakic).lens)} at 400 nm (age ${state.age})`, 'the brain re-whitens the yellowing world; you never notice it', 'spectrophotometer; compare eyes after one cataract operation', false],
+    ['Macular pigment', 'OD 0.35 at 460 nm', 'invisible — except as Haidinger\'s brushes in polarized light', 'flicker photometry', false],
+    ['The spectrum itself', `→ L : M : S = ${sp.lmsNow.map(v => f2(v/(sp.lmsNow.reduce((a, b) => a + b, 0) || 1))).join(' : ')}`, 'infinitely many spectra map to the same three numbers (metamerism)', 'spectrometer', false],
+    ['Chromatic focus error', d.objOK ? `${f2(d.lca)} D, 450 → 650 nm; blue blur Ø ${f0(d.blurUm(450))} µm` : '—', 'the brain ignores it; the fovea has few S cones to notice', 'chromatic aberrometer', false],
+    ['Non-image light', 'melanopsin ganglion cells (480 nm)', 'drive the pupil and the body clock, never the picture', 'pupillometry', false]];
+  let html = '<table><thead><tr><th>Phenomenon</th><th>Computed now</th><th>Why perception misses it</th><th>What would reveal it</th></tr></thead><tbody>';
+  for (const r of rows){
+    if (r[0] === 'grp'){ html += `<tr class="grp"><td colspan="4">${r[1]}</td></tr>`; continue; }
+    html += `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td${r[4] ? ' class="seen"' : ''}>${r[2]}</td><td>${r[3]}</td></tr>`;
+  }
+  $('ledger').innerHTML = html + '</tbody></table>';
+}
+
+/* ---------------- narration for the lower sections ---------------- */
+function updateDeepNarration(){
+  const d = DER, sp = SPC, h = sp.heat, K = sp.K, age = state.age;
+  const nirFrac = bandOf(sp.bandsRetina, 'NIR-A')/Math.max(1e-30, sp.Pret);
+  let uvCut = 280; for (let i = 0; i < LG.length; i++) if (sp.tAtm[i] < 0.01) uvCut = LG[i]; else if (LG[i] > 330) break;
+  const fF = d.f*(nBK7(589.3) - 1)/(nBK7(486.1) - 1), fC = d.f*(nBK7(589.3) - 1)/(nBK7(656.3) - 1);
+  $('narrSpec1').innerHTML = (sp.sun
+    ? `Above the air the Sun delivers ${V(f0(sp.toaTot) + ' W/m²')} between 280 nm and 4 µm. At ${V(state.elev + '°')} the beam crosses ${V(f2(sp.m))} atmospheres: molecules and aerosols (swollen ×${V(f2(sp.aer.growth))} by ${V(state.rh + ' %')} humidity) scatter ${V(fW(sp.atmShare.ray + sp.atmShare.aer))} of this aperture's share out of the beam as sky light, ozone removes everything below ≈${V(f0(uvCut + 1) + ' nm')}, and ${V(f2(sp.wCol) + ' cm')} of water vapour plus oxygen carve the infrared bands. The direct beam that a magnifier can focus: ${V(f0(sp.dni) + ' W/m²')}. ` +
+      `The page's own 589 nm line is, in sunlight, a <em>dark</em> line: sodium in the Sun's atmosphere leaves the D₂ core at ${V(f1(NA_D_CORE*100) + ' %')} of its neighbours. `
+    : `The lab source is one 589 nm line of ${V(fW(SPX.P_LAB))}, indoors: no atmosphere, no spectrum, so the chain below acts on a single wavelength. `) +
+    `The crown-glass magnifier reflects ${V(pct(1 - sp.stages[K.lensR][2][iOf(589)]))}, absorbs below ≈320 nm and beyond 2.5 µm, and focuses blue ${V(f2(fC - fF) + ' mm')} before red. ` +
+    `The crystal's faces reflect ${V(pct(1 - sp.stages[K.qzR][2][iOf(589)]))}, its ${SURFACE[state.surface].label} surface absorbs ${V(pct(SURFACE[state.surface].A))} per face` + (state.variety !== 'clear' ? `, and its ${VARIETY[state.variety].label} colour centres take their band` : '') + `. ` +
+    `Of the ${V(fW(sp.Pcrystal))} leaving the crystal, a ${V(state.pupil + ' mm')} pupil at ${V(d.L + ' mm')} admits ${V(pct(sp.pupilFrac))}. Inside the eye the cornea stops UV-B, the ${state.aphakic ? 'missing lens lets UV-A through' : V(age + '-year-old') + ' lens takes the UV-A and violet'}, and the water of the vitreous drinks the infrared beyond 1.4 µm. Yet ${V(pct(nirFrac))} of what reaches the retina is near-infrared that no pigment answers. The cone pigments absorb ${V(fW(sp.PconeAbs))}: that is all of it that becomes vision.`;
+  $('narrSpec2').innerHTML =
+    `A ${V(f2(d.ephot) + ' eV')} photon cannot be absorbed by perfect quartz — too little for its ${V('8.9 eV')} gap, too much for its ${V('0.14 eV')} highest vibration — so the lattice only polarizes and re-radiates, which <em>is</em> the refractive index. ` +
+    `Real crystals absorb at their imperfections: here ${V(fW(h.Pabs))}, mostly in ${h.Pincl > 0 ? 'the inclusion' : h.Pvar > h.Psurf1 ? 'the colour centres' : 'the surface film'}. Each absorbed photon's energy relaxes, within picoseconds, into at least ${V(f0(h.optPerPhot))} optical phonons that split into ≈${V(f0(h.thermPerPhot))} thermal ones — ${V(sci(h.absPhot*h.thermPerPhot) + ' phonons/s')}. That flow is the heat: the hottest point, ${h.hotWhere}, sits ${V('+' + f2(h.dThot) + ' K')} above the ${V(f0(state.tAir) + ' °C')} air, reached in ${V(h.tauSpot < 1 ? f1(h.tauSpot*1000) + ' ms' : f1(h.tauSpot) + ' s')}; thermal stress ≈${V(f1(h.stress/1e6) + ' MPa')}` + (h.stress > 0.5*SPX.SIGMA_T ? ` — <b>enough to risk cracking</b>` : ` (fracture needs ~50)`) + `. ` +
+    `Separately, about ${V(sci(SPX.RAMAN_PER_CM) + ' per cm')} of the light Raman-scatters, leaving one 464 cm⁻¹ phonon per event and emerging at ${V('606 nm')}; at ${V(f0(h.Tamb + h.dTbulk) + ' K')} the anti-Stokes partner is ${V(f3(h.asRatio464))} as strong, because it must borrow a phonon the crystal's warmth already holds. ` +
+    `And quartz is chiral: along its axis it turns the polarization ${V(f2(rotPower(589)) + '°/mm')}${Math.abs(d.theta) < 5 ? ` — ${V(f0(Math.abs(d.rotDeg)) + '°')} through this block` : ''}; between crossed polarizers a thin plate would glow in the colours of the strip above, but at d = ${V(d.d + ' mm')} the colours average to grey-white, and with no polarizer at all the eye sees only ${state.variety === 'clear' ? 'clear quartz' : 'the body colour of the stone'}.`;
+  $('narrSpec3').innerHTML = !d.objOK ? 'The image falls at or beyond the cornea, so the eye stage is suspended at these settings.' :
+    `The Navarro eye refracts at four surfaces, cornea front and back and lens front and back, for ${V(f1(d.eyeP) + ' D')} in all at 589 nm. To see the ${d.src === 'sun' ? 'solar image' : 'waist'} at ${V(f0(d.obj) + ' mm')} the lens bulges: its front radius tightens to ${V(f2(d.lensRA) + ' mm')} and its index rises to ${V(f3(d.eyeN.L))} (A = ${V(f2(d.acc) + ' D')}` + (d.accFlag ? `, but at age ${V(age)} only ${V(f1(d.ampAcc) + ' D')} is available, so the image blurs` : '') + `). ` +
+    `Every medium bends blue more than red, so blue focuses ${V(f2(Math.abs(d.defocusAt(450))) + ' D')} away from red: a ${V(f0(d.blurUm(450)) + ' µm')} blue blur that the brain discards. ` +
+    `On the way the tear film reflects ${V(pct(purkinje()[0]))} (the bright corneal highlight), tryptophan in the cornea absorbs UV-B, the lens's kynurenine pigments absorb ${state.aphakic ? 'nothing — there is no lens' : V(pct(1 - SPC.stages[SPC.K.lensEye][2][iOf(400)])) + ' of 400 nm light'}, and macular lutein and zeaxanthin pre-filter blue before the foveal cones. ` +
+    `At the outer segments ${V(sci(SPC.isoRate[0]) + '/s')} isomerisations per L cone flip 11-cis retinal to all-trans in about 200 fs` + (SPC.bleach[0] > 0.5 ? ` — enough to bleach ${V(pct(SPC.bleach[0]))} of the pigment: an afterimage, and a hazard` : '') + `. Then the whole spectrum is reduced to three numbers, L : M : S = ${V(SPC.lmsNow.map(v => f2(v/(SPC.lmsNow.reduce((a, b) => a + b, 0) || 1))).join(' : '))}.`;
+  /* interpretive layers — they read numbers, never write them */
+  $('hermSpec1').innerHTML = `The descending light passes the four elements in turn, and each takes its tithe. Air gives the blue away to the sky (${V(fW(sp.atmShare.ray + sp.atmShare.aer))}); Fire gathers at the burning point of the lens; Earth, the crystal, keeps a little as warmth (${V(fW(h.Pabs))}); Water, the vitreous, drinks the infrared. What arrives at the inner sanctum, the yellow spot, is a light already refined by every sphere it crossed. <span class="tag">symbolic reading — computes nothing</span>`;
+  $('specSpec1').innerHTML = `Some bio-energetic traditions treat "full-spectrum" sunlight as a nourishment, and the lens's UV filtering as a gate on "higher frequencies". Read against the numbers: the gate is real (${V(pct(1 - SPC.stages[SPC.K.lensEye][2][iOf(380)]))} of 380 nm light is stopped), but what it stops is absorbed as heat and photochemistry in the lens, not stored or transmitted onward. <span class="tag">speculative framing — not a physical claim</span>`;
+  $('hermSpec2').innerHTML = `Solve et coagula: the light is dissolved into the lattice's vibration and congealed as warmth. The crystal answers the light with its own song, the Raman lines, ${V('128, 207, 464 cm⁻¹')}, a voice proper to quartz alone, and its turning of the plane (${V(f2(rotPower(589)) + '°/mm')}) is the helix of its making expressed in light. <span class="tag">symbolic reading — computes nothing</span>`;
+  $('specSpec2').innerHTML = `Claims that quartz "stores", "amplifies" or "programs" light can be held against this ledger: of ${V(fW(h.Pin))} arriving, ${V(fW(h.Pabs))} is absorbed and leaves as heat within ${V(h.tauSpot < 1 ? f1(h.tauSpot*1000) + ' ms' : f1(h.tauSpot) + ' s')} locally; nothing accumulates, and the emerging light carries no imprint beyond the computed polarization and spectrum. A coherence-ordering reading remains an analogy. <span class="tag">speculative — not a physical or biological measurement</span>`;
+  $('hermSpec3').innerHTML = `The eye as microcosmic temple: four veils (cornea, aqueous, lens, vitreous) before the sanctuary, and at its heart the macula lutea, the golden spot, a gilded altar on which the image is laid inverted, as the Above is mirrored Below. <span class="tag">symbolic reading — computes nothing</span>`;
+  $('specSpec3').innerHTML = `Bio-energetic accounts sometimes say light entering the eye "charges" the body beyond vision. The measurable part of that is real and named: melanopsin ganglion cells (peak ≈480 nm) drive the pupil and the circadian clock. Anything beyond it is not modelled here. <span class="tag">speculative — not a physical claim</span>`;
+  $('hermSpec4').innerHTML = `What is hidden outweighs what is shown: of all this light, the eye keeps three numbers. The Hermetic teaching that the senses read only the outer garment of things finds a literal ledger here. <span class="tag">symbolic reading — computes nothing</span>`;
+  $('specSpec4').innerHTML = `Where speculative traditions speak of "unseen energies", the table lists energies that are unseen yet measured, each with its instrument. Claims outside the table have, as yet, no instrument. <span class="tag">speculative framing — not a physical claim</span>`;
+}
+function updateCondNote(){
+  const sp = SPC, d = DER;
+  $('elevNote').textContent = `air mass ${f2(sp.m)} — the beam crosses ${f2(sp.m)} atmospheres`;
+  $('condNote').innerHTML = `Feeding the bench now: n_air(589) = ${f6(d.nAir)} · direct sun ${f0(sp.dni)} W/m² → ${f2(d.powerW)} W through the magnifier · ${state.hand}-handed rotation ${f2(rotPower(589))}°/mm · accommodation amplitude ${f1(d.ampAcc)} D at age ${state.age}.`;
+}
+const f6 = x => x.toFixed(6);
+function drawDeep(){
+  if (!SPC) return;
+  drawSpec(); drawBudget(); updateSpecReadouts();
+  drawRaman(); drawPol(); drawPolSwatches(); updateCrystalReadouts();
+  drawEyeDetail(); updateEyeReadouts();
+  drawLedger(); updateDeepNarration(); updateCondNote();
+  if (!LAT || LAT.W !== Math.max(420, Math.floor($('cvLat').parentElement.clientWidth) - 2) || LAT.variety !== state.variety){
+    buildLattice(); LAT.variety = state.variety;
+  }
+}
+/* ================================================================
    WIRING — pub/sub; toggles change words, table, flourish, theme —
    never a computed pixel (see __isolationCheck).
    ================================================================ */
@@ -1615,14 +3141,19 @@ function setMarkerMode(mode){
   refresh();                                 // static canvas note swaps with the mode
 }
 function refresh(){
-  DER = computePhysics(state);
+  /* the atmosphere sets the sunlight's power first; the bench runs on it;
+     the full spectral chain then follows the bench's geometry */
+  DER = computePhysics({...state, dni: atmosphereDNI(state)});
   window.__derived = DER;
+  SPC = computeSpectral(state, DER);
+  window.__spectral = SPC;
   GEO = layout();
   drawStatic();
   drawCosmetic();
   buildLanes();
   updateReadouts();
   updateNarration();
+  drawDeep();
 }
 function bindRange(id, key, outId, fmt){
   const el = $(id);
@@ -1640,6 +3171,18 @@ bindRange('inD', 'd', 'outD', v => `${v} mm`);
 bindRange('inTheta', 'theta', 'outTheta', v => `${v}°`);
 bindRange('inL', 'L', 'outL', v => `${v} mm`);
 bindRange('inPupil', 'pupil', 'outPupil', v => `${v} mm`);
+/* conditions panel — weather, sun, observer, crystal */
+bindRange('inTair', 'tAir', 'outTair', v => `${v} °C`);
+bindRange('inPair', 'pAir', 'outPair', v => `${v} hPa`);
+bindRange('inRh', 'rh', 'outRh', v => `${v} %`);
+bindRange('inVis', 'vis', 'outVis', v => `${v} km`);
+bindRange('inElev', 'elev', 'outElev', v => `${v}°`);
+bindRange('inAge', 'age', 'outAge', v => `${v} y`);
+$('inAphakic').addEventListener('change', e => { state.aphakic = e.target.checked; refresh(); });
+for (const [id, key] of [['inVariety', 'variety'], ['inSurface', 'surface'], ['inHand', 'hand']])
+  $(id).addEventListener('change', e => { state[key] = e.target.value; refresh(); });
+$('cvSpec').addEventListener('mousemove', specTooltip);
+$('cvSpec').addEventListener('mouseleave', () => { $('specTip').style.display = 'none'; specHoverL = null; drawSpec(); });
 $('inSpeed').addEventListener('input', () => {
   state.speed = parseFloat($('inSpeed').value);
   $('outSpeed').textContent = `${state.speed}×`;
@@ -1658,6 +3201,7 @@ function setLayer(which, on){
   $(which === 'herm' ? 'tgHerm' : 'tgSpec').checked = on;
   $(which === 'herm' ? 'narrHermBox' : 'narrSpecBox').hidden = !on;
   $('cmp').hidden = !(layers.herm || layers.spec);
+  document.querySelectorAll('[data-layer]').forEach(el => { el.hidden = !layers[el.dataset.layer]; });
   drawCosmetic();                            // cosmetic canvas only — physics canvas untouched
 }
 $('tgHerm').addEventListener('change', e => setLayer('herm', e.target.checked));
@@ -1672,6 +3216,10 @@ $('btnReset').addEventListener('click', () => {
   $('inTheta').value = 45; $('outTheta').textContent = '45°';
   $('inL').value = 250; $('outL').textContent = '250 mm';
   $('inPupil').value = 4; $('outPupil').textContent = '4 mm';
+  for (const [id, out, v, u] of [['inTair', 'outTair', 20, ' °C'], ['inPair', 'outPair', 1013, ' hPa'], ['inRh', 'outRh', 50, ' %'],
+      ['inVis', 'outVis', 40, ' km'], ['inElev', 'outElev', 60, '°'], ['inAge', 'outAge', 30, ' y']]){
+    $(id).value = v; $(out).textContent = v + u; }
+  $('inAphakic').checked = false; $('inVariety').value = 'clear'; $('inSurface').value = 'handled'; $('inHand').value = 'right';
   $('inSpeed').value = 1; $('outSpeed').textContent = '1×';
   setLayer('herm', false); setLayer('spec', false);
   setMarkerMode('fronts');
@@ -1719,15 +3267,18 @@ window.__selfTest = function(){
   ok(near(um(D.w0p), 21.26, 0.05), `w0' default = ${um(D.w0p)} ≠ 21.26 µm`);
   ok(near(D.depthO, 29.31, 0.05), `depth = ${D.depthO} ≠ 29.31 (inside d = 40 ✓)`);
   ok(near(D.zApp, 6.92, 0.02), `z_app = ${D.zApp} ≠ 6.92`);
-  ok(near(D.acc, 3.89, 0.02), `A = ${D.acc} ≠ 3.89 D`);
+  /* observer — Navarro eye: the vergence demand is 1000/obj; the lens must also
+     undo the relaxed eye's +0.24 D hyperopia at 589 nm (it is emmetropic at 543) */
+  ok(near(D.accDemand, 3.892, 0.01), `vergence demand = ${D.accDemand} ≠ 3.89 D`);
+  ok(near(D.acc, 4.258, 0.02), `A = ${D.acc} ≠ 4.258 D (Navarro, 589 nm onto the retina)`);
   ok(near(D.arcmin, 3.14, 0.04), `Δθ = ${D.arcmin} ≠ 3.14 arcmin (gate: 3.1)`);
-  ok(near(um(D.dRet), 15.2, 0.15), `Δret = ${um(D.dRet)} ≠ 15.2 µm`);
-  ok(near(D.cones, 6.1, 0.06), `cones = ${D.cones} ≠ 6.1`);
+  ok(near(um(D.dRet), 14.82, 0.15), `Δret = ${um(D.dRet)} ≠ 14.82 µm (Navarro retinal magnification)`);
+  ok(near(D.cones, 5.93, 0.06), `cones = ${D.cones} ≠ 5.93`);
   ok(near(D.wCorn, 2.266, 0.01), `w_cornea = ${D.wCorn} ≠ 2.266 mm`);
   ok(near(D.trans, 0.789, 0.01), `pupil transmission = ${D.trans} ≠ 0.789`);
-  ok(near(um(D.wRet), 1.38, 0.03), `w_ret = ${um(D.wRet)} ≠ 1.38 µm`);
+  ok(near(um(D.wRet), 1.34, 0.03), `w_ret = ${um(D.wRet)} ≠ 1.34 µm (Gaussian q through the eye's ABCD)`);
   ok(D.retMiss < 0.01, `retina miss = ${D.retMiss} mm ≥ 0.01 (gate: accommodated waist lands on retina)`);
-  ok(near(um(D.wDiff), 1.56, 0.03), `w_diff = ${um(D.wDiff)} ≠ 1.56 µm`);
+  ok(near(um(D.wDiff), 1.44, 0.03), `w_diff = ${um(D.wDiff)} ≠ 1.44 µm`);
   /* WATCH ITEM (verified): honest per-ray Δφ across the default fan spans ≈ 7
      fringes — resolvable, so the strip draws them rather than averaging. */
   ok(near(D.fringeSpread, 7.0, 0.5), `fringe spread = ${D.fringeSpread} ≠ 7.0`);
@@ -1737,7 +3288,7 @@ window.__selfTest = function(){
   ok(Math.abs(D.ephot - 2.105) < 0.002, `hν = ${D.ephot} eV ≠ 2.105`);
   ok(Math.abs(D.lamO*1e6 - 381.40) < 0.05, `λ/n₀ = ${D.lamO*1e6} nm ≠ 381.40`);
   ok(Math.abs(D.lamE*1e6 - 380.29) < 0.05, `λ/nₑ(45°) = ${D.lamE*1e6} nm ≠ 380.29`);
-  ok(Math.abs(D.lamVit*1e6 - 441.75) < 0.05, `λ in vitreous = ${D.lamVit*1e6} nm ≠ 441.75`);
+  ok(Math.abs(D.lamVit*1e6 - 440.86) < 0.05, `λ in vitreous = ${D.lamVit*1e6} nm ≠ 440.86 (Navarro n′ 1.3360)`);
   ok(Math.abs((D.cyclesE - D.cyclesO) - D.order) < 1e-6, 'Δcycles ≡ interference order (identity)');
   /* emitted light — exit polarization state */
   const [S1t, S2t, S3t] = D.stokes;
@@ -1745,7 +3296,11 @@ window.__selfTest = function(){
   ok(Math.abs(D.psiDeg + 45) < 0.5 || Math.abs(D.psiDeg - 45) < 0.5, `ψ = ${D.psiDeg} ≠ ±45° at α = 45 (S1 = 0)`);
   ok(D.rotCCW === (Math.sin(D.deltaM) > 0), 'rotation sense consistent with sin δ');
   ok(D.polState === 'elliptical' && D.ba > 0.2 && D.ba < 0.9, `exit state at defaults = ${D.polState}, b/a = ${D.ba}`);
-  ok(computePhysics({...DEFAULTS, theta:0}).polState.startsWith('linear — unchanged'), 'θ = 0: exit stays input linear');
+  const T0 = computePhysics({...DEFAULTS, theta:0});
+  ok(T0.polState.startsWith('linear — rotated') && Math.abs(Math.abs(T0.rotDeg) - 869.7) < 1.5,
+     `θ = 0: optical activity turns the plane ${T0.rotDeg}° ≠ 21.74°/mm × 40 mm`);
+  ok(Math.abs(Math.abs(T0.stokes[2])) < 1e-9, 'θ = 0: pure rotation keeps the light linear');
+  ok(computePhysics({...DEFAULTS, theta:0, hand:'left'}).rotDeg < 0, 'left-handed quartz turns the other way');
   ok(Math.abs(D.visNaD - 0.557) < 0.02, `Na-D visibility = ${D.visNaD} ≠ 0.557 at defaults`);
   /* sunlight mode — extended-source physics (the real magnifying-glass scenario) */
   const SUN = computePhysics({...DEFAULTS, src:'sun'});
@@ -1757,22 +3312,61 @@ window.__selfTest = function(){
   ok(Math.abs(SUN.cohUm - 20.25) < 0.3, `coherence = ${SUN.cohUm} ≠ 20.25 µm (van Cittert–Zernike)`);
   ok(Math.abs(SUN.etendueMax - 46160) < 300, `étendue limit = ${SUN.etendueMax} ≠ ≈46,160×`);
   ok(SUN.Io === 0.5 && SUN.Ie === 0.5 && SUN.polState.startsWith('unpolarized'), 'sunlight: unpolarized 50/50 split, α ignored');
-  ok(Math.abs(SUN.acc - 3.6245) < 0.01, `sun-mode accommodation = ${SUN.acc} ≠ 3.62 D`);
-  ok(Math.abs(um(SUN.dSunRet) - 25.31) < 0.15, `retinal sun disk = ${um(SUN.dSunRet)} ≠ 25.3 µm`);
+  ok(Math.abs(SUN.acc - 3.722) < 0.01, `sun-mode accommodation = ${SUN.acc} ≠ 3.72 D (focused at 555 nm)`);
+  ok(Math.abs(um(SUN.dSunRet) - 23.38) < 0.15, `retinal sun disk = ${um(SUN.dSunRet)} ≠ 23.4 µm`);
   ok(SUN.retMiss < 1e-6, 'sun-mode vergence closes on the retina');
   ok(SUN.sep < SUN.dSun, 'o/e offset < disk Ø — the doubled sun images overlap');
   /* crystalline-lens anatomy — accommodation-coupled drawing values */
-  ok(Math.abs(D.lensRA - 8.171) < 0.01, `lens rA = ${D.lensRA} ≠ 8.17 mm at A = 3.89 D (lab)`);
-  ok(Math.abs(SUN.lensRA - 8.296) < 0.01, `lens rA = ${SUN.lensRA} ≠ 8.30 mm at A = 3.62 D (sun)`);
+  ok(Math.abs(D.lensRA - 7.295) < 0.01, `lens rA = ${D.lensRA} ≠ 7.30 mm at A = 4.26 D (lab; 10.2 − 1.75 ln(A+1))`);
+  ok(Math.abs(SUN.lensRA - 7.483) < 0.01, `lens rA = ${SUN.lensRA} ≠ 7.48 mm at A = 3.72 D (sun)`);
+  /* Navarro anchors — the model reproduces its published design */
+  ok(['cornea', 'aqueous', 'lens', 'vitreous'].every((m, k) => Math.abs(navN(m, 543) - [1.3777, 1.3391, 1.4222, 1.3377][k]) < 2e-4),
+     'Navarro dispersion reproduces the Escudero-Sanz 543 nm indices');
+  ok(Math.abs(navDefocus(543, 0, 1e12)) < 0.02, `relaxed eye at 543 nm: defocus ${navDefocus(543, 0, 1e12)} D (emmetropic by design)`);
+  ok(Math.abs(navToRetina(543, 0).P - 60.72) < 0.05, `eye power at 543 = ${navToRetina(543, 0).P} ≠ 60.72 D (Python cross-check)`);
+  const lca47 = navDefocus(400, 0, 1e12) - navDefocus(700, 0, 1e12);
+  ok(lca47 > 2.0 && lca47 < 2.8, `chromatic error 400→700 nm = ${lca47} D (measured eyes ≈ 2–2.5)`);
+  const OLD = computePhysics({...DEFAULTS, age:60});
+  ok(OLD.accFlag && OLD.ampAcc < 1, 'age 60: amplitude < 1 D — presbyopic flag at 250 mm');
   /* quantum picture in the lattice */
   ok(Math.abs(D.cellsAlong/1e7 - 7.40) < 0.02, `cells along path = ${D.cellsAlong} ≠ 7.40×10⁷ (d/c-lattice)`);
   ok(Math.abs(D.transitO*1e9 - 0.206) < 0.001, `o transit = ${D.transitO*1e9} ns ≠ 0.206`);
   ok(D.ephot < 0.3*PHY.E_GAP, 'hν ≪ band gap — transparent, virtual excitation only');
   /* the air in the gap */
-  ok(Math.abs(D.airLam - 20.86) < 0.1, `air path over g = ${D.airLam}λ ≠ 20.9λ (n_air 1.000273)`);
-  ok(Math.abs(D.airScatter - 3.96e-7)/3.96e-7 < 0.02, `Rayleigh over g = ${D.airScatter} ≠ 3.96×10⁻⁷`);
-  ok(Math.abs(D.airMol - 5.31e17)/5.31e17 < 0.03, `gap molecules (lab beam) = ${D.airMol} ≠ 5.3×10¹⁷`);
-  ok(Math.abs(SUN.airMol - 2.74e20)/2.74e20 < 0.03, `gap molecules (sun cone) = ${SUN.airMol} ≠ 2.7×10²⁰`);
+  ok(Math.abs(D.airLam - 20.78) < 0.02, `air path over g = ${D.airLam}λ ≠ 20.78λ (20 °C, 50 % RH)`);
+  ok(Math.abs(D.airScatter - 3.83e-7)/3.83e-7 < 0.01, `Rayleigh over g = ${D.airScatter} ≠ 3.83×10⁻⁷ (from the index, King 1.048)`);
+  ok(Math.abs(D.airMol - 5.215e17)/5.215e17 < 0.01, `gap molecules (lab beam) = ${D.airMol} ≠ 5.2×10¹⁷`);
+  ok(Math.abs(SUN.airMol - 2.69e20)/2.69e20 < 0.02, `gap molecules (sun cone) = ${SUN.airMol} ≠ 2.7×10²⁰`);
+  ok(Math.abs(airIndex(589.3, 15, 1013.25, 0) - 1 - 2.7715e-4) < 5e-8, 'Edlén standard air at 589.3 nm: n − 1 = 2.7715×10⁻⁴');
+  ok(airIndex(589, 20, 1013.25, 100) < airIndex(589, 20, 1013.25, 0) - 7e-7, 'water vapour lowers the air index');
+  /* the spectral engine */
+  ok(Math.abs(rotPower(589.3) - 21.72) < 0.03 && Math.abs(rotPower(404.7) - 48.95) < 0.1, 'rotary power matches Lowry 589.3 / 404.7 nm');
+  ok(Math.abs(gyr(90) + 0.54) < 1e-12, 'gyration ⊥ axis = −0.54 × along');
+  ok(Math.abs(nO(589) - PHY.NO) < 1e-12 && Math.abs((nO(486.1) - nO(656.3)) - 0.0078) < 0.0003, 'quartz dispersion anchored at 589 nm; F−C ≈ 0.0078');
+  ok(Math.abs(nBK7(589.3) - 1.51673) < 2e-5, `N-BK7 n(589.3) = ${nBK7(589.3)}`);
+  ok(Math.abs(airMass(90) - 1) < 1e-3 && Math.abs(airMass(0) - 38) < 0.5, 'Kasten–Young air mass: 1 at zenith, ≈38 at the horizon');
+  const toaI = integ(solarTOA());
+  ok(toaI > 1295 && toaI < 1345, `solar spectrum 280–4000 nm = ${toaI} W/m² (of 1361 total)`);
+  const SPd = computeSpectral({...DEFAULTS, src:'sun'}, SUN);
+  ok(SPd.dni > 850 && SPd.dni < 950, `clear-day direct beam = ${SPd.dni} W/m²`);
+  const pre = ['atm','lensR','lensA','air','qzR','qzS','qzV','qzIR','incl'].reduce((a, k) => a + SPd.lossW[k], 0);
+  ok(Math.abs(SPd.Pstart - pre - SPd.Pcrystal)/SPd.Pstart < 1e-9, 'energy closes: start = losses + leaving the crystal');
+  const inEye = ['corR','tp','lensEye','scat','water','mp'].reduce((a, k) => a + SPd.lossW[k], 0);
+  ok(Math.abs(SPd.Ppupil - inEye - SPd.Pret)/SPd.Ppupil < 1e-9, 'energy closes inside the eye');
+  const peakOf = a => { let b = 0, bl = 0; for (let i = iOf(380); i <= iOf(720); i++){ const v = a[i]*SPd.cum[SPd.K.mp][i]/SPd.cum[SPd.K.corR][i]*LG[i]; if (v > b){ b = v; bl = LG[i]; } } return bl; };
+  const pk = SPd.absCone.map(peakOf);
+  ok(pk[0] >= 563 && pk[0] <= 575 && pk[1] >= 538 && pk[1] <= 550 && pk[2] >= 435 && pk[2] <= 447,
+     `cone sensitivities through the media peak at L ${pk[0]} / M ${pk[1]} / S ${pk[2]} nm (Stockman–Sharpe ≈ 570 / 543 / 442)`);
+  const heats = ['clean', 'handled', 'dusty', 'inclusion'].map(sf => computeSpectral({...DEFAULTS, src:'sun', surface: sf}, SUN).heat.dThot);
+  ok(heats[0] < heats[1] && heats[1] < heats[2] && heats[2] < heats[3] && heats[3] > 30 && heats[0] < 0.2,
+     `hot spot rises with absorption: ${heats.map(x => x.toFixed(2)).join(' < ')} K`);
+  ok(Math.abs(SPd.heat.asRatio464 - 0.13) < 0.02, `anti-Stokes/Stokes 464 cm⁻¹ at room temperature = ${SPd.heat.asRatio464}`);
+  ok(Math.abs(SPd.heat.brillGHz - 31.5) < 1, `Brillouin shift = ${SPd.heat.brillGHz} GHz`);
+  let yMin = 9, tMin = 0; for (const q of SPd.strip) if (q.t > 0.25*SPd.stripMax/4 && q.t < 1.5*SPd.stripMax/4 && q.Y < yMin){ yMin = q.Y; tMin = q.t; }
+  const ordMin = tMin*SPd.dn550/550e-6;
+  ok(ordMin > 0.9 && ordMin < 1.15, `first-order red (crossed polarizers) at order ${ordMin} — Michel-Lévy`);
+  const age70 = computeSpectral({...DEFAULTS, src:'sun', age:70}, SUN).lmsRel[2], aph = computeSpectral({...DEFAULTS, src:'sun', aphakic:true}, SUN).lmsRel[2];
+  ok(age70 < 0.6 && aph > 1.5, `S-cone signal: age 70 ×${age70}, aphakic ×${aph} vs age 32`);
   /* edge cases must not throw */
   const E1 = computePhysics({...DEFAULTS, f:100, s:100});
   ok(!Number.isFinite(E1.sGeo) && near(E1.s2, 100, 0.001), 's = f: collimated, s″ = f, no errors');
@@ -1788,9 +3382,14 @@ window.__selfTest = function(){
 /* isolation check — shipped verification: toggles must not change one
    computed pixel or printed number. Compares static canvas + readouts + derived. */
 window.__isolationCheck = function(){
+  const deep = ['roAtm', 'roChain', 'roBands', 'roHeat', 'roPhonon', 'roPol', 'roEyeOpt', 'roEyeChem', 'roRetina',
+    'budget', 'ledger', 'polSwatches', 'narrSpec1', 'narrSpec2', 'narrSpec3'];
   const snap = () => JSON.stringify({
     readouts: $('readouts').innerText, status: $('status').textContent,
-    derived: window.__derived, canvas: cvStatic.toDataURL()});
+    derived: window.__derived, canvas: cvStatic.toDataURL(),
+    deep: deep.map(id => $(id).innerHTML),
+    deepCanvas: ['cvSpec', 'cvRaman', 'cvPol', 'cvEye'].map(id => $(id).toDataURL()),
+    spectral: SPC ? [SPC.dni, SPC.Pret, SPC.heat.dThot, SPC.PconeAbs] : null});
   const h0 = layers.herm, s0 = layers.spec;
   setLayer('herm', false); setLayer('spec', false); const a = snap();
   setLayer('herm', true);  setLayer('spec', true);  const b = snap();
@@ -1815,7 +3414,11 @@ setSource('sun');   // the real scenario: the magnifier in the sun (lab source o
 (function applyHash(){
   const h = location.hash.replace(/^#/, ''); if (!h) return;
   const q = new URLSearchParams(h);
-  const sliders = {f:'inF', s:'inS', alpha:'inAlpha', d:'inD', theta:'inTheta', L:'inL', pupil:'inPupil', speed:'inSpeed', D:'inDlens'};
+  const sliders = {f:'inF', s:'inS', alpha:'inAlpha', d:'inD', theta:'inTheta', L:'inL', pupil:'inPupil', speed:'inSpeed', D:'inDlens',
+    tAir:'inTair', pAir:'inPair', rh:'inRh', vis:'inVis', elev:'inElev', age:'inAge'};
+  for (const [k, id] of [['variety', 'inVariety'], ['surface', 'inSurface'], ['hand', 'inHand']])
+    if (q.has(k) && [...$(id).options].some(o => o.value === q.get(k))){ $(id).value = q.get(k); $(id).dispatchEvent(new Event('change')); }
+  if (q.get('aphakic') === '1'){ $('inAphakic').checked = true; $('inAphakic').dispatchEvent(new Event('change')); }
   for (const k in sliders) if (q.has(k)){ const el = $(sliders[k]); el.value = q.get(k); el.dispatchEvent(new Event('input')); }
   if (q.get('herm') === '1') setLayer('herm', true);
   if (q.get('spec') === '1') setLayer('spec', true);
@@ -1824,6 +3427,8 @@ setSource('sun');   // the real scenario: the magnifier in the sun (lab source o
   else if (q.get('src') === 'sun') setSource('sun');
   const th = q.get('theme'); if (th === 'light' || th === 'dark') document.documentElement.dataset.theme = th;
 })();
+if (window.IntersectionObserver)
+  new IntersectionObserver(es => { latVisible = es[0].isIntersecting; }).observe($('cvLat'));
 requestAnimationFrame(drawAnim);
 </script>
 </body>
