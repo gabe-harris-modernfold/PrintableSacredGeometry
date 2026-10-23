@@ -42,12 +42,15 @@ module seed_of_life() {
 
 // 4. Egg of Life (8 Spheres)
 // The Egg of Life is 8 spheres arranged like the corners of a cube.
+// The radius is a little over d/2 so each sphere overlaps its three edge neighbours and
+// the egg prints as one solid. At exactly d/2 the spheres only touch: 8 loose balls.
 module egg_of_life() {
-    d = R; 
+    d = R;
+    r = 0.6 * R;  // neck between neighbours: 2*sqrt(r^2 - (d/2)^2) = 6.6 mm at R = 10
     for (x = [-d/2, d/2]) {
         for (y = [-d/2, d/2]) {
             for (z = [-d/2, d/2]) {
-                translate([x, y, z]) sphere(r=R/2);
+                translate([x, y, z]) sphere(r=r);
             }
         }
     }
