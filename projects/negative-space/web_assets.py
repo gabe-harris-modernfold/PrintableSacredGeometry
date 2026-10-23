@@ -33,7 +33,7 @@ import negative_space_pyramid as npyr
 SITE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "site")
 ASSETS = os.path.join(SITE, "assets", "negative-space")
 STL_DIR = os.path.join(SITE, "stl")
-HERO = os.path.join(SITE, "..", "indirect-perception.png")
+HERO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "indirect-perception.png")
 PREVIEW_TRIS = 80_000          # decimate any ribbon above this for the viewer
 
 
