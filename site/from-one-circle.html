@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="A matched, printable set of sacred geometry: eight stackable plates from the circle to the Tree of Life, the five Platonic solids, their stellations, and the Egg and Flower of Life in spheres, every piece sized from one 15 mm circle.">
+<title>From One Circle — a matched set of sacred geometry to print</title>
+<link rel="canonical" href="https://promethean-theoria.netlify.app/from-one-circle.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="From One Circle — a matched set of sacred geometry to print">
+<meta property="og:description" content="Eight stackable plates, five Platonic solids, their stars, and two sphere forms, all grown from one 15 mm circle so every print matches every other.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/from-one-circle.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/from-one-circle.html">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{
+  --ground:#F6F5F1; --panel:#EFEEE8; --panel-2:#E7E6DE; --rule:#D3D2C9; --rule-soft:#E2E1D9;
+  --ink:#1C2028; --ink-2:#454B57; --muted:#5E6472; --faint:#6B707C;
+  --gold:#8A6A1F; --gold-soft:rgba(143,111,36,.10); --gold-line:rgba(143,111,36,.35);
+  --ghost:#2F7FA8; --ok:#2C7A4E; --warn:#A8452B;
+  --stage:#13161D;
+  --serif: Charter,'Sitka Text',Cambria,Georgia,serif;
+  --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code',Consolas,'SF Mono','Roboto Mono',monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ground:#10131A; --panel:#171B25; --panel-2:#1D2230; --rule:#2A3040; --rule-soft:#1F2431;
+    --ink:#E9E6DD; --ink-2:#B9B8B1; --muted:#98A0B2; --faint:#7C8499;
+    --gold:#C9B070; --gold-soft:rgba(201,176,112,.10); --gold-line:rgba(201,176,112,.35);
+    --ghost:#8FC8E8; --ok:#5DB883; --warn:#E58A6B;
+    --stage:#0B0D12;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--ground);color:var(--ink);font:17px/1.7 var(--sans)}
+main{max-width:980px;margin:0 auto;padding:28px 16px 60px}
+a{color:var(--gold)}
+:focus-visible{outline:3px solid var(--ghost);outline-offset:2px;border-radius:3px}
+.skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:var(--ground);padding:8px 14px;border-radius:6px;z-index:10}
+.skip:focus{left:12px}
+header.masthead{text-align:center;padding:26px 8px 6px}
+.eyebrow{font:600 12px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--faint)}
+.eyebrow a{color:inherit;text-decoration:none}
+h1{font:400 42px/1.15 var(--serif);margin:14px 0 4px;letter-spacing:.01em}
+@media (max-width:600px){h1{font-size:32px}}
+.sub{color:var(--muted);font-style:italic;font-family:var(--serif);font-size:19px}
+.epigraph{max-width:600px;margin:22px auto 0;padding:14px 22px;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line);
+  font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink-2)}
+.epigraph .src{display:block;margin-top:6px;font-style:normal;font-size:12.5px;color:var(--faint);letter-spacing:.06em}
+h2{font:400 28px/1.25 var(--serif);margin:60px 0 8px;color:var(--ink);scroll-margin-top:16px}
+h2 .num{font:600 13px/1 var(--sans);letter-spacing:.2em;color:var(--gold);display:block;margin-bottom:8px}
+h3{font:500 20px/1.3 var(--serif);margin:26px 0 6px}
+p.lede{color:var(--ink-2);font-size:18px;max-width:760px}
+.rl{font:600 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;padding:4px 8px;border-radius:3px;white-space:nowrap;display:inline-block;margin:0 6px 6px 0}
+.rl-m{color:var(--ok);border:1px solid var(--ok)}
+.rl-h{color:var(--gold);border:1px dashed var(--gold)}
+.rl-c{color:var(--warn);border:1px solid var(--warn)}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;margin:16px 0}
+@media (max-width:600px){.panel{padding:14px 12px}}
+.note{border-left:3px solid var(--gold);padding:10px 16px;background:var(--panel);border-radius:0 8px 8px 0;margin:16px 0;color:var(--ink-2);font-size:16px}
+.note.trad{border-left-style:dashed}
+
+/* contents */
+nav.toc{margin:30px auto 0;max-width:760px}
+nav.toc ol{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px 18px}
+nav.toc a{display:block;text-decoration:none;color:var(--ink-2);padding:6px 10px;border-radius:6px;border:1px solid var(--rule-soft)}
+nav.toc a:hover{background:var(--gold-soft);color:var(--ink)}
+nav.toc b{font:600 12px var(--mono);color:var(--gold);margin-right:8px}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:18px 0}
+.rule{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.rule h3{margin:4px 0 6px;font-size:18px}
+.rule p{margin:6px 0;font-size:15.5px;color:var(--ink-2)}
+.rule svg{width:100%;height:auto;display:block;margin-top:8px}
+
+/* steps */
+.step{display:grid;grid-template-columns:minmax(260px,400px) 1fr;gap:26px;align-items:start;margin:14px 0}
+@media (max-width:780px){.step{grid-template-columns:1fr}}
+figure{margin:0}
+.plate{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px}
+.plate svg{width:100%;height:auto;display:block}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.55}
+.facts{margin:12px 0 0;padding:0;list-style:none}
+.facts li{margin:0 0 10px;padding-left:0;color:var(--ink-2)}
+.do{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+button.act,a.act{font:600 14.5px var(--sans);padding:9px 16px;border:1px solid var(--gold);border-radius:7px;background:transparent;color:var(--gold);cursor:pointer;text-decoration:none;display:inline-block}
+button.act:hover,a.act:hover,button.act[aria-pressed=true]{background:var(--gold-soft)}
+a.act span{font-weight:400;color:var(--muted);margin-left:6px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:6px 0 10px}
+.seg button{font:600 14.5px var(--sans);padding:9px 14px;border:0;border-right:1px solid var(--rule-soft);background:transparent;color:var(--muted);cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-selected=true]{background:var(--gold-soft);color:var(--gold)}
+
+/* svg ink */
+.f-frame{fill:var(--panel-2);stroke:var(--rule);stroke-width:.6}
+.f-pin{fill:var(--panel);stroke:var(--rule);stroke-width:.6}
+.f-spoke{stroke:var(--rule);stroke-width:3}
+.f-fig{fill:none;stroke:var(--ink);stroke-linecap:round}
+.f-disc{fill:var(--ink)}
+.f-faint{fill:none;stroke:var(--faint);stroke-width:1;opacity:.55}
+.f-lattice{fill:var(--faint);opacity:.55}
+.f-shadow{fill:var(--ghost);fill-opacity:.16;stroke:var(--ghost);stroke-width:1.2}
+.f-front{stroke:var(--gold);stroke-width:2.6;stroke-linecap:round}
+.f-back{stroke:var(--gold);stroke-width:1.6;stroke-dasharray:4 3;opacity:.8}
+.f-on{fill:var(--ok)}
+.f-off{fill:var(--ground);stroke:var(--warn);stroke-width:2}
+.f-ring{fill:none;stroke:var(--ghost);stroke-width:1;stroke-dasharray:3 3}
+.f-label{font:600 7px var(--sans);fill:var(--muted)}
+
+/* viewer */
+.vslot:empty{display:none}
+.viewer{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px;margin:16px 0}
+.vhead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline;margin:0 4px 8px}
+.vhead b{font:500 18px var(--serif)}
+.vhead span{font-size:14px;color:var(--muted)}
+.vstage{position:relative;height:460px;border-radius:9px;overflow:hidden;touch-action:none;
+  background:radial-gradient(ellipse 70% 60% at 50% 45%,#1F2430 0%,var(--stage) 75%)}
+@media (max-width:700px){.vstage{height:360px}}
+.vstage canvas{display:block;width:100%;height:100%}
+.vstage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.vmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#A7AEBA;font:15px var(--sans);text-align:center;padding:20px;pointer-events:none}
+.vhint{position:absolute;left:12px;bottom:10px;font:13px var(--sans);color:#8C93A0;pointer-events:none}
+.vbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 2px 2px}
+.vbar .sp{flex:1}
+.nudge{display:inline-flex;gap:4px}
+.nudge button{width:38px;padding:8px 0}
+
+/* gallery */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.card img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;display:block;background:#F2F2F0}
+.card .in{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card h3{margin:2px 0 0;font-size:19px}
+.card p{margin:0;font-size:15px;color:var(--ink-2)}
+.card .do{margin-top:auto}
+
+/* solids lab */
+.lab{display:grid;grid-template-columns:minmax(280px,440px) 1fr;gap:24px;align-items:start}
+@media (max-width:820px){.lab{grid-template-columns:1fr}}
+.read{background:var(--panel-2);border:1px solid var(--rule-soft);border-radius:8px;padding:12px 14px;margin:10px 0;font-size:15.5px;color:var(--ink-2)}
+.read b{color:var(--ink)}
+.key{display:flex;flex-wrap:wrap;gap:14px;font-size:13.5px;color:var(--muted);margin:6px 0}
+.key i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px}
+
+/* tables */
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:14px 0;min-width:640px}
+caption{text-align:left;font-size:14px;color:var(--muted);padding-bottom:6px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+th{font:600 12px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+td.n{font-family:var(--mono);font-size:13.5px;white-space:nowrap}
+tbody th{font:500 15px var(--serif);letter-spacing:0;text-transform:none;color:var(--ink)}
+ol.refs{font-size:14.5px;color:var(--muted);padding-left:22px}
+ol.refs li{margin:6px 0}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);color:var(--faint);font-size:14px;text-align:center}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<a class="skip" href="#start">Skip to the first step</a>
+<main>
+
+<header class="masthead">
+  <div class="eyebrow"><a href="./">Promethean Theoria</a> · Printable Sacred Geometry</div>
+  <h1>From One Circle</h1>
+  <div class="sub">a matched set of sacred geometry to print, every piece grown from one 15&nbsp;mm circle</div>
+  <div class="epigraph">
+    “God is always doing geometry.”
+    <span class="src">— PLATO, AS REPORTED BY PLUTARCH, <i>TABLE TALK</i> VIII.2</span>
+  </div>
+</header>
+
+<p class="lede" style="margin:30px auto 0">
+  Sacred-geometry prints usually come from different places at different sizes, so a Flower of Life
+  never quite matches the Platonic solids it is supposed to contain. This set fixes that. Every piece
+  starts from a single circle with a radius of <b>15&nbsp;mm</b>, the one measure. Eight flat plates take
+  you from that circle to Metatron’s Cube and the Tree of Life, and they stack on pins with every line in
+  register. From the plates come the five Platonic solids, their stars, and two clusters of spheres, and
+  each one sits on its plate at exactly the right size.
+</p>
+<p class="lede" style="margin:14px auto 0">
+  Go step by step, or jump to <a href="#print">printing the set</a>. Every step has a drawing, a 3D view
+  you can turn, and the file to print. Two labels keep the mathematics and the meaning apart:
+  <span class="rl rl-m">exact</span> marks geometry you can check with a ruler, and
+  <span class="rl rl-h">tradition</span> marks names, history and symbolism.
+</p>
+
+<nav class="toc" aria-label="Steps on this page">
+  <ol>
+    <li><a href="#measure"><b>00</b>The one measure</a></li>
+    <li><a href="#circle"><b>01</b>The Circle</a></li>
+    <li><a href="#vesica"><b>02</b>Vesica Piscis</a></li>
+    <li><a href="#tripod"><b>03</b>Tripod of Life</a></li>
+    <li><a href="#seed"><b>04</b>Seed &amp; Egg of Life</a></li>
+    <li><a href="#flower"><b>05</b>Flower of Life</a></li>
+    <li><a href="#fruit"><b>06</b>Fruit of Life</a></li>
+    <li><a href="#metatron"><b>07</b>Metatron’s Cube</a></li>
+    <li><a href="#solids"><b>08</b>Five solids in one drawing</a></li>
+    <li><a href="#stars"><b>09</b>Stars and the woven five</a></li>
+    <li><a href="#tree"><b>10</b>Tree of Life</a></li>
+    <li><a href="#print"><b>11</b>Printing the set</a></li>
+    <li><a href="#claims"><b>12</b>Exact, and tradition</a></li>
+  </ol>
+</nav>
+
+<!-- the one 3D viewer; it moves into whichever step asks for it -->
+<div id="viewerHome" hidden>
+  <section class="viewer" id="viewer" aria-label="3D viewer">
+    <div class="vhead"><b id="vTitle">—</b><span id="vSize"></span></div>
+    <div class="vstage" id="vStage" tabindex="0" role="application" aria-roledescription="3D viewer" aria-label="3D view">
+      <div class="vmsg" id="vMsg">loading…</div>
+      <div class="vhint" aria-hidden="true">drag to turn · scroll or pinch to zoom · arrow keys work too</div>
+    </div>
+    <div class="vbar">
+      <span class="nudge" role="group" aria-label="Turn the model">
+        <button class="act" data-nudge="left" aria-label="Turn left">◀</button>
+        <button class="act" data-nudge="right" aria-label="Turn right">▶</button>
+        <button class="act" data-nudge="up" aria-label="Tilt up">▲</button>
+        <button class="act" data-nudge="down" aria-label="Tilt down">▼</button>
+      </span>
+      <button class="act" id="vTop">Look straight down</button>
+      <button class="act" id="vFront">Three-quarter view</button>
+      <button class="act" id="vSpin" aria-pressed="true">Turning</button>
+      <span class="sp"></span>
+      <a class="act" id="vDl" href="#" download>Download STL</a>
+      <button class="act" id="vClose">Close</button>
+    </div>
+  </section>
+</div>
+
+<!-- ============================================================== 00 -->
+<h2 id="measure"><span class="num">00</span>The one measure <span class="rl rl-m">exact</span></h2>
+<p>Three rules size every piece. Each one is a single sentence, and each can be checked on the prints with a ruler.</p>
+<div class="rules">
+  <div class="rule">
+    <h3>Flat figures</h3>
+    <p>Every circle has radius <b>R = 15&nbsp;mm</b>, and every centre sits on one triangular grid of
+    points 15&nbsp;mm apart, one row running straight up. All eight plates share a 170&nbsp;mm ring and
+    three pins, so their lines fall on one another when stacked.</p>
+    <svg id="ruleLattice" viewBox="-60 -40 120 80" role="img" aria-labelledby="rl1t"><title id="rl1t">A triangular grid of dots 15 mm apart, with one circle of radius 15 mm centred on a dot and passing through six others</title></svg>
+  </div>
+  <div class="rule">
+    <h3>Solids</h3>
+    <p>Look straight down a solid’s three-fold axis, through the middle of a triangular face or a
+    three-way corner. Its outermost corners then land on the circle of radius <b>4R = 60&nbsp;mm</b>
+    that runs through the six outer centres of Metatron’s Cube.</p>
+    <svg id="ruleShadow" viewBox="-80 -80 160 160" role="img" aria-labelledby="rl2t"><title id="rl2t">Metatron's Cube drawn faintly, with a dashed circle through its six outer centres and the outline of a cube seen corner-on, whose six outer corners sit on that circle</title></svg>
+  </div>
+  <div class="rule">
+    <h3>Spheres</h3>
+    <p>Spheres of radius R sit on a cube-shaped grid with a spacing of R × √(3/2) = <b>18.37&nbsp;mm</b>.
+    Seen corner-on, that grid’s shadow is the plates’ grid, so a 2 × 2 × 2 cluster casts the Seed of
+    Life and a 3 × 3 × 3 cluster casts the Flower of Life.</p>
+    <svg id="ruleSpheres" viewBox="-50 -50 100 100" role="img" aria-labelledby="rl3t"><title id="rl3t">Seven circles cast by eight spheres seen corner-on: one in the middle, six around it, the Seed of Life</title></svg>
+  </div>
+</div>
+<div class="note">The grid is triangular, not square, because six equal circles fit exactly around a seventh:
+six equilateral triangles meet at a point, and 6 × 60° = 360°. That one fact is why every figure below
+closes up with nothing left over.</div>
+
+<!-- ============================================================== 01 -->
+<h2 id="circle"><span class="num" id="start">01</span>The Circle</h2>
+<div class="step">
+  <figure class="plate"><svg data-plate="circle" role="img" aria-labelledby="t01"><title id="t01">Plate 1: a single circle of radius 15 mm in the middle of the ring frame, tied to it by six spokes</title></svg>
+    <figcaption>Plate 01. The six spokes run along the grid’s six directions and hold the figure in the frame; every plate has them wherever its drawing stops short of the ring.</figcaption></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>One circle, radius 15&nbsp;mm. Every later figure is made the same way: put the compass point on
+    a place where lines already cross, and draw another circle of the same size.</p>
+    <span class="rl rl-h">tradition</span>
+    <p>The circle stands for unity and wholeness in many traditions: no beginning, no end, every point
+    the same distance from the centre.</p>
+    <div class="do"><button class="act v3d" data-piece="plate-01">Turn it in 3D</button>
+      <a class="act" href="stl/one-circle/01_circle.stl" download>01_circle.stl<span>225 KB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 02 -->
+<h2 id="vesica"><span class="num">02</span>Vesica Piscis</h2>
+<div class="step">
+  <figure class="plate"><svg data-plate="vesica_piscis" role="img" aria-labelledby="t02"><title id="t02">Plate 2: two overlapping circles, the second centred on the top of the first, making a lens shape between them</title></svg>
+    <figcaption>Plate 02. The second circle’s centre sits on the first circle’s rim, straight up the grid.</figcaption></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>Each circle passes through the other’s centre. The lens between them is 15&nbsp;mm wide and
+    15 × √3 = <b>26.0&nbsp;mm</b> tall, a ratio of exactly √3. Join the two centres and either crossing
+    point and you get a perfect equilateral triangle, which is how Euclid begins his <i>Elements</i>
+    (Book I, Proposition 1).</p>
+    <span class="rl rl-h">tradition</span>
+    <p><i>Vesica piscis</i> is Latin for “fish’s bladder”. In medieval Christian art the lens becomes the
+    <i>mandorla</i>, the almond-shaped glory around Christ in Majesty.</p>
+    <div class="do"><button class="act v3d" data-piece="plate-02">Turn it in 3D</button>
+      <a class="act" href="stl/one-circle/02_vesica_piscis.stl" download>02_vesica_piscis.stl<span>271 KB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 03 -->
+<h2 id="tripod"><span class="num">03</span>Tripod of Life</h2>
+<div class="step">
+  <figure class="plate"><svg data-plate="tripod_of_life" role="img" aria-labelledby="t03"><title id="t03">Plate 3: three circles, each passing through the other two centres</title></svg>
+    <figcaption>Plate 03. The third circle is drawn on a crossing point of the first two.</figcaption></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>Three circles, each through both other centres. The centres form an equilateral triangle with
+    15&nbsp;mm sides, the first triangle of the grid.</p>
+    <span class="rl rl-h">tradition</span>
+    <p>“Tripod of Life” is a modern name from sacred-geometry teaching. The pattern also echoes the
+    Borromean rings and the Christian triquetra.</p>
+    <div class="do"><button class="act v3d" data-piece="plate-03">Turn it in 3D</button>
+      <a class="act" href="stl/one-circle/03_tripod_of_life.stl" download>03_tripod_of_life.stl<span>316 KB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 04 -->
+<h2 id="seed"><span class="num">04</span>Seed of Life, and the Egg of Life</h2>
+<div class="step">
+  <figure class="plate"><svg data-plate="seed_of_life" data-shadow="egg_of_life" role="img" aria-labelledby="t04"><title id="t04">Plate 4: seven circles, six arranged around a central one, each passing through the centre</title></svg>
+    <figcaption>Plate 04. Use the button to lay the Egg of Life’s shadow over it.</figcaption></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>Keep drawing around the first circle and six circles fit exactly, each through the centre and
+    through its two neighbours’ centres. Their centres make a regular hexagon with 15&nbsp;mm sides.</p>
+    <p><b>The Egg of Life</b> is the same figure in three dimensions: eight spheres of radius 15&nbsp;mm at
+    the corners of a cube with 18.37&nbsp;mm sides. Look at it corner-on and two spheres hide behind each
+    other in the middle while the other six ring them, casting this plate exactly. The spheres overlap,
+    so it prints as one solid, 48&nbsp;mm across.</p>
+    <span class="rl rl-h">tradition</span>
+    <p>The Seed of Life is often read as the seven days of creation in Genesis, one circle per day.
+    “Seed”, “Egg” and “Fruit of Life” are modern names, popularised in the 1990s.</p>
+    <div class="do"><button class="act shadowbtn" data-for="seed_of_life" aria-pressed="false">Lay the Egg of Life on it</button>
+      <button class="act v3d" data-piece="egg-of-life">Turn the Egg in 3D</button>
+      <button class="act v3d" data-piece="plate-04">Turn the plate in 3D</button></div>
+    <div class="do"><a class="act" href="stl/one-circle/04_seed_of_life.stl" download>04_seed_of_life.stl<span>478 KB</span></a>
+      <a class="act" href="stl/one-circle/egg_of_life.stl" download>egg_of_life.stl<span>880 KB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 05 -->
+<h2 id="flower"><span class="num">05</span>Flower of Life, in circles and in spheres</h2>
+<div class="step">
+  <figure class="plate"><svg data-plate="flower_of_life" data-shadow="flower_of_life_spheres" role="img" aria-labelledby="t05"><title id="t05">Plate 5: nineteen overlapping circles inside a larger circle, making a pattern of petals</title></svg>
+    <figcaption>Plate 05. Nineteen circles inside a border circle of radius 45&nbsp;mm.</figcaption></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>Go two rings out from the centre and you have 19 circles, every one on the grid. The petal shapes
+    are vesicas, all the same size as the one on plate 02. The border circle has radius 3R = 45&nbsp;mm
+    and just touches the six outermost circles.</p>
+    <p><b>In spheres:</b> 27 spheres in a 3 × 3 × 3 block, on the same cube grid as the Egg. Seen
+    corner-on, the 27 cast exactly these 19 circles, because some sit behind others. It is 67&nbsp;mm across.</p>
+    <span class="rl rl-h">tradition</span>
+    <p>Drawings of the pattern on granite columns of the Osireion at Abydos, Egypt, are often cited as
+    the oldest. They are drawn, not carved, and their date is disputed. The name “Flower of Life” and
+    most of its present-day meaning come from late-20th-century writing, especially Drunvalo
+    Melchizedek’s.</p>
+    <div class="do"><button class="act shadowbtn" data-for="flower_of_life" aria-pressed="false">Lay the 27 spheres on it</button>
+      <button class="act v3d" data-piece="flower-of-life-spheres">Turn the spheres in 3D</button>
+      <button class="act v3d" data-piece="plate-05">Turn the plate in 3D</button></div>
+    <div class="do"><a class="act" href="stl/one-circle/05_flower_of_life.stl" download>05_flower_of_life.stl<span>926 KB</span></a>
+      <a class="act" href="stl/one-circle/flower_of_life_spheres.stl" download>flower_of_life_spheres.stl<span>1.9 MB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 06 -->
+<h2 id="fruit"><span class="num">06</span>Fruit of Life</h2>
+<div class="step">
+  <figure class="plate"><svg data-plate="fruit_of_life" role="img" aria-labelledby="t06"><title id="t06">Plate 6: thirteen circles that touch but do not overlap, one in the middle, six around it and six further out</title></svg>
+    <figcaption>Plate 06. The outer six circles reach the frame exactly, at 75&nbsp;mm from the centre.</figcaption></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>Thirteen circles that only touch, with centres 30&nbsp;mm (2R) apart along the grid’s six
+    directions, plus six more at 60&nbsp;mm (4R). Every centre is still a point of the grid: along each
+    of the six directions, the Fruit keeps every second circle of an extended Flower. Its outer circles
+    end at 5R = 75&nbsp;mm, which is why the ring frame starts there.</p>
+    <span class="rl rl-h">tradition</span>
+    <p>Thirteen is read as the number of the “Fruit”, from which Metatron’s Cube is drawn.</p>
+    <div class="do"><button class="act v3d" data-piece="plate-06">Turn it in 3D</button>
+      <a class="act" href="stl/one-circle/06_fruit_of_life.stl" download>06_fruit_of_life.stl<span>718 KB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 07 -->
+<h2 id="metatron"><span class="num">07</span>Metatron’s Cube</h2>
+<div class="step">
+  <figure class="plate"><svg data-plate="metatrons_cube" role="img" aria-labelledby="t07"><title id="t07">Plate 7: the thirteen circles of the Fruit of Life with a straight line joining every pair of centres, 78 lines in all</title></svg>
+    <figcaption>Plate 07. 150&nbsp;mm across the drawing, 170&nbsp;mm with the ring.</figcaption></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>Join every one of the Fruit’s 13 centres to every other: 13 × 12 ÷ 2 = <b>78 lines</b>. Hexagons,
+    six-pointed stars and the outline of a cube seen corner-on all appear. The next step tests the
+    claim that all five Platonic solids are hidden here.</p>
+    <span class="rl rl-h">tradition</span>
+    <p>Named after the archangel Metatron of Jewish mystical writing. The figure as drawn here is modern.</p>
+    <div class="do"><button class="act v3d" data-piece="plate-07">Turn it in 3D</button>
+      <a class="act" href="stl/one-circle/07_metatrons_cube.stl" download>07_metatrons_cube.stl<span>841 KB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 08 -->
+<h2 id="solids"><span class="num">08</span>Five solids in one drawing</h2>
+<p>A Platonic solid has identical regular faces and the same number of faces meeting at every corner.
+There are exactly five, which Euclid proves at the end of the <i>Elements</i> (Book XIII). Here each is
+printed as an edge frame: 5&nbsp;mm struts with 7&nbsp;mm nodes at the corners. Pick one and see where its
+corners fall on Metatron’s Cube.</p>
+<div class="seg" role="tablist" aria-label="Choose a solid" id="solidTabs">
+  <button role="tab" data-s="tetrahedron" aria-selected="true">Tetrahedron</button>
+  <button role="tab" data-s="cube" aria-selected="false">Cube</button>
+  <button role="tab" data-s="octahedron" aria-selected="false">Octahedron</button>
+  <button role="tab" data-s="dodecahedron" aria-selected="false">Dodecahedron</button>
+  <button role="tab" data-s="icosahedron" aria-selected="false">Icosahedron</button>
+</div>
+<div class="lab">
+  <figure class="plate"><svg id="solidSvg" viewBox="-80 -80 160 160" role="img" aria-labelledby="solidSvgT"><title id="solidSvgT">The solid seen down its three-fold axis, drawn over Metatron's Cube</title></svg>
+    <div class="key" aria-hidden="true"><span><i style="background:var(--ok)"></i>corner on a Metatron centre</span>
+      <span><i style="border:2px solid var(--warn);border-radius:0"></i>corner between them</span>
+      <span>— front edges &nbsp; - - back edges</span></div></figure>
+  <div>
+    <h3 id="solidName">Tetrahedron</h3>
+    <div id="solidChip"></div>
+    <div class="read" id="solidRead" aria-live="polite"></div>
+    <p id="solidText"></p>
+    <div class="do"><button class="act v3d" id="solid3d" data-piece="tetrahedron">Turn it in 3D</button>
+      <a class="act" id="solidDl" href="stl/one-circle/tetrahedron_frame.stl" download>tetrahedron_frame.stl</a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+<div class="note">Why the last two miss: the dodecahedron and icosahedron are built on the golden ratio,
+φ = 1.618…, which no whole-number grid can hold. Metatron’s Cube has rings only at 30 and 60&nbsp;mm,
+in the plain ratio 1 : 2, so their remaining corners fall between the rings. The <a href="mineral-lattices-platonic-solids.html">Forbidden Symmetry</a>
+page follows the same φ into crystals, where it makes five-fold symmetry impossible.</div>
+
+<!-- ============================================================== 09 -->
+<h2 id="stars"><span class="num">09</span>Stars, and the woven five</h2>
+<p><b>Stellation</b> means extending a solid’s faces outward until they meet again. Each face then grows a
+pyramid whose sides lie in the planes of its neighbouring faces. Each star below is grown from the solid
+in step 08, so its core is exactly that solid. The tetrahedron and cube cannot be stellated, because their
+faces meet at 90° or less and the extended planes never close in front of a face. For those two, the set
+uses the classic stand-in instead: the solid combined with its partner solid, called its <i>dual</i>,
+which swaps corners for face centres.</p>
+<div class="cards" id="starCards"></div>
+<div class="vslot"></div>
+
+<h3>The five intersecting tetrahedra</h3>
+<div class="step">
+  <figure class="plate" style="padding:0;overflow:hidden"><img src="assets/one-circle/five-tetrahedra.webp" width="640" height="640" loading="lazy" style="width:100%;height:auto;display:block"
+    alt="Five triangular frames woven through one another, each a tetrahedron, together forming a star-like ball"></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>The dodecahedron’s 20 corners split into five groups of four, and each group is a regular
+    tetrahedron. Each tetrahedron’s edge is the cube’s face diagonal, <b>103.9&nbsp;mm</b>. Built as
+    flat-faced frames, the five pass through one another without touching.</p>
+    <p>The beam width is calculated, not guessed. The widest beam that still lets the frames slip past
+    each other is the edge length ÷ 12.09. That matches Francis Ow’s origami unit folded from a 1 × 3
+    strip, whose width is the edge ÷ 12. The woven file prints the five frames already interlocked, with
+    0.8&nbsp;mm between them. The rigid file welds them into one solid.</p>
+    <div class="do"><button class="act v3d" data-piece="five-tetrahedra">Turn the woven one in 3D</button>
+      <button class="act v3d" data-piece="five-tetrahedra-rigid">Turn the rigid one in 3D</button></div>
+    <div class="do"><a class="act" href="stl/one-circle/five_intersecting_tetrahedra.stl" download>woven<span>12 KB</span></a>
+      <a class="act" href="stl/one-circle/five_intersecting_tetrahedra_rigid.stl" download>rigid<span>59 KB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 10 -->
+<h2 id="tree"><span class="num">10</span>Tree of Life</h2>
+<div class="step">
+  <figure class="plate"><svg data-plate="tree_of_life" role="img" aria-labelledby="t10"><title id="t10">Plate 8: the Tree of Life, ten discs joined by twenty-two paths, with a small ring for the hidden eleventh, all placed on centres of the Flower of Life grid</title></svg>
+    <figcaption>Plate 08. Ten sephirot as discs, the hidden Daath as a ring, and 22 paths.</figcaption></figure>
+  <div>
+    <span class="rl rl-m">exact</span>
+    <p>Every sephirah sits on a circle centre of the Flower of Life (plate 05), with Tiferet in the middle.
+    The Tree is 60&nbsp;mm from Kether at the top to Malkuth at the bottom, exactly four grid steps. Stack
+    this plate on the Flower and every disc lands on a circle centre.</p>
+    <span class="rl rl-h">tradition</span>
+    <p>The Tree of Life is the central diagram of Kabbalah, the Jewish mystical tradition. This layout of
+    ten sephirot and 22 paths is the one Athanasius Kircher published in 1652, later adopted by the
+    Hermetic Order of the Golden Dawn. Each path is paired with a letter of the Hebrew alphabet.</p>
+    <div class="do"><button class="act shadowbtn" data-for="tree_of_life" data-under="flower_of_life" aria-pressed="false">Show the Flower beneath it</button>
+      <button class="act v3d" data-piece="plate-08">Turn it in 3D</button>
+      <a class="act" href="stl/one-circle/08_tree_of_life.stl" download>08_tree_of_life.stl<span>376 KB</span></a></div>
+  </div>
+</div>
+<div class="vslot"></div>
+
+<!-- ============================================================== 11 -->
+<h2 id="print"><span class="num">11</span>Printing the set</h2>
+<p>All files are for a 320&nbsp;mm bed in PETG with a 0.4&nbsp;mm nozzle, and every one was checked to be
+a single, watertight piece that fits the bed. The edge frames come already seated on their widest face,
+with a thin flat underneath to help them stick.</p>
+<div class="do"><a class="act" href="stl/one-circle-set.zip" download>Download the whole set (zip)<span>3.8 MB, 23 files + printing notes</span></a></div>
+<div class="panel">
+  <h3 style="margin-top:2px">Stacking the plates</h3>
+  <p style="margin:6px 0">Print <code>plate_pin.stl</code> three times; it lies on its flat side so it needs no supports.
+  Or use 3&nbsp;mm dowels. The pin holes are 3.4&nbsp;mm, at 0°, 120° and 180° around the ring. Because they are
+  spaced unevenly, a plate only seats one way round and can’t go on rotated or flipped. Stack any plates
+  in any order and their lines fall on one another. Circle, Seed, Flower, Tree makes a good four-layer stack.</p>
+</div>
+<div class="tscroll">
+<table>
+  <caption>Every file in the set. Weight is for PETG printed solid; frames print close to that, while the spheres use far less with normal infill.</caption>
+  <thead><tr><th scope="col">Piece</th><th scope="col">File</th><th scope="col">Size, mm</th><th scope="col">Solid weight</th><th scope="col">Notes</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Plates 01–08</th><td class="n">01_circle … 08_tree_of_life</td><td class="n">170 × 170 × 3</td><td class="n">24–38 g</td><td>flat, no supports</td></tr>
+    <tr><th scope="row">Plate pin</th><td class="n">plate_pin</td><td class="n">24 × 3 × 3</td><td class="n">0.2 g</td><td>print 3, lying flat</td></tr>
+    <tr><th scope="row">Tetrahedron</th><td class="n">tetrahedron_frame</td><td class="n">111 × 97 × 91</td><td class="n">15 g</td><td rowspan="5">tree supports, brim; edge 103.9 / 73.5 / 103.9 / 45.4 / 64.2 mm</td></tr>
+    <tr><th scope="row">Cube</th><td class="n">cube_frame</td><td class="n">111 × 111 × 80</td><td class="n">22 g</td></tr>
+    <tr><th scope="row">Octahedron</th><td class="n">octahedron_frame</td><td class="n">111 × 127 × 91</td><td class="n">30 g</td></tr>
+    <tr><th scope="row">Dodecahedron</th><td class="n">dodecahedron_frame</td><td class="n">127 × 132 × 108</td><td class="n">34 g</td></tr>
+    <tr><th scope="row">Icosahedron</th><td class="n">icosahedron_frame</td><td class="n">111 × 127 × 103</td><td class="n">46 g</td></tr>
+    <tr><th scope="row">Stella octangula (from the tetrahedron)</th><td class="n">stellated_tetrahedron_frame</td><td class="n">97 × 97 × 80</td><td class="n">30 g</td><td rowspan="5">tree supports, brim</td></tr>
+    <tr><th scope="row">Cube + octahedron</th><td class="n">stellated_cube_frame</td><td class="n">134 × 127 × 110</td><td class="n">51 g</td></tr>
+    <tr><th scope="row">Stella octangula (from the octahedron)</th><td class="n">stellated_octahedron_frame</td><td class="n">215 × 215 × 153</td><td class="n">90 g</td></tr>
+    <tr><th scope="row">Small stellated dodecahedron</th><td class="n">stellated_dodecahedron_frame</td><td class="n">211 × 228 × 186</td><td class="n">134 g</td></tr>
+    <tr><th scope="row">Small triambic icosahedron</th><td class="n">stellated_icosahedron_frame</td><td class="n">133 × 135 × 124</td><td class="n">99 g</td></tr>
+    <tr><th scope="row">Five tetrahedra, woven</th><td class="n">five_intersecting_tetrahedra</td><td class="n">121 × 125 × 101</td><td class="n">89 g</td><td>prints interlocked; supports from the bed only</td></tr>
+    <tr><th scope="row">Five tetrahedra, rigid</th><td class="n">five_intersecting_tetrahedra_rigid</td><td class="n">121 × 125 × 101</td><td class="n">176 g</td><td>one solid</td></tr>
+    <tr><th scope="row">Egg of Life</th><td class="n">egg_of_life</td><td class="n">48 × 48 × 47</td><td class="n">102 g</td><td rowspan="2">supports under the lower spheres</td></tr>
+    <tr><th scope="row">Flower of Life in spheres</th><td class="n">flower_of_life_spheres</td><td class="n">67 × 67 × 65</td><td class="n">299 g</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================================== 12 -->
+<h2 id="claims"><span class="num">12</span>Exact, and tradition</h2>
+<div class="panel">
+  <p style="margin-top:0"><span class="rl rl-m">exact</span> These are checked numerically by the scripts
+  that make the files, and you can confirm them on the prints:</p>
+  <ul>
+    <li>All eight plates share one grid. Stacked on the pins, their circle centres coincide.</li>
+    <li>Corner-on, the tetrahedron, cube and octahedron put <i>every</i> corner on a centre of Metatron’s Cube.</li>
+    <li>The dodecahedron puts 8 of its 20 corners there (the cube hidden inside it), and the icosahedron 6 of 12. The rest cannot fit, because of φ.</li>
+    <li>At these sizes the cube and octahedron are exact partners: their edges cross at their midpoints.</li>
+    <li>The Egg of Life and the 27-sphere Flower cast exactly the Seed and Flower plates.</li>
+    <li>Every sephirah of the Tree lies on a circle centre of the Flower of Life.</li>
+  </ul>
+  <p><span class="rl rl-h">tradition</span> The names Seed, Egg and Fruit of Life, the idea that the
+  Flower of Life is the pattern of creation, Metatron as the figure’s angel, and the Kabbalistic meanings
+  of the Tree are traditions of interpretation, some ancient and some quite recent. This page reports
+  them; the geometry neither proves nor disproves them.</p>
+  <p style="margin-bottom:0"><span class="rl rl-c">correction</span> The popular claim that Metatron’s
+  Cube “contains all five Platonic solids” holds exactly for three and only approximately for the other
+  two (step 08).</p>
+</div>
+<h3>Sources</h3>
+<ol class="refs">
+  <li>Euclid, <i>Elements</i>, Book I Prop. 1 (the vesica construction) and Book XIII (the five solids, and why there are no more).</li>
+  <li>Plato, <i>Timaeus</i> 53c–56c, which pairs four solids with the elements and the dodecahedron with the whole.</li>
+  <li>J. Kepler, <i>Harmonices Mundi</i> (1619), which names the stella octangula and describes the small stellated dodecahedron.</li>
+  <li>H. S. M. Coxeter, P. Du Val, H. T. Flather, J. F. Petrie, <i>The Fifty-Nine Icosahedra</i> (1938), on the stellations of the icosahedron.</li>
+  <li>A. Kircher, <i>Oedipus Aegyptiacus</i> (1652), the source of this Tree of Life layout.</li>
+  <li>D. Melchizedek, <i>The Ancient Secret of the Flower of Life</i>, vol. 1 (1999), the source of most modern Flower of Life names.</li>
+  <li>F. Ow, the 60° origami unit for the five intersecting tetrahedra.</li>
+</ol>
+
+<footer>Promethean Theoria · Printable Sacred Geometry · <a href="./">all pages</a></footer>
+</main>
+
+<script src="assets/one-circle/geometry.js"></script>
+<script>
+(function(){
+const OC=window.OC, NS='http://www.w3.org/2000/svg', $=id=>document.getElementById(id);
+if(!OC){return;}
+const R=OC.R;
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+const f2=v=>(+v).toFixed(2), Y=y=>-y;     // geometry is y-up, svg is y-down
+
+/* ---------- plates ---------- */
+function drawFigure(g,name,cls){
+  const p=OC.plates[name], w=name==='tree_of_life'?2.2:OC.stroke;
+  for(const [x,y,r] of p.circles) el('circle',{cx:f2(x),cy:f2(Y(y)),r:f2(r),class:cls||'f-fig','stroke-width':w},g);
+  for(const [a,b,lw] of p.lines) el('line',{x1:f2(a[0]),y1:f2(Y(a[1])),x2:f2(b[0]),y2:f2(Y(b[1])),class:cls||'f-fig','stroke-width':lw},g);
+  for(const [x,y,r] of p.discs) el('circle',{cx:f2(x),cy:f2(Y(y)),r:f2(r),class:cls?cls:'f-disc'},g);
+}
+function drawPlate(svg,name){
+  const o=OC.frameOut, i=OC.frameIn;
+  svg.setAttribute('viewBox',`${-o-2} ${-o-2} ${2*o+4} ${2*o+4}`);
+  el('path',{d:`M${-o},0a${o},${o} 0 1,0 ${2*o},0a${o},${o} 0 1,0 ${-2*o},0ZM${-i},0a${i},${i} 0 1,1 ${2*i},0a${i},${i} 0 1,1 ${-2*i},0Z`,class:'f-frame','fill-rule':'evenodd'},svg);
+  for(const [x,y] of OC.pins) el('circle',{cx:f2(x),cy:f2(Y(y)),r:OC.pinHole/2,class:'f-pin'},svg);
+  for(const [a,b] of OC.plates[name].spokes) el('line',{x1:f2(a[0]),y1:f2(Y(a[1])),x2:f2(b[0]),y2:f2(Y(b[1])),class:'f-spoke'},svg);
+  svg._under=el('g',{},svg);
+  drawFigure(el('g',{},svg),name);
+  svg._over=el('g',{},svg);
+}
+document.querySelectorAll('svg[data-plate]').forEach(s=>drawPlate(s,s.dataset.plate));
+
+/* shadow and underlay toggles */
+document.querySelectorAll('.shadowbtn').forEach(b=>{
+  const svg=document.querySelector(`svg[data-plate="${b.dataset.for}"]`);
+  b.addEventListener('click',()=>{
+    const on=b.getAttribute('aria-pressed')!=='true';
+    b.setAttribute('aria-pressed',on);
+    if(b.dataset.under){
+      svg._under.innerHTML='';
+      if(on) drawFigure(svg._under,b.dataset.under,'f-faint');
+    }else{
+      svg._over.innerHTML='';
+      if(on) for(const [x,y] of OC.spheres[svg.dataset.shadow]) el('circle',{cx:f2(x),cy:f2(Y(y)),r:R,class:'f-shadow'},svg._over);
+    }
+  });
+});
+
+/* rule diagrams */
+(function(){
+  const s=$('ruleLattice');
+  for(let i=-4;i<=4;i++)for(let j=-4;j<=4;j++){const x=i*R*Math.cos(Math.PI/6), y=i*R*Math.sin(Math.PI/6)+j*R;
+    if(Math.abs(x)<58&&Math.abs(y)<38) el('circle',{cx:f2(x),cy:f2(Y(y)),r:1.4,class:'f-lattice'},s);}
+  el('circle',{cx:0,cy:0,r:R,class:'f-fig','stroke-width':1.2},s);
+  el('line',{x1:0,y1:0,x2:0,y2:-R,class:'f-front','stroke-width':1},s);
+  const t=el('text',{x:-2.5,y:-R/2,class:'f-label','text-anchor':'end'},s); t.textContent='R = 15';
+})();
+(function(){
+  const s=$('ruleShadow'); drawFigure(el('g',{},s),'metatrons_cube','f-faint');
+  el('circle',{cx:0,cy:0,r:4*R,class:'f-ring'},s);
+  drawSolid(el('g',{},s),OC.solids.cube,true);
+})();
+(function(){
+  const s=$('ruleSpheres');
+  drawFigure(el('g',{},s),'seed_of_life','f-faint');
+  for(const [x,y] of OC.spheres.egg_of_life) el('circle',{cx:f2(x),cy:f2(Y(y)),r:R,class:'f-shadow'},s);
+})();
+
+/* ---------- solids over Metatron's Cube ---------- */
+const CENTRES=[[0,0]].concat(...OC.rays.map(a=>[2,4].map(k=>[k*R*Math.cos(a*Math.PI/180),k*R*Math.sin(a*Math.PI/180)])));
+function onCentre(x,y){return CENTRES.some(([cx,cy])=>Math.hypot(x-cx,y-cy)<0.05);}
+function drawSolid(g,S,quiet){
+  const V=S.V;
+  const edges=S.E.map(([i,j])=>({i,j,z:(V[i][2]+V[j][2])/2})).sort((a,b)=>a.z-b.z);
+  for(const e of edges){
+    const front=e.z>=-0.01;
+    el('line',{x1:f2(V[e.i][0]),y1:f2(Y(V[e.i][1])),x2:f2(V[e.j][0]),y2:f2(Y(V[e.j][1])),class:front?'f-front':'f-back'},g);
+  }
+  if(quiet) return;
+  for(const [x,y] of V){
+    if(onCentre(x,y)) el('circle',{cx:f2(x),cy:f2(Y(y)),r:2.6,class:'f-on'},g);
+    else el('rect',{x:f2(x-2.4),y:f2(Y(y)-2.4),width:4.8,height:4.8,class:'f-off'},g);
+  }
+}
+const SOLID_TEXT={
+  tetrahedron:['Four triangles, three at each corner. Corner-on it shows a triangle on the outer centres with its top corner over the middle.',
+    'Plato’s solid of fire.'],
+  cube:['Six squares. Corner-on, the cube is the hexagon with three lines to the middle, the most visible figure in Metatron’s Cube. Its edge is 73.5&nbsp;mm.',
+    'Plato’s solid of earth.'],
+  octahedron:['Eight triangles, four at each corner. Corner-on it is a hexagon crossed by two triangles. At this size it is the cube’s exact partner: each cube edge crosses an octahedron edge at the middle, as in the cube + octahedron star in step 09.',
+    'Plato’s solid of air.'],
+  dodecahedron:['Twelve pentagons. A cube hides inside it, sharing 8 of its 20 corners, and those 8 land on the centres just as the cube’s do. The other 12 miss: six sit on the outer circle between its centres, and six on a 42.4&nbsp;mm circle, between Metatron’s rings at 30 and 60&nbsp;mm.',
+    'Plato’s solid for the whole cosmos.'],
+  icosahedron:['Twenty triangles, five at each corner. The outer six corners land on the outer centres. The inner six fall on a 37.1&nbsp;mm circle, 60 ÷ φ, where Metatron’s ring is at 30&nbsp;mm.',
+    'Plato’s solid of water.'],
+};
+const CHIP={tetrahedron:'m',cube:'m',octahedron:'m',dodecahedron:'c',icosahedron:'c'};
+function showSolid(name){
+  const svg=$('solidSvg'); svg.innerHTML='<title id="solidSvgT"></title>';
+  drawFigure(el('g',{},svg),'metatrons_cube','f-faint');
+  el('circle',{cx:0,cy:0,r:4*R,class:'f-ring'},svg);
+  const S=OC.solids[name]; drawSolid(el('g',{},svg),S);
+  const on=S.V.filter(([x,y])=>onCentre(x,y)).length, n=S.V.length;
+  const nm=name[0].toUpperCase()+name.slice(1);
+  $('solidSvgT').textContent=`The ${name} seen corner-on over Metatron's Cube: ${on} of ${n} corners land on its centres`;
+  $('solidName').textContent=nm;
+  const f=OC.files[name], edge=Math.min(...S.E.map(([i,j])=>Math.hypot(...[0,1,2].map(k=>S.V[i][k]-S.V[j][k]))));
+  const rad=Math.max(...S.V.map(v=>Math.hypot(...v)));
+  $('solidChip').innerHTML=CHIP[name]==='m'?'<span class="rl rl-m">exact fit</span>':'<span class="rl rl-c">near fit only</span>';
+  $('solidRead').innerHTML=`<b>${on} of ${n}</b> corners land on a centre of Metatron’s Cube. Edge ${edge.toFixed(1)}&nbsp;mm, corners on a ${(2*rad).toFixed(1)}&nbsp;mm sphere; the print is ${f.mm.map(v=>Math.round(v)).join(' × ')}&nbsp;mm.`;
+  $('solidText').innerHTML=SOLID_TEXT[name][0]+' <span class="rl rl-h" style="margin-left:4px">tradition</span> '+SOLID_TEXT[name][1];
+  $('solid3d').dataset.piece=name;
+  $('solidDl').href='stl/one-circle/'+f.file; $('solidDl').textContent=f.file;
+}
+document.querySelectorAll('#solidTabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#solidTabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  showSolid(b.dataset.s);
+}));
+$('solidTabs').addEventListener('keydown',e=>{
+  if(!['ArrowLeft','ArrowRight'].includes(e.key))return;
+  const bs=[...document.querySelectorAll('#solidTabs button')], i=bs.findIndex(b=>b.getAttribute('aria-selected')==='true');
+  const b=bs[(i+(e.key==='ArrowRight'?1:bs.length-1))%bs.length]; b.focus(); b.click();
+});
+showSolid('tetrahedron');
+
+/* ---------- star cards ---------- */
+const STARS=[
+  ['tetrahedron','Stella octangula','stand-in','Two tetrahedra through each other: the tetrahedron with its dual. Its eight points are the grid cube’s corners, so it sits on Metatron’s Cube exactly like the cube. Also called the star tetrahedron or Merkaba.'],
+  ['cube','Cube + octahedron','stand-in','The cube with its dual. These are the very cube and octahedron of step 08: at the grid’s sizes their edges cross at the midpoints.'],
+  ['octahedron','Stella octangula, grown','true','The octahedron’s real stellation: a pyramid on every face, ending in the same two-tetrahedron star, now twice as large, with the octahedron visible at its heart. Kepler named it in 1619.'],
+  ['dodecahedron','Small stellated dodecahedron','true','A five-pointed star on every face of the dodecahedron. Its 30 straight struts run through the dodecahedron’s corners. Kepler described it in 1619.'],
+  ['icosahedron','Small triambic icosahedron','true','The icosahedron’s first stellation: a low three-sided pyramid on each of its 20 faces. It opens the catalogue of 59 icosahedron stellations by Coxeter and colleagues (1938).'],
+];
+$('starCards').innerHTML=STARS.map(([s,t,kind,txt])=>{
+  const key='stellated-'+s, f=OC.files[key];
+  return `<article class="card"><img src="assets/one-circle/${key}.webp" width="640" height="640" loading="lazy" alt="Edge-frame model of the ${t.toLowerCase()}">
+    <div class="in"><h3>${t}</h3><div>${kind==='true'?'<span class="rl rl-m">true stellation</span>':'<span class="rl rl-h">stand-in: dual compound</span>'}<span class="rl" style="color:var(--muted);border:1px solid var(--rule)">from the ${s}</span></div>
+    <p>${txt}</p><p style="font-size:14px;color:var(--muted)">${f.mm.map(v=>Math.round(v)).join(' × ')}&nbsp;mm</p>
+    <div class="do"><button class="act v3d" data-piece="${key}">Turn it in 3D</button>
+    <a class="act" href="stl/one-circle/${f.file}" download>STL<span>${f.kb} KB</span></a></div></div></article>`;
+}).join('');
+
+/* ---------- moving the viewer to the step that asks ---------- */
+const TITLES={'egg-of-life':'Egg of Life','flower-of-life-spheres':'Flower of Life in spheres',
+  'five-tetrahedra':'Five tetrahedra, woven','five-tetrahedra-rigid':'Five tetrahedra, rigid'};
+Object.keys(OC.files).forEach(k=>{
+  if(TITLES[k]) return;
+  TITLES[k]=k.startsWith('plate-')?'Plate '+k.slice(6)+' · '+OC.files[k].file.replace(/^\d+_/,'').replace('.stl','').replace(/_/g,' '):
+    k[0].toUpperCase()+k.slice(1)+' frame';
+});
+STARS.forEach(([s,t])=>TITLES['stellated-'+s]=t+' (from the '+s+')');
+const viewer=$('viewer');
+function openViewer(btn){
+  const key=btn.dataset.piece, f=OC.files[key];
+  let slot=btn.closest('.step,.lab,#starCards');
+  do slot=slot&&slot.nextElementSibling; while(slot&&!slot.classList.contains('vslot'));
+  if(!slot) return;
+  slot.appendChild(viewer);
+  $('vTitle').textContent=TITLES[key]||key;
+  $('vSize').textContent=f.mm.map(v=>Math.round(v)).join(' × ')+' mm';
+  $('vDl').href='stl/one-circle/'+f.file; $('vDl').innerHTML='Download STL<span>'+f.kb+' KB</span>';
+  $('vStage').setAttribute('aria-label','3D view of '+(TITLES[key]||key)+'. Drag to turn, or focus here and use the arrow keys; plus and minus zoom.');
+  viewer.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  window.OC_PENDING=key;
+  if(window.OCView) window.OCView.show(key);
+  else{ $('vMsg').textContent='loading the 3D viewer…'; setTimeout(()=>{ if(!window.OCView&&window.OC_PENDING===key) fallback(key); },8000); }
+}
+function fallback(key){
+  const st=$('vStage'); st.querySelectorAll('img').forEach(i=>i.remove());
+  if(OC.files[key] && !key.startsWith('plate-')){const im=new Image(); im.src='assets/one-circle/'+key+'.webp'; im.alt='Studio render of '+(TITLES[key]||key); st.prepend(im);}
+  $('vMsg').textContent=key.startsWith('plate-')?'The 3D view needs WebGL and a connection to the three.js CDN. The drawing above shows the plate exactly, and the download works.':'';
+}
+window.OC_FALLBACK=fallback;
+document.addEventListener('click',e=>{const b=e.target.closest('.v3d'); if(b) openViewer(b);});
+$('vClose').addEventListener('click',()=>{window.OC_PENDING=null; $('viewerHome').appendChild(viewer);
+  if(window.OCView) window.OCView.hide();});
+})();
+</script>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+            "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const stage=document.getElementById('vStage'), msg=document.getElementById('vMsg');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});   // throws without WebGL: the page falls back to renders
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.setClearColor(0x000000,0);
+stage.prepend(renderer.domElement);
+renderer.domElement.setAttribute('aria-hidden','true');
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(28,1,1,6000);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.enablePan=false; controls.autoRotate=!reduce; controls.autoRotateSpeed=1.6;
+const spin=document.getElementById('vSpin');
+spin.setAttribute('aria-pressed',controls.autoRotate); spin.textContent=controls.autoRotate?'Turning':'Turn slowly';
+
+scene.add(new THREE.HemisphereLight(0xf4f1ea,0x30343e,1.5));
+const key=new THREE.DirectionalLight(0xffffff,2.4); key.position.set(420,620,520); scene.add(key);
+const rim=new THREE.DirectionalLight(0xbcd6ff,0.9); rim.position.set(-500,200,-400); scene.add(rim);
+const root=new THREE.Group(); root.rotation.x=-Math.PI/2; scene.add(root);   // models are z-up
+const PETG=new THREE.MeshStandardMaterial({color:0xE9DFC9,roughness:0.55,metalness:0,side:THREE.DoubleSide});
+const WEAVE=[0xd64545,0x3f8f4f,0x3b6fb6,0xd99b2c,0x8b5cb8].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:0.5}));
+
+async function loadNSM(url){
+  const r=await fetch(url); if(!r.ok) throw new Error(url+' '+r.status);
+  const buf=await r.arrayBuffer(), dv=new DataView(buf);
+  if(String.fromCharCode(...new Uint8Array(buf,0,4))!=='NSM1') throw new Error('bad mesh '+url);
+  const n=dv.getUint32(4,true), lo=[0,1,2].map(i=>dv.getFloat32(8+4*i,true)), hi=[0,1,2].map(i=>dv.getFloat32(20+4*i,true));
+  const span=hi.map((h,i)=>h>lo[i]?h-lo[i]:1);
+  let off=32; const out=[];
+  for(let c=0;c<n;c++){
+    const nv=dv.getUint32(off,true), nt=dv.getUint32(off+4,true); off+=8;
+    const q=new Uint16Array(buf,off,nv*3); off+=nv*6; off+=(4-(nv*6)%4)%4;
+    const idx=new Uint32Array(buf.slice(off,off+nt*12)); off+=nt*12;
+    const pos=new Float32Array(nv*3);
+    for(let i=0;i<nv*3;i++){const a=i%3;pos[i]=lo[a]+q[i]/65535*span[a];}
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(pos,3)); g.setIndex(new THREE.BufferAttribute(idx,1));
+    out.push(g);
+  }
+  return out;
+}
+
+const cache=new Map(); let current=null, want=null;
+async function build(k){
+  if(cache.has(k)) return cache.get(k);
+  const geos=await loadNSM('assets/one-circle/'+k+'.nsm');
+  const grp=new THREE.Group(), box=new THREE.Box3();
+  geos.forEach((g,i)=>{
+    const smooth=k.includes('sphere')||k==='egg-of-life';
+    const m=new THREE.Mesh(toCreasedNormals(g,smooth?Math.PI/2.2:Math.PI/5),geos.length===5?WEAVE[i]:PETG);
+    grp.add(m); g.computeBoundingBox(); box.union(g.boundingBox);
+  });
+  const item={grp,radius:box.getBoundingSphere(new THREE.Sphere()).radius};
+  cache.set(k,item); return item;
+}
+function place(dir){
+  const d=current.radius/Math.sin(THREE.MathUtils.degToRad(Math.min(camera.fov,camera.fov*camera.aspect)/2))*0.68;
+  controls.target.set(0,0,0);
+  camera.position.copy(dir.clone().normalize().multiplyScalar(d));
+  controls.minDistance=d*0.35; controls.maxDistance=d*3;
+  controls.update();
+}
+const FRONT=new THREE.Vector3(0.78,0.42,0.78), TOP=new THREE.Vector3(0,1,0.0001);
+async function show(k){
+  want=k; msg.textContent='loading…'; msg.style.display='flex';
+  stage.querySelectorAll('img').forEach(i=>i.remove());
+  try{
+    const item=await build(k); if(want!==k) return;
+    if(current) root.remove(current.grp);
+    current=item; root.add(item.grp); resize();
+    place(k.startsWith('plate-')?new THREE.Vector3(0.0,1.0,0.55):FRONT);
+    msg.style.display='none';
+  }catch(e){ console.error(e); window.OC_FALLBACK&&window.OC_FALLBACK(k); }
+}
+function nudge(dx,dy){
+  const off=camera.position.clone().sub(controls.target), s=new THREE.Spherical().setFromVector3(off);
+  s.theta+=dx; s.phi=Math.min(Math.PI-0.05,Math.max(0.05,s.phi+dy));
+  camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(s)); controls.update();
+}
+function zoom(f){const off=camera.position.clone().sub(controls.target).multiplyScalar(f);
+  if(off.length()>controls.minDistance&&off.length()<controls.maxDistance){camera.position.copy(controls.target).add(off);controls.update();}}
+document.querySelectorAll('[data-nudge]').forEach(b=>b.addEventListener('click',()=>{
+  const a=0.26; ({left:()=>nudge(-a,0),right:()=>nudge(a,0),up:()=>nudge(0,-a),down:()=>nudge(0,a)})[b.dataset.nudge]();}));
+stage.addEventListener('keydown',e=>{
+  const a=0.18, m={ArrowLeft:()=>nudge(-a,0),ArrowRight:()=>nudge(a,0),ArrowUp:()=>nudge(0,-a),ArrowDown:()=>nudge(0,a),
+    '+':()=>zoom(0.88),'=':()=>zoom(0.88),'-':()=>zoom(1.14)}[e.key];
+  if(m){e.preventDefault();m();}
+});
+document.getElementById('vTop').addEventListener('click',()=>current&&place(TOP));
+document.getElementById('vFront').addEventListener('click',()=>current&&place(FRONT));
+spin.addEventListener('click',()=>{controls.autoRotate=!controls.autoRotate;spin.setAttribute('aria-pressed',controls.autoRotate);spin.textContent=controls.autoRotate?'Turning':'Turn slowly';});
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight; if(!w||!h) return; renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+new ResizeObserver(resize).observe(stage);
+let visible=false;
+new IntersectionObserver(es=>{visible=es[0].isIntersecting;}).observe(stage);
+renderer.setAnimationLoop(()=>{ if(!visible||!current) return; controls.update(); renderer.render(scene,camera); });
+window.OCView={show,hide(){want=null;}};
+if(window.OC_PENDING) show(window.OC_PENDING);
+</script>
+</body>
+</html>

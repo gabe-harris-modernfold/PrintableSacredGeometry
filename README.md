@@ -33,6 +33,7 @@ works without setting `PYTHONPATH`.
 | `mesh_kit.py` | Mesh assembly and STL writing (`Mesh`, `tube`, `write_stl`). |
 | `render_mesh.py` | Offscreen preview rendering used by the `preview_*.py` scripts. |
 | `ray_optics.py` | Ray/vector helpers for the optical studies. |
+| `sacred_grid.py` | The one-circle grid (R = 15 mm) that sizes the matched sacred-geometry set: plate figures, grid solids, stellations, sphere clusters, frames. |
 | `validate_mesh.py` | Watertightness and geometry checks. |
 
 ## Projects
@@ -47,9 +48,10 @@ works without setting `PYTHONPATH`.
 | [equilateral_vortex_tube_frame](projects/equilateral_vortex_tube_frame) | Space frame for the (3,7) phyllotactic equilateral vortex tube. |
 | [faraday_instability_disc](projects/faraday_instability_disc) | 200 mm tactile Faraday-instability teaching disc. |
 | [fcc_negative_space](projects/fcc_negative_space) | Interstitial voids of an FCC close-packing of spheres, and its connected "sponge" variant. |
-| [five_intersecting_tetrahedra](projects/five_intersecting_tetrahedra) | 150 mm compound of five woven tetrahedral frames. |
+| [five_intersecting_tetrahedra](projects/five_intersecting_tetrahedra) | Compound of five woven tetrahedral frames, woven and rigid, on the grid dodecahedron. |
 | [flesh-sheath-standing-wave](projects/flesh-sheath-standing-wave) | Research note on universality classes and renormalization-group flow. No build yet. |
-| [flower_of_life_spheres](projects/flower_of_life_spheres) | Flower of Life built from spheres. |
+| [flower_of_life_spheres](projects/flower_of_life_spheres) | Egg of Life (2³) and Flower of Life (3³) as sphere clusters whose corner-on shadows are the Seed and Flower plates. |
+| [from_one_circle](projects/from_one_circle) | Index of the matched sacred-geometry set and the asset builder for `web/from-one-circle.html`. |
 | [gem_cut_light_paths](projects/gem_cut_light_paths) | Pure-numpy auditor for the gem-cut light-path visualizer in `web/`. |
 | [golden_ratio_scrying_pool](projects/golden_ratio_scrying_pool) | Golden-ratio scrying pool: flared half-cosine wall, sound-collector rim, stand, print segments. |
 | [horn_torus_variants](projects/horn_torus_variants) | The torus where tube radius equals revolution radius, plus spindle and vortex variants. |
@@ -61,10 +63,11 @@ works without setting `PYTHONPATH`.
 | [multifunction_terrarium](projects/multifunction_terrarium) | Multifunction terrarium — brief and idea notes. |
 | [negative-space](projects/negative-space) | Data ribbons wound around invisible solids (sphere, cube, icosahedron, pyramid), the data encoded as holes. Also builds the assets for `web/indirect-perception.html`. |
 | [ogdoad_wind_chandelier](projects/ogdoad_wind_chandelier) | The Hymn of the Ogdoad: nine wind-blown pigeon-whistle voices hung as a geocentric cosmos. |
+| [platonic_solid_frames](projects/platonic_solid_frames) | The five Platonic solids as edge frames, sized so their corner-on outlines land on Metatron's Cube. |
 | [rainbow_prism_tray](projects/rainbow_prism_tray) | Hex-tile prism tray and tabletop scene (OpenSCAD). |
 | [sacred_correspondant_forms](projects/sacred_correspondant_forms) | Research report on printed acoustic geometries, cymatics and water resonance. No build yet. |
-| [sacred_geometry_plates](projects/sacred_geometry_plates) | The numbered 2D plate series (circle → icosahedron) and its OpenSCAD generator. |
-| [stellated_platonic_solids](projects/stellated_platonic_solids) | First stellation of each Platonic solid, at 150 mm. |
+| [sacred_geometry_plates](projects/sacred_geometry_plates) | Eight stackable 170 mm plates on one lattice, circle → Metatron's Cube → Tree of Life, with registration pins. |
+| [stellated_platonic_solids](projects/stellated_platonic_solids) | First stellation of each Platonic solid (or its dual compound), as edge frames grown from the grid solids. |
 | [SubConsiousness](projects/SubConsiousness) | Research note on evidence for influencing nonconscious processing. No build yet. |
 | [thermal_plume](projects/thermal_plume) | Thermal lattice-Boltzmann study of the convective plume off a standing person, for `web/human-thermal-plume.html`. |
 | [voice-horn-evolution](projects/voice-horn-evolution) | NSGA-II and FEM search that evolved the voice-horn genomes ("The Forge" in `docs/voice-horn-pocs.md`). |
@@ -94,6 +97,7 @@ First commit of each project's files (renames followed), oldest first:
 | 2026-10-14 | [indirect-perception](projects/indirect-perception), [negative-space](projects/negative-space) |
 | 2026-10-16 | [incense_vortex_ring](projects/incense_vortex_ring) |
 | 2026-10-20 | [ogdoad_wind_chandelier](projects/ogdoad_wind_chandelier) |
+| 2026-10-23 | [platonic_solid_frames](projects/platonic_solid_frames), [from_one_circle](projects/from_one_circle) |
 
 ## Web visualizers
 

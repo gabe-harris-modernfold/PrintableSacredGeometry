@@ -7,7 +7,8 @@ self-contained HTML visualizers.
 
 - `projects/<name>/` — one directory per buildable thing: its generator scripts, STLs and preview
   renders live together. **New work gets a new project directory here**, not a file at the root.
-- `lib/` — shared modules: `mesh_kit`, `render_mesh`, `ray_optics`, `validate_mesh`.
+- `lib/` — shared modules: `mesh_kit`, `render_mesh`, `ray_optics`, `validate_mesh`, and `sacred_grid`
+  (the R = 15 mm grid every piece of the matched sacred-geometry set is sized from).
 - `web/` — source for the HTML visualizers. `site/` is the Netlify publish dir; `deploy.ps1` copies
   `web/*.html` into it, so **edit `web/`, never `site/`** (except `site/index.html`, which is the
   menu page and lives there only).

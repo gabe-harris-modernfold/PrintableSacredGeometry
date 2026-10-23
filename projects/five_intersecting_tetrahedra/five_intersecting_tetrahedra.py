@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Five intersecting tetrahedra -- printable 150 mm compound of woven tetrahedral frames.
+"""Five intersecting tetrahedra -- printable compound of woven tetrahedral frames.
 
 Geometry
 --------
@@ -22,15 +22,22 @@ tetrahedron edge), which is why Ow's unit folded from 1x3 paper -- frame width L
 is the width that works. Backing off from m* by a printer clearance gives the woven STL;
 pushing past it fuses the five frames into one rigid solid.
 
+Size
+----
+The dodecahedron is the one in projects/platonic_solid_frames, sized on the shared grid
+(lib/sacred_grid.py): corners on a 127.3 mm sphere, so each tetrahedron's edge is the grid
+cube's face diagonal, 103.9 mm. The 150 mm originals are in _legacy/.
+
 Outputs
 -------
-five_intersecting_tetrahedra_150mm.stl        five free interlocked frames (print-in-place)
-five_intersecting_tetrahedra_150mm_rigid.stl  the same compound welded into one solid
-five_intersecting_tetrahedra.png              preview
+five_intersecting_tetrahedra.stl         five free interlocked frames (print-in-place)
+five_intersecting_tetrahedra_rigid.stl   the same compound welded into one solid
+five_intersecting_tetrahedra.png         preview
 """
 
 import itertools
 import os
+import sys
 import tempfile
 
 import numpy as np
@@ -38,10 +45,13 @@ from scipy.optimize import linprog
 from scipy.spatial import ConvexHull, HalfspaceIntersection
 from scipy.spatial.transform import Rotation
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "lib"))
+import sacred_grid  # noqa: E402
+
 # ---------------------------------------------------------------- parameters
 
-SIZE = 150.0        # largest bounding-box dimension of the finished object, mm
-GAP = 0.8           # clearance between neighbouring frames in the woven version, mm
+UNIT = sacred_grid.UNIT   # mm per unit of dodeca_vertices(): circumradius sqrt(3) -> 63.6 mm
+GAP = 0.8          # clearance between neighbouring frames in the woven version, mm
 WELD = 1.6          # interference between frames in the rigid version, mm
 FIVEFOLD_UP = True  # stand the compound on a dodecahedron face (five vertices on the bed)
 
@@ -231,10 +241,8 @@ def orientation():
 
 
 def placed_vertices():
-    """Dodecahedron vertices rotated to the print orientation and scaled to SIZE."""
-    V = dodeca_vertices() @ orientation().T
-    V *= SIZE / (V.max(0) - V.min(0)).max()
-    return V
+    """Dodecahedron vertices rotated to the print orientation, at the grid's size."""
+    return dodeca_vertices() @ orientation().T * UNIT
 
 
 # ---------------------------------------------------------------- output
@@ -266,8 +274,9 @@ def render(frame_meshes, path):
     import pyvista as pv
     pv.OFF_SCREEN = True
 
-    centre = np.concatenate([m.vertices for m in frame_meshes]).mean(0)
-    d = 3.1 * SIZE
+    allv = np.concatenate([m.vertices for m in frame_meshes])
+    centre = allv.mean(0)
+    d = 3.1 * float((allv.max(0) - allv.min(0)).max())
     views = [("the woven compound", np.array([0.86, -0.98, 0.62])),
              ("down a five-fold axis", np.array([0.0, 0.0, 1.0]))]
 
@@ -365,7 +374,7 @@ def main():
 
         frames = build_frames(V, m)
         suffix = "" if tag == "woven" else "_rigid"
-        path = f"five_intersecting_tetrahedra_{SIZE:.0f}mm{suffix}.stl"
+        path = f"five_intersecting_tetrahedra{suffix}.stl"
         meshes, combined = export(frames, path, fuse)
 
         lo = combined.bounds[0]
