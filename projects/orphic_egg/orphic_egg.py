@@ -18,8 +18,9 @@ in narrow-band slabs (exact field only within BAND of the surface, a trilinear c
 field elsewhere), Taubin-smoothed, and quadric-decimated to stay under the repo's 50 MB STL
 limit. The pupils are too fine for that voxel; they are meshed separately and cut out last.
 
-Run from this directory:  python orphic_egg.py [--draft]
-    orphic_egg.stl     the print, flat at z = 0 (stands on the egg tip and the tail)
+Run from this directory:  python orphic_egg.py [--draft] [--serpent]
+    orphic_egg.stl       the print, flat at z = 0 (stands on the egg tip and the tail)
+    orphic_serpent.stl   --serpent: the same serpent with no egg inside its coils
 """
 
 import math
@@ -77,6 +78,7 @@ Z_G = 0.0
 FAR = 6.0                   # stand-in field value well clear of every surface
 
 DRAFT = "--draft" in sys.argv
+SERPENT = "--serpent" in sys.argv   # leave the egg out: the serpent alone, coiled round where it was
 H = 0.42 if DRAFT else 0.2  # marching-cubes voxel
 HC = 1.0                    # coarse voxel
 BAND = 2.4                  # exact evaluation within this distance of the coarse surface
@@ -514,15 +516,20 @@ def scale_relief(u, phi, r, s):
 
 
 class Piece:
-    def __init__(self):
+    """The print. Without the egg the serpent keeps exactly its coiled shape, as if wound round
+    an egg that is not there; the egg still sets the geometry, it just isn't part of the solid."""
+
+    def __init__(self, with_egg=True):
+        self.with_egg = with_egg
         self.egg = Egg()
         self.head = Head((HEAD_AT[0], HEAD_AT[1], self.egg.top + HEAD_LIFT), HEAD_DIR)
         self.body = Serpent(self.egg, self.head)
         self.key = Key(self.head)
 
     def field(self, P, fine=True):
-        d = smin(self.egg.sdf(P), self.body.sdf(P, fine),
-                 K_EGG + K_FOOT * smoothstep(9.0, 2.0, P[:, 2] - Z_G))
+        d = self.body.sdf(P, fine)
+        if self.with_egg:
+            d = smin(self.egg.sdf(P), d, K_EGG + K_FOOT * smoothstep(9.0, 2.0, P[:, 2] - Z_G))
         d = smin(d, self.head.sdf(P), K_HEAD)
         d = smin(d, self.key.sdf(P), K_KEY)                     # the lips close round the shaft
         return np.maximum(d, Z_G - P[:, 2])
@@ -650,7 +657,7 @@ def stability(m):
 
 def main():
     t0 = time.time()
-    piece = Piece()
+    piece = Piece(with_egg=not SERPENT)
     b = piece.body
     print(f"    egg {EGG_H:.0f} x {EGG_W:.0f} mm, serpent {b.s[-1]:.0f} mm long, "
           f"lands after {b.land_turns:.2f} turns, min tube-egg gap {b.egg_gap.min():+.2f} mm")
@@ -665,7 +672,8 @@ def main():
     m.update_faces(m.nondegenerate_faces())
     m.remove_unreferenced_vertices()
     m = carve_pupils(piece, m)
-    path = "orphic_egg_draft.stl" if DRAFT else "orphic_egg.stl"
+    name = "orphic_serpent" if SERPENT else "orphic_egg"
+    path = f"{name}_draft.stl" if DRAFT else f"{name}.stl"
     m.export(path)
     back = trimesh.load(path)
     ok = sg.check(back, path)
