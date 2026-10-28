@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Drift of the Word — a measured family tree of Christianity</title>
+<meta name="description" content="Cultural-evolution mathematics applied to the history of Christianity: a stemma from Egypt, Canaan, Persia and Greece through Israel and the early church to the denominations and the AI era, with a drift number on every link and every link graded by its evidence.">
+<link rel="canonical" href="https://promethean-theoria.netlify.app/the-drift-of-the-word.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="The Drift of the Word — a measured family tree of Christianity">
+<meta property="og:description" content="From the Nile to the newsfeed: how much of an idea survives each copying, translation and council, computed live, with every link graded from documented to pseudohistorical.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/the-drift-of-the-word.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/the-drift-of-the-word.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — dark-first, in the Theoria family.
+   gold = the measured path · registers: documented / probable / contested / convergent / pseudohistorical
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --ground:   #0B0D12;
+  --ground-2: #11141B;
+  --ground-3: #181C26;
+  --rule:     #262C3A;
+  --rule-soft:#1C212E;
+
+  --ink:   #E8E4D8;
+  --ink-2: #B6B3A8;
+  --muted: #8B92A4;
+  --faint: #5C6376;
+
+  --gold:  #D4B87F;
+  --doc:   #6FBF9A;
+  --prob:  #6FC7DC;
+  --cont:  #E39A4C;
+  --conv:  #B287DE;
+  --pseudo:#E0596B;
+  --link:  #6FC7DC;
+
+  --serif: "Palatino Linotype", Palatino, "Iowan Old Style", "Book Antiqua",
+           "URW Palladio L", "Hoefler Text", Georgia, serif;
+  --label: "Bahnschrift SemiCondensed", "Bahnschrift", "DIN Alternate",
+           "Franklin Gothic Medium", "Avenir Next Condensed",
+           "Roboto Condensed", Corbel, "Segoe UI", sans-serif;
+  --mono:  Consolas, "Cascadia Mono", "SF Mono", Menlo, "DejaVu Sans Mono", monospace;
+
+  --measure: 38rem;
+  --wide: 66rem;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#E9E8E2; --ground-2:#F1F0EB; --ground-3:#F8F7F3;
+    --rule:#C4C6BD; --rule-soft:#D8D9D1;
+    --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+    --gold:#8A6E1E; --doc:#2C7A56; --prob:#1F7A93; --cont:#A66312; --conv:#6E4B9E;
+    --pseudo:#B03145; --link:#1F7A93;
+  }
+}
+:root[data-theme="light"]{
+  --ground:#E9E8E2; --ground-2:#F1F0EB; --ground-3:#F8F7F3;
+  --rule:#C4C6BD; --rule-soft:#D8D9D1;
+  --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+  --gold:#8A6E1E; --doc:#2C7A56; --prob:#1F7A93; --cont:#A66312; --conv:#6E4B9E;
+  --pseudo:#B03145; --link:#1F7A93;
+}
+:root[data-theme="dark"]{
+  --ground:#0B0D12; --ground-2:#11141B; --ground-3:#181C26;
+  --rule:#262C3A; --rule-soft:#1C212E;
+  --ink:#E8E4D8; --ink-2:#B6B3A8; --muted:#8B92A4; --faint:#5C6376;
+  --gold:#D4B87F; --doc:#6FBF9A; --prob:#6FC7DC; --cont:#E39A4C; --conv:#B287DE;
+  --pseudo:#E0596B; --link:#6FC7DC;
+}
+
+/* ═════════════════════════ BASE ═════════════════════════ */
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *, *::before, *::after{ transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
+}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.7;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+::selection{ background:var(--gold); color:var(--ground); }
+p{ text-wrap:pretty; }
+h1,h2,h3,h4{ font-weight:400; text-wrap:balance; }
+a{ color:var(--link); text-decoration-color:color-mix(in srgb, var(--link) 45%, transparent); text-underline-offset:3px; }
+a:hover{ text-decoration-color:var(--link); }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+button, select, input{ font:inherit; color:inherit; }
+b{ font-weight:400; color:var(--gold); }
+i.t{ color:var(--ink); }
+
+.wrap{ max-width:var(--wide); margin:0 auto; padding:0 16px 4rem; }
+.wide{ max-width:84rem; margin:0 auto; padding:0 16px; }
+.col{ max-width:var(--measure); }
+.top{ display:flex; justify-content:space-between; align-items:center; padding:1rem 0; font-family:var(--label); font-size:0.9rem; }
+.top a{ color:var(--muted); text-decoration:none; }
+.top a:hover{ color:var(--ink); }
+.pill{
+  border:1px solid var(--rule); background:transparent; color:var(--muted); cursor:pointer;
+  font-family:var(--label); font-size:0.82rem; letter-spacing:0.04em; padding:0.25rem 0.8rem; border-radius:2px;
+}
+.pill:hover{ color:var(--ink); border-color:var(--muted); }
+
+.eyebrow{ font-family:var(--label); font-size:0.78rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+h1{ font-size:clamp(2.2rem, 6vw, 3.6rem); line-height:1.08; margin:0.5rem 0 0.4rem; letter-spacing:-0.01em; }
+.axline{ font-style:italic; color:var(--gold); font-size:1.15rem; margin-bottom:1.6rem; }
+.lede{ font-size:1.12rem; color:var(--ink); }
+section{ padding-top:3.2rem; }
+h2{ font-size:1.9rem; line-height:1.2; margin-bottom:0.3rem; }
+h2 .no{ font-family:var(--label); font-size:0.8rem; letter-spacing:0.16em; color:var(--gold); display:block; margin-bottom:0.3rem; }
+h3{ font-size:1.25rem; margin:1.6rem 0 0.4rem; }
+.col p + p{ margin-top:0.9rem; }
+.note{ color:var(--muted); font-size:0.92rem; }
+.mono{ font-family:var(--mono); font-size:0.88em; }
+sup.c a{ text-decoration:none; font-family:var(--label); font-size:0.72em; }
+
+.callout{
+  border-left:2px solid var(--gold); background:var(--ground-2); padding:0.9rem 1.1rem; margin:1.4rem 0;
+  max-width:var(--measure); font-size:0.98rem;
+}
+.callout.quiet{ border-left-color:var(--rule); }
+.callout h4{ font-family:var(--label); font-size:0.8rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:0.35rem; }
+
+/* register chips */
+.chip{
+  display:inline-block; font-family:var(--label); font-size:0.72rem; letter-spacing:0.06em;
+  padding:0.02rem 0.45rem; border:1px solid currentColor; border-radius:2px; vertical-align:0.1em; white-space:nowrap;
+}
+.chip.g-D{ color:var(--doc); }
+.chip.g-P{ color:var(--prob); }
+.chip.g-C{ color:var(--cont); }
+.chip.g-V{ color:var(--conv); border-style:dotted; }
+.chip.g-X{ color:var(--pseudo); border-style:dashed; }
+.chip.g-M{ color:var(--gold); }
+.legend{ display:flex; flex-wrap:wrap; gap:0.5rem 1.1rem; margin:1rem 0; font-size:0.92rem; color:var(--ink-2); max-width:var(--wide); }
+.legend div{ display:flex; gap:0.5rem; align-items:baseline; }
+
+/* formula */
+.formula{
+  font-family:var(--mono); font-size:0.95rem; background:var(--ground-2); border:1px solid var(--rule-soft);
+  padding:0.9rem 1.1rem; margin:1rem 0; max-width:var(--measure); overflow-x:auto; white-space:pre; line-height:1.55; color:var(--ink);
+}
+
+/* axes cards */
+.axes{ display:grid; grid-template-columns:repeat(auto-fit, minmax(13rem, 1fr)); gap:0.8rem; margin:1.2rem 0; }
+.axes div{ border-top:2px solid var(--gold); background:var(--ground-2); padding:0.7rem 0.9rem; font-size:0.93rem; color:var(--ink-2); }
+.axes div strong{ display:block; font-weight:400; font-family:var(--label); letter-spacing:0.08em; text-transform:uppercase; font-size:0.8rem; color:var(--gold); }
+
+/* ═════════════════════════ CONTROLS ═════════════════════════ */
+.controls{
+  display:flex; flex-wrap:wrap; gap:0.8rem 1.4rem; align-items:flex-end; padding:0.9rem 0 0.7rem;
+  border-top:1px solid var(--rule); border-bottom:1px solid var(--rule-soft); font-family:var(--label); font-size:0.88rem;
+}
+.ctl{ display:flex; flex-direction:column; gap:0.25rem; }
+.ctl > span{ font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
+.seg{ display:flex; border:1px solid var(--rule); border-radius:2px; overflow:hidden; }
+.seg button{ background:transparent; border:0; padding:0.3rem 0.7rem; cursor:pointer; color:var(--ink-2); border-right:1px solid var(--rule); }
+.seg button:last-child{ border-right:0; }
+.seg button[aria-pressed="true"]{ background:var(--gold); color:var(--ground); }
+select, input[type=number]{
+  background:var(--ground-2); border:1px solid var(--rule); border-radius:2px; padding:0.28rem 0.45rem; color:var(--ink);
+  font-family:var(--label); font-size:0.88rem; max-width:100%;
+}
+label.chk{ display:flex; gap:0.4rem; align-items:center; cursor:pointer; color:var(--ink-2); padding-bottom:0.3rem; }
+input[type=range]{ accent-color:var(--gold); width:100%; }
+
+/* ═════════════════════════ FIGURE ═════════════════════════ */
+.headline{
+  font-size:1.2rem; padding:0.9rem 0 0.2rem; color:var(--ink); max-width:56rem;
+}
+.headline .big{ font-family:var(--mono); color:var(--gold); font-size:1.5rem; }
+.figgrid{ display:block; margin-top:0.6rem; }
+@media (min-width:1100px){
+  .figgrid{ display:grid; grid-template-columns:minmax(0,1fr) 22rem; gap:1.2rem; align-items:start; }
+  .panel{ position:sticky; top:0.8rem; max-height:calc(100vh - 1.6rem); overflow:auto; }
+}
+.treewrap{ overflow-x:auto; background:var(--ground-2); border:1px solid var(--rule-soft); }
+#tree{ display:block; width:100%; min-width:760px; height:auto; }
+#tree text{ font-family:var(--label); }
+.band{ fill:var(--ground-3); }
+.bandname{ fill:var(--faint); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; }
+.tick{ stroke:var(--rule-soft); stroke-width:1; }
+.ticklab{ fill:var(--faint); font-size:10.5px; }
+.e{ fill:none; stroke-width:1.4; stroke-linecap:round; opacity:0.75; }
+.e.g-D{ stroke:var(--doc); } .e.g-P{ stroke:var(--prob); } .e.g-C{ stroke:var(--cont); }
+.e.g-V{ stroke:var(--conv); stroke-dasharray:1.5 4; } .e.g-X{ stroke:var(--pseudo); stroke-dasharray:6 5; }
+.e.k-i{ stroke-dasharray:5 4; }
+.e.k-a{ stroke-dasharray:1.5 3.5; stroke-width:2; }
+.e.off{ opacity:0.13; }
+.e.path{ stroke:var(--gold); stroke-width:3.4; opacity:1; }
+.elab{ font-family:var(--mono) !important; font-size:10.5px; fill:var(--gold); paint-order:stroke; stroke:var(--ground-2); stroke-width:4px; stroke-linejoin:round; }
+.elab.small{ font-size:9px; fill:var(--ink-2); }
+.n{ cursor:pointer; }
+.n circle.dot{ stroke:var(--gold); stroke-width:1.2; }
+.n.unreach circle.dot{ stroke:var(--faint); fill:var(--ground-2); }
+.n.ended circle.dot{ stroke-dasharray:2 2; }
+.n .ring{ fill:none; stroke:var(--ink); stroke-width:1.2; }
+.n .oring{ fill:none; stroke:var(--gold); stroke-width:1.2; }
+.n .tring{ fill:none; stroke-width:2; }
+.n .nm{ fill:var(--ink); font-size:13.5px; text-anchor:middle; paint-order:stroke; stroke:var(--ground-2); stroke-width:4px; stroke-linejoin:round; }
+.n .val{ fill:var(--gold); font-size:11.5px; text-anchor:middle; font-family:var(--mono) !important; paint-order:stroke; stroke:var(--ground-2); stroke-width:4px; }
+.n.unreach .nm{ fill:var(--muted); }
+.n.unreach .val{ fill:var(--faint); }
+.n .tnum{ font-size:10px; font-family:var(--mono) !important; fill:var(--ground); text-anchor:middle; }
+.n:hover .nm, .n:focus .nm{ fill:var(--gold); }
+.n:focus{ outline:none; }
+.n:focus-visible .ring{ stroke:var(--gold); stroke-width:2.4; }
+
+/* panel */
+.panel{ background:var(--ground-2); border:1px solid var(--rule-soft); padding:1rem 1.1rem; margin-top:1rem; font-size:0.94rem; }
+@media (min-width:1100px){ .panel{ margin-top:0; } }
+.panel h3{ margin:0; font-size:1.4rem; }
+.panel .date{ font-family:var(--label); color:var(--muted); font-size:0.85rem; letter-spacing:0.05em; margin-bottom:0.5rem; }
+.panel p{ color:var(--ink-2); margin-bottom:0.7rem; }
+.panel h4{ font-family:var(--label); font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin:0.9rem 0 0.4rem; font-weight:400; }
+.bars{ display:grid; grid-template-columns:5.6rem 1fr 4.6rem; gap:0.3rem 0.5rem; align-items:center; font-family:var(--label); font-size:0.85rem; }
+.bars .bt{ height:7px; background:var(--rule-soft); position:relative; }
+.bars .bt i{ position:absolute; left:0; top:0; bottom:0; background:var(--gold); opacity:0.55; }
+.bars .on{ color:var(--gold); }
+.bars .on + .bt i{ opacity:1; }
+.bars .pv{ font-family:var(--mono); font-size:0.8rem; text-align:right; }
+ol.path{ list-style:none; counter-reset:s; }
+ol.path li{ counter-increment:s; border-left:1px solid var(--rule); padding:0.1rem 0 0.55rem 0.8rem; position:relative; font-size:0.88rem; color:var(--ink-2); }
+ol.path li::before{ content:counter(s); position:absolute; left:-0.55rem; top:0.15rem; width:1.1rem; height:1.1rem; border-radius:50%; background:var(--ground); border:1px solid var(--gold); font-family:var(--mono); font-size:0.66rem; color:var(--gold); text-align:center; line-height:1.05rem; }
+ol.path .hd{ color:var(--ink); }
+ol.path .loss{ font-family:var(--mono); color:var(--gold); }
+ul.links{ list-style:none; }
+ul.links li{ font-size:0.87rem; color:var(--ink-2); padding:0.35rem 0; border-top:1px solid var(--rule-soft); }
+.btnrow{ display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.6rem; }
+
+/* trait box */
+.traitbox{ margin-top:1rem; background:var(--ground-2); border:1px solid var(--rule-soft); padding:0.9rem 1.1rem; display:none; }
+.traitbox.on{ display:block; }
+.traitbox h4{ font-family:var(--label); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:0.5rem; font-weight:400; }
+.traitbox ol{ padding-left:1.4rem; }
+.traitbox li{ margin:0.25rem 0; font-size:0.94rem; color:var(--ink-2); }
+.traitbox li strong{ font-weight:400; color:var(--ink); }
+
+/* lab */
+.lab{ display:grid; gap:1.2rem; grid-template-columns:1fr; margin-top:1rem; }
+@media (min-width:860px){ .lab{ grid-template-columns:16rem 1fr; } }
+.lab .sliders{ display:flex; flex-direction:column; gap:0.9rem; font-family:var(--label); font-size:0.88rem; }
+.lab .sliders label{ display:flex; justify-content:space-between; color:var(--ink-2); }
+.lab .sliders output{ font-family:var(--mono); color:var(--gold); }
+.readout{ display:grid; grid-template-columns:1fr auto; gap:0.2rem 0.8rem; font-family:var(--label); font-size:0.86rem; color:var(--ink-2); border-top:1px solid var(--rule); padding-top:0.6rem; }
+.readout b{ font-family:var(--mono); }
+#labsvg{ width:100%; height:auto; display:block; background:var(--ground-2); border:1px solid var(--rule-soft); }
+#labsvg text{ font-family:var(--label); font-size:11px; fill:var(--muted); }
+
+/* tables */
+.tbl{ width:100%; border-collapse:collapse; font-size:0.9rem; margin:0.8rem 0; }
+.tbl th{ font-family:var(--label); font-weight:400; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); text-align:left; padding:0.4rem 0.5rem; border-bottom:1px solid var(--rule); }
+.tbl td{ padding:0.45rem 0.5rem; border-bottom:1px solid var(--rule-soft); vertical-align:top; color:var(--ink-2); }
+.tbl td.num{ font-family:var(--mono); text-align:right; white-space:nowrap; color:var(--ink); }
+.tbl input[type=number]{ width:5.2rem; font-family:var(--mono); }
+.scrollx{ overflow-x:auto; }
+details{ margin:1rem 0; }
+summary{ cursor:pointer; font-family:var(--label); color:var(--gold); letter-spacing:0.04em; }
+
+/* casebook */
+.cases{ display:grid; grid-template-columns:repeat(auto-fit, minmax(18rem, 1fr)); gap:0.9rem; margin-top:1.2rem; }
+.case{ background:var(--ground-2); border:1px solid var(--rule-soft); border-top:2px solid var(--rule); padding:0.85rem 1rem; font-size:0.93rem; color:var(--ink-2); }
+.case.g-D{ border-top-color:var(--doc); } .case.g-P{ border-top-color:var(--prob); } .case.g-C{ border-top-color:var(--cont); }
+.case.g-V{ border-top-color:var(--conv); } .case.g-X{ border-top-color:var(--pseudo); }
+.case h4{ font-size:1.08rem; font-weight:400; color:var(--ink); margin:0.3rem 0 0.35rem; }
+.case dl{ display:grid; grid-template-columns:auto 1fr; gap:0.15rem 0.6rem; margin-top:0.5rem; font-size:0.86rem; }
+.case dt{ font-family:var(--label); color:var(--muted); font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; padding-top:0.15rem; }
+.case .verdict{ margin-top:0.55rem; color:var(--ink); }
+
+ol.sources{ padding-left:1.4rem; font-size:0.9rem; color:var(--ink-2); max-width:52rem; }
+ol.sources li{ margin:0.3rem 0; }
+footer{ margin-top:4rem; padding-top:1.2rem; border-top:1px solid var(--rule); font-family:var(--label); font-size:0.88rem; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.6rem; }
+footer a{ color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<div class="top">
+  <a href="index.html">&larr; Promethean Theoria</a>
+  <button class="pill" id="themeBtn" aria-label="Toggle color theme">Theme</button>
+</div>
+
+<!-- ═════════════════════════ HERO ═════════════════════════ -->
+<header class="col" style="padding-top:2rem;">
+  <div class="eyebrow">A study in cultural evolution &middot; transmission &middot; drift &middot; the shared-error test</div>
+  <h1>The Drift of the Word</h1>
+  <div class="axline">a measured family tree of Christianity, from the Nile to the newsfeed</div>
+  <p class="lede">
+    Every idea that reaches you has been copied, translated, argued over and retold many times. Each
+    retelling keeps most of what it received and changes a little. Cultural evolution, the science of how
+    knowledge passes between people, has mathematics for this. It came from population genetics and
+    information theory. This page applies that mathematics to one of the longest, best-documented chains of
+    transmission there is: the ideas that became Christianity, from the religions of Egypt, Canaan, Persia
+    and Greece, through Israel and the early church, to the denominations of the last five centuries and the
+    search box.
+  </p>
+  <div class="callout quiet">
+    <h4>What this page measures, and what it doesn&rsquo;t</h4>
+    It measures <b>transmission</b>: how much of a text, an idea, an attribution or a practice survives a
+    passage from one community to the next. It does not measure truth, and it does not treat change as
+    corruption. Most traditions have their own account of legitimate development (see &sect;VI). The drift
+    numbers come from a stated model with stated parameters, and you can change every one of them. The
+    evidence grades on each link come from the historical record and are the part to take most seriously.
+  </div>
+</header>
+
+<!-- ═════════════════════════ I · THE INSTRUMENT ═════════════════════════ -->
+<section id="instrument">
+  <h2 class="col"><span class="no">I &middot; The instrument</span>Four things can drift, and one thing stops it</h2>
+  <div class="col">
+    <p>
+      An idea is not one thing. Its wording can survive while its meaning changes. Its meaning can survive
+      while everyone forgets where it came from. A rite can be performed faithfully for centuries by people
+      who no longer hold the belief it once expressed. So the model tracks four axes separately, because
+      each kind of medium protects a different one.
+    </p>
+  </div>
+  <div class="axes">
+    <div><strong>Text</strong>The wording itself: the sayings, verses and formulas, as units that can be copied right or wrong.</div>
+    <div><strong>Meaning</strong>What the words are understood to say, compared with what the originator meant.</div>
+    <div><strong>Provenance</strong>Knowing where it came from: who said it, when, and drawing on whom.</div>
+    <div><strong>Practice</strong>The lived part: the rite, the custom, the way of doing it.</div>
+  </div>
+  <div class="col">
+    <p>
+      Along each link of the tree, a unit is copied once per <i class="t">generation</i>. It goes wrong with
+      probability <span class="mono">&mu;</span>. With probability <span class="mono">c</span>, the copier
+      goes back to a fixed source, such as a written scripture, a reference manuscript or a liturgical book,
+      instead of copying the previous copy. Some links also carry a one-time event such as a translation,
+      a council or a borrowing between religions. That event multiplies in a retention factor
+      <span class="mono">e</span>. On a borrowing link <span class="mono">e</span> is small by design. It
+      is the share of the whole source tradition that crosses over: Proverbs took about thirty sayings from
+      Egypt, not Egyptian religion.
+    </p>
+  </div>
+  <div class="formula">fraction surviving one link, after g generations:
+
+  f(g) = f* + (1 − f*) · a^g          a  = (1 − μ)(1 − c)
+                                      f* = (1 − μ)·c / (1 − a)
+  link retention  r = f(g) · e
+
+  drift to a node = 1 − ∏ r     (product along the strongest path)</div>
+  <div class="col">
+    <p>
+      The behaviour that matters is in <span class="mono">c</span>. With no source to go back to
+      (<span class="mono">c = 0</span>), the plateau <span class="mono">f*</span> is zero and the idea decays
+      exponentially for ever. With any access at all, decay stops at a plateau. <b>The error rate sets how
+      fast an idea drifts. Whether the source can still be reached sets whether drift ever stops.</b> Try
+      it below.
+    </p>
+  </div>
+
+  <div class="lab">
+    <div class="sliders">
+      <div><label>Error per copy &mu; <output id="muOut"></output></label><input type="range" id="muIn" min="0" max="100" value="50"></div>
+      <div><label>Return to source c <output id="cOut"></output></label><input type="range" id="cIn" min="0" max="50" value="10"></div>
+      <div class="readout">
+        <span>After 100 generations, no source</span><b id="r0"></b>
+        <span>After 100 generations, with source</span><b id="r1"></b>
+        <span>Plateau f*</span><b id="r2"></b>
+        <span>Half-life, no source</span><b id="r3"></b>
+      </div>
+    </div>
+    <svg id="labsvg" viewBox="0 0 640 260" role="img" aria-label="Fidelity against generations, with and without access to the source"></svg>
+  </div>
+</section>
+
+<!-- ═════════════════════════ II · THE TREE ═════════════════════════ -->
+<section id="tree-sec">
+  <h2 class="col"><span class="no">II &middot; The tree</span>Thirty-nine communities, seventy-one links, a number on each</h2>
+  <div class="col">
+    <p>
+      This is not a straight line from Egypt to the Greeks to the Jews. The record shows several streams
+      converging. Israel grew mostly out of Canaanite culture. Egypt, Mesopotamia, Persia and Greece flow in
+      as influences, at different times and with very different strengths of evidence. Solid lines are
+      descent, where a community inherits from its parent. Dashed lines are borrowing between traditions.
+      Dotted lines are <i class="t">anchors</i>: manuscripts that lay buried and skipped centuries of
+      copying. Each line&rsquo;s colour gives its evidence grade.
+    </p>
+    <p>
+      Pick an originator and an axis. Every node then shows how much of the originator survives there, on the
+      strongest path the evidence level allows. Click any node to see that path link by link.
+    </p>
+  </div>
+  <div class="legend">
+    <div><span class="chip g-D">Documented</span> dependence shown by the texts themselves</div>
+    <div><span class="chip g-P">Probable</span> most specialists accept it</div>
+    <div><span class="chip g-C">Contested</span> argued both ways</div>
+    <div><span class="chip g-V">Convergent</span> same form, no route: reached independently</div>
+    <div><span class="chip g-X">Pseudohistorical</span> no ancient source for the claim</div>
+  </div>
+</section>
+</div>
+
+<div class="wide">
+  <div class="controls" id="controls">
+    <div class="ctl"><span>Axis</span>
+      <div class="seg" id="axSeg">
+        <button data-ax="T">Text</button><button data-ax="M">Meaning</button><button data-ax="P">Provenance</button><button data-ax="R">Practice</button>
+      </div>
+    </div>
+    <div class="ctl"><span>Originator</span><select id="originSel"></select></div>
+    <div class="ctl"><span>Evidence admitted</span>
+      <select id="levelSel">
+        <option value="0">Documented only</option>
+        <option value="1">+ Probable</option>
+        <option value="2">+ Contested</option>
+      </select>
+    </div>
+    <div class="ctl"><span>Trace a trait</span><select id="traitSel"><option value="">None</option></select></div>
+    <label class="chk"><input type="checkbox" id="showAll"> Show convergent &amp; pseudohistorical claims</label>
+    <label class="chk"><input type="checkbox" id="allNums"> Drift number on every link</label>
+  </div>
+  <div class="headline" id="headline"></div>
+  <div class="figgrid">
+    <div>
+      <div class="treewrap"><svg id="tree" viewBox="0 0 1000 1610" role="img" aria-label="Family tree of Christianity with drift numbers"></svg></div>
+      <div class="traitbox" id="traitbox"></div>
+    </div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+</div>
+
+<div class="wrap">
+<!-- ═════════════════════════ III · SHARED ERRORS ═════════════════════════ -->
+<section id="cases">
+  <h2 class="col"><span class="no">III &middot; The shared-error test</span>Telling inheritance from coincidence</h2>
+  <div class="col">
+    <p>
+      Two traditions can share a form for two reasons. One copied the other, or both arrived at the same form
+      independently, because some forms are what human minds and hands keep producing. The two cases look
+      the same from a distance. The test that separates them comes from textual criticism, from Karl
+      Lachmann&rsquo;s method of reconstructing lost manuscripts: <b>shared errors prove shared descent</b>.
+      Anyone can independently arrive at a mother nursing a child, or at the idea that the dead will rise.
+      Nobody independently arrives at the same odd number, the same misreading or the same misplaced verse.
+    </p>
+    <p>
+      Each claim below gets the same three questions. Is there a shared idiosyncrasy? Is there a documented
+      route of contact? Does the source come first in time?
+    </p>
+  </div>
+  <div class="cases" id="caseGrid"></div>
+</section>
+
+<!-- ═════════════════════════ IV · MEASURED ═════════════════════════ -->
+<section id="measured">
+  <h2 class="col"><span class="no">IV &middot; What is actually measured</span>The numbers that are not a model</h2>
+  <div class="col">
+    <p>
+      The tree&rsquo;s drift numbers are modelled. Some numbers in this history are measured, and they
+      calibrate the model. The most striking is the Great Isaiah Scroll from Qumran: copied about 125
+      BCE, buried, and compared in 1947 with the medieval Hebrew text. More than a thousand years of copying
+      sat between the two, and they turned out to be the same book, differing mostly in spelling and small
+      points of wording. That is scribal copying with a strong anchor, the plateau regime of &sect;I seen in
+      real data.
+    </p>
+  </div>
+  <div class="scrollx">
+  <table class="tbl" style="max-width:56rem">
+    <thead><tr><th>Quantity</th><th>Value</th><th>Register</th><th>What it calibrates</th></tr></thead>
+    <tbody>
+      <tr><td>Greek New Testament manuscripts catalogued</td><td class="num">&gt; 5,800</td><td><span class="chip g-D">Measured</span></td><td>Redundancy N: why the text axis is so well anchored</td></tr>
+      <tr><td>Textual variants among them</td><td class="num">~300,000&ndash;500,000+</td><td><span class="chip g-P">Estimate</span></td><td>Raw μ. Most are spelling, word order or obvious slips; Gurry (2016) estimates about 500,000 excluding spelling</td></tr>
+      <tr><td>Isaiah: Qumran scroll vs. Leningrad Codex</td><td class="num">~1,100 yrs apart</td><td><span class="chip g-D">Measured</span></td><td>The plateau: high text fidelity under scribal copying with a fixed exemplar</td></tr>
+      <tr><td>Earliest New Testament fragment (P52, John 18)</td><td class="num">2nd century</td><td><span class="chip g-C">Dating debated</span></td><td>How long the earliest stretch went unrecorded</td></tr>
+      <tr><td>Earliest complete New Testaments (Sinaiticus, Vaticanus)</td><td class="num">4th century</td><td><span class="chip g-D">Measured</span></td><td>About 300 years between composition and the first full witnesses</td></tr>
+      <tr><td>Christians in Europe, share of world total</td><td class="num">66% &rarr; 26%</td><td><span class="chip g-D">Measured</span></td><td>1910 &rarr; 2010 (Pew). The population carrying the tradition moved continents</td></tr>
+      <tr><td>Christians worldwide</td><td class="num">~2.3 billion</td><td><span class="chip g-D">Measured</span></td><td>Pew, 2020 data: the size of the current population</td></tr>
+      <tr><td>Distinct denominations</td><td class="num">~45,000</td><td><span class="chip g-C">Definition-dependent</span></td><td>Diversity. Counts national bodies separately, so treat it as an upper bound</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ═════════════════════════ V · SENSITIVITY ═════════════════════════ -->
+<section id="params">
+  <h2 class="col"><span class="no">V &middot; The ruler, and how to bend it</span>Every parameter on the table</h2>
+  <div class="col">
+    <p>
+      The tree&rsquo;s numbers rest on five channel presets and one event factor per link. They are
+      judgements, set to be roughly consistent with the measured figures above, and they are not sacred.
+      Bend them and watch the tree. What changes is the size of the numbers. What holds is their order:
+      translation and borrowing cost meaning, anchors save text, and the Egyptian contribution is thin on
+      every setting.
+    </p>
+  </div>
+  <div class="lab" style="grid-template-columns:1fr">
+    <div class="sliders" style="max-width:40rem">
+      <div><label>All error rates &times; <output id="kmuOut"></output></label><input type="range" id="kmuIn" min="-100" max="100" value="0"></div>
+      <div><label>All source access &times; <output id="kcOut"></output></label><input type="range" id="kcIn" min="0" max="200" value="100"></div>
+      <div><label>All event losses &times; <output id="kevOut"></output></label><input type="range" id="kevIn" min="0" max="200" value="100"></div>
+      <div><button class="pill" id="resetK">Reset all parameters</button></div>
+    </div>
+  </div>
+  <h3 class="col">Channels</h3>
+  <div class="scrollx">
+  <table class="tbl" id="chTable" style="max-width:60rem"></table>
+  </div>
+  <details>
+    <summary>Every link, with its parameters and its retention on the current axis</summary>
+    <div class="scrollx"><table class="tbl" id="edgeTable"></table></div>
+  </details>
+</section>
+
+<!-- ═════════════════════════ VI · INSIDERS ═════════════════════════ -->
+<section id="insiders">
+  <h2 class="col"><span class="no">VI &middot; The tradition&rsquo;s own drift theory</span>Development or corruption?</h2>
+  <div class="col">
+    <p>
+      Christianity has argued about drift from the start, and its own answers line up with the model&rsquo;s
+      terms surprisingly well. In 1845 John Henry Newman, an Anglican on his way to Rome, wrote
+      <i>An Essay on the Development of Christian Doctrine</i>. He asked the question this page asks: how
+      can you tell when a teaching has grown and when it has decayed? He proposed seven
+      &ldquo;notes&rdquo; of genuine development. Read them against the model:
+    </p>
+  </div>
+  <div class="scrollx">
+  <table class="tbl" style="max-width:56rem">
+    <thead><tr><th>Newman&rsquo;s note (1845)</th><th>The model&rsquo;s term</th></tr></thead>
+    <tbody>
+      <tr><td>Preservation of type</td><td>An attractor: the form keeps returning to the same shape even as details change</td></tr>
+      <tr><td>Continuity of principles</td><td>The meaning axis: retention of the core sense across links</td></tr>
+      <tr><td>Power of assimilation</td><td>Borrowing links: taking in Greek philosophy without being dissolved by it</td></tr>
+      <tr><td>Logical sequence</td><td>Change in a consistent direction, not random drift</td></tr>
+      <tr><td>Anticipation of its future</td><td>Early traces of the later form, as evidence of descent</td></tr>
+      <tr><td>Conservative action upon its past</td><td>The anchor term c: a development must not overturn its source</td></tr>
+      <tr><td>Chronic vigour</td><td>Survival: the branch keeps producing descendants and doesn&rsquo;t end</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="col">
+    <p>
+      The great divisions can be read as different bets on which axis to protect. The Reformers&rsquo;
+      <i>sola scriptura</i> is a bet on the text axis: raise <span class="mono">c</span> by going back to the
+      Greek and Hebrew, past a thousand years of commentary. Orthodoxy bets on practice. Its liturgy keeps a
+      form whose core is traditionally dated to the late fourth century, and its theology lives inside that
+      worship. Catholicism bets on an interpreting authority, a living <span class="mono">c</span> in the form
+      of a teaching office rather than a fixed text. Restorationist movements bet on provenance, claiming
+      direct return to the first church, and often move fastest on meaning. Rabbinic Judaism, the other
+      surviving descendant of Second Temple Judaism, made the oral commentary itself part of the anchor.
+    </p>
+    <p>
+      None of these bets is a mistake. Each one protects one axis at the cost of another. That is the
+      main finding of the model, here in the tradition&rsquo;s own history: no channel prevents drift. A
+      channel only chooses which axis absorbs it.
+    </p>
+  </div>
+</section>
+
+<!-- ═════════════════════════ VII · LIMITS ═════════════════════════ -->
+<section id="limits">
+  <h2 class="col"><span class="no">VII &middot; Limits</span>Where the instrument stops</h2>
+  <div class="col">
+    <p><b>The nodes are my selection.</b> Thirty-nine communities stand for thousands. A different cut
+    (Syriac Christianity, the Church of the East, African independent churches) would change some paths.
+    The tree is a lens, not an atlas.</p>
+    <p><b>Meaning has no natural ruler.</b> Text drift can be counted against manuscripts. Meaning drift
+    here is a judgement put into numbers so it can be compared and argued with. It shouldn&rsquo;t be quoted as a
+    finding.</p>
+    <p><b>The strongest path is not the only path.</b> An idea that reaches a node by three weak routes may
+    be better preserved than one strong route suggests. The model reports the best single channel, a lower
+    bound on what survives.</p>
+    <p><b>Survivorship.</b> We measure the branches that left witnesses. The Jewish Christians and the
+    Gnostics are on the tree only because a few texts survived. Countless local forms left none.</p>
+    <p><b>Drift is not decline.</b> A low meaning-retention number says the idea changed, not that it got
+    worse. Insiders may call the same change development, inspiration or the work of the Spirit. History
+    cannot settle that question, and this page does not try.</p>
+  </div>
+</section>
+
+<!-- ═════════════════════════ SOURCES ═════════════════════════ -->
+<section id="sources">
+  <h2 class="col"><span class="no">Sources</span>Where to check every claim</h2>
+  <ol class="sources">
+    <li>Sperber, D. <i>Explaining Culture: A Naturalistic Approach</i>. Blackwell, 1996. Cultural attraction.</li>
+    <li>Cavalli-Sforza, L. L. &amp; Feldman, M. W. <i>Cultural Transmission and Evolution</i>. Princeton, 1981.</li>
+    <li>Shumailov, I. et al. &ldquo;AI models collapse when trained on recursively generated data.&rdquo; <i>Nature</i> 631 (2024).</li>
+    <li>Smith, M. S. <i>The Early History of God: Yahweh and the Other Deities in Ancient Israel</i>. 2nd ed., Eerdmans, 2002.</li>
+    <li>Erman, A. &ldquo;Eine ägyptische Quelle der &lsquo;Sprüche Salomos&rsquo;.&rdquo; <i>Sitzungsberichte der Preussischen Akademie</i>, 1924. Amenemope and Proverbs.</li>
+    <li>Fox, M. V. <i>Proverbs 10&ndash;31</i>. Anchor Yale Bible, 2009.</li>
+    <li>Assmann, J. <i>Moses the Egyptian: The Memory of Egypt in Western Monotheism</i>. Harvard, 1997.</li>
+    <li>Freud, S. <i>Moses and Monotheism</i>. 1939.</li>
+    <li>Boyce, M. <i>Zoroastrians: Their Religious Beliefs and Practices</i>. Routledge, 1979.</li>
+    <li>Tov, E. <i>Textual Criticism of the Hebrew Bible</i>. 3rd ed., Fortress, 2012. Qumran Isaiah and the Masoretic text.</li>
+    <li>Metzger, B. M. &amp; Ehrman, B. D. <i>The Text of the New Testament</i>. 4th ed., Oxford, 2005. The Comma, Erasmus, the longer ending of Mark.</li>
+    <li>Gurry, P. J. &ldquo;The Number of Variants in the Greek New Testament.&rdquo; <i>New Testament Studies</i> 62 (2016).</li>
+    <li>Smith, J. Z. <i>Drudgery Divine: On the Comparison of Early Christianities and the Religions of Late Antiquity</i>. Chicago, 1990.</li>
+    <li>Mettinger, T. N. D. <i>The Riddle of Resurrection: &ldquo;Dying and Rising Gods&rdquo; in the Ancient Near East</i>. Almqvist &amp; Wiksell, 2001.</li>
+    <li>Talley, T. J. <i>The Origins of the Liturgical Year</i>. Pueblo, 1986. The calculation hypothesis for 25 December.</li>
+    <li>Newman, J. H. <i>An Essay on the Development of Christian Doctrine</i>. 1845; rev. 1878.</li>
+    <li>Eisenstein, E. <i>The Printing Press as an Agent of Change</i>. Cambridge, 1979.</li>
+    <li>Pew Research Center. <i>Global Christianity</i> (2011); <i>How the Global Religious Landscape Changed From 2010 to 2020</i> (2025).</li>
+    <li>Massey, G. <i>Ancient Egypt: The Light of the World</i>. 1907; Graves, K. <i>The World&rsquo;s Sixteen Crucified Saviors</i>. 1875. Cited as the sources of the Horus claims, not as authorities.</li>
+  </ol>
+</section>
+
+<footer>
+  <a href="index.html">&larr; back to Promethean Theoria</a>
+  <span>Where the traditions genuinely touch, it is marked. Where they only rhyme, that is marked too.</span>
+</footer>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   DATA — nodes (communities), edges (transmissions), traits, cases
+   ═══════════════════════════════════════════════════════════════ */
+const NODES = [
+  {id:"meso", yr:-1750, lane:6, name:"Mesopotamia", date:"c. 1750–1200 BCE",
+   body:"Atrahasis and Gilgamesh tell of a flood whose hero sends out birds to find dry land; Hammurabi’s laws rule on the ox that gores. Both details reappear in Genesis and Exodus."},
+  {id:"egypt", yr:-1300, lane:1, name:"Egypt", date:"c. 1350–1100 BCE",
+   body:"Akhenaten’s Great Hymn to the Aten (c. 1350 BCE) and the Instruction of Amenemope (c. 1100 BCE) are the two Egyptian texts with the strongest claim to have entered the Hebrew Bible. The wider religion of Osiris, Isis and Horus travels later and by other routes."},
+  {id:"ugarit", yr:-1250, lane:4, name:"Canaan · Ugarit", date:"c. 1400–1200 BCE",
+   body:"Clay tablets dug up at Ugarit from 1928 preserve the Canaanite gods El and Baal. El’s titles and Baal’s epithet “rider of the clouds” later belong to Yahweh."},
+  {id:"yahwism", yr:-950, lane:4, name:"Israelite Yahwism", date:"c. 1000–600 BCE",
+   body:"Israel emerges largely from within Canaanite culture. Yahweh absorbs El’s identity, and the worship of Baal and Asherah is later condemned. Worship happens at many shrines and is passed on mostly by mouth."},
+  {id:"proverbs", yr:-700, lane:2, name:"Israelite wisdom", date:"c. 700 BCE",
+   body:"Proverbs 22:17–24:22 follows the Egyptian Instruction of Amenemope closely. The book credits Solomon and “the wise”. The Egyptian source was forgotten until Adolf Erman noticed it in 1924."},
+  {id:"persia", yr:-550, lane:7, name:"Persia", date:"from c. 550 BCE",
+   body:"Zoroastrian teaching on a final judgement, a bodily resurrection and a cosmic adversary meets Judah during Persian rule (539–332 BCE). How much Judaism took from it is still argued, partly because the Avesta was written down late."},
+  {id:"torah", yr:-520, lane:4, name:"Exile & return", date:"c. 586–400 BCE",
+   body:"In and after the Babylonian exile the Torah is edited into its lasting shape, and worship of one God becomes explicit (Second Isaiah, c. 540 BCE). From now on there is a text to go back to: the anchor term c rises above zero."},
+  {id:"greek", yr:-450, lane:9, name:"Greek philosophy", date:"c. 500–100 BCE",
+   body:"Heraclitus’s Logos, Plato’s two worlds and the Stoics’ rational order. After Alexander (332 BCE) this vocabulary becomes the common language of educated thought around the eastern Mediterranean."},
+  {id:"lxx", yr:-250, lane:6, name:"Septuagint", date:"c. 250–100 BCE",
+   body:"The Hebrew scriptures are translated into Greek at Alexandria. Isaiah 7:14’s almah (“young woman”) becomes parthenos (“virgin”), the reading the Gospel of Matthew later quotes."},
+  {id:"secondtemple", yr:-160, lane:4, name:"Second Temple Judaism", date:"c. 200 BCE – 70 CE",
+   body:"Daniel (c. 165 BCE) gives the first clear Hebrew statement that the dead will rise. Enoch elaborates angels and fallen Watchers. Pharisees, Sadducees and the Dead Sea community argue over the Law."},
+  {id:"isis", yr:-50, lane:1, name:"Isis cult", date:"c. 300 BCE – 400 CE",
+   body:"Hellenised Isis worship spreads across the Roman world. Images of Isis nursing the infant Horus are common in Roman Egypt."},
+  {id:"philo", yr:20, lane:8, name:"Philo of Alexandria", date:"c. 20 BCE – 50 CE",
+   body:"A Jewish philosopher reading the Septuagint through Plato and the Stoics. His Logos is God’s mediating Word, the “first-born” through whom the world is made."},
+  {id:"jesus", yr:30, lane:4, name:"Jesus of Nazareth", date:"c. 30 CE",
+   body:"A Galilean Jewish teacher who spoke Aramaic. He left no writing. Everything we have of him passed first through oral memory and then into Greek."},
+  {id:"paul", yr:55, lane:6, name:"Paul’s letters", date:"c. 50–60 CE",
+   body:"The earliest Christian documents. Paul writes in Greek to largely Gentile churches, quotes the Septuagint, and almost never quotes Jesus’ sayings."},
+  {id:"gospels", yr:90, lane:4, name:"The Gospels", date:"c. 70–100 CE",
+   body:"Mark, then Matthew and Luke using Mark, then John. All four are in Greek, a translation away from Jesus’ Aramaic. John opens with the Logos."},
+  {id:"jewishxn", yr:120, lane:2, name:"Jewish Christians", date:"c. 50–400 CE", ended:true,
+   body:"Followers of Jesus who kept the Law, such as the Ebionites. Their line ended around the fifth century: a branch of the tree that left almost no descendants."},
+  {id:"gnostic", yr:150, lane:7, name:"Gnostic Christianities", date:"c. 120–400 CE", ended:true,
+   body:"Groups who read the gospel through a Platonic myth: an ignorant creator, a hidden true God, salvation as knowledge. Known mainly from their opponents until the Nag Hammadi find of 1945, which also held Egyptian Hermetic treatises."},
+  {id:"rabbinic", yr:200, lane:1, name:"Rabbinic Judaism", date:"from c. 200 CE",
+   body:"The other surviving descendant of Second Temple Judaism. After the Temple falls in 70 CE, study and prayer replace sacrifice. The Mishnah (c. 200) writes the oral Law down."},
+  {id:"canon", yr:325, lane:4, name:"Canon & creed", date:"325–381 CE",
+   body:"Councils at Nicaea (325) and Constantinople (381) define the Trinity in Greek philosophical terms such as ousia and homoousios. The New Testament list settles over the fourth century."},
+  {id:"vulgate", yr:405, lane:3, name:"Latin Vulgate", date:"c. 382–405 CE",
+   body:"Jerome translates the Bible into Latin. For a thousand years the Western church reads its scriptures through this one translation."},
+  {id:"marian", yr:431, lane:1, name:"The God-bearer", date:"431 CE",
+   body:"The Council of Ephesus names Mary Theotokos, “God-bearer”. Images of Mary nursing Jesus appear in Coptic Egypt."},
+  {id:"coptic", yr:451, lane:7, name:"Oriental Orthodox", date:"from 451 CE",
+   body:"After the Council of Chalcedon (451) the Coptic, Syriac, Armenian and Ethiopian churches part from Rome and Constantinople over how Christ is one person in two natures. Here the Egyptian thread returns, as the Coptic Church."},
+  {id:"east", yr:1054, lane:6, name:"Eastern Orthodoxy", date:"from 1054",
+   body:"Greek-speaking Christianity. It keeps the Byzantine Greek text and a liturgy whose core is traditionally dated to the late fourth century. Practice is the axis it guards best."},
+  {id:"west", yr:1054, lane:3, name:"Latin Catholicism", date:"1054–1517",
+   body:"The Latin West after the mutual excommunications of 1054: one language, one Bible translation, and scribal copying in monasteries."},
+  {id:"erasmus", yr:1516, lane:4, name:"Printed Greek NT", date:"1516",
+   body:"Erasmus prints the first published Greek New Testament, from a handful of late manuscripts. His copy of Revelation lacked the last verses, so he translated them back into Greek from the Latin."},
+  {id:"luther", yr:1517, lane:1, name:"Lutheran Reformation", date:"from 1517",
+   body:"Luther translates Erasmus’s Greek into German (1522). “Scripture alone” is an anchor move: go back to the source text, past the tradition. The sacraments drop from seven to two."},
+  {id:"anabaptist", yr:1525, lane:0, name:"Anabaptists", date:"from 1525",
+   body:"Believer’s baptism and a church separate from the state. Mennonites, Amish and Hutterites descend from them."},
+  {id:"reformed", yr:1541, lane:2, name:"Reformed", date:"from 1541",
+   body:"Calvin’s Geneva. Presbyterian, Congregational and many Baptist churches descend from this line."},
+  {id:"trent", yr:1563, lane:5, name:"Catholic: Trent", date:"1545–1563",
+   body:"The Catholic answer to the Reformation fixes doctrine, the Latin Mass, and the Vulgate as the authoritative Bible."},
+  {id:"anglican", yr:1611, lane:3, name:"Anglican · KJV", date:"1534; KJV 1611",
+   body:"The Church of England and the King James Version, translated from Erasmus’s descendant text, the Textus Receptus. The KJV renders Sheol, Hades and Gehenna all as “hell” in many places."},
+  {id:"methodist", yr:1739, lane:3, name:"Methodism", date:"from 1739",
+   body:"Wesley’s revival inside Anglicanism becomes its own church. Its Holiness wing later produces Pentecostalism."},
+  {id:"critical", yr:1778, lane:8, name:"Critical scholarship", date:"from 1778",
+   body:"Reimarus’s fragments, published by Lessing, open the study of Jesus as a figure of history. Scholars compare manuscripts and rebuild earlier texts. The method on this page descends from it."},
+  {id:"restoration", yr:1830, lane:1, name:"Restorationists", date:"from the 1830s",
+   body:"Movements that set out to restore the original church: Stone-Campbell, the Latter-day Saints (1830), Adventists (1863), Jehovah’s Witnesses (1870s). Several add new revelation, so meaning moves fast just where the claim to origin is strongest."},
+  {id:"pentecostal", yr:1906, lane:3, name:"Pentecostalism", date:"from 1906",
+   body:"Azusa Street, Los Angeles. Speaking in tongues and healing as a return to the Acts of the Apostles. Now among the fastest-growing forms of Christianity."},
+  {id:"fundamental", yr:1915, lane:1, name:"Fundamentalism", date:"from 1910",
+   body:"The Fundamentals (1910–15) defend biblical inerrancy against critical scholarship. Much of modern evangelicalism grows out of it."},
+  {id:"recovery", yr:1947, lane:9, name:"Recovered sources", date:"1844–1947",
+   body:"Codex Sinaiticus (found 1844–59), the Nag Hammadi library (1945) and the Dead Sea Scrolls (1947). Manuscripts that skipped centuries of copying: anchors that bypass the chain."},
+  {id:"vatican2", yr:1965, lane:5, name:"Vatican II", date:"1962–1965",
+   body:"Mass in local languages, openness to other churches and religions, and Catholic acceptance of critical biblical study."},
+  {id:"global", yr:1985, lane:3, name:"Global South", date:"from the 1980s",
+   body:"By 2010 only about a quarter of Christians lived in Europe, down from two-thirds in 1910. The centre of gravity is now Africa, Latin America and Asia, much of it Pentecostal or charismatic."},
+  {id:"digital", yr:2024, lane:6, name:"Search & AI", date:"from the 2000s",
+   body:"Bible apps, Wikipedia, search snippets and AI answers. Text fidelity is almost perfect and every manuscript is a click away. Answers, though, are regenerated from the most common reading, so meaning regresses toward the average and provenance is the first thing dropped."}
+];
+
+/* channel presets: generation length (years), error per generation per axis, return-to-source probability */
+const CH0 = {
+  oral:    {name:"Oral",           gen:25,  mu:{T:.05,  M:.02, P:.04, R:.015}, c:0,
+            why:"Memory and retelling. No fixed text: c = 0."},
+  scribal: {name:"Scribal",        gen:50,  mu:{T:.01,  M:.008,P:.015,R:.02},  c:.05,
+            why:"Hand copies from an exemplar, about one copying generation per half-century, with occasional checks against a better manuscript."},
+  print:   {name:"Print",          gen:30,  mu:{T:.001, M:.01, P:.005,R:.02},  c:.25,
+            why:"Identical copies; editions are revised against sources. Meaning still moves with each generation of readers."},
+  digital: {name:"Search & AI",    gen:5,   mu:{T:.0005,M:.02, P:.03, R:.01},  c:.4,
+            why:"Perfect copies and instant access to sources, but fast cycles of regeneration that drop attribution."},
+  buried:  {name:"Buried (anchor)",gen:500, mu:{T:.02,  M:.25, P:.1,  R:.9},   c:0,
+            why:"No copying at all. The words survive; how they were read and practised does not."}
+};
+const CH = JSON.parse(JSON.stringify(CH0));
+
+/* edges: [from, to, kind d=descent i=influence a=anchor, grade, channel, event retention {T,M,P,R}, note] */
+const E_RAW = [
+  ["meso","torah","i","D","scribal",{T:.03,M:.03,P:.005,R:.01},"The flood story with birds sent out to find land (Gilgamesh XI → Genesis 8) and law cases such as the goring ox (Hammurabi → Exodus 21). The bird detail is a shared idiosyncrasy, the kind of evidence the shared-error test asks for."],
+  ["ugarit","yahwism","d","D","oral",{M:.7,R:.6},"Israel emerges from within Canaanite culture. Yahweh takes on El’s name and titles and Baal’s cloud-riding (Psalm 68:4); Baal worship itself is rejected."],
+  ["egypt","yahwism","i","P","scribal",{T:.01,M:.02,P:.002,R:.005},"Psalm 104 closely follows the Great Hymn to the Aten in order and imagery. Most scholars accept a connection, probably indirect, through later Egyptian or Canaanite hymns."],
+  ["egypt","proverbs","i","D","scribal",{T:.03,M:.03,P:.002,R:.01},"Proverbs 22:17–24:22 follows the Instruction of Amenemope, down to its “thirty” sayings (Prov. 22:20). The tradition forgot the Egyptian origin: provenance is the axis that falls."],
+  ["egypt","torah","i","V","scribal",{},"Akhenaten’s Aten worship as the source of Mosaic monotheism (Freud, 1939). No documented route. Israel reaches worship of one God by its own path centuries later, so this is best read as convergence."],
+  ["yahwism","proverbs","d","D","oral",{},"Israelite court and family wisdom, collected under Solomon’s name."],
+  ["yahwism","torah","d","D","scribal",{M:.75,R:.6},"Exile ends the Temple cult; stories and laws are edited into the Torah. Worship of Yahweh becomes worship of the only God."],
+  ["proverbs","torah","d","D","scribal",{},"Wisdom literature joins the scriptures."],
+  ["persia","secondtemple","i","C","scribal",{T:.005,M:.05,P:.005,R:.01},"A final judgement, bodily resurrection, ranks of angels and a cosmic adversary appear in Jewish texts after Persian rule. Influence is widely suspected but hard to prove, because the Zoroastrian texts were written down late."],
+  ["torah","secondtemple","d","D","scribal",{M:.8},"Scripture is copied, read in synagogues and argued over. Apocalyptic hope and resurrection (Daniel 12:2) enter."],
+  ["greek","secondtemple","i","P","scribal",{T:.01,M:.05,P:.01,R:.01},"Hellenisation: Greek schooling, the Maccabean revolt against it (167 BCE), and Greek-language Jewish books such as the Wisdom of Solomon."],
+  ["torah","lxx","d","D","scribal",{T:.55,M:.85},"Translation into Greek at Alexandria. Isaiah 7:14 almah (“young woman”) becomes parthenos (“virgin”)."],
+  ["greek","philo","i","D","scribal",{T:.05,M:.15,P:.1,R:.01},"Philo openly uses Plato and the Stoics; the Logos becomes God’s mediating Word."],
+  ["lxx","philo","d","D","scribal",{},"Philo reads scripture in the Septuagint."],
+  ["secondtemple","jesus","d","D","oral",{M:.8,R:.85},"A Galilean Jew teaching in Aramaic inside the arguments of his time: the Kingdom of God, the Law, the age to come."],
+  ["secondtemple","rabbinic","d","D","scribal",{M:.8,R:.55},"After the Temple falls in 70 CE, Pharisaic study and prayer replace sacrifice."],
+  ["jesus","paul","d","D","oral",{T:.3,M:.7,P:.8,R:.7},"Paul never met Jesus in life and rarely quotes him. The mission to Gentiles drops circumcision and the food laws."],
+  ["jesus","gospels","d","D","oral",{T:.5,M:.85,P:.85,R:.9},"Forty to seventy years of oral memory, then writing in Greek: a translation step for every saying."],
+  ["jesus","jewishxn","d","D","oral",{T:.6,M:.85},"Followers who kept the Law. The line ends by about the fifth century."],
+  ["paul","gospels","d","P","oral",{T:.3,M:.75,P:.7,R:.85},"Luke–Acts tells Paul’s mission; how far Mark depends on Paul is debated."],
+  ["lxx","gospels","d","D","scribal",{T:.4,M:.9},"The Gospels quote scripture in its Greek form: Matthew 1:23 cites Isaiah 7:14 as “the virgin shall conceive”."],
+  ["philo","gospels","i","C","scribal",{T:.02,M:.1,P:.02,R:.01},"John 1:1, “In the beginning was the Logos.” Whether John draws on Philo, on Jewish Wisdom tradition, or on both is debated."],
+  ["isis","paul","i","C","scribal",{T:.005,M:.03,P:.005,R:.03},"The History of Religions school read Paul’s dying and rising with Christ (Romans 6) against the mystery cults. J. Z. Smith (1990) and others argue the parallels are thin."],
+  ["egypt","isis","d","D","scribal",{M:.6,R:.5},"Isis and Osiris worship is Hellenised under the Ptolemies and spreads across the Roman empire."],
+  ["greek","isis","i","D","scribal",{T:.02,M:.1,P:.05,R:.05},"Ptolemaic religious policy: Serapis, and Greek hymns to Isis."],
+  ["gospels","gnostic","d","D","scribal",{M:.4,R:.5},"Gospel material reread as a myth of a hidden God and a flawed creator."],
+  ["greek","gnostic","i","D","scribal",{T:.02,M:.15,P:.05,R:.02},"Platonic cosmology: the demiurge and the ascent of the soul."],
+  ["egypt","gnostic","i","P","scribal",{T:.01,M:.03,P:.01,R:.01},"Hermetic treatises, among them the Discourse on the Eighth and Ninth, were bound into the Nag Hammadi codices alongside Christian texts."],
+  ["gospels","canon","d","D","scribal",{T:.95,M:.8,R:.8},"Four Gospels are chosen out of many; the creeds summarise them."],
+  ["paul","canon","d","D","scribal",{T:.95,M:.8,R:.8},"Paul’s letters become scripture."],
+  ["greek","canon","i","D","scribal",{T:.01,M:.1,P:.02,R:.01},"Ousia, hypostasis, homoousios: the Trinity is defined in the words of Greek philosophy."],
+  ["canon","vulgate","d","D","scribal",{T:.55,M:.85},"Translation into Latin."],
+  ["canon","marian","d","D","scribal",{M:.85,R:.8},"Mary is named Theotokos at Ephesus, 431 CE."],
+  ["isis","marian","i","C","scribal",{T:.005,M:.03,P:.01,R:.05},"Isis nursing Horus and the nursing Virgin (Maria lactans), whose earliest images are Coptic. Influence on the images is plausible, but a mother nursing a child is a human universal that can be reached independently."],
+  ["canon","coptic","d","D","scribal",{M:.9,R:.9},"Separation after Chalcedon, 451."],
+  ["canon","east","d","D","scribal",{M:.9,R:.9},"Greek Christianity of the eastern empire."],
+  ["marian","east","d","D","scribal",{},"Marian devotion and the icon."],
+  ["vulgate","west","d","D","scribal",{M:.9,R:.85},"Latin Christianity of the West."],
+  ["marian","west","d","D","scribal",{},"Marian devotion."],
+  ["east","erasmus","d","D","scribal",{T:.95,P:.9},"Erasmus’s printed Greek comes from a few late Byzantine manuscripts. For the last verses of Revelation he translated the Latin back into Greek."],
+  ["west","erasmus","i","D","scribal",{T:.3,M:.5,P:.5,R:.3},"Under pressure, his third edition (1522) adds the Johannine Comma (1 John 5:7–8): a Trinitarian phrase found in Latin manuscripts but in no early Greek one."],
+  ["west","luther","d","D","scribal",{M:.75,R:.55},"Justification by faith alone; sacraments from seven to two; worship in German."],
+  ["erasmus","luther","d","D","print",{T:.55,M:.9},"Luther’s German New Testament (1522) is translated from Erasmus’s Greek."],
+  ["west","anabaptist","d","D","scribal",{M:.7,R:.4},"Infant baptism rejected; the church separated from the state."],
+  ["west","reformed","d","D","scribal",{M:.75,R:.45},"Calvin: God’s sovereignty, simplified worship, church discipline."],
+  ["erasmus","reformed","d","D","print",{},"The printed Greek text as the source to return to."],
+  ["west","trent","d","D","scribal",{M:.95,R:.9},"Doctrine codified at Trent."],
+  ["west","anglican","d","D","scribal",{M:.85,R:.75},"Break with Rome in 1534; worship in English (Book of Common Prayer, 1549)."],
+  ["erasmus","anglican","d","D","print",{T:.55,M:.9},"The KJV New Testament (1611) is translated from the Textus Receptus, the descendant of Erasmus’s edition."],
+  ["anglican","methodist","d","D","print",{M:.85,R:.7},"Wesley’s revival inside Anglicanism."],
+  ["reformed","restoration","d","D","print",{M:.55,P:.6,R:.5},"Movements to restore the first church. Several add new revelation or reject the Trinity."],
+  ["methodist","restoration","d","D","print",{M:.7,R:.6},"Revival and camp-meeting roots."],
+  ["methodist","pentecostal","d","D","print",{M:.8,R:.55},"The Holiness movement leads to tongues at Azusa Street."],
+  ["reformed","fundamental","d","D","print",{M:.9,R:.85},"Inerrancy defended against critical scholarship."],
+  ["luther","critical","d","D","print",{M:.7,R:.3},"German Protestant universities. The Bible read as a historical document like any other."],
+  ["secondtemple","recovery","a","D","buried",{},"The Dead Sea Scrolls lay in the caves at Qumran from about 70 CE until 1947, skipping about nine centuries of copying."],
+  ["canon","recovery","a","D","buried",{},"Codex Sinaiticus, copied in the fourth century and found at Saint Catherine’s Monastery in 1844–59."],
+  ["gnostic","recovery","a","D","buried",{},"The Nag Hammadi library, buried about 400 CE and found in 1945."],
+  ["critical","recovery","d","D","print",{},"Scholars search for, edit and publish the recovered texts."],
+  ["trent","vatican2","d","D","print",{M:.85,R:.6},"Mass in the vernacular; ecumenism."],
+  ["critical","vatican2","i","D","print",{T:.3,M:.3,P:.5,R:.1},"Divino Afflante Spiritu (1943) and Dei Verbum (1965) accept historical-critical study."],
+  ["pentecostal","global","d","D","print",{M:.85,R:.8},"Pentecostal and charismatic growth in Africa, Latin America and Asia."],
+  ["vatican2","global","d","D","print",{M:.9},"Catholic growth in the Global South."],
+  ["global","digital","d","D","digital",{},"Phone first: Bible apps, video sermons, messaging groups."],
+  ["fundamental","digital","d","D","print",{},"Evangelical radio, television, then the web."],
+  ["vatican2","digital","d","D","print",{},"Official documents online; the Vatican’s own sites."],
+  ["east","digital","d","D","scribal",{},"Orthodox liturgy and texts carried largely unchanged."],
+  ["recovery","digital","a","D","print",{},"Codex Sinaiticus was digitised and published online in 2009; the scrolls are online too."],
+  ["critical","digital","d","D","print",{},"Critical editions and their commentary, now searchable."],
+  ["egypt","gospels","i","X","scribal",{},"“Horus was born of a virgin on 25 December and had twelve disciples.” No ancient Egyptian source says so. The claim traces to Kersey Graves (1875) and Gerald Massey (1907) and spread through the film Zeitgeist (2007). A modern claim that acquired an ancient pedigree: provenance drift running backwards."],
+  ["persia","canon","i","X","scribal",{},"“Mithras was born of a virgin on 25 December.” The Roman Mithraic evidence does not say so: Mithras is born from a rock. (Roman Mithras is also distinct from the Persian Mithra.) The 25 December date of Christmas is first attested for the year 336; whether it was set against the Sol Invictus feast or calculated from the date of the Passion is contested."]
+];
+const EDGES = E_RAW.map(([f,t,k,g,ch,e,n]) => ({f,t,k,g,ch,e,n}));
+
+const TRAITS = {
+  logos:{name:"The Logos (the Word)", steps:[
+    ["greek","D","Heraclitus (c. 500 BCE): the Logos as the order behind all change; the Stoics make it divine reason."],
+    ["philo","D","Philo: the Logos is God’s first-born, the intermediary through whom the world is made."],
+    ["gospels","C","John 1:1–14: “In the beginning was the Logos … and the Logos became flesh.” The Philo route is debated; Jewish Wisdom (Proverbs 8) is the other candidate."],
+    ["canon","D","Nicaea: the Son is “of one substance” with the Father."],
+    ["vulgate","D","Latin renders Logos as Verbum, “word”. The philosophical sense of reason fades from the term."]]},
+  wisdom:{name:"Amenemope’s thirty sayings", steps:[
+    ["egypt","D","The Instruction of Amenemope, thirty chapters, c. 1100 BCE."],
+    ["proverbs","D","Proverbs 22:17–24:22 follows its order and wording; 22:20 promises “thirty” sayings."],
+    ["torah","D","The collection enters scripture under Solomon’s name. The Egyptian source is forgotten."],
+    ["vulgate","D","Jerome, with no Egyptian source to hand, reads 22:20 as tripliciter, “threefold”. The KJV has “excellent things”. Every reader inherits the drift."],
+    ["critical","D","Adolf Erman identifies the source in 1924; modern translations restore “thirty”. An anchor recovered after three thousand years."]]},
+  virgin:{name:"The virgin birth", steps:[
+    ["torah","D","Isaiah 7:14: an almah, a young woman, will conceive, as a sign for King Ahaz’s own day."],
+    ["lxx","D","Septuagint: parthenos, which usually means “virgin”."],
+    ["gospels","D","Matthew 1:23 quotes the Greek; Matthew and Luke both tell of a virginal conception."],
+    ["canon","D","“Born of the Virgin Mary” enters the creeds."],
+    ["marian","D","Ephesus (431): Mary as Theotokos."],
+    ["critical","D","The Revised Standard Version (1952) prints “young woman” in Isaiah and provokes public outcry."]]},
+  resurrection:{name:"Resurrection of the dead", steps:[
+    ["torah","D","Older Hebrew texts: all the dead go down to Sheol; no general resurrection."],
+    ["persia","C","A Zoroastrian final renewal with bodily resurrection. The doctrine’s date is debated."],
+    ["secondtemple","D","Daniel 12:2 (c. 165 BCE): “many of those who sleep in the dust of the earth shall awake”."],
+    ["jesus","D","Jesus sides with the Pharisees against the Sadducees on resurrection (Mark 12:18–27)."],
+    ["paul","D","1 Corinthians 15: Christ as the “first fruits” of the general resurrection."],
+    ["canon","D","“The resurrection of the body” in the creeds."]]},
+  hell:{name:"Hell", steps:[
+    ["torah","D","Sheol: the shadowy place of all the dead, good and bad alike."],
+    ["greek","D","Hades, and Tartarus as a pit of punishment."],
+    ["secondtemple","D","1 Enoch: places of punishment. Gehenna, a valley outside Jerusalem, becomes a name for it."],
+    ["gospels","D","Gehenna in Jesus’ sayings; Hades in Luke 16."],
+    ["vulgate","D","Latin infernus covers several of these words."],
+    ["anglican","D","The KJV renders Sheol, Hades, Gehenna and Tartarus as “hell” in many places: four ideas, one word."],
+    ["critical","D","Modern translations mostly restore the distinctions."]]},
+  mother:{name:"Mother and child", steps:[
+    ["egypt","D","Isis nursing the infant Horus: a common Egyptian image."],
+    ["isis","D","The image travels with the Isis cult across the Roman world."],
+    ["marian","C","Maria lactans, earliest in Coptic Egypt. Influence is plausible, but the image is also convergent: a nursing mother is universal."],
+    ["west","D","The medieval Madonna and Child."],
+    ["east","D","Icons of the Theotokos."]]},
+  one:{name:"One God", steps:[
+    ["egypt","V","Akhenaten’s Aten (c. 1350 BCE), suppressed after his death. No documented route to Israel."],
+    ["ugarit","D","El, head of a council of gods."],
+    ["yahwism","D","Yahweh absorbs El; other gods tolerated, then opposed."],
+    ["torah","D","Second Isaiah (c. 540 BCE): “besides me there is no god”."],
+    ["canon","D","One God in three persons."],
+    ["rabbinic","D","The Shema at the centre of daily prayer."]]},
+  trinity:{name:"The Trinity and the Comma", steps:[
+    ["gospels","D","Matthew 28:19: “in the name of the Father and of the Son and of the Holy Spirit”."],
+    ["canon","D","Nicaea (325) and Constantinople (381) define the doctrine in Greek terms."],
+    ["west","D","A Latin gloss on 1 John 5:7–8, “the Father, the Word and the Holy Spirit, and these three are one”, enters the Latin text from around the fourth to fifth century."],
+    ["erasmus","D","Erasmus leaves it out in 1516 and 1519, then adds it in 1522."],
+    ["anglican","D","Printed in the KJV, 1611."],
+    ["critical","D","Removed from critical editions and most modern translations. The doctrine never depended on it."]]},
+  christmas:{name:"25 December", steps:[
+    ["persia","X","“Mithras born of a virgin on 25 December”: not in the ancient evidence."],
+    ["egypt","X","“Horus born on 25 December”: not in the ancient evidence."],
+    ["canon","C","First attested in the Chronography of 354, for the year 336. Set against the Sol Invictus feast, or calculated from the date of the Passion? Contested."],
+    ["west","D","Christmas spreads through the Latin West."],
+    ["east","D","The East joins it to Epiphany (6 January); the Armenian church still keeps 6 January."]]}
+};
+
+const CASES = [
+  {g:"D", t:"Amenemope and Proverbs", tests:["Yes: the “thirty” of Prov. 22:20 only makes sense with a thirty-chapter source","Egypt–Judah contact is well attested","Egyptian text is older"], v:"Descent. The textbook case, and provenance was lost on the way."},
+  {g:"D", t:"The flood birds", tests:["Yes: the hero releases birds to find land","Mesopotamia and Judah, especially in the exile","Mesopotamian versions are centuries older"], v:"Descent, with heavy reworking of the meaning."},
+  {g:"D", t:"Almah becomes parthenos", tests:["Yes: one word choice, quoted verbatim in Matthew 1:23","The Septuagint was the Gospels’ Bible","Translation precedes the Gospel"], v:"Documented translation drift on the meaning axis."},
+  {g:"D", t:"The Johannine Comma", tests:["Yes: a phrase found in no early Greek manuscript","Latin gloss → Latin text → Erasmus 1522 → KJV","Its appearance in the manuscripts is datable"], v:"An insertion into the text axis, later removed by going back to the anchor."},
+  {g:"D", t:"Erasmus’s Revelation", tests:["Yes: back-translated Greek words that no Greek manuscript has","His one manuscript lacked the last leaf","1516"], v:"Some of these readings were carried by the Textus Receptus into the KJV: a printed error multiplied."},
+  {g:"D", t:"Mark’s longer ending; the woman taken in adultery", tests:["Absent from the earliest manuscripts (Sinaiticus, Vaticanus, early papyri)","Later scribal tradition","Datable by manuscript"], v:"Later additions to the text, now usually printed in brackets."},
+  {g:"D", t:"Four hells become one", tests:["Sheol, Hades, Gehenna, Tartarus → “hell”","Latin infernus, then English","Translation choices in 1611 are fixed in print"], v:"Conflation: distinct ideas merged by translation."},
+  {g:"P", t:"Psalm 104 and the Hymn to the Aten", tests:["Close parallels in order and imagery","Route unclear; probably later hymns in between","Aten hymn is older"], v:"Probable, indirect connection."},
+  {g:"D", t:"The Logos: Greek → Philo", tests:["Same technical term, same role","Philo names his Greek sources","Heraclitus and the Stoics come first"], v:"Descent. The next step, Philo → John, is contested."},
+  {g:"C", t:"Persian resurrection and dualism", tests:["Shared themes, no shared idiosyncrasy","Persian rule over Judah 539–332 BCE","Avesta written down late, so priority is hard to fix"], v:"Contested. Plausible influence that the evidence can’t settle."},
+  {g:"C", t:"Isis and the nursing Virgin", tests:["Same posture: a universal image","Both in Egypt; Coptic art is the bridge","Isis images are older"], v:"Contested. Influence and convergence both fit the evidence."},
+  {g:"C", t:"Dying-and-rising gods", tests:["Category built by Frazer (1890); the details differ","Mystery cults were common in Paul’s world","Mixed"], v:"Contested. J. Z. Smith rejects the category; Mettinger defends a narrow version."},
+  {g:"V", t:"Akhenaten as the source of Moses’ one God", tests:["None: belief in one god is a common destination","No documented route across the centuries","Aten worship was erased after Akhenaten"], v:"Convergence. Freud’s suggestion, not a finding."},
+  {g:"X", t:"Horus: virgin-born on 25 December, twelve disciples", tests:["The details are not in Egyptian sources","The route runs through 19th-century books and a 2007 film","The “ancient” claim is younger than the KJV"], v:"Pseudohistorical. The drift here is in provenance: a modern claim given an ancient pedigree."}
+];
+const TESTNAMES = ["Shared idiosyncrasy?","Route?","Source first?"];
+
+/* ═══════════════════════════════════════════════════════════════
+   MODEL
+   ═══════════════════════════════════════════════════════════════ */
+const N = Object.fromEntries(NODES.map(n => [n.id, n]));
+const AX = {T:"Text", M:"Meaning", P:"Provenance", R:"Practice"};
+const GR = {D:"Documented", P:"Probable", C:"Contested", V:"Convergent", X:"Pseudohistorical"};
+const KIND = {d:"descent", i:"borrowing", a:"anchor"};
+const K = {mu:1, c:1, ev:1};
+const state = {ax:"M", origin:"egypt", sel:"digital", level:1, showAll:false, allNums:false, trait:""};
+const OUT = {}; EDGES.forEach(e => (OUT[e.f] = OUT[e.f] || []).push(e));
+const SORTED = [...NODES].sort((a,b) => a.yr - b.yr);
+
+function edgeR(E, ax){
+  const C = CH[E.ch];
+  const yrs = Math.max(1, N[E.t].yr - N[E.f].yr);
+  const g = yrs / C.gen;
+  const mu = Math.min(0.95, C.mu[ax] * K.mu);
+  const c = Math.min(1, C.c * K.c);
+  const a = (1 - mu) * (1 - c), b = (1 - mu) * c;
+  const fs = a < 1 ? b / (1 - a) : 0;
+  const f = fs + (1 - fs) * Math.pow(a, g);
+  let ev = (E.e && E.e[ax] != null) ? E.e[ax] : 1;
+  ev = Math.max(0, Math.min(1, 1 - (1 - ev) * K.ev));
+  return f * ev;
+}
+function allowed(E){
+  if (E.g === "V" || E.g === "X") return false;
+  return E.g === "D" || (E.g === "P" && state.level >= 1) || (E.g === "C" && state.level >= 2);
+}
+function solve(origin, ax){
+  const best = {[origin]:1}, prev = {};
+  for (const n of SORTED){
+    if (best[n.id] == null) continue;
+    for (const E of (OUT[n.id] || [])){
+      if (!allowed(E)) continue;
+      const v = best[n.id] * edgeR(E, ax);
+      if (best[E.t] == null || v > best[E.t]){ best[E.t] = v; prev[E.t] = E; }
+    }
+  }
+  return {best, prev};
+}
+function pathTo(sol, id){
+  const p = []; let cur = id;
+  while (sol.prev[cur]){ p.unshift(sol.prev[cur]); cur = sol.prev[cur].f; }
+  return p;
+}
+function pct(r){
+  if (r == null) return "—";
+  if (r >= 0.995) return "100%";
+  if (r >= 0.1) return Math.round(r * 100) + "%";
+  if (r >= 0.01) return (r * 100).toFixed(1) + "%";
+  if (r >= 0.001) return (r * 100).toFixed(2) + "%";
+  if (r <= 0) return "0%";
+  return "1 in " + Math.round(1 / r).toLocaleString("en");
+}
+function loss(r){ return "−" + Math.round((1 - r) * 100) + "%"; }
+function yrLabel(y){ return y < 0 ? (-y) + " BCE" : y + " CE"; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TREE LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+const YS = [[-1800,70],[-1000,190],[-300,400],[0,580],[150,760],[500,950],[1500,1080],[1800,1310],[2030,1565]];
+function Y(yr){
+  for (let i = 0; i < YS.length - 1; i++){
+    const [a, ya] = YS[i], [b, yb] = YS[i+1];
+    if (yr <= b) return ya + (yr - a) / (b - a) * (yb - ya);
+  }
+  return YS[YS.length-1][1];
+}
+const X = lane => 80 + lane * 84;
+const BANDS = [["Bronze Age roots",-1800,-1000],["Iron Age Israel",-1000,-300],["Hellenistic world",-300,0],["First century",0,150],
+  ["Late antiquity",150,500],["Middle Ages",500,1500],["Reformation & print",1500,1800],["Modern & digital",1800,2030]];
+const TICKS = [-1500,-1000,-500,1,100,300,500,1000,1500,1600,1700,1800,1900,2000];
+const SVGNS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent, text){
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function drawTree(){
+  const svg = document.getElementById("tree");
+  svg.innerHTML = "";
+  const sol = solve(state.origin, state.ax);
+  const onPath = new Set(pathTo(sol, state.sel));
+  const trait = state.trait ? TRAITS[state.trait] : null;
+  const traitIdx = {};
+  if (trait) trait.steps.forEach((s, i) => { if (traitIdx[s[0]] == null) traitIdx[s[0]] = {i, g:s[1]}; });
+
+  const gB = el("g", {}, svg);
+  BANDS.forEach(([name, a, b], i) => {
+    const y0 = Y(a), y1 = Y(b);
+    if (i % 2 === 0) el("rect", {class:"band", x:0, y:y0, width:1000, height:y1 - y0}, gB);
+    el("text", {class:"bandname", x:992, y:y0 + 16, "text-anchor":"end"}, gB, name);
+  });
+  TICKS.forEach(t => {
+    const y = Y(t);
+    el("line", {class:"tick", x1:0, x2:44, y1:y, y2:y}, gB);
+    el("text", {class:"ticklab", x:6, y:y - 4}, gB, t < 0 ? (-t) + " BCE" : (t === 1 ? "1 CE" : t));
+  });
+
+  const gE = el("g", {}, svg), gL = el("g", {}, svg), gN = el("g", {}, svg);
+  const draw = [...EDGES].sort((a, b) => onPath.has(a) - onPath.has(b));
+  for (const E of draw){
+    const hidden = (E.g === "V" || E.g === "X") && !state.showAll;
+    if (hidden) continue;
+    const a = N[E.f], b = N[E.t];
+    const x1 = X(a.lane), y1 = Y(a.yr), x2 = X(b.lane), y2 = Y(b.yr);
+    const dy = y2 - y1;
+    const d = `M${x1},${y1} C${x1},${y1 + dy * 0.5} ${x2},${y2 - dy * 0.5} ${x2},${y2}`;
+    const live = allowed(E) && sol.best[E.f] != null;
+    let cls = `e g-${E.g} k-${E.k}`;
+    if (onPath.has(E)) cls += " path";
+    else if (!live && E.g !== "V" && E.g !== "X") cls += " off";
+    const p = el("path", {class:cls, d}, gE);
+    el("title", {}, p, `${a.name} → ${b.name} · ${KIND[E.k]} · ${GR[E.g]}\n${E.n}`);
+    if (onPath.has(E) || (state.allNums && live)){
+      const r = edgeR(E, state.ax);
+      el("text", {class:"elab" + (onPath.has(E) ? "" : " small"), x:(x1 + x2) / 2 + 4, y:(y1 + y2) / 2 + 3}, gL, loss(r));
+    }
+  }
+
+  for (const n of NODES){
+    const x = X(n.lane), y = Y(n.yr);
+    const r = sol.best[n.id];
+    const reach = r != null;
+    const g = el("g", {class:"n" + (reach ? "" : " unreach") + (n.ended ? " ended" : ""), tabindex:0, role:"button",
+      "aria-label":`${n.name}, ${n.date}. ${AX[state.ax]} retained from ${N[state.origin].name}: ${pct(r)}`, "data-id":n.id}, gN);
+    el("title", {}, g, `${n.name} · ${n.date}`);
+    el("circle", {cx:x, cy:y, r:16, fill:"transparent"}, g);
+    if (trait && traitIdx[n.id]){
+      const ti = traitIdx[n.id];
+      const col = {D:"var(--doc)",P:"var(--prob)",C:"var(--cont)",V:"var(--conv)",X:"var(--pseudo)"}[ti.g];
+      el("circle", {class:"tring", cx:x, cy:y, r:13, stroke:col, "stroke-dasharray": ti.g === "X" ? "4 3" : "none"}, g);
+      el("circle", {cx:x + 13, cy:y - 11, r:7, fill:col}, g);
+      el("text", {class:"tnum", x:x + 13, y:y - 7.6}, g, String(ti.i + 1));
+    }
+    if (n.id === state.origin) el("circle", {class:"oring", cx:x, cy:y, r:10.5}, g);
+    if (n.id === state.sel) el("circle", {class:"ring", cx:x, cy:y, r:15}, g);
+    const op = reach ? Math.max(0.12, Math.min(1, (Math.log10(Math.max(r, 1e-5)) + 5) / 5)) : 0;
+    el("circle", {class:"dot", cx:x, cy:y, r:6.5, fill:"var(--gold)", "fill-opacity":op}, g);
+    el("text", {class:"nm", x, y:y + 21}, g, n.name + (n.ended ? " †" : ""));
+    el("text", {class:"val", x, y:y + 34}, g, reach ? pct(r) : "—");
+    g.addEventListener("click", () => select(n.id));
+    g.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); select(n.id); } });
+  }
+
+  const tr = sol.best[state.sel];
+  const steps = pathTo(sol, state.sel).length;
+  const hl = document.getElementById("headline");
+  hl.innerHTML = tr == null
+    ? `No transmission path from <b>${N[state.origin].name}</b> to <b>${N[state.sel].name}</b> at this evidence level.`
+    : `From <b>${N[state.origin].name}</b> to <b>${N[state.sel].name}</b>: <span class="big">${pct(tr)}</span> of the ${AX[state.ax].toLowerCase()} survives on the strongest path (${steps} link${steps === 1 ? "" : "s"}). Drift: <span class="big">${tr <= 0 ? "100%" : pct(1 - tr)}</span>.`;
+}
+
+function select(id){ state.sel = id; drawTree(); drawPanel(); }
+
+function drawPanel(){
+  const n = N[state.sel];
+  const sols = {}; for (const a in AX) sols[a] = solve(state.origin, a);
+  const sol = sols[state.ax];
+  const path = pathTo(sol, n.id);
+  let h = `<h3>${n.name}${n.ended ? " †" : ""}</h3><div class="date">${n.date}${n.ended ? " · line ended" : ""}</div><p>${n.body}</p>`;
+  h += `<h4>Retained from ${N[state.origin].name}</h4><div class="bars">`;
+  for (const a in AX){
+    const r = sols[a].best[n.id];
+    const w = r == null ? 0 : Math.max(0, Math.min(100, (Math.log10(Math.max(r, 1e-5)) + 5) / 5 * 100));
+    h += `<span class="${a === state.ax ? "on" : ""}">${AX[a]}</span><span class="bt"><i style="width:${w}%"></i></span><span class="pv">${pct(r)}</span>`;
+  }
+  h += `</div><p class="note" style="margin-top:0.4rem">Bars on a log scale: a full bar is 100%, each fifth is a factor of ten.</p>`;
+  if (n.id === state.origin){
+    h += `<p>This is the originator. Pick a later node to see how much of it survives.</p>`;
+  } else if (!path.length){
+    h += `<p>No transmission path from ${N[state.origin].name} at this evidence level. Admit probable or contested links, or pick an earlier originator.</p>`;
+  } else {
+    h += `<h4>Strongest path · ${AX[state.ax]}</h4><ol class="path">`;
+    let run = 1;
+    for (const E of path){
+      const r = edgeR(E, state.ax); run *= r;
+      const yrs = N[E.t].yr - N[E.f].yr;
+      h += `<li><span class="hd">${N[E.f].name} → ${N[E.t].name}</span> <span class="loss">${loss(r)}</span><br>
+        <span class="chip g-${E.g}">${GR[E.g]}</span> ${KIND[E.k]} · ${CH[E.ch].name.toLowerCase()} · ${yrs} yrs · running ${pct(run)}<br>${E.n}</li>`;
+    }
+    h += `</ol>`;
+  }
+  const inc = EDGES.filter(E => E.t === n.id);
+  if (inc.length){
+    h += `<h4>Every link into this node</h4><ul class="links">`;
+    for (const E of inc) h += `<li><span class="chip g-${E.g}">${GR[E.g]}</span> from <b>${N[E.f].name}</b> (${KIND[E.k]}). ${E.n}</li>`;
+    h += `</ul>`;
+  }
+  h += `<div class="btnrow">${n.id !== state.origin ? `<button class="pill" id="setOrigin">Measure drift from here</button>` : ""}</div>`;
+  const panel = document.getElementById("panel");
+  panel.innerHTML = h;
+  const so = document.getElementById("setOrigin");
+  if (so) so.addEventListener("click", () => { state.origin = n.id; document.getElementById("originSel").value = n.id; refresh(); });
+}
+
+function drawTrait(){
+  const box = document.getElementById("traitbox");
+  if (!state.trait){ box.classList.remove("on"); box.innerHTML = ""; return; }
+  const T = TRAITS[state.trait];
+  box.classList.add("on");
+  box.innerHTML = `<h4>Tracing: ${T.name}</h4><ol>` +
+    T.steps.map(([id, g, txt]) => `<li><strong>${N[id].name}</strong> <span class="chip g-${g}">${GR[g]}</span> ${txt}</li>`).join("") + `</ol>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════════════════════════ */
+function drawChTable(){
+  const t = document.getElementById("chTable");
+  let h = `<thead><tr><th>Channel</th><th>Years / generation</th><th>μ text</th><th>μ meaning</th><th>μ provenance</th><th>μ practice</th><th>c</th><th>Why</th></tr></thead><tbody>`;
+  for (const k in CH){
+    const C = CH[k];
+    const inp = (field, sub, v, step) => `<input type="number" step="${step}" min="0" value="${v}" data-ch="${k}" data-f="${field}" data-s="${sub || ""}">`;
+    h += `<tr><td>${C.name}</td><td>${inp("gen","",C.gen,1)}</td>` +
+      ["T","M","P","R"].map(a => `<td>${inp("mu",a,C.mu[a],0.001)}</td>`).join("") +
+      `<td>${inp("c","",C.c,0.01)}</td><td>${C.why}</td></tr>`;
+  }
+  t.innerHTML = h + "</tbody>";
+  t.querySelectorAll("input").forEach(inp => inp.addEventListener("change", () => {
+    const v = Math.max(0, parseFloat(inp.value) || 0);
+    const C = CH[inp.dataset.ch];
+    if (inp.dataset.f === "mu") C.mu[inp.dataset.s] = Math.min(0.95, v);
+    else if (inp.dataset.f === "c") C.c = Math.min(1, v);
+    else C.gen = Math.max(1, v);
+    refresh(true);
+  }));
+}
+function drawEdgeTable(){
+  const t = document.getElementById("edgeTable");
+  let h = `<thead><tr><th>Link</th><th>Kind</th><th>Grade</th><th>Channel</th><th>Years</th><th>Event e (T/M/P/R)</th><th>${AX[state.ax]} retained</th></tr></thead><tbody>`;
+  for (const E of EDGES){
+    const ev = ["T","M","P","R"].map(a => (E.e && E.e[a] != null) ? E.e[a] : 1).join(" / ");
+    const r = (E.g === "V" || E.g === "X") ? "not computed" : pct(edgeR(E, state.ax));
+    h += `<tr><td>${N[E.f].name} → ${N[E.t].name}</td><td>${KIND[E.k]}</td><td><span class="chip g-${E.g}">${GR[E.g]}</span></td>
+      <td>${CH[E.ch].name}</td><td class="num">${N[E.t].yr - N[E.f].yr}</td><td class="num">${ev}</td><td class="num">${r}</td></tr>`;
+  }
+  t.innerHTML = h + "</tbody>";
+}
+function drawCases(){
+  document.getElementById("caseGrid").innerHTML = CASES.map(c =>
+    `<div class="case g-${c.g}"><span class="chip g-${c.g}">${GR[c.g]}</span><h4>${c.t}</h4>
+     <dl>${c.tests.map((x, i) => `<dt>${TESTNAMES[i]}</dt><dd>${x}</dd>`).join("")}</dl>
+     <div class="verdict">${c.v}</div></div>`).join("");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAB — the three regimes
+   ═══════════════════════════════════════════════════════════════ */
+function drawLab(){
+  const s = +document.getElementById("muIn").value;
+  const mu = Math.pow(10, -3 + 2 * s / 100);
+  const c = +document.getElementById("cIn").value / 100;
+  document.getElementById("muOut").textContent = (mu * 100).toFixed(mu < 0.01 ? 2 : 1) + "%";
+  document.getElementById("cOut").textContent = Math.round(c * 100) + "%";
+  const f = (g, cc) => { const a = (1 - mu) * (1 - cc), b = (1 - mu) * cc; const fs = a < 1 ? b / (1 - a) : 0; return fs + (1 - fs) * Math.pow(a, g); };
+  const a = (1 - mu) * (1 - c), fs = a < 1 ? (1 - mu) * c / (1 - a) : 0;
+  document.getElementById("r0").textContent = pct(f(100, 0));
+  document.getElementById("r1").textContent = pct(f(100, c));
+  document.getElementById("r2").textContent = c > 0 ? pct(fs) : "0 (none)";
+  document.getElementById("r3").textContent = Math.round(Math.LN2 / -Math.log(1 - mu)) + " gens";
+  const svg = document.getElementById("labsvg"); svg.innerHTML = "";
+  const x0 = 50, x1 = 620, y0 = 220, y1 = 20, G = 300;
+  const px = g => x0 + g / G * (x1 - x0), py = v => y0 - v * (y0 - y1);
+  for (let v = 0; v <= 1.001; v += 0.25){
+    el("line", {x1:x0, x2:x1, y1:py(v), y2:py(v), stroke:"var(--rule-soft)"}, svg);
+    el("text", {x:x0 - 8, y:py(v) + 4, "text-anchor":"end"}, svg, Math.round(v * 100) + "%");
+  }
+  for (let g = 0; g <= G; g += 50) el("text", {x:px(g), y:y0 + 18, "text-anchor":"middle"}, svg, g);
+  el("text", {x:(x0 + x1) / 2, y:254, "text-anchor":"middle"}, svg, "generations of copying");
+  const line = (cc, attrs) => {
+    let d = ""; for (let g = 0; g <= G; g += 2) d += (g ? "L" : "M") + px(g).toFixed(1) + "," + py(f(g, cc)).toFixed(1);
+    el("path", Object.assign({d, fill:"none"}, attrs), svg);
+  };
+  if (c > 0){
+    el("line", {x1:x0, x2:x1, y1:py(fs), y2:py(fs), stroke:"var(--gold)", "stroke-dasharray":"4 4", opacity:0.7}, svg);
+    el("text", {x:x1 - 4, y:py(fs) - 6, "text-anchor":"end", style:"fill:var(--gold)"}, svg, "plateau f* = " + pct(fs));
+  }
+  line(0, {stroke:"var(--muted)", "stroke-width":1.6, "stroke-dasharray":"5 4"});
+  line(c, {stroke:"var(--gold)", "stroke-width":2.4});
+  const hl = Math.LN2 / -Math.log(1 - mu);
+  if (hl < G){
+    el("circle", {cx:px(hl), cy:py(0.5), r:3.5, fill:"var(--muted)"}, svg);
+    el("text", {x:px(hl) + 7, y:py(0.5) + 14, style:"fill:var(--muted)"}, svg, "half gone, no source");
+  }
+  el("text", {x:x0 + 10, y:y0 - 26, style:"fill:var(--gold)"}, svg, "solid: with source access c");
+  el("text", {x:x0 + 10, y:y0 - 10}, svg, "dashed: no source (c = 0)");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WIRING
+   ═══════════════════════════════════════════════════════════════ */
+function syncK(){
+  const kmu = Math.pow(4, +document.getElementById("kmuIn").value / 100);
+  K.mu = kmu; K.c = +document.getElementById("kcIn").value / 100; K.ev = +document.getElementById("kevIn").value / 100;
+  document.getElementById("kmuOut").textContent = K.mu.toFixed(2);
+  document.getElementById("kcOut").textContent = K.c.toFixed(2);
+  document.getElementById("kevOut").textContent = K.ev.toFixed(2);
+}
+function refresh(){
+  document.querySelectorAll("#axSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.ax === state.ax));
+  drawTree(); drawPanel(); drawTrait(); drawEdgeTable();
+}
+(function init(){
+  const params = new URLSearchParams(location.search);
+  if (params.get("theme")) document.documentElement.setAttribute("data-theme", params.get("theme"));
+  const os = document.getElementById("originSel");
+  os.innerHTML = SORTED.map(n => `<option value="${n.id}">${n.name} · ${yrLabel(n.yr)}</option>`).join("");
+  ["origin","sel","ax","trait"].forEach(k => { const v = params.get(k); if (v && (k === "ax" ? AX[v] : k === "trait" ? TRAITS[v] : N[v])) state[k] = v; });
+  os.value = state.origin;
+  os.addEventListener("change", () => { state.origin = os.value; refresh(); });
+  const ts = document.getElementById("traitSel");
+  ts.innerHTML += Object.entries(TRAITS).map(([k, t]) => `<option value="${k}">${t.name}</option>`).join("");
+  ts.value = state.trait;
+  ts.addEventListener("change", () => { state.trait = ts.value; refresh(); });
+  const ls = document.getElementById("levelSel"); ls.value = String(state.level);
+  ls.addEventListener("change", () => { state.level = +ls.value; refresh(); });
+  document.getElementById("showAll").addEventListener("change", e => { state.showAll = e.target.checked; drawTree(); });
+  document.getElementById("allNums").addEventListener("change", e => { state.allNums = e.target.checked; drawTree(); });
+  document.querySelectorAll("#axSeg button").forEach(b => b.addEventListener("click", () => { state.ax = b.dataset.ax; refresh(); }));
+  ["muIn","cIn"].forEach(id => document.getElementById(id).addEventListener("input", drawLab));
+  ["kmuIn","kcIn","kevIn"].forEach(id => document.getElementById(id).addEventListener("input", () => { syncK(); refresh(); }));
+  document.getElementById("resetK").addEventListener("click", () => {
+    document.getElementById("kmuIn").value = 0; document.getElementById("kcIn").value = 100; document.getElementById("kevIn").value = 100;
+    for (const k in CH0) CH[k] = JSON.parse(JSON.stringify(CH0[k]));
+    syncK(); drawChTable(); refresh();
+  });
+  syncK(); drawChTable(); drawCases(); drawLab(); refresh();
+
+  const root = document.documentElement, btn = document.getElementById("themeBtn");
+  let saved = null; try { saved = localStorage.getItem("theoria-theme"); } catch(e) {}
+  if (saved && !params.get("theme")) root.setAttribute("data-theme", saved);
+  btn.addEventListener("click", () => {
+    const dark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theoria-theme", next); } catch(e) {}
+  });
+})();
+</script>
+</body>
+</html>
