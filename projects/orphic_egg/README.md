@@ -7,22 +7,26 @@ Sculpted after the reference pendant (`reference_front.webp`, `reference_head_on
 no longer hangs, the serpent's last turn slides off the egg onto the bed and its tail lies round the
 egg's tip as a foot.
 
-Two sculptures, each printable bare or fused onto its own plinth:
+Three sculptures, each printable bare or fused onto its own plinth:
 
 | File | What | Size |
 | --- | --- | --- |
 | `orphic_egg.stl` | the serpent on its egg | 103 × 103 × 143 mm, 514 cm³ |
 | `orphic_serpent.stl` | the same serpent with no egg: the empty coil, as if the egg has hatched | 103 × 103 × 143 mm, 165 cm³ |
+| `orphic_shedding.stl` | the empty coil shedding its skin | 108 × 110 × 143 mm, 197 cm³ |
 | `orphic_egg_plinth.stl` | the egg sculpture on its moulded drum, one print | 149 × 149 × 165 mm, 875 cm³ |
 | `orphic_serpent_plinth.stl` | the empty coil on its moulded drum, one print | 149 × 149 × 165 mm, 527 cm³ |
+| `orphic_shedding_plinth.stl` | the shedding serpent on its drum, the Seed of Life cut 1 mm into the top | 149 × 149 × 165 mm, 556 cm³ |
 
 ```bash
 python orphic_egg.py                # orphic_egg.stl, about 3 min
 python orphic_egg.py --serpent      # orphic_serpent.stl, about 3 min
-python plinth.py                    # both *_plinth.stl from the two STLs above, under a minute
+python orphic_shedding.py           # orphic_shedding.stl, about 14 min (--draft: 0.42 mm voxels, 2 min)
+python plinth.py [name ...]         # *_plinth.stl from the STLs above (default all three), about a minute each
 python orphic_egg.py --draft        # orphic_egg_draft.stl at 0.42 mm voxels, about 20 s
 python preview_orphic_egg.py                                                 # orphic_egg_views.png, orphic_egg_eye.png
 python preview_orphic_egg.py orphic_serpent.stl orphic_serpent_views.png -   # serpent views only
+python preview_shedding.py          # orphic_shedding_views.png, orphic_shedding_details.png
 ```
 
 ## Proportions
@@ -38,7 +42,8 @@ Sized from the shared grid (`lib/sacred_grid.py`, R = 15 mm) like the rest of th
 | Eyes | 6 × 5.5 mm domed eyeball set 1 mm proud in a recessed socket, under a swept brow shelf the socket cuts into a lid edge |
 | Pupils | an exact vesica piscis, 2.5 × 4.3 mm (√3 : 1), its horns 0.6 mm deep; its inscribed circle (Ø 2.5 mm) is a vortex, a disc falling to its centre with a 1.5-turn spiral groove (0.45 mm wide, 0.83 mm pitch) winding inward to a 1 mm-deep pit. The two eyes spin in mirror image |
 | Key | 45 mm skeleton key bitten crosswise: bow on the serpent's right (toward the front view), a 16 mm medallion of the Tripod of Life (three circles, each through the others' centres) in a ring tangent to its lobes; Ø 3.6 mm shaft with a throat collar; warded bit hanging on the left; plates 2.6 mm thick |
-| Plinth | a moulded round drum, top radius 4.5R (15 mm clear of the serpent's widest reach), 1.5R tall, 149 mm across at the foot. From the bed up: a chamfered foot, a plain band, a cove, a bead and a top band with a rounded edge |
+| Plinth | a moulded round drum, top radius 4.5R (15 mm clear of the serpent's widest reach, 8 mm clear of the shedding skin's), 1.5R tall, 149 mm across at the foot. From the bed up: a chamfered foot, a plain band, a cove, a bead and a top band with a rounded edge |
+| Seed of Life | on the shedding serpent's plinth only: the set's figure (seven circles, each through its neighbours' centres) at circle radius 2R, so it spans 120 mm and its outer arcs stop 7.5 mm inside the top edge; grooves 1.8 mm wide (the set's stroke), 1 mm deep, left uncut under the sculpture's footprint |
 
 ## How it is built
 
@@ -65,6 +70,27 @@ quadric-decimated with pymeshlab to keep each STL under GitHub's 50 MB warning. 
 leaves a few hundred sub-voxel crumbs off the sharp scale steps; the build drops them and reports
 the largest.
 
+## The shedding serpent
+
+`orphic_shedding.py` builds the empty coil again and lays its old skin over it in the same field.
+The front half, from the head to about 1.6 turns down, shows the new scales. At the peel front,
+450 mm along the body, the old skin has been pushed back: a rolled collar, then concertina folds,
+and ahead of it a cuff torn into four flared, ruffled tongues. Behind the front the skin lies loose
+over the rest of the body, crumpled, with sharper creases, and the crumpling grows where the tail lies on the
+ground. Eighteen tears show the new scales underneath, each with a curled-up rim, and four of them
+have their torn piece still hinged on and curling up like a lid. Three drapes of skin hang off
+the coils' outer flanks: one onto the coil below, one onto the tail, and one down to the ground,
+where its foot splays out. Four crumpled sheets lie on the ground beside the tail.
+
+The old skin is built in the serpent's own tube coordinates (s along the centreline, φ round it,
+ρ out from it) as an outer radius and, where it lifts, an inner one 1.3 mm in. So it is solid and
+fused to the body where it lies down and a shell where it lifts. Each radius is divided by its
+slope so the field stays a true distance on the steep folds. The drapes are shells in cylindrical
+coordinates about the coil's axis, starting and ending inside a tube. The ground sheets are height
+fields. All of the old skin carries the net of scale outlines a shed skin keeps (grooves 0.35 mm
+deep on the same diamond lattice as the scales), so it reads differently from the overlapping
+scales of the new skin.
+
 The plinth is revolved exactly from its profile. Each sculpture's STL is set 0.5 mm into its top,
 so no faces are coplanar, and unioned with manifold3d at full detail (48 MB each). The union
 leaves one zero-volume scrap where the tail tip grazes the top plane; the build drops it.
@@ -82,6 +108,13 @@ leaves one zero-volume scrap where the tail tip grazes the top plane; the build 
 - **The empty coil needs more.** Without the egg every coil overhangs along its whole underside
   (22 % of the surface), and the upper coils sit over the lower ones. Let tree supports land on the
   model, not just the build plate. On the plinth prints they can also land on the plinth top.
+- **The shedding serpent** stands on the tail, the ground sheets and the foot of one drape: 1896 mm²
+  on the bed within a 6000 mm² footprint, leaning about 28° before it tips. Only 16 % of its
+  surface overhangs more than 45° (22 % for the bare coil), because the drapes are near-vertical
+  walls that tie the lower coils to each other and to the ground. The cuff's tongues and the
+  peeled flaps lift off the body with thin, 1.3 mm edges and need tree supports beneath them. Remove
+  those supports gently. On the plinth print the Seed of Life grooves need nothing, and the
+  drape's foot lies across them.
 - **The key joins only through the jaws** (a Ø 3.6 mm shaft), so leave its supports on until the
   print has cooled.
 - **The plinth needs no support.** The cove only steps inward, the bead's underside is a 45° bevel

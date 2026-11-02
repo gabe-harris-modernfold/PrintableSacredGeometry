@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Each sculpture on its own plinth, fused into a single print: the Orphic Egg, and the empty
-coil (the same serpent after the hatching).
+"""Each sculpture on its own plinth, fused into a single print: the Orphic Egg, the empty
+coil (the same serpent after the hatching), and the empty coil shedding its skin.
 
 The plinth is a moulded round drum. From the bed up: a chamfered foot, a plain band, a cove,
 a bead and a top band with a rounded edge. Every face is printable without support: the cove
@@ -8,10 +8,14 @@ only steps inward and the bead's underside is a 45-degree bevel. Sized from the 
 the top face has radius 4.5R, 15 mm clear of the serpent's widest reach, and the drum is 1.5R
 tall.
 
-Each sculpture is unioned onto its drum with manifold3d at full detail.
+Each sculpture is unioned onto its drum with manifold3d at full detail. The shedding serpent's
+drum has the Seed of Life cut 1 mm into its top, its circles 2R so the figure spans the top
+to within 7.5 mm of the edge.
 
-Run from this directory, after orphic_egg.py and orphic_egg.py --serpent:
-    python plinth.py      orphic_egg_plinth.stl, orphic_serpent_plinth.stl, orphic_plinths_views.png
+Run from this directory, after orphic_egg.py, orphic_egg.py --serpent and orphic_shedding.py:
+    python plinth.py [name ...]   <name>_plinth.stl for each sculpture named (default: all
+                                  three), then orphic_plinths_views.png from every plinth print
+    python -c "import plinth; plinth.views()"     the views alone
 """
 
 import math
@@ -21,6 +25,8 @@ import sys
 import manifold3d as m3
 import numpy as np
 import trimesh
+from shapely.geometry import Point
+from shapely.ops import unary_union
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "lib"))
 
@@ -31,7 +37,10 @@ TOP_R = 4.5 * R             # radius of the plinth's top face
 HEIGHT = 1.5 * R
 SINK = 0.5                  # sculpture set this far into the top, so no faces are coplanar
 SEGMENTS = 360
-PIECES = ("orphic_egg", "orphic_serpent")
+PIECES = {"orphic_egg": "egg", "orphic_serpent": "empty coil", "orphic_shedding": "shedding"}
+ENGRAVED = ("orphic_shedding",)     # these have the Seed of Life cut into the top:
+SEED_R = 2 * R              # its circles, twice the set's plate size, so the outer arcs reach 4R
+ENGRAVE = 1.0               # groove depth; the width is the set's stroke
 
 
 def arc(cd, cz, r, a0, a1, n=12):
@@ -72,6 +81,22 @@ def plinth():
     return trimesh.Trimesh(V, np.concatenate(F), process=False)
 
 
+def seed_of_life():
+    """The set's Seed of Life (lib/sacred_grid.py) at SEED_R, as the outline of its grooves."""
+    rings = [Point(x * SEED_R / r, y * SEED_R / r).buffer(SEED_R + sg.STROKE / 2, quad_segs=sg.QUAD * 2)
+             .difference(Point(x * SEED_R / r, y * SEED_R / r).buffer(SEED_R - sg.STROKE / 2, quad_segs=sg.QUAD * 2))
+             for x, y, r in sg.figure("seed_of_life")["circles"]]
+    return sg._cross_section(unary_union(rings))
+
+
+def engrave(top, piece):
+    """Cut the Seed of Life into the plinth's top, except under the sculpture's footprint, so
+    no groove runs on as a tunnel beneath it."""
+    foot = piece.slice(HEIGHT - SINK + 0.05)
+    grooves = m3.Manifold.extrude(seed_of_life() - foot, ENGRAVE + 1.0)
+    return top - grooves.translate((0.0, 0.0, HEIGHT - ENGRAVE))
+
+
 def manifold(m):
     return m3.Manifold(m3.Mesh(vert_properties=np.asarray(m.vertices, np.float32),
                                tri_verts=np.asarray(m.faces, np.uint32)))
@@ -81,10 +106,11 @@ def main():
     base = plinth()
     assert base.is_watertight and base.is_volume, "plinth mesh is not a closed solid"
     print(f"    plinth {base.extents[0]:.1f} mm across, {HEIGHT:.1f} mm tall, {base.volume / 1000:.0f} cm3")
-    ok, meshes = True, []
-    for name in PIECES:
+    ok = True
+    for name in sys.argv[1:] or PIECES:
         piece = manifold(trimesh.load(f"{name}.stl")).translate((0.0, 0.0, HEIGHT - SINK))
-        m = sg.to_trimesh(manifold(base) + piece)
+        top = engrave(manifold(base), piece) if name in ENGRAVED else manifold(base)
+        m = sg.to_trimesh(top + piece)
         m.merge_vertices(digits_vertex=5)
         m.update_faces(m.nondegenerate_faces())
         m.update_faces(m.unique_faces())
@@ -96,17 +122,24 @@ def main():
         back = trimesh.load(out)
         ok &= sg.check(back, out)
         print(f"        {len(shells) - 1} scraps dropped, {os.path.getsize(out) / 1e6:.1f} MB")
-        meshes.append(back)
-
-    import pyvista as pv
-    c = np.array([0.0, 0.0, 0.45 * meshes[0].extents[2]])
-    shots = []
-    for m, name in zip(meshes, ("egg", "empty coil")):
-        pm = pv.wrap(m)
-        shots += [(f"{name}: front", pm, c, (0.0, -1.0, 0.15)),
-                  (f"{name}: three-quarter", pm, c, (0.8, -0.8, 0.4))]
-    sheet(shots, "orphic_plinths_views.png")
+    views()
     sys.exit(0 if ok else 1)
+
+
+def views():
+    """Front and three-quarter renders of every plinth print on disk, side by side."""
+    import pyvista as pv
+    shots = []
+    for name, title in PIECES.items():
+        if not os.path.exists(f"{name}_plinth.stl"):
+            continue
+        pm = pv.read(f"{name}_plinth.stl")
+        c = np.array([0.0, 0.0, 0.45 * (pm.bounds[5] - pm.bounds[4])])
+        shots += [(f"{title}: front", pm, c, (0.0, -1.0, 0.15)),
+                  (f"{title}: three-quarter", pm, c, (0.8, -0.8, 0.4))]
+        if name in ENGRAVED:
+            shots.append((f"{title}: from above", pm, c, (0.25, -0.5, 1.0)))
+    sheet(shots, "orphic_plinths_views.png")
 
 
 def sheet(shots, out, size=560, height=760):
@@ -116,8 +149,10 @@ def sheet(shots, out, size=560, height=760):
     for i, (title, mesh, c, d) in enumerate(shots):
         pl.subplot(0, i)
         pl.set_background("white")
+        # split at 30 degrees: at 60 the plinth top's long slivers smear the sculpture's
+        # normals across it in streaks
         pl.add_mesh(mesh, color="#8fdc86", smooth_shading=True, split_sharp_edges=True,
-                    feature_angle=60, specular=0.25, specular_power=18, ambient=0.18)
+                    feature_angle=30, specular=0.25, specular_power=18, ambient=0.18)
         pl.add_text(title, font_size=10, color="#333333")
         d = np.array(d, float) / np.linalg.norm(d)
         pl.camera.position = (c + d * 470).tolist()
