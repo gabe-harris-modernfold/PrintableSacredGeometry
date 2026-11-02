@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Smoke Speech Lab</title>
+<title>Language of the Plume</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -151,7 +151,7 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>Smoke Speech Lab</h1>
+    <h1>Language of the Plume</h1>
     <p class="lede">Read the smoke on a ridge-top table. The lab learns how you read and which signals you favour, then evolves the signs whose reading best matches what the communicator meant.</p>
   </header>
 
@@ -967,9 +967,10 @@ function drawAirArc(g,P,s,H){let pk=0,sx=0,sy=0,sw=0;
   g.globalAlpha=0.08*st;sect((i0-0.5)*da,(i1+0.5)*da,RING0,RING1);
   g.globalAlpha=0.9*st;g.strokeStyle=css.ember;g.lineWidth=Math.max(2,0.55*s);g.lineCap='round';g.beginPath();
   for(let k=0;k<=24;k++){const a=(i0-0.5+(i1-i0+1)*k/24)*da,r=TABLE_R+0.9,q=P(r*Math.sin(a),r*Math.cos(a),TABLE_Z);k?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);}g.stroke();
-  const am=(i0+i1)/2*da,lp=P((TABLE_R+8)*Math.sin(am),(TABLE_R+8)*Math.cos(am),TABLE_Z);
-  g.globalAlpha=st;g.fillStyle=css.ember;g.font=`500 ${Math.max(10,s*1.4)}px ${css['f-mono']||'monospace'}`;g.textAlign='center';g.textBaseline='middle';
-  g.fillText('dominant air',lp[0],lp[1]);g.globalAlpha=1;g.lineCap='butt';}
+  // the label sits outside the hour numbers, set away from the rim on whichever side it falls
+  const am=(i0+i1)/2*da,lp=P((TABLE_R+7)*Math.sin(am),(TABLE_R+7)*Math.cos(am),TABLE_Z),sx2=Math.sin(am-(app.view?app.view.yaw:0));
+  g.globalAlpha=st;g.fillStyle=css.ember;g.font=`500 ${Math.max(10,s*1.4)}px ${css['f-mono']||'monospace'}`;g.textAlign=sx2<-0.35?'right':sx2>0.35?'left':'center';g.textBaseline='middle';
+  g.fillText('dominant air',lp[0],lp[1]);g.globalAlpha=1;g.lineCap='butt';g.textAlign='center';}
 function drawStage(cv,sim,dial,marks,ui){
   const{g,w,h}=fitCanvas(cv);if(!w||!h)return;
   const hA=Math.max(220,h-(ui.reserve||0)),s=Math.min((w-24)/94,(hA-16)/104),cx=w/2,cy=Math.max(8,(hA-104*s)/2)+66*s;
@@ -1078,7 +1079,7 @@ function drawFit(cv,hist,base){const{g,w,h}=fitCanvas(cv);if(!w)return;g.clearRe
    8. Storage: the artifact's db when the viewer offers it, else this browser
    ==================================================================== */
 const store={db:null,canWrite:false,trials:[],runs:[],mode:'local'};
-const LS_KEY='smoke-speech-lab.trials.v1';
+const LS_KEY='smoke-speech-lab.trials.v1';   // the page's first name; kept so earlier readings still load
 function lsGet(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]');}catch(e){return[];}}
 function lsSet(a){try{localStorage.setItem(LS_KEY,JSON.stringify(a));}catch(e){}}
 const validTrial=t=>t&&typeof t.truth==='number'&&t.resp&&typeof t.resp.form==='number'&&ENVS[t.env]&&Array.isArray(t.opts);
@@ -1136,7 +1137,7 @@ function dissolve(){if(reduceMotion)return;const a=$('stage'),f=$('fade');if(!a.
 function measureDock(){const d=$('dock');app.reserve=getComputedStyle(d).position==='absolute'?d.offsetHeight:0;}
 
 /* ---- modes ---- */
-function setMode(m){if(app.mode==='read'&&m!=='read'){commitPend();app.flow=null;}app.mode=m;
+function setMode(m){if(app.mode==='read'&&m!=='read'){commitPend();app.flow=null;}app.mode=m;$('toast').hidden=true;
   for(const[id,name]of [['mRead','read'],['mEvo','evo'],['mFree','free']])$(id).setAttribute('aria-selected',String(name===m));
   $('deckRead').hidden=m!=='read';$('deckEvo').hidden=m!=='evo';$('deckFree').hidden=m!=='free';
   app.seq=null;app.marks=[];app.hover=null;app.answer=null;app.truthMark=null;$('signcap').textContent='';
