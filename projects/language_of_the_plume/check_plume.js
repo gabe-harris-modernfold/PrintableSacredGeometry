@@ -7,7 +7,7 @@ const m=require('./plume_core.js');
 let fails=0;
 function check(name,v,lo,hi){const ok=v>=lo&&v<=hi;if(!ok)fails++;
   console.log(`${ok?'ok  ':'FAIL'} ${name}: ${typeof v==='number'?+v.toFixed(3):v}  [${lo}..${hi}]`);}
-const sim=(env,seed,signs)=>{const s=new m.SmokeSim();s.reset({env,gm:1,p:0.35,seed,k:m.WORLD.k});if(signs)s.schedule(signs);return s;};
+const sim=(env,seed,signs)=>{const s=new m.SmokeSim();s.reset({env,gm:1,p:0.35,seed});if(signs)s.schedule(signs);return s;};
 
 // 1. The smooth column is short most of the time; the tall thread is a rare dusk event.
 for(const env of ['day','dusk','night']){const s=sim(env,21),Ls=[];let tall=0;
@@ -28,9 +28,12 @@ for(const env of ['day','dusk','night']){let two=0,n=0;for(const seed of [1,2,3,
   for(let i=0;i<14*60;i++){s.step(1/60);if(i%6===0&&s.t>5.5&&s.t<10){a++;if(s.read.streams===2)b++;}}}
   check('Fork sign read as two streams',b/a,0.6,1);}
 
-// 4. A Stone leans where it was sent.
-{const s=sim('dusk',5,[{form:m.F.STONE,angle:m.hourToAng(3),count:3,beat:1.1,t0:1,T:6}]);for(let i=0;i<5*60;i++)s.step(1/60);
-  check('Stone toward 3 lands on hour',m.angToHour(s.read.bearing),3,3);}
+// 4. A Stone leans where the wind turned; a Still drops the air, and the wind lets go slowly afterwards.
+{const s=sim('dusk',5,[{form:m.F.STONE,angle:Math.PI/2,hold:1,t0:1,T:6}]);for(let i=0;i<5*60;i++)s.step(1/60);
+  check('Stone to the right leans right (0 away, 1 right, 2 toward, 3 left)',m.dirOf(s.read.bearing),1,1);}
+{const s=sim('day',8,[{form:m.F.STILL,t0:1,T:6,hold:1}]);for(let i=0;i<5*60;i++)s.step(1/60);const during=Math.hypot(s.wind.m[0],s.wind.m[1]);
+  for(let i=0;i<14*60;i++)s.step(1/60);const after=Math.hypot(s.wind.m[0],s.wind.m[1]);
+  check("Still at midday: the wind's mean 4 s in (cm/s)",during,0,10);check("Still at midday: the wind's mean 12 s after it ends (cm/s)",after,18,60);}
 
 // 5. The reader model recovers a known stand-in, and evolution beats the first guess.
 {const st=[];for(let i=0;i<300;i++){const tr=m.makeTrial(100+i);st.push({...tr,resp:m.standInRespond(tr,m.rng32(tr.seed^0x9e37))});}
@@ -39,8 +42,12 @@ for(const env of ['day','dusk','night']){let two=0,n=0;for(const seed of [1,2,3,
   const pr=m.presence(st);check("stand-in presence d'",pr.d,1.5,6);check('stand-in false alarms',pr.fa,0,0.05);
   const toy=[];for(let i=0;i<12;i++)toy.push({truth:i<6?m.F.RING:m.F.WIND,resp:{form:i<6?m.F.RING:m.F.WIND,conf:i<6?5:null}});
   check("toy reader d' from 6 rated hits and 6 unrated wind picks",m.presence(toy).d,2.5,5);
-  const ev=new m.Evolver({M:f.M,kappa:f.kappa,ca:f.ca,cb:f.cb,C:f.C,beta:f.beta},7);for(let i=0;i<40;i++)ev.step();
-  check('evolved bits per cone over first guess',ev.champ.e.fit-ev.base.fit,50,1e9);}
+  // reliability: a sign read twice under the same seed, weeks apart
+  const rel=[{seed:1,sit:10,epi:0,at:1,truth:m.F.RING,resp:{form:m.F.RING,conf:5}},{seed:1,sit:20,epi:0,at:2,truth:m.F.RING,resp:{form:m.F.RING,conf:1}},
+    {seed:1,sit:10,epi:1,at:1,truth:m.F.FORK,resp:{form:m.F.FORK,conf:5}},{seed:1,sit:20,epi:1,at:2,truth:m.F.FORK,resp:{form:m.F.CURL,conf:5}}];
+  const R=m.reliability(rel);check('reliability: pairs found',R.n,2,2);check('reliability: same form',R.form,1,1);check('reliability: same felt',R.felt,1,1);
+  const ev=new m.Evolver({M:f.M,kappa:f.kappa,C:f.C,beta:f.beta},7);for(let i=0;i<40;i++)ev.step();
+  check('evolved bits per cone (at least 20, and 15% over the first guess)',ev.champ.e.fit,Math.max(20,ev.base.fit*1.15),1e9);}
 
 // 6. Cost: one stage step stays well inside a frame.
 {const s=sim('dusk',3),t0=Date.now();for(let i=0;i<60*60;i++)s.step(1/60);check('sim ms per step',(Date.now()-t0)/3600,0,4);}

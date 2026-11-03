@@ -66,8 +66,19 @@ const ICON=[
 const icon=f=>`<svg class="ic" viewBox="0 0 20 20" aria-hidden="true">${ICON[f]}</svg>`;
 /* Ridge weather at the crest. W: mean flow (cm/s), sig: gust std (cm/s), tau: gust memory (s). */
 const ENVS={day:{name:'Day upslope',W:35,sig:14,tau:4},dusk:{name:'Dusk hinge',W:4,sig:4,tau:7},night:{name:'Night drainage',W:16,sig:7,tau:5}};
-const WORLD={k:0.65,S:22,settle:1.5,gap:2.0,trialT:6,trialBeat:1.1,clip:11,lead:2.5};
-const PRIMES=[1,2,3,5];
+const WORLD={S:22,settle:1.5,gap:2.0,trialT:6,clip:11,lead:2.5};
+/* A sign is a mode the wind enters: how far it quietens for each form (0 = the air is untouched). The
+   shapes need a calmer column to carry them; Still and Tower are the wind holding its breath. */
+const QUIET=[0.5,0.5,0.5,0.5,0.4,0.75,0.95,0.9,0];
+/* The air the reader practises in, from easy to hard: gustier, and a wind less committed to its signs. */
+const LEVELS=[{gm:0.5,hold:1},{gm:0.75,hold:1},{gm:1,hold:0.95},{gm:1.25,hold:0.9},{gm:1.5,hold:0.8},{gm:1.75,hold:0.7},{gm:2,hold:0.6}];
+/* Direction is read from the seat: away, right, toward you, left. A sent Stone takes one of the four with a
+   hand's width of play, so the lean is never a perfect grid. */
+const DIR_WORD=['away from you','to your right','toward you','to your left'],DIR_SHORT=['away','right','toward you','left'];
+const stoneAngle=r=>Math.floor(r()*4)*TAU/4+(r()-0.5)*TAU/12;
+const dirOf=a=>Math.round(wrap2Pi(a)/(TAU/4))%4;
+const BEAR8=['away','away, right','right','toward, right','toward you','toward, left','left','away, left'];
+const bearingWord=a=>BEAR8[Math.round(wrap2Pi(a)/(TAU/8))%8];
 /* The cone over its burn fraction p: how much smoke (vis), how coherent the column (coh),
    how much it spills sideways unbidden (spillNat), and how fast it rises (rise, cm/s). */
 const vis=p=>smooth(0,0.08,p)*(0.55+0.45*smooth(0.05,0.6,p))*(1-0.85*smooth(0.96,1.0,p));
@@ -82,19 +93,25 @@ const angToHour=a=>{const h=Math.round(wrap2Pi(a)/(TAU/12))%12;return h===0?12:h
 const hourToAng=h=>(h%12)*TAU/12;
 
 class Wind{
-  constructor(key,gm,r){this.key=key;this.e=ENVS[key];this.gm=gm;this.r=r;this.g=[0,0];
+  constructor(key,gm,r){this.key=key;this.e=ENVS[key];this.gm=gm;this.r=r;this.g=[0,0];this.q=0;this.qs=0;this.dv=null;this.on=false;
     this.side=r()<0.5?1:-1;this.dd=r()*TAU;this.target();this.m=this.tg.slice();
     for(let i=0;i<40;i++)this.step(0.25);}
   target(){const W=this.e.W;
     this.tg=this.key==='day'?[0,W]:this.key==='night'?[0,this.side*W]:[Math.sin(this.dd)*W,Math.cos(this.dd)*W];}
-  step(dt){const e=this.e,s=e.sig*this.gm,a=Math.exp(-dt/e.tau),b=s*Math.sqrt(1-a*a);
-    this.g[0]=this.g[0]*a+b*gauss(this.r);this.g[1]=this.g[1]*a+b*gauss(this.r);
+  /* A sign: for this step the wind commits to a bearing (dx,dy in cm/s, or nothing) and quietens by q. It is
+     the same process steered from inside, not a push laid over it: the mean turns toward the bearing on a
+     short memory while its own habit fades by q, the gusts die down, and when the sign ends the wind wanders
+     back on its slow clock. The dust, the air's arc and the instrument all see one wind. */
+  drive(dx,dy,q){this.dv=[dx||0,dy||0];this.q=q;this.on=true;}
+  step(dt){const e=this.e,q=this.q,s=e.sig*this.gm*(1-q),a=Math.exp(-dt/e.tau),b=s*Math.sqrt(1-a*a),dq=Math.exp(-dt*3*q);
+    this.g[0]=this.g[0]*a*dq+b*gauss(this.r);this.g[1]=this.g[1]*a*dq+b*gauss(this.r);
     if(this.key==='night'&&this.r()<dt/45)this.side=-this.side;
     if(this.key==='dusk')this.dd+=gauss(this.r)*Math.sqrt(dt)*0.35;
-    this.target();const c=1-Math.exp(-dt/8);
-    this.m[0]+=(this.tg[0]-this.m[0])*c;this.m[1]+=(this.tg[1]-this.m[1])*c;}
+    this.target();const dv=this.dv||[0,0],c=1-Math.exp(-dt/(this.on?1.5:8));
+    this.m[0]+=((1-q)*this.tg[0]+dv[0]-this.m[0])*c;this.m[1]+=((1-q)*this.tg[1]+dv[1]-this.m[1])*c;
+    this.qs=q;this.dv=null;this.q=0;this.on=false;}
   nat(){return[this.m[0]+this.g[0],this.m[1]+this.g[1]];}
-  sigma(){return this.e.sig*this.gm;}
+  sigma(){return this.e.sig*this.gm*(1-this.qs);}
 }
 
 /* ====================================================================
@@ -103,37 +120,34 @@ class Wind{
 const T_BINS=[2,3,4,6,8,12],P_BINS=[0.1,0.3,0.5,0.7,0.9],GM_BINS=[0.5,1,1.5,2];
 const DIRBINS=24,DIRSAMP=40;
 const dirCache=new Map();
-/* For a lean held T seconds toward each of 24 bearings: where the plume actually points
-   (offset from intended) and how visible the lean is, sampled over the ridge's gusts. */
-function dirCell(env,gm,T,p,k){
-  gm=nearest(GM_BINS,gm);T=nearest(T_BINS,T);p=nearest(P_BINS,p);k=Math.round(k*20)/20;
-  const key=env+'|'+gm+'|'+T+'|'+p+'|'+k;let c=dirCache.get(key);if(c)return c;
+/* For a lean held T seconds toward each of 24 bearings: where the plume actually points (offset from
+   intended) and how visible the lean is, sampled over the ridge's gusts. hold is the wind's commitment to
+   the sign (1 = full; the harder levels lower it). */
+function dirCell(env,gm,T,p,hold){
+  gm=nearest(GM_BINS,gm);T=nearest(T_BINS,T);p=nearest(P_BINS,p);hold=Math.round(hold*20)/20;
+  const key=env+'|'+gm+'|'+T+'|'+p+'|'+hold;let c=dirCache.get(key);if(c)return c;
   const r=rng32(hashStr(key)),off=new Float32Array(DIRBINS*DIRSAMP),vs=new Float32Array(DIRBINS*DIRSAMP);
-  const w=rise(p),dt=0.25,tauP=2.0,hold0=Math.min(WORLD.settle,T*0.4),a=1-Math.exp(-dt/tauP);
+  const w=rise(p),dt=0.25,tauP=2.0,hold0=Math.min(WORLD.settle,T*0.4),a=1-Math.exp(-dt/tauP),S=WORLD.S*(0.6+0.4*hold),q0=QUIET[F.STONE]*hold;
   for(let b=0;b<DIRBINS;b++){const th=b*TAU/DIRBINS,dx=Math.sin(th),dy=Math.cos(th);
     for(let s=0;s<DIRSAMP;s++){const wd=new Wind(env,gm,r);const n0=wd.nat();let px=n0[0],py=n0[1],ax=0,ay=0,cnt=0;
-      for(let t=0;t<T;t+=dt){wd.step(dt);const n=wd.nat(),ramp=smooth(0,0.6,t);
-        const ux=n[0]*(1-k*ramp)+WORLD.S*ramp*dx,uy=n[1]*(1-k*ramp)+WORLD.S*ramp*dy;
-        px+=(ux-px)*a;py+=(uy-py)*a;if(t>=hold0){ax+=px;ay+=py;cnt++;}}
+      for(let t=0;t<T;t+=dt){const ramp=smooth(0,0.6,t);wd.drive(S*ramp*dx,S*ramp*dy,q0*ramp);wd.step(dt);const n=wd.nat();
+        px+=(n[0]-px)*a;py+=(n[1]-py)*a;if(t>=hold0){ax+=px;ay+=py;cnt++;}}
       ax/=cnt;ay/=cnt;const lean=Math.atan2(Math.hypot(ax,ay),w);
       off[b*DIRSAMP+s]=wrapPi(Math.atan2(ax,ay)-th);
       vs[b*DIRSAMP+s]=clamp(Math.tan(lean)/Math.tan(25*D2R),0.15,1);}}
   c={off,vs};dirCache.set(key,c);return c;
 }
 const dirBin=a=>Math.round(wrap2Pi(a)/TAU*DIRBINS)%DIRBINS;
-/* Chance each form survives the air physically (it can still be misread afterwards). */
-function legib(env,gm,p,k){const e=ENVS[env],sr=(1-k)*e.sig*gm,ur=(1-k)*e.W+sr,v=vis(p),c=coh(p);
-  return[v*(0.55+0.45*Math.exp(-((sr/25)**2))), v*c*Math.exp(-((ur/14)**2)), v*Math.sqrt(c)*Math.exp(-((ur/28)**2)),
-         v*c*Math.exp(-((sr/7)**2)-(ur/30)**2), v*(1-0.6*spillNat(p)),
-         v*Math.sqrt(c)*Math.exp(-((sr/12)**2)), v*c*Math.exp(-((sr/4)**2)-(ur/10)**2), Math.exp(-((sr/8)**2)), 1];}
+/* Chance each form survives the air physically (it can still be misread afterwards). Each form quietens
+   the wind by its own QUIET times the hold, so the gust and the residual habit it faces are its own. */
+function legib(env,gm,p,hold){const e=ENVS[env],v=vis(p),c=coh(p);
+  const sr=f=>(1-QUIET[f]*hold)*e.sig*gm,ur=f=>(1-QUIET[f]*hold)*e.W*0.5+sr(f);
+  return[v*(0.55+0.45*Math.exp(-((sr(0)/25)**2))), v*c*Math.exp(-((ur(1)/14)**2)), v*Math.sqrt(c)*Math.exp(-((ur(2)/28)**2)),
+         v*c*Math.exp(-((sr(3)/7)**2)-(ur(3)/30)**2), v*(1-0.6*spillNat(p)),
+         v*Math.sqrt(c)*Math.exp(-((sr(5)/12)**2)), v*c*Math.exp(-((sr(6)/4)**2)-(ur(6)/10)**2), Math.exp(-((sr(7)/8)**2)), 1];}
+const holdOf=t=>t.hold==null?1:t.hold;   // readings from before the levels were held at full commitment
 /* What a reader reports when no sign got through: the reader's wind row, pulled toward Spill late in the burn. */
 function rowWind(M,p){const ns=0.5*spillNat(p);return M[F.WIND].map((v,j)=>v*(1-ns)+(j===F.SPILL?ns:0));}
-/* Puffs seen: neighbours blur together when the beat is shorter than the plume's blur time,
-   gusts add false puffs, then the reader's own counting noise. */
-function countDraw(r,n,beat,env,gm,p,k,obs){const sr=(1-k)*ENVS[env].sig*gm,tb=0.3+sr/20+0.4*(1-coh(p)),pm=Math.exp(-1.6*beat/tb);
-  let seen=1;for(let i=1;i<n;i++)if(r()>=pm)seen++;
-  seen+=poisson(r,0.016*sr*n*beat);
-  return Math.max(0,Math.round(seen+gauss(r)*(obs.ca+obs.cb*n)));}
 
 /* ====================================================================
    4. The reader model: priors, stand-in, fitting from trials
@@ -149,35 +163,37 @@ const PRIOR_M=[
   [.02,.04,.06,.05,.02,.04,.55,.14,.08],
   [.03,.01,.01,.03,.02,.01,.16,.55,.18],
   [.12,.02,.07,.04,.07,.07,.05,.12,.44]];
-const PRIOR={kappa:8,ca:0.35,cb:0.08,C:4,beta:0.15};
+const PRIOR={kappa:8,C:4,beta:0.15};
 const sharpen=(M,g)=>M.map(r=>{const q=r.map(v=>v**g),s=q.reduce((a,b)=>a+b,0);return q.map(v=>v/s);});
-const STANDIN={kappa:6,ca:0.3,cb:0.14,C:4,beta:0.55,M:sharpen(PRIOR_M,1.3)};
+const STANDIN={kappa:6,C:4,beta:0.55,M:sharpen(PRIOR_M,1.3)};
 
 function makeTrial(seed){const r=rng32(seed);
   const env=['day','dusk','night'][Math.floor(r()*3)],gm=[0.5,1,1.5][Math.floor(r()*3)],p=0.12+r()*0.8;
   const truth=r()<0.14?F.WIND:Math.floor(r()*8);
-  const angle=truth===F.STONE?r()*TAU:null,count=truth===F.STONE?1+Math.floor(r()*6):null;
+  const angle=truth===F.STONE?stoneAngle(r):null;
   const nOpt=2+Math.floor(r()*7);
   const pool=shuffle([0,1,2,3,4,5,6,7].filter(f=>f!==truth),r);
   const opts=(truth===F.WIND?pool.slice(0,nOpt):[truth,...pool.slice(0,nOpt-1)]).sort((a,b)=>a-b);
-  return{seed,env,gm,p,truth,angle,count,opts,T:WORLD.trialT,beat:WORLD.trialBeat,k:WORLD.k};}
+  return{seed,env,gm,p,truth,angle,opts,T:WORLD.trialT,hold:1};}
 
-function standInRespond(tr,r){const S=STANDIN,L=legib(tr.env,tr.gm,tr.p,tr.k),choices=[...tr.opts,F.WIND],g=tr.truth;
+function standInRespond(tr,r){const S=STANDIN,L=legib(tr.env,tr.gm,tr.p,holdOf(tr)),choices=[...tr.opts,F.WIND],g=tr.truth;
   const visible=g!==F.WIND&&r()<L[g],row=visible?S.M[g]:rowWind(S.M,tr.p);
   const eps=1-Math.exp(-S.beta*Math.max(0,tr.opts.length-S.C));
   const w=choices.map(j=>row[j]),sw=w.reduce((a,b)=>a+b,0);
   const form=choices[pickW(r,w.map(v=>(1-eps)*v/sw+eps/choices.length))];
-  let hour=null,count=null;
+  let dir=null;
   if(form===F.STONE){
-    if(g===F.STONE){const c=dirCell(tr.env,tr.gm,tr.T,tr.p,tr.k),s=dirBin(tr.angle)*DIRSAMP+Math.floor(r()*DIRSAMP);
-      hour=angToHour(tr.angle+c.off[s]+vmSample(r,S.kappa*c.vs[s]));
-      count=countDraw(r,tr.count,tr.beat,tr.env,tr.gm,tr.p,tr.k,S);}
-    else{hour=1+Math.floor(r()*12);count=1+Math.floor(r()*4);}
+    if(g===F.STONE){const c=dirCell(tr.env,tr.gm,tr.T,tr.p,holdOf(tr)),s=dirBin(tr.angle)*DIRSAMP+Math.floor(r()*DIRSAMP);
+      dir=dirOf(tr.angle+c.off[s]+vmSample(r,S.kappa*c.vs[s]));}
+    else dir=Math.floor(r()*4);
   }
-  return{form,hour,count,conf:visible?4:2,note:''};}
+  return{form,dir,conf:visible?4:2,note:''};}
+/* Where a reading pointed and how wide its sector was: four seat bearings now, twelve hours before. */
+const respAng=t=>t.resp.dir!=null?{a:t.resp.dir*TAU/(t.nDir||4),w:TAU/(t.nDir||4)}:t.resp.hour?{a:hourToAng(t.resp.hour),w:TAU/12}:null;
 
 /* Fit the reader: form confusion (EM separating air failures from misreadings), direction sharpness
-   kappa (likelihood over the physical lean samples), count noise, and the vocabulary limit. */
+   kappa (likelihood over the physical lean samples, integrated over the sector the reader chose), and the
+   vocabulary limit. */
 function fitObserver(trials){
   const out={n:trials.length};
   // forms
@@ -185,38 +201,28 @@ function fitObserver(trials){
   for(let it=0;it<15;it++){const C=PRIOR_M.map(r=>r.map(v=>v*PS));
     for(const t of trials){const g=t.truth,j=t.resp.form;
       if(g===F.WIND){C[F.WIND][j]+=1;continue;}
-      const L=legib(t.env,t.gm,t.p,t.k)[g],rw=rowWind(M,t.p),a=L*M[g][j],b=(1-L)*rw[j],w=a+b>0?a/(a+b):1;
+      const L=legib(t.env,t.gm,t.p,holdOf(t))[g],rw=rowWind(M,t.p),a=L*M[g][j],b=(1-L)*rw[j],w=a+b>0?a/(a+b):1;
       C[g][j]+=w;C[F.WIND][j]+=1-w;}
     M=C.map(row=>{const s=row.reduce((x,y)=>x+y,0);return row.map(v=>v/s);});}
   out.M=M;
   // direction
-  const dirT=trials.filter(t=>t.truth===F.STONE&&t.resp.form===F.STONE&&t.resp.hour);
+  const dirT=trials.filter(t=>t.truth===F.STONE&&t.resp.form===F.STONE&&respAng(t));
   const KG=[];for(let i=0;i<40;i++)KG.push(0.3*Math.pow(80/0.3,i/39));
-  const cells=dirT.map(t=>dirCell(t.env,t.gm,t.T,t.p,t.k));
+  const cells=dirT.map(t=>dirCell(t.env,t.gm,t.T,t.p,holdOf(t)));
   const ll=KG.map(k=>{let s=-0.5*((Math.log(k)-Math.log(PRIOR.kappa))/1.0)**2;
-    dirT.forEach((t,ti)=>{const c=cells[ti],b=dirBin(t.angle),ra=hourToAng(t.resp.hour);let acc=0;
+    dirT.forEach((t,ti)=>{const c=cells[ti],b=dirBin(t.angle),ra=respAng(t),st=ra.w/5;let acc=0;
       for(let si=0;si<DIRSAMP;si+=2){const o=c.off[b*DIRSAMP+si],kv=k*c.vs[b*DIRSAMP+si];
-        for(let q=-2;q<=2;q++)acc+=vmPdf(wrapPi(ra+q*TAU/60-(t.angle+o)),kv);}
-      acc=acc/(DIRSAMP/2)*(TAU/12)/5;s+=Math.log(0.95*Math.min(1,acc)+0.05/12);});return s;});
+        for(let q=-2;q<=2;q++)acc+=vmPdf(wrapPi(ra.a+q*st-(t.angle+o)),kv);}
+      acc=acc/(DIRSAMP/2)*ra.w/5;s+=Math.log(0.95*Math.min(1,acc)+0.05*ra.w/TAU);});return s;});
   const mx=Math.max(...ll),wk=ll.map(v=>Math.exp(v-mx)),sw=wk.reduce((a,b)=>a+b,0);
   let lk=0;KG.forEach((k,i)=>lk+=wk[i]/sw*Math.log(k));out.kappa=Math.exp(lk);
   let cum=0;out.kLo=KG[0];out.kHi=KG[KG.length-1];let lo=false;
   for(let i=0;i<KG.length;i++){cum+=wk[i]/sw;if(!lo&&cum>=0.1){out.kLo=KG[i];lo=true;}if(cum>=0.9){out.kHi=KG[i];break;}}
   out.nDir=dirT.length;
-  // counting
-  const cT=trials.filter(t=>t.truth===F.STONE&&t.resp.form===F.STONE&&t.resp.count!=null);
-  let best=-Infinity,post=[];
-  for(let ai=0;ai<12;ai++)for(let bi=0;bi<9;bi++){const a=0.05+ai*0.1,b=bi*0.05;
-    let s=-0.5*((a-PRIOR.ca)/0.3)**2-0.5*((b-PRIOR.cb)/0.1)**2;
-    for(const t of cT){const n=t.count,c=t.resp.count,sd=a+b*n;
-      const pr=(Phi((c+0.5-n)/sd)-(c<=0?0:Phi((c-0.5-n)/sd)));s+=Math.log(0.97*pr+0.03/8);}
-    post.push([a,b,s]);if(s>best)best=s;}
-  let ws=0,ea=0,eb=0;for(const[a,b,s]of post){const w=Math.exp(s-best);ws+=w;ea+=w*a;eb+=w*b;}
-  out.ca=ea/ws;out.cb=eb/ws;out.nCount=cT.length;
   // vocabulary limit
   const CP={2:.1,3:.2,4:.3,5:.15,6:.1,7:.08,8:.07};let lb=-Infinity;const lp=[];
   for(const Cc of [2,3,4,5,6,7,8])for(let bi=0;bi<=12;bi++){const be=bi*0.1;let s=Math.log(CP[Cc])-be/0.15;
-    for(const t of trials){const g=t.truth,ch=[...t.opts,F.WIND],L=g===F.WIND?0:legib(t.env,t.gm,t.p,t.k)[g],rw=rowWind(M,t.p);
+    for(const t of trials){const g=t.truth,ch=[...t.opts,F.WIND],L=g===F.WIND?0:legib(t.env,t.gm,t.p,holdOf(t))[g],rw=rowWind(M,t.p);
       const row=ch.map(j=>g===F.WIND?rw[j]:L*M[g][j]+(1-L)*rw[j]),sr=row.reduce((a,b)=>a+b,0);
       const pred=row[ch.indexOf(g)]/sr,eps=1-Math.exp(-be*Math.max(0,t.opts.length-Cc)),pc=clamp((1-eps)*pred+eps/ch.length,1e-4,1-1e-4);
       s+=Math.log(t.resp.form===g?pc:1-pc);}
@@ -240,77 +246,80 @@ function presence(trials){
   const zH=probit((sH+0.5)/(sN+1)),zF=probit((wF+0.5)/(wN+1));
   return{n,sN,wN,hit:sN?sH/sN:null,fa:wN?wF/wN:null,unclear:n?unc/n:0,d:zH-zF,c:-(zH+zF)/2,ok:sN>=6&&wN>=6};
 }
+/* Reliability: when a sitting has come round again under its seed, the same sign was read twice, weeks
+   apart. How often the form and the felt sense agreed is how steady the reading is. */
+function reliability(trials){const by=new Map();
+  for(const t of trials){if(t.sit==null||t.epi==null||t.truth===F.WIND)continue;const k=t.seed+':'+t.epi;
+    let a=by.get(k);if(!a)by.set(k,a=new Map());if(!a.has(t.sit))a.set(t.sit,t);}
+  let n=0,form=0,felt=0;const sits=new Set();
+  for(const a of by.values()){if(a.size<2)continue;const[x,y]=[...a.values()].sort((p,q)=>p.at-q.at);n++;sits.add(y.sit);
+    if(x.resp.form===y.resp.form)form++;const fx=feltOf(x),fy=feltOf(y);if(fx&&fy&&fx===fy)felt++;}
+  return{n,form,felt,sits:sits.size};}
 
 /* ====================================================================
    5. Languages and their evolution
    ==================================================================== */
 const NDIRS=[1,2,3,4,6,8,12,16],TODS=['day','dusk','night'];
-const BASELINE={nDir:12,off:0,nRing:5,forms:[true,true,true,true,true,false,false],T:6,beat:1.1,reps:1,p0:0.05,span:0.65,tod:'dusk',pre:4};
-function randGenome(r){return fixG({nDir:NDIRS[Math.floor(r()*8)],off:r(),nRing:1+Math.floor(r()*6),forms:SIGN_FORMS.map(()=>r()<0.5),
-  T:2+r()*10,beat:0.5+r()*2,reps:1+Math.floor(r()*3),p0:r()*0.7,span:0.15+r()*0.85,tod:TODS[Math.floor(r()*3)],pre:Math.floor(r()*5)});}
-function fixG(g){if(!g.forms.some(Boolean))g.forms[0]=true;g.T=clamp(g.T,2,12);g.beat=clamp(g.beat,0.5,2.5);g.off=wrap2Pi(g.off*TAU)/TAU;
-  g.nRing=clamp(Math.round(g.nRing),1,6);g.reps=clamp(Math.round(g.reps),1,3);g.p0=clamp(g.p0,0,0.85);g.span=clamp(g.span,0.1,1);g.pre=clamp(Math.round(g.pre),0,4);return g;}
+const BASELINE={nDir:4,off:0,forms:[true,true,true,true,true,false,false],T:6,reps:1,p0:0.05,span:0.65,tod:'dusk'};
+function randGenome(r){return fixG({nDir:NDIRS[Math.floor(r()*8)],off:r(),forms:SIGN_FORMS.map(()=>r()<0.5),
+  T:2+r()*10,reps:1+Math.floor(r()*3),p0:r()*0.7,span:0.15+r()*0.85,tod:TODS[Math.floor(r()*3)]});}
+function fixG(g){if(!g.forms.some(Boolean))g.forms[0]=true;g.T=clamp(g.T,2,12);g.off=wrap2Pi(g.off*TAU)/TAU;
+  g.reps=clamp(Math.round(g.reps),1,3);g.p0=clamp(g.p0,0,0.85);g.span=clamp(g.span,0.1,1);return g;}
 const cloneG=g=>({...g,forms:g.forms.slice()});
 function mutate(g,r,rate){g=cloneG(g);const m=()=>r()<rate;
   if(m()){const i=NDIRS.indexOf(g.nDir)+(r()<0.5?-1:1);g.nDir=NDIRS[clamp(i,0,NDIRS.length-1)];}
-  if(m())g.off+=gauss(r)*0.15; if(m())g.nRing+=r()<0.5?-1:1;
+  if(m())g.off+=gauss(r)*0.15;
   for(const i of SIGN_FORMS)if(r()<rate/2)g.forms[i]=!g.forms[i];
-  if(m())g.T*=Math.exp(gauss(r)*0.25); if(m())g.beat+=gauss(r)*0.25; if(m())g.reps+=r()<0.5?-1:1;
-  if(m())g.p0+=gauss(r)*0.08; if(m())g.span+=gauss(r)*0.1; if(r()<rate/2)g.tod=TODS[Math.floor(r()*3)]; if(m())g.pre+=r()<0.5?-1:1;
+  if(m())g.T*=Math.exp(gauss(r)*0.25); if(m())g.reps+=r()<0.5?-1:1;
+  if(m())g.p0+=gauss(r)*0.08; if(m())g.span+=gauss(r)*0.1; if(r()<rate/2)g.tod=TODS[Math.floor(r()*3)];
   return fixG(g);}
-function crossover(a,b,r){const c=cloneG(a);for(const k of ['nDir','off','nRing','T','beat','reps','p0','span','tod','pre'])if(r()<0.5)c[k]=b[k];
+function crossover(a,b,r){const c=cloneG(a);for(const k of ['nDir','off','T','reps','p0','span','tod'])if(r()<0.5)c[k]=b[k];
   for(const i of SIGN_FORMS)if(r()<0.5)c.forms[i]=b.forms[i];return fixG(c);}
 /* 'clean': a wrong mark costs what a right one earns, a missing mark costs nothing (a reader who cannot decode codes).
    'shannon': mutual information, as if errors could later be corrected. */
 let OBJECTIVE='clean';
-const tStoneOf=(g,n)=>Math.max(g.T,WORLD.settle+n*g.beat+0.5);
 
-/* Bits that reach the table in one cone: Monte Carlo through air + reader, repeats voted on the table. */
+/* Bits that reach the table in one cone: Monte Carlo through air + reader, repeats voted on the table. The
+   sender commits fully (hold 1); what varies is the code. */
 function evaluate(g,obs,seed,N=1200){
-  const r=rng32(seed),k=WORLD.k,env=g.tod,p0=g.p0,p1=Math.min(0.98,g.p0+g.span);
+  const r=rng32(seed),env=g.tod,p0=g.p0,p1=Math.min(0.98,g.p0+g.span);
   const active=SIGN_FORMS.filter(i=>g.forms[i]),stoneOn=g.forms[0];
-  const nD=stoneOn?g.nDir:1,nR=stoneOn?g.nRing:1,others=active.filter(i=>i!==0);
-  const nStone=stoneOn?nD*nR:0,nSym=nStone+others.length,choices=[...active,F.STILL,F.WIND];
+  const nD=stoneOn?g.nDir:1,others=active.filter(i=>i!==0);
+  const nStone=stoneOn?nD:0,nSym=nStone+others.length,choices=[...active,F.STILL,F.WIND];
   const V=active.length+1,eps=1-Math.exp(-obs.beta*Math.max(0,V-obs.C));
-  let tSum=others.length*g.T;if(stoneOn)for(let n=1;n<=nR;n++)tSum+=nD*tStoneOf(g,n);
-  const per=g.reps*(tSum/nSym+WORLD.gap);
-  let preT=0;for(let i=0;i<g.pre;i++)preT+=tStoneOf(g,PRIMES[i])+WORLD.gap;
-  const signs=Math.max(0,(600*(p1-p0)-preT)/per);
+  const per=g.reps*(g.T+WORLD.gap),signs=Math.max(0,600*(p1-p0)/per);
   const restrict=row=>{let s=0;for(const j of choices)s+=row[j];return cumul(choices.map(j=>(1-eps)*row[j]/s+eps/choices.length));};
-  const tabs=P_BINS.map(pb=>{const L=legib(env,1,pb,k);let dc=null;
-    return{L,vis:active.map(gi=>restrict(obs.M[gi])),wind:restrict(rowWind(obs.M,pb)),dir:()=>dc||(dc=dirCell(env,1,g.T,pb,k))};});
-  const nA=active.length,CG=mat(nA,nA+1),CD=mat(nD,nD),CC=mat(nR,nR),D=TAU/nD;
+  const tabs=P_BINS.map(pb=>{const L=legib(env,1,pb,1);let dc=null;
+    return{L,vis:active.map(gi=>restrict(obs.M[gi])),wind:restrict(rowWind(obs.M,pb)),dir:()=>dc||(dc=dirCell(env,1,g.T,pb,1))};});
+  const nA=active.length,CG=mat(nA,nA+1),CD=mat(nD,nD),D=TAU/nD;
   const pick=cum=>{const u=r()*cum[cum.length-1];for(let i=0;i<cum.length;i++)if(u<cum[i])return i;return cum.length-1;};
   let both=0,exact=0,erased=0;
   for(let i=0;i<N;i++){
     const p=p0+r()*(p1-p0),tb=tabs[nearestIdx(P_BINS,p)],sym=Math.floor(r()*nSym);
-    let gi,d=0,c=1;
-    if(sym<nStone){gi=0;d=sym%nD;c=1+Math.floor(sym/nD);}else gi=active.indexOf(others[sym-nStone]);
-    const gF=active[gi],tally=new Array(nA).fill(0),ds=[],cs=[];
+    let gi,d=0;
+    if(sym<nStone){gi=0;d=sym;}else gi=active.indexOf(others[sym-nStone]);
+    const gF=active[gi],tally=new Array(nA).fill(0),ds=[];
     for(let q=0;q<g.reps;q++){
       const j=pick(r()<tb.L[gF]?tb.vis[gi]:tb.wind),jf=choices[j];
       if(jf===F.STILL||jf===F.WIND)continue;
       tally[j]++;
-      if(jf===F.STONE){let dd=0,cc=1;
+      if(jf===F.STONE){let dd=0;
         if(gF===F.STONE){
           if(nD>1){const th=(d+g.off)*D,cell=tb.dir(),s=dirBin(th)*DIRSAMP+Math.floor(r()*DIRSAMP);
             const pa=th+cell.off[s]+vmSample(r,obs.kappa*cell.vs[s]);
             dd=((Math.round(wrap2Pi(pa)/D-g.off)%nD)+nD)%nD;}
-          cc=clamp(countDraw(r,c,g.beat,env,1,p,k,obs),1,nR);
-        }else{dd=Math.floor(r()*nD);cc=1+Math.floor(r()*nR);}
-        ds.push(dd);cs.push(cc);}
+        }else dd=Math.floor(r()*nD);
+        ds.push(dd);}
     }
     let dec=nA,bt=0;for(let a=0;a<nA;a++)if(tally[a]>bt){bt=tally[a];dec=a;}
     CG[gi][dec]++;if(dec===nA)erased++;
     if(stoneOn&&gi===0&&dec===0){const dv=new Array(nD).fill(0);let dd=ds[0],bv=0;for(const x of ds){dv[x]++;if(dv[x]>bv){bv=dv[x];dd=x;}}
-      const cc=cs.slice().sort((a,b)=>a-b)[(cs.length-1)>>1];CD[d][dd]++;CC[c-1][cc-1]++;both++;if(dd===d&&cc===c)exact++;}
+      CD[d][dd]++;both++;if(dd===d)exact++;}
     else if(dec===gi&&!(stoneOn&&gi===0))exact++;
   }
-  const Ig=mutualInfo(CG),Ip=both>0?(both/N)*((nD>1?mutualInfo(CD):0)+(nR>1?mutualInfo(CC):0)):0;
-  const bps=Ig+Ip,sr=(1-k)*ENVS[env].sig,clarity=Math.exp(-((sr/12)**2))*vis((p0+p1)/2);
-  const recog=1-Math.exp(-(0.6+0.9*g.pre)*clarity);
-  const wrong=(N-exact-erased)/N,clean=Math.max(0,exact/N-wrong)*Math.log2(Math.max(2,nSym));
-  return{fit:recog*signs*(OBJECTIVE==='clean'?clean:bps),bps,clean,signs,recog,exact:exact/N,wrong,erased:erased/N,eps,V,nSym,cap:Math.log2(nSym)};
+  const Ig=mutualInfo(CG),Ip=both>0?(both/N)*(nD>1?mutualInfo(CD):0):0;
+  const bps=Ig+Ip,wrong=(N-exact-erased)/N,clean=Math.max(0,exact/N-wrong)*Math.log2(Math.max(2,nSym));
+  return{fit:signs*(OBJECTIVE==='clean'?clean:bps),bps,clean,signs,exact:exact/N,wrong,erased:erased/N,eps,V,nSym,cap:Math.log2(nSym)};
 }
 
 class Evolver{
@@ -359,7 +368,7 @@ const W0=0.18;   // a fresh thread's half-width, cm
    comes from a field shared by its neighbours, which keeps a thread a thread. Spreading is carried as each
    particle's width (w2), not as random steps. */
 class SmokeSim{
-  constructor(){this.parts=[];this.rings=[];this.hist=[];this.reset({env:'dusk',gm:1,p:0.35,seed:7,k:WORLD.k});}
+  constructor(){this.parts=[];this.rings=[];this.hist=[];this.reset({env:'dusk',gm:1,p:0.35,seed:7});}
   reset(o){this.o=Object.assign({burn:0},o);const r=this.r=rng32(o.seed>>>0);this.wind=new Wind(o.env,o.gm,r);this.t=0;this.p=o.p;
     this.parts.length=0;this.rings.length=0;this.signs=[];
     this.modes=makeModes(r,0.12,0.4,0.8,3);this.fine=makeModes(r,0.45,0.9,2,5);this.finer=makeModes(r,1,1.8,4,8);
@@ -372,7 +381,7 @@ class SmokeSim{
   /* Dust in the air: it shows the wind around the plume and the inflow the rising smoke draws in. It has its
      own random stream, so it never changes the smoke, and it keeps drifting whatever the smoke is doing. */
   newMote(u,age){const r=this.mr;return{x:(r()-0.5)*76,y:(r()-0.5)*76,z:-12+u*96,age,tw:r()*TAU,b:0.4+0.6*r()};}
-  stepMotes(dt,t){const U=this.U,sig=(1-(this.kk||0))*this.wind.sigma()*0.5+2;
+  stepMotes(dt,t){const U=this.U,sig=this.wind.sigma()*0.5+2;
     for(let i=0;i<this.motes.length;i++){const m=this.motes[i];m.age+=dt;
       const hf=0.45+0.55*smooth(-5,35,m.z),rh2=m.x*m.x+m.y*m.y,near=Math.exp(-rh2/40)*smooth(-2,4,m.z)*(1-smooth(30,60,m.z));
       TX=0;TY=0;TZ=0;turb(this.modes,m.x,m.y,m.z,t,0.8);
@@ -393,30 +402,33 @@ class SmokeSim{
     this.mode=mode||BREAKS[pickW(r,[0.35,0.2,0.3,0.15+0.25*smooth(0.5,0.9,this.p)])];
     const a=r()*TAU;this.mdT=[Math.sin(a),Math.cos(a)];this.burstK=1;this.modeT=0;
     if(this.mode==='fork')this.startSplit(2+2*r());}
-  /* Two streams part across the wind (a buoyant plume bent by crossflow rolls up into a counter-rotating pair). */
-  startSplit(dur,shown){if(this.ez.fork.x<0.05){const U=this.U,sp=Math.hypot(U[0],U[1]);let px,py;
-      if(sp>2){px=-U[1]/sp;py=U[0]/sp;}else if(shown){px=1;py=0;}else{const a=this.r()*TAU;px=Math.sin(a);py=Math.cos(a);}
+  /* Two streams part across the wind (a buoyant plume bent by crossflow rolls up into a counter-rotating pair).
+     A Fork passes the crosswind it is bringing, so the streams part across that before the wind has turned. */
+  startSplit(dur,along){if(this.ez.fork.x<0.05){const U=this.U,sp=Math.hypot(U[0],U[1]);let px,py;
+      if(along){px=-along[1];py=along[0];}else if(sp>2){px=-U[1]/sp;py=U[0]/sp;}else{const a=this.r()*TAU;px=Math.sin(a);py=Math.cos(a);}
       this.splitDir=[px,py];}
     this.splitT=dur;}
   step(dt){
     const o=this.o,r=this.r,E=this.ez;this.t+=dt;if(o.burn)this.p=Math.min(1,this.p+dt*o.burn/600);
-    this.wind.step(dt);const nat=this.wind.nat(),s=this.active(),t=this.t;
-    let kk=0,sx=0,sy=0,gate=1,helix=0,curl=0,spill=0,tower=false;
-    if(s){const ts=t-s.t0,ramp=smooth(0,0.6,ts)*(1-smooth(s.T-0.5,s.T,ts));kk=o.k*ramp;
-      if(s.form===F.STILL)kk=Math.min(0.95,o.k+0.25)*ramp;
-      if(s.form===F.STONE){
-        if(s.angle!=null){sx=WORLD.S*ramp*Math.sin(s.angle);sy=WORLD.S*ramp*Math.cos(s.angle);}
-        if(s.count>0){const tp=ts-WORLD.settle;if(tp>=0&&tp<s.count*s.beat+0.3){const u=(tp%s.beat)/s.beat;
-          gate=u<0.4&&tp<s.count*s.beat?0.1+2.4*Math.sin(Math.PI*u/0.4)**2:0.1;}}}
+    const s=this.active(),t=this.t;
+    let q=0,gate=1,helix=0,curl=0,spill=0,tower=false;
+    // A sign is a mode the wind itself enters for a while: it turns to a bearing and holds, or holds its
+    // breath, or drops to the light crosswind that parts a plume. Nothing pushes the smoke from outside the air.
+    if(s){const ts=t-s.t0,ramp=smooth(0,0.6,ts)*(1-smooth(s.T-0.5,s.T,ts)),hold=s.hold==null?1:s.hold;q=QUIET[s.form]*hold*ramp;
+      const S=WORLD.S*(0.6+0.4*hold)*ramp;
+      if(s.form===F.STONE&&s.angle!=null)this.wind.drive(S*Math.sin(s.angle),S*Math.cos(s.angle),q);
+      else if(s.form===F.FORK){if(s.fa==null){const m=this.wind.m,sp0=Math.hypot(m[0],m[1]);s.fa=sp0>1?Math.atan2(m[0],m[1]):r()*TAU;}
+        const fx=Math.sin(s.fa),fy=Math.cos(s.fa);this.wind.drive(5*ramp*fx,5*ramp*fy,q);if(this.splitT<0.3&&ts<s.T-1)this.startSplit(Math.max(0.6,s.T-0.6-ts),[fx,fy]);}
+      else this.wind.drive(0,0,q);   // Still and Tower hold their breath; the shapes only need a calmer column
       if(s.form===F.HELIX)helix=ramp;
       if(s.form===F.CURL)curl=ramp;
       if(s.form===F.SPILL)spill=ramp;
       if(s.form===F.RING){for(const rt of [0.8,0.8+s.T/2]){const key=s.id+':'+rt;if(ts>=rt&&!this.spawned.has(key)){this.spawned.add(key);this.spawnRing();}}gate=0.3;}
-      if(s.form===F.FORK){kk=Math.max(kk,0.8*ramp);if(this.splitT<0.3&&ts<s.T-1)this.startSplit(Math.max(0.6,s.T-0.6-ts),true);}
-      if(s.form===F.TOWER){kk=Math.min(0.97,o.k+0.3)*ramp;const key=s.id+':brk';
+      if(s.form===F.TOWER){const key=s.id+':brk';
         if(ts<s.T-1.4)tower=true;else if(!this.spawned.has(key)){this.spawned.add(key);this.trip(['whip','puffs','bloom'][Math.floor(r()*3)]);}}}
-    const Ux=nat[0]*(1-kk)+sx,Uy=nat[1]*(1-kk)+sy;this.U=[Ux,Uy];this.kk=kk;
-    const sr=(1-kk)*this.wind.sigma(),sigT=0.55*sr+3,p=this.p,c=coh(p),w0=rise(p),ns=spillNat(p),sp=Math.hypot(Ux,Uy);
+    this.wind.step(dt);const nat=this.wind.nat();
+    const Ux=nat[0],Uy=nat[1];this.U=[Ux,Uy];this.quiet=q;
+    const sr=this.wind.sigma(),sigT=0.55*sr+3,p=this.p,c=coh(p),w0=rise(p),ns=spillNat(p),sp=Math.hypot(Ux,Uy);
     // every shape the communicator asks for eases in and out
     const hel=E.helix.to(helix,0.3,dt),cur=E.curl.to(curl,0.3,dt),spl=Math.max(0,E.spill.to(spill,0.3,dt));
     gate=Math.max(0,E.gate.to(gate,0.1,dt));
@@ -424,12 +436,12 @@ class SmokeSim{
     // A tall straight column needs a calm spell: rare, a minute or two apart at dusk and almost never in
     // the day or night winds. The communicator's grip (Still, Fork, Tower) makes its own calm.
     if(this.spellT>0)this.spellT-=dt;else if(r()<dt*0.02*Math.exp(-((sp/7)**2))*c)this.spellT=8+10*r();
-    const calm=E.calm.to(Math.max(this.spellT>0?1:0,smooth(0.7,0.92,kk),s&&s.form===F.FORK?0.75:0),1.2,dt);
+    const calm=E.calm.to(Math.max(this.spellT>0?1:0,smooth(0.7,0.92,q),s&&s.form===F.FORK?0.75:0),1.2,dt);
     const Lmax=tower?64:2.5+5*c*Math.exp(-((sp/12)**2))+52*clamp(calm,0,1)*Math.exp(-((sp/9)**2))*Math.exp(-((sr/12)**2))*c;
     if(this.Ldrop!=null){this.L+=(this.Ldrop-this.L)*(1-Math.exp(-dt/0.15));if(this.L-this.Ldrop<0.3)this.Ldrop=null;}
     else this.L+=(Lmax-this.L)*(1-Math.exp(-dt/(this.L<Lmax?(tower?2.5:3):0.6)));
     // trips: the restless short column breaks often; the communicator's grip keeps it from tripping
-    if(!tower&&kk<0.5&&this.Ldrop==null&&r()<dt*(this.L>15?0.02+sr/80:0.12+sr/60))this.trip();
+    if(!tower&&q<0.5&&this.Ldrop==null&&r()<dt*(this.L>15?0.02+sr/80:0.12+sr/60))this.trip();
     this.burstK*=Math.exp(-dt/1.5);const burst=Math.max(0,E.burst.to(this.burstK,0.15,dt));
     this.modeT+=dt;if(this.mode!=='bloom'&&this.modeT>6)this.mode='bloom';
     const wW=E.whip.to(this.mode==='whip'?1:0,0.35,dt),wP=E.puffs.to(this.mode==='puffs'?1:0,0.35,dt),wB=clamp(E.bloom.to(this.mode==='bloom'?1:0,0.35,dt),0,1);
@@ -521,4 +533,4 @@ class SmokeSim{
 function ringAt(g,q){const rr=g.R+g.a*Math.cos(q.ph);q.tx=g.x+rr*Math.sin(q.th);q.ty=g.y+rr*Math.cos(q.th);q.tz=g.z+g.a*Math.sin(q.ph);}
 
 
-module.exports={SmokeSim,F,WORLD,ENVS,hourToAng,angToHour,evaluate,BASELINE,PRIOR,PRIOR_M,STANDIN,Evolver,fitObserver,presence,feltOf,makeTrial,standInRespond,rng32,turb,smooth};
+module.exports={SmokeSim,F,WORLD,ENVS,hourToAng,angToHour,evaluate,BASELINE,PRIOR,PRIOR_M,STANDIN,Evolver,fitObserver,presence,feltOf,reliability,respAng,dirOf,stoneAngle,bearingWord,QUIET,LEVELS,legib,dirCell,holdOf,makeTrial,standInRespond,rng32,turb,smooth};

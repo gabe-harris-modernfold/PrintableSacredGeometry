@@ -22,17 +22,17 @@ def adv(sec):
 
 def air(env, seed, sec=40):
     # hold off the communicator so the table shows the ridge's own air
-    return (f"app.flow.env='{env}';sim.reset({{env:'{env}',gm:1,p:0.4,seed:{seed},k:WORLD.k}});"
+    return (f"app.flow.env='{env}';sim.reset({{env:'{env}',gm:1,p:0.4,seed:{seed}}});"
             f"app.flow.next=1e9;" + adv(sec))
 
 def stage(sec, signs="[]", env="dusk", seed=11, gm=0.6):
-    return (f"setMode('free');sim.reset({{env:'{env}',gm:{gm},p:0.35,seed:{seed},k:0.65}});"
+    return (f"setMode('free');sim.reset({{env:'{env}',gm:{gm},p:0.35,seed:{seed}}});"
             f"sim.schedule({signs});for(let i=0;i<60*{sec};i++)sim.step(1/60);sim.measure();"
             "sim.step=()=>{};")  # freeze the frame so the screenshot catches this moment
 
 # a sitting's end: fourteen readings with felt ratings are kept, then the table tells the sitting as a whole
-TOLD = ("const mk=(truth,conf,form)=>{app.flow.pend={ep:truth===F.WIND?null:{truth,angle:null,count:null,T:6,t0:sim.t,close:sim.t+18,p:sim.p},"
-        "t:sim.t,p:sim.p,conf,note:'',hour:null,count:null,form,close:sim.t+9};commitPend();};"
+TOLD = ("const mk=(truth,conf,form)=>{app.flow.pend={ep:truth===F.WIND?null:{truth,angle:null,T:6,t0:sim.t,close:sim.t+18,p:sim.p,i:app.flow.epi++},"
+        "t:sim.t,p:sim.p,conf,note:'',dir:null,form,close:sim.t+9};commitPend();};"
         "for(let i=0;i<7;i++)mk(F.RING,i<5?5:1,i<4?F.RING:F.CURL);for(let i=0;i<7;i++)mk(F.WIND,i<6?1:5,F.WIND);"
         "newChapter();" + adv(6))
 
@@ -41,7 +41,7 @@ SCENES = {
     "sitting": ("", "dark"),
     "told": (TOLD, "dark"),
     "picked": ("app.flow.next=sim.t;" + adv(7) + "pick(app.flow.ep?app.flow.ep.truth:app.flow.opts[0],null);setConf(5);", "dark"),
-    "air_day": (air("day", 9) + "pick(F.STONE,{dir:1,ring:3});", "dark"),
+    "air_day": (air("day", 9) + "pick(F.STONE,{dir:1,ring:1});", "dark"),
     "air_night": (air("night", 4), "dark"),
     "column": (stage(14, seed=3), "dark"),
     "tower": (stage(5.6, "[{form:F.TOWER,t0:0.5,T:7}]"), "dark"),
