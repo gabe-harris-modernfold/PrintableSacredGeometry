@@ -46,10 +46,33 @@ for(const env of ['day','dusk','night']){let two=0,n=0;for(const seed of [1,2,3,
   const rel=[{seed:1,sit:10,epi:0,at:1,truth:m.F.RING,resp:{form:m.F.RING,conf:5}},{seed:1,sit:20,epi:0,at:2,truth:m.F.RING,resp:{form:m.F.RING,conf:1}},
     {seed:1,sit:10,epi:1,at:1,truth:m.F.FORK,resp:{form:m.F.FORK,conf:5}},{seed:1,sit:20,epi:1,at:2,truth:m.F.FORK,resp:{form:m.F.CURL,conf:5}}];
   const R=m.reliability(rel);check('reliability: pairs found',R.n,2,2);check('reliability: same form',R.form,1,1);check('reliability: same felt',R.felt,1,1);
+  // lexicon: a note's word must come back in another note of the same cue to count
+  const lx=m.lexicon([{resp:{form:m.F.FORK,dir:null,note:'a choice, two roads'}},{resp:{form:m.F.FORK,dir:null,note:'the choice again'}},{resp:{form:m.F.FORK,dir:null,note:'roads roads roads'}},{resp:{form:m.F.STONE,dir:2,note:'welcome'}}]);
+  check('lexicon: notes on the fork',lx[0].n,3,3);check('lexicon: words that come back on the fork',lx[0].recur.length,2,2);check('lexicon: top word count',lx[0].recur[0].n,2,2);
+  const lens={entries:[{form:'stone',dir:'toward',means:'welcome'},{form:'stone',means:'a lean'},{form:'fork',means:'two roads'}]};
+  check('lens: stone toward matches its own rule',m.lensMatch(lens,{form:m.F.STONE,dir:2,env:'dusk',p:0.3}).means==='welcome'?1:0,1,1);
+  check('lens: stone left falls to the general rule',m.lensMatch(lens,{form:m.F.STONE,dir:3,env:'dusk',p:0.3}).means==='a lean'?1:0,1,1);
+  check('lens: ring has no rule',m.lensMatch(lens,{form:m.F.RING,dir:null,env:'dusk',p:0.3})===null?1:0,1,1);
   const ev=new m.Evolver({M:f.M,kappa:f.kappa,C:f.C,beta:f.beta},7);for(let i=0;i<40;i++)ev.step();
   check('evolved bits per cone (at least 20, and 15% over the first guess)',ev.champ.e.fit,Math.max(20,ev.base.fit*1.15),1e9);}
 
-// 6. Cost: one stage step stays well inside a frame.
+// 6. The traditions as lifted from docs/smoke-reading-traditions.md: every rule speaks the page's cue
+//    vocabulary, every item cites a source in the table, the timeline runs in order in known families.
+{const T=m.TRADITIONS,S=T.sources,bad=[];
+  for(const l of T.lenses)for(const e of l.entries){
+    if(e.form&&!m.FORM_KEY.includes(e.form))bad.push(l.id+': form '+e.form);
+    if(e.dir&&(!m.DIR_KEY.includes(e.dir)||e.form!=='stone'))bad.push(l.id+': dir '+e.dir);
+    if(e.env&&!['day','dusk','night'].includes(e.env))bad.push(l.id+': env '+e.env);
+    if(e.burn&&!['early','mid','late'].includes(e.burn))bad.push(l.id+': burn '+e.burn);
+    if(!e.means||!S[e.src])bad.push(l.id+': means/src');}
+  for(const x of [...T.lenses,...T.forms,...T.timeline])if(x.src&&!S[x.src])bad.push('unresolved '+x.src);
+  for(const f of T.forms){if(!m.FAMILY[f.family])bad.push(f.id+': family '+f.family);if(f.lens&&!T.lenses.some(l=>l.id===f.lens))bad.push(f.id+': lens '+f.lens);}
+  for(let i=0;i<T.timeline.length;i++){const t=T.timeline[i];if(!m.FAMILY[t.family])bad.push(t.who+': family');if(i&&t.year<T.timeline[i-1].year)bad.push(t.who+': order');}
+  if(bad.length)console.log('  '+bad.slice(0,8).join('\n  '));
+  check('traditions: rules, sources, families and order that do not fit',bad.length,0,0);
+  check('traditions: lenses lifted',T.lenses.length,1,99);}
+
+// 7. Cost: one stage step stays well inside a frame.
 {const s=sim('dusk',3),t0=Date.now();for(let i=0;i<60*60;i++)s.step(1/60);check('sim ms per step',(Date.now()-t0)/3600,0,4);}
 
 console.log(fails?`${fails} failed`:'all ok');process.exitCode=fails;

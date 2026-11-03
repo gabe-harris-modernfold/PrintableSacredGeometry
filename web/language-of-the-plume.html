@@ -15,7 +15,7 @@
 :root{
   --bg:#e8ebe6; --panel:#f3f4f0; --sunk:#dadfd8; --ink:#1c2220; --muted:#59635e; --line:#c2c8c1;
   --ember:#b4441a; --smoke:#4f5964; --table:#d3ccbf; --table-ink:#6a6154;
-  --ok:#2b7a56; --warn:#9c6a0c; --bad:#ab3838;
+  --ok:#2b7a56; --warn:#9c6a0c; --bad:#ab3838; --sci:#3b6ea5;
   --f-display:"Marcellus","Palatino Linotype",Georgia,serif;
   --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
@@ -23,11 +23,11 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#111517; --panel:#181d20; --sunk:#0c0f11; --ink:#e2e5e1; --muted:#8f9994; --line:#2a3135;
   --ember:#ef7a3e; --smoke:#cfd7de; --table:#29251f; --table-ink:#9f9481;
-  --ok:#5fc292; --warn:#e1a83f; --bad:#e46d6d; color-scheme:dark}}
+  --ok:#5fc292; --warn:#e1a83f; --bad:#e46d6d; --sci:#7fa8d8; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111517; --panel:#181d20; --sunk:#0c0f11; --ink:#e2e5e1; --muted:#8f9994; --line:#2a3135;
   --ember:#ef7a3e; --smoke:#cfd7de; --table:#29251f; --table-ink:#9f9481;
-  --ok:#5fc292; --warn:#e1a83f; --bad:#e46d6d; color-scheme:dark}
+  --ok:#5fc292; --warn:#e1a83f; --bad:#e46d6d; --sci:#7fa8d8; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);
@@ -132,6 +132,38 @@ input[type=range]{accent-color:var(--ember)}
 .sitting{border-left:3px solid var(--ember);background:color-mix(in srgb,var(--panel) 80%,transparent);border-radius:0 8px 8px 0;padding:8px 12px;font-size:.86rem;display:grid;gap:2px;max-width:72ch}
 .sitting b{font-weight:600}
 .sitting .who{font:500 .72rem var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+/* the lexicon: lens in use, the lens board, the reader's words */
+.notes .lex{grid-column:1/-1}
+.mini select{font:inherit;font-size:.82rem;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+table.lex{border-collapse:collapse;width:100%;font-size:.84rem}
+table.lex th,table.lex td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+table.lex th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.wchip{appearance:none;font:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:2px 9px;background:var(--bg);color:var(--ink);cursor:pointer;margin:2px 4px 2px 0}
+.wchip:hover{border-color:var(--ember)}
+.word{font:inherit;font-size:.84rem;padding:4px 8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:11em}
+.lens-src{color:var(--muted);font-size:.78rem}
+.lens-src a,.fcard a,.tl-detail a{color:inherit;text-decoration:underline;text-decoration-color:var(--line)}
+/* the readers of smoke: family filter, timeline, detail, the forms */
+.readers code{font:.78rem var(--f-mono)}
+.fam{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{appearance:none;display:inline-flex;align-items:center;gap:6px;font:500 .82rem var(--f-body);border:1px solid var(--line);border-radius:999px;padding:4px 11px 4px 8px;background:var(--panel);color:var(--muted);cursor:pointer}
+.fchip i{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block}
+.fchip[aria-pressed="true"]{color:var(--ink);border-color:var(--c)}
+.fchip[aria-pressed="false"] i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--c)}
+.tl-box{position:relative;width:100%;overflow:hidden}
+#timeline{display:block;width:100%;height:auto}
+#timeline .dot{cursor:pointer;outline:none}
+#timeline .dot:focus-visible circle.ring,#timeline .dot.sel circle.ring{stroke:var(--ink);stroke-width:2}
+.tl-detail{min-height:3.2em;border-left:3px solid var(--line);padding:4px 0 4px 12px;font-size:.9rem}
+.tl-detail .when{font:500 .8rem var(--f-mono);color:var(--muted)}
+.forms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.fcard{border:1px solid var(--line);border-top:3px solid var(--c);border-radius:8px;padding:10px 12px;display:grid;gap:5px;align-content:start;background:var(--bg);min-width:0}
+.fcard .fam-pill{font:500 .7rem var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--c)}
+.fcard h3{font-family:var(--f-display);font-size:1.05rem;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:400}
+.fcard .where{font:.76rem var(--f-mono);color:var(--muted)}
+.fcard .reads{font-size:.84rem}.fcard .reads b{font-weight:600}
+.fcard p{font-size:.84rem;color:var(--muted)}
+.fcard .btn{justify-self:start;font-size:.8rem;padding:5px 10px}
 .scroll{overflow-x:auto;max-width:100%}
 table.cm{border-collapse:collapse;font:.74rem var(--f-mono);font-variant-numeric:tabular-nums}
 table.cm th,table.cm td{padding:4px 6px;text-align:center;border:1px solid var(--line)}
@@ -174,7 +206,7 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
           <div class="seg modes" role="tablist" aria-label="Mode">
             <button role="tab" id="mRead" aria-selected="true">Read</button>
             <button role="tab" id="mFree" aria-selected="false">Free</button>
-            <button role="tab" id="mEvo" aria-selected="false">Codebook</button>
+            <button role="tab" id="mEvo" aria-selected="false">Protocol</button>
           </div>
           <div class="cap" id="caption"></div>
           <div class="chips" id="chips"></div>
@@ -190,6 +222,7 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
           <div class="glyphbar" id="formChoices" role="radiogroup" aria-label="What did the smoke just do?"></div>
           <div class="deck-row">
             <div class="conf" role="group" aria-label="How it felt (optional)"><span>it felt</span><span id="confDots" class="row" style="gap:2px"></span></div>
+            <label class="mini" for="lens">lens <select id="lens" aria-label="Lens"></select></label>
             <input type="text" id="note" class="note" maxlength="200" placeholder="what it brought to mind, if anything" aria-label="What it brought to mind">
             <button class="btn quiet" id="btnPass" title="Esc" hidden>Let it go</button>
           </div>
@@ -200,12 +233,12 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
           <div class="deck-row">
             <button class="btn primary" id="btnEvo">Run evolution</button>
             <button class="btn" id="btnEvoReset">Start over</button>
-            <div class="seg" role="group" aria-label="What counts as success"><button id="objClean" aria-pressed="true">Clean marks</button><button id="objShannon" aria-pressed="false">Shannon bits</button></div>
+            <div class="seg" role="group" aria-label="What counts as success"><button id="objShannon" aria-pressed="true">Bits learned</button><button id="objClean" aria-pressed="false">Clean marks</button></div>
           </div>
           <div class="deck-row">
-            <button class="btn" id="btnPlay">Send a sentence</button>
+            <button class="btn" id="btnPlay">Show these signs</button>
             <div class="seg" role="group" aria-label="Playback speed"><button id="sp1" aria-pressed="true">1×</button><button id="sp4" aria-pressed="false">4×</button></div>
-            <button class="btn" id="btnKeep">Keep this code</button>
+            <button class="btn" id="btnKeep">Keep this protocol</button>
             <span class="hint" id="keepStatus"></span>
             <canvas class="spark" id="spark" aria-label="Best bits per cone by generation"></canvas>
           </div>
@@ -288,6 +321,23 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
           <dt>Late burn</dt><dd>The ash cap and the cooling cup make weak smoke that spills to every side on its own.</dd>
         </dl>
       </details>
+    </div>
+    <div class="note-col lex">
+      <h2>The lexicon</h2>
+      <p class="fine" id="lensAbout"></p>
+      <div id="lensBoard"></div>
+      <div id="lexicon"></div>
+    </div>
+  </section>
+
+  <section class="readers" aria-labelledby="readersHead">
+    <div class="note-col">
+      <h2 id="readersHead">The readers of smoke</h2>
+      <p class="fine">Every way people are known to have read smoke, and the people who did it, from two Babylonian tablets to the fluid dynamicists. Each has its source, and the writeup behind this page (<code>docs/smoke-reading-traditions.md</code>) says plainly where the evidence is thin. Where a tradition left rules for what was seen, you can sit with it as a lens.</p>
+      <div class="fam" id="famFilter" role="group" aria-label="Show these families"></div>
+      <div class="tl-box"><svg id="timeline" role="group" aria-label="Timeline of smoke readers" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <div class="tl-detail" id="tlDetail" aria-live="polite"></div>
+      <div class="forms-grid" id="formsGrid"></div>
     </div>
   </section>
 
@@ -375,6 +425,25 @@ const stoneAngle=r=>Math.floor(r()*4)*TAU/4+(r()-0.5)*TAU/12;
 const dirOf=a=>Math.round(wrap2Pi(a)/(TAU/4))%4;
 const BEAR8=['away','away, right','right','toward, right','toward you','toward, left','left','away, left'];
 const bearingWord=a=>BEAR8[Math.round(wrap2Pi(a)/(TAU/8))%8];
+/* Lenses: ways of reading. Each is a dictionary from what the reader saw (form, side, hour, burn) to what a
+   tradition made of it. 'own' is the reader's own lexicon, built from their notes; the traditions' entries are
+   lifted from docs/smoke-reading-traditions.md and carry their source keys. A rule matches a reading when
+   every field it names matches. */
+const FORM_KEY=['stone','ring','curl','helix','spill','fork','tower','still','wind'],DIR_KEY=['away','right','toward','left'];
+const BURN_WORD=p=>p<0.33?'early':p<0.66?'mid':'late';
+/* The traditions: lifted verbatim from the writeup's JSON block and Sources table by
+   projects/language_of_the_plume/lift_traditions.py. Do not edit between the markers. */
+/* TRADITIONS:BEGIN */
+const TRADITIONS={"lenses":[{"id":"babylonian-qutrenu","name":"Old Babylonian smoke omens","era":"Old Babylonian, c. 1800 BC","seat":"The diviner sits facing the censer; right and left are taken as his own, though the tablets say its right and its left.","about":"Two tablets read the smoke and flame of an aromatic burnt offering by direction, shape and movement. Renderings here follow Finkel as reproduced online.","src":"S1","entries":[{"form":"stone","dir":"right","means":"You will defeat your enemy","note":"(uncertain) rendering seen only in web reproductions of Finkel","src":"S6"},{"form":"stone","dir":"left","means":"The enemy gains the upper hand","note":"(uncertain) counterpart to the right omen on hobbyist pages; not checked against the edition","src":"S5"},{"form":"fork","means":"Madness; a change of mind","note":"(uncertain) top of the smoke cleft in two","src":"S5"},{"form":"spill","means":"An even contest; neither side prevails","note":"(approximate) smoke spreading evenly on all sides","src":"S5"}]},{"id":"greek-empyra","name":"Greek burnt-offering signs","era":"Classical Greek, 5th c. BC","seat":"No seat is prescribed; the reader stands at the altar and watches whether the offering burns clean.","about":"No ancient Greek text uses the word kapnomanteia. What is attested is reading burnt offerings, with frankincense named as the exception Pythagoras allowed.","src":"S7","entries":[{"form":"spill","means":"The offering is refused; the gods will not hear","note":"(approximate) smoke and sputter without flame, Antigone 1005-1011","src":"S8"}]},{"id":"chinese-guanxiang","name":"Chinese incense watching","era":"Chinese folk practice, modern compendia","seat":"The reader faces the altar; direction plays no part, so the seat does not matter.","about":"The printed charts read stick heights, not smoke. Smoke rules survive only in modern folk compendia that name no source.","src":"S15","entries":[{"form":"still","means":"A spirit attends the altar; the offering is received","note":"thin straight column likened to a hanging pagoda","src":"S15"},{"form":"helix","means":"Something adverse or an unquiet spirit is near","note":"(approximate) smoke that swirls or spins like a whirlwind","src":"S15"},{"form":"fork","means":"A parting; people or matters separate","note":"streams dividing in opposite directions","src":"S15"}]},{"id":"european-capnomancy","name":"European capnomancy","era":"Early-modern to modern Europe, 1533 to 1920","seat":"No seat; the rule concerns the column alone.","about":"A word catalogued from Agrippa and Gaule onward, with a generic rule supplied by nineteenth- and twentieth-century encyclopaedias. No ancient text is cited for it.","src":"S13","entries":[{"form":"still","means":"Favourable; the offering is accepted","note":"smoke rising lightly and straight","src":"S13"},{"form":"spill","means":"Unfavourable","note":"smoke that hangs about the altar","src":"S13"},{"form":"wind","means":"Unfavourable","note":"(approximate) thick dark smoke hanging like a cloud","src":"S12"}]},{"id":"tibetan-dud-brda","name":"Tibetan smoke signs","era":"Tibet, ethnography of 1964","seat":"The reader watches the smoke of a juniper offering against the sky; no seat is recorded.","about":"Ekvall records a category of smoke signs read by colour, volume and drift, held by specialists. No rules are published, so this lens is empty.","src":"S17","entries":[]},{"id":"indian-agni-lakshana","name":"Indian fire signs","era":"India, 6th c. AD","seat":"The observer watches the altar fire at the final oblation; the verses read flame, not smoke.","about":"Varahamihira reads the sacrificial fire by shape, colour, sound, smell and the turn of its flames, and extends the omens to journeys and campaigns.","src":"S18","entries":[{"form":"stone","dir":"right","means":"Conquest; the undertaking succeeds","note":"(approximate) flames turning to the right, not smoke","src":"S18"}]},{"id":"temple-woodpile","name":"Temple woodpile smoke","era":"Second Temple Judea, recorded c. AD 500","seat":"The watcher stands east of the altar facing west; the mapping of compass points to sides is ours, not the Talmud.","about":"At the close of Sukkot the lean of the altar smoke forecast the rains of the coming year. Only the four compass leans are given.","src":"S19","entries":[{"form":"stone","dir":"right","means":"Heavy rain; the poor are glad, owners grieve as stores rot","note":"smoke leaning north before a south wind; right = north is our mapping; read at the close of the festival","src":"S19"},{"form":"stone","dir":"left","means":"Sparse rain; owners are glad, the poor grieve","note":"smoke leaning south before a north wind; left = south is our mapping","src":"S19"},{"form":"stone","dir":"toward","means":"Enough rain and good keeping; everyone is glad","note":"smoke leaning east before a west wind; toward = east is our mapping","src":"S19"},{"form":"stone","dir":"away","means":"Drought; everyone is sad","note":"smoke leaning west before an east wind; away = west is our mapping","src":"S19"}]},{"id":"roman-seneca","name":"Seneca at the altar","era":"Roman, 1st c. AD","seat":"The seer is blind; his daughter watches the altar for him while the king stands by the fire.","about":"A tragedy, not a manual. The smoke sinks and wraps the head of the king, marking him as the polluted one.","src":"S23","entries":[{"form":"stone","dir":"toward","means":"The fault rests with the one the smoke settles on","note":"(approximate) smoke wrapping the head of the king, Oedipus c. 325-327; literary portent","src":"S23"}]}],"forms":[{"id":"babylonian-libanomancy","name":"Babylonian smoke omens","family":"omen","region":"Mesopotamia","era":"c. 1800 BC","start":-1800,"reads":"Lean, split, spread and density of the smoke of an aromatic offering","what":"Two Old Babylonian tablets list if-then omens taken from the qutrenu offering, within the work of the baru diviner. The tablets are damaged and renderings differ.","lens":"babylonian-qutrenu","src":"S1"},{"id":"pillar-of-cloud","name":"Pillar of cloud and fire","family":"signal","region":"Hebrew Bible","era":"text c. 6th c. BC","start":-550,"reads":"A column of cloud by day and of fire by night","what":"In Exodus a pillar of cloud by day and of fire by night goes before the people to guide them. A guiding sign, with no reading rule.","src":"S22"},{"id":"greek-empyra","name":"Greek burnt-offering signs","family":"omen","region":"Greece","era":"5th c. BC","start":-441,"reads":"Whether the offering flames or only smokes and sputters","what":"Tragedy and biography show burnt offerings read for acceptance, and Pythagoras allowing only frankincense. No ancient text found uses the word kapnomanteia.","lens":"greek-empyra","src":"S8"},{"id":"greek-fire-signals","name":"Greek fire signals","family":"signal","region":"Greece","era":"4th to 2nd c. BC","start":-350,"reads":"Beacons and torches sent by agreed code","what":"Aeneas Tacticus paired beacons with graduated water vessels; Cleoxenus and Democleitus built a torch alphabet that Polybius refined. Polybius describes fire, not daytime smoke.","src":"S27"},{"id":"chinese-beacons","name":"Chinese beacon smoke","family":"signal","region":"China","era":"Han, c. 100 BC","start":-100,"reads":"Fire by night and smoke by day from frontier beacon towers","what":"Beacon lines passed alarms along the frontier. The wolf-dung origin of the word langyan is a Tang-era claim that modern writers doubt; excavated fuels are plants.","src":"S29"},{"id":"temple-woodpile","name":"Temple woodpile smoke","family":"omen","region":"Judea","era":"Second Temple, recorded c. AD 500","start":-100,"reads":"Compass lean of the altar smoke at the close of Sukkot","what":"The Babylonian Talmud records that the lean of the woodpile smoke at the end of Sukkot forecast the rains, with a verdict for north, south, east and west.","lens":"temple-woodpile","src":"S19"},{"id":"yom-kippur-incense","name":"Yom Kippur incense column","family":"rite","region":"Judea","era":"Second Temple, recorded c. AD 500","start":-100,"reads":"Incense smoke rising straight like a staff","what":"A smoke-raising herb in the incense of the high priest made the column rise straight to the roof before spreading. A requirement of the rite, not an omen.","src":"S21"},{"id":"roman-oedipus","name":"Seneca at the altar","family":"omen","region":"Rome","era":"1st c. AD","start":50,"reads":"Flame colour, a fire that splits, and smoke settling on a person","what":"In the Oedipus of Seneca the sacrificial fire changes colour and splits, and the smoke wraps the head of the king. A literary portent; no Roman smoke manual was found.","lens":"roman-seneca","src":"S23"},{"id":"indian-agni","name":"Indian fire signs","family":"omen","region":"India","era":"c. AD 550","start":550,"reads":"Flame direction, colour, sound, smell and shape at the oblation","what":"Varahamihira reads the sacrificial fire at royal rites; flames turning right at the final oblation foretell conquest. The verses read flame, not smoke.","lens":"indian-agni-lakshana","src":"S18"},{"id":"leonardo-deluge","name":"Leonardo and moving air","family":"science","region":"Italy and France","era":"c. 1517","start":1517,"reads":"Coiling motion of water, cloud, dust and smoke","what":"The late Deluge drawings study storm and debris in coiling motion; the Royal Collection notes his interest in the optics of dust and smoke.","src":"S33"},{"id":"pyromancy","name":"Pyromancy","family":"catalogue","region":"Europe","era":"1533 onward","start":1533,"reads":"Fire and flame","what":"Agrippa groups pyromancy with geomancy, hydromancy and aeromancy as divinations of the elements; Rabelais and Gaule list it. No method is given.","src":"S9"},{"id":"capnomancy","name":"Capnomancy","family":"catalogue","region":"Europe","era":"1533 onward","start":1533,"reads":"Smoke of a fire or a sacrifice","what":"Agrippa, Rabelais and Gaule name capnomancy; encyclopaedias from 1880 add the rule that thin straight smoke is good and hanging smoke bad. No ancient source is cited.","lens":"european-capnomancy","src":"S9"},{"id":"libanomancy-catalogue","name":"Libanomancy in the lists","family":"catalogue","region":"Europe","era":"1546 onward","start":1546,"reads":"Burning frankincense","what":"Rabelais and Gaule list libanomancy by burning frankincense, and Del Rio is cited for it. None of them describes a method.","src":"S25"},{"id":"daphnomancy","name":"Daphnomancy","family":"catalogue","region":"Europe","era":"1546 onward","start":1546,"reads":"Whether burning laurel crackles","what":"Rabelais stages it: the Sibyl of Panzoust burns laurel, it makes no crackle, and this is called a dismal omen. Modern lists define it as divination by burning laurel.","src":"S24"},{"id":"sideromancy","name":"Sideromancy","family":"catalogue","region":"Europe","era":"early modern, date unverified","start":1600,"reads":"Straws burned on hot iron","what":"Modern lists define it as divination by burning straw on iron. No early source was found that describes the method or a reading of its smoke.","src":"S26"},{"id":"causimomancy","name":"Causimomancy","family":"catalogue","region":"Europe","era":"early modern, date unverified","start":1600,"reads":"Objects thrown into fire and how they burn","what":"Modern lists define it only as divination by burning. No early source or rule was found.","src":"S26"},{"id":"chinese-guanxiang","name":"Chinese incense watching","family":"omen","region":"China","era":"modern compendia; Qing origin claimed","start":1800,"reads":"Shape and colour of incense smoke at a home altar","what":"Printed charts read the burn heights of three sticks; a few smoke rules survive only in modern folk compendia that name no source.","lens":"chinese-guanxiang","src":"S15"},{"id":"plains-smoke-signals","name":"Plains smoke signals","family":"signal","region":"North American Plains","era":"19th c.","start":1850,"reads":"Position and timing of smoke columns","what":"Agreed signals made with damp fuel on high ground. The only account reached cites a web page; the ethnography of Clark (1885) was located but its entry not read.","src":"S28"},{"id":"vortex-rings","name":"Smoke rings as vortices","family":"science","region":"Germany and Scotland","era":"1858 to 1867","start":1858,"reads":"Smoke rings as stable vortices","what":"Helmholtz showed vortex rings persist in an ideal fluid; Tait fired smoke rings from a box and Kelvin proposed that atoms are vortex rings.","src":"S35"},{"id":"sensitive-flames","name":"Sensitive flames and smoke jets","family":"science","region":"Britain","era":"1867","start":1867,"reads":"Flames and smoke jets that flare or break at a sound","what":"Tyndall lectured on flames that respond to sound and later showed that smoke jets do the same: a column on the edge of instability.","src":"S36"},{"id":"reynolds-transition","name":"Direct and sinuous flow","family":"science","region":"Britain","era":"1883","start":1883,"reads":"When a straight streak breaks into eddies","what":"Reynolds watched dye in a pipe and found the condition under which smooth flow turns turbulent, the same break a rising incense column shows.","src":"S37"},{"id":"papal-fumata","name":"Conclave smoke","family":"signal","region":"Vatican","era":"1914 onward","start":1914,"reads":"Black or white smoke from the conclave stove","what":"Burned ballots signal the vote: black for no election, white for a new pope. The first intentional white smoke is dated to 1914; chemicals now fix the colour.","src":"S30"},{"id":"buoyant-plume","name":"The buoyant plume","family":"science","region":"USSR, Germany and Britain","era":"1937 to 1973","start":1937,"reads":"Rise and spread of a turbulent plume above a heat source","what":"Zeldovich and Schmidt found similarity laws for the plume above a point heat source; Morton, Taylor and Turner closed the model with entrainment proportional to plume speed.","src":"S41"},{"id":"tibetan-dud-brda","name":"Tibetan smoke signs","family":"omen","region":"Tibet","era":"recorded 1964","start":1964,"reads":"Colour, volume and drift of the smoke of a juniper offering","what":"Ekvall records a specialist category of smoke signs read from bsang offerings, most finely as the smoke fades against the sky. No rules are published.","lens":"tibetan-dud-brda","src":"S17"}],"timeline":[{"year":-1800,"label":"c. 1800 BC","who":"Old Babylonian libanomancy tablets","what":"Omens read from the smoke of the qutrenu offering, written as if-then rules","family":"omen","src":"S1"},{"year":-550,"label":"c. 6th c. BC (text)","who":"Exodus 13:21-22","what":"A pillar of cloud by day and fire by night goes before the people","family":"signal","src":"S22"},{"year":-441,"label":"c. 441 BC","who":"Sophocles, Antigone","what":"Teiresias reports an offering that smokes and sputters without flame: the gods refuse it","family":"omen","src":"S8"},{"year":-350,"label":"c. 350 BC","who":"Aeneas Tacticus","what":"Beacons paired with graduated water vessels send set messages, as Polybius describes","family":"signal","src":"S27"},{"year":-150,"label":"c. 150 BC","who":"Polybius, Histories 10.43-47","what":"Describes and refines the torch alphabet of Cleoxenus and Democleitus","family":"signal","src":"S27"},{"year":-100,"label":"c. 100 BC","who":"Han frontier beacons","what":"Fire by night and smoke by day along the frontier beacon lines","family":"signal","src":"S29"},{"year":50,"label":"1st c. AD","who":"Seneca, Oedipus","what":"Sacrificial smoke sinks and wraps the head of the king","family":"omen","src":"S23"},{"year":230,"label":"3rd c. AD","who":"Diogenes Laertius 8.20","what":"Pythagoras divined by voices and auguries, never by burnt offerings beyond frankincense","family":"omen","src":"S7"},{"year":500,"label":"c. AD 500","who":"Babylonian Talmud, Bava Batra 147a","what":"Records the lean of the altar smoke at the end of Sukkot as a forecast of the rains","family":"omen","src":"S19"},{"year":500,"label":"c. AD 500","who":"Babylonian Talmud, Yoma 53a","what":"A smoke-raising herb makes the Yom Kippur incense rise straight like a staff","family":"rite","src":"S21"},{"year":550,"label":"c. AD 550","who":"Varahamihira, Brhat Samhita","what":"Reads the altar fire: flames turning right at the final oblation mean conquest","family":"omen","src":"S18"},{"year":860,"label":"c. 860","who":"Duan Chengshi, Youyang zazu","what":"Cited as the source of the doubted claim that beacon smoke was made with wolf dung","family":"signal","src":"S29"},{"year":1517,"label":"c. 1517","who":"Leonardo da Vinci, Deluge drawings","what":"Late drawings of storm, water, dust and smoke in coiling motion","family":"science","src":"S33"},{"year":1533,"label":"1533","who":"Agrippa, De occulta philosophia","what":"Names capnomancy, which searches into flame and smoke","family":"catalogue","src":"S9"},{"year":1546,"label":"1546","who":"Rabelais, Tiers Livre","what":"Her Trippa offers capnomancy, libanomancy, tephromancy and pyromancy to Panurge","family":"catalogue","src":"S25"},{"year":1599,"label":"1599-1600","who":"Martin Del Rio, Disquisitiones magicae","what":"Cited by modern references for libanomancy; not read here","family":"catalogue","src":"S6"},{"year":1610,"label":"1610","who":"John Healey, after Vives","what":"Earliest dated English use of capnomancy, divination by smoke","family":"catalogue","src":"S10"},{"year":1652,"label":"1652","who":"John Gaule, Pus-mantia","what":"Lists capnomancy by smoke and libanomancy by burning frankincense","family":"catalogue","src":"S11"},{"year":1858,"label":"1858","who":"Hermann von Helmholtz","what":"Vortex theorems: vortex lines move with the fluid, so a ring in an ideal fluid persists","family":"science","src":"S34"},{"year":1867,"label":"Jan 1867","who":"Peter Guthrie Tait","what":"Smoke-ring box: a struck cloth fires rings through a hole in a smoke-filled crate","family":"science","src":"S35"},{"year":1867,"label":"Feb 1867","who":"William Thomson (Kelvin)","what":"On Vortex Atoms proposes that atoms are vortex rings in the ether","family":"science","src":"S35"},{"year":1867,"label":"1867","who":"John Tyndall","what":"Lectures on sensitive flames; later shows that smoke jets respond to sound","family":"science","src":"S36"},{"year":1879,"label":"1879-82","who":"Auguste Bouche-Leclercq","what":"Four-volume history of ancient divination; its pages on smoke were not checked here","family":"catalogue","src":"S43"},{"year":1880,"label":"1880","who":"McClintock and Strong","what":"Cyclopedia gives the rule: thin straight smoke favourable, thick hanging smoke unfavourable","family":"catalogue","src":"S12"},{"year":1883,"label":"1883","who":"Osborne Reynolds","what":"Dye-streak experiments show when flow turns from direct to sinuous","family":"science","src":"S37"},{"year":1914,"label":"1914","who":"Conclave of Benedict XV","what":"First intentional white smoke to announce an election, per Baumgartner","family":"signal","src":"S30"},{"year":1920,"label":"1920","who":"Lewis Spence","what":"Repeats the smoke-to-the-clouds rule and adds seed-on-coals and inhalation variants","family":"catalogue","src":"S13"},{"year":1937,"label":"1937","who":"Yakov Zeldovich","what":"Similarity laws for the turbulent plume above a point source of heat","family":"science","src":"S38"},{"year":1941,"label":"1941","who":"Wilhelm Schmidt","what":"Formulates the turbulent spread of a rising stream of heated air","family":"science","src":"S39"},{"year":1954,"label":"1954","who":"George Batchelor","what":"Reviews heat convection and buoyancy effects in fluids","family":"science","src":"S40"},{"year":1956,"label":"1956","who":"Morton, Taylor and Turner","what":"Entrainment model of plumes, applied to the rise of smoke in stratified air","family":"science","src":"S41"},{"year":1964,"label":"1964","who":"Robert Ekvall","what":"Records Tibetan smoke signs read by the colour, volume and drift of bsang smoke","family":"omen","src":"S17"},{"year":1966,"label":"1966","who":"Giovanni Pettinato","what":"First edition and study of a Babylonian libanomancy text","family":"omen","src":"S2"},{"year":1973,"label":"1973","who":"J. Stewart Turner","what":"Buoyancy Effects in Fluids, the standard text on plumes and thermals","family":"science","src":"S42"},{"year":1983,"label":"1983-84","who":"Irving Finkel","what":"Publishes UCLM 9-2433, a new libanomancy tablet, collated with the earlier texts","family":"omen","src":"S1"},{"year":2005,"label":"2005","who":"Vatican conclave","what":"A second stove is added so the smoke colour cannot be mistaken","family":"signal","src":"S31"},{"year":2015,"label":"2015","who":"Ulla Susanne Koch","what":"Handbook of Mesopotamian divination treats libanomancy among solicited techniques","family":"omen","src":"S4"},{"year":2016,"label":"2016","who":"Maria Stella Cingolo","what":"Surveys the two Old Babylonian libanomancy texts and the term qutrenu","family":"omen","src":"S3"}],"sources":{"S1":{"author":"I. L. Finkel","title":"\"A New Piece of Libanomancy\", Archiv für Orientforschung 29/30, 50–55 (tablet UCLM 9-2433; not read, cited via CDLI record)","year":"1983/84","kind":"primary edition (scholarly)","url":"https://cdli.earth/authors/1002"},"S2":{"author":"G. Pettinato","title":"\"Libanomanzia presso i Babilonesi\", Rivista degli Studi Orientali 41, 303–327 (not read)","year":"1966","kind":"scholarly","url":null},"S3":{"author":"M. S. Cingolo","title":"\"Some Remarks about the Old Babylonian Libanomancy Texts\", in J. C. Fincke (ed.), Divination as Science, 93–106 (abstract read)","year":"2016","kind":"scholarly","url":"https://doi.org/10.1515/9781575064260-007"},"S4":{"author":"U. S. Koch","title":"Mesopotamian Divination Texts: Conversing with the Gods (GMTR 7, Ugarit-Verlag; smoke section not read)","year":"2015","kind":"scholarly","url":"https://www.cambridge.org/core/journals/bulletin-of-the-school-of-oriental-and-african-studies/article/abs/F533D3089CADFB7A30AD745BC5D9F818"},"S5":{"author":"J. Carlson","title":"\"Incense and Divination\" (blog reproducing Finkel's renderings)","year":"n.d.","kind":"tertiary","url":"https://www.jesscarlson.com/blog/incense-and-divination"},"S6":{"author":"Wikipedia","title":"\"Libanomancy\" (right-drift omen, via Dunwich 1988)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Libanomancy"},"S7":{"author":"Diogenes Laertius, tr. R. D. Hicks","title":"Lives of Eminent Philosophers 8.20","year":"1925","kind":"primary","url":"https://en.wikisource.org/wiki/Lives_of_the_Eminent_Philosophers/Book_VIII"},"S8":{"author":"Sophocles, tr. R. C. Jebb","title":"Antigone 1005–1011","year":"1891","kind":"primary","url":"http://classics.mit.edu/Sophocles/antigone.html"},"S9":{"author":"H. C. Agrippa, tr. J. F.","title":"Three Books of Occult Philosophy I.57 (Latin 1533)","year":"1651","kind":"primary","url":"https://www.esotericarchives.com/agrippa/agripp1c.htm"},"S10":{"author":"Wiktionary","title":"\"capnomancy\" (carries the 1610 Healey/Vives citation)","year":"2026","kind":"tertiary","url":"https://en.wiktionary.org/wiki/capnomancy"},"S11":{"author":"J. Gaule","title":"Pus-mantia the Mag-astro-mancer, ch. XIX, pp. 165–166","year":"1652","kind":"primary","url":"https://archive.org/details/pysmantiamagastr00gaul"},"S12":{"author":"J. McClintock, J. Strong","title":"Cyclopedia of Biblical, Theological, and Ecclesiastical Literature, \"Capnomancy\"","year":"1880","kind":"tertiary","url":"https://www.biblicalcyclopedia.com/C/capnomancy.html"},"S13":{"author":"L. Spence","title":"An Encyclopaedia of Occultism, \"Capnomancy\"","year":"1920","kind":"tertiary","url":"https://archive.org/details/encyclopaediaofo1920spen"},"S14":{"author":"Wikipedia","title":"\"Capnomancy\" (Celtic/Semang claims cite Dunwich 2002, Cheung 2006)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Capnomancy"},"S15":{"author":"网易订阅 (anon.)","title":"观香火看事，断吉凶（观香秘法）","year":"c. 2025","kind":"tertiary","url":"https://www.163.com/dy/article/JS0LKBFK0531PYY1.html"},"S16":{"author":"百度百科","title":"二十四香谱","year":"2026","kind":"tertiary","url":"https://baike.baidu.com/item/%E4%BA%8C%E5%8D%81%E5%9B%9B%E9%A6%99%E8%B0%B1/7944671"},"S17":{"author":"R. B. Ekvall","title":"Religious Observances in Tibet: Patterns and Function, p. 271","year":"1964","kind":"scholarly","url":"https://archive.org/details/religious-observances-in-tibet-patterns-and-function"},"S18":{"author":"Varāhamihira, tr. N. C. Iyer","title":"Bṛhat Saṃhitā 43.31–37","year":"1884","kind":"primary","url":"https://www.wisdomlib.org/hinduism/book/brihat-samhita/d/doc229188.html"},"S19":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Bava Batra 147a","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Bava_Batra.147a"},"S20":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Yoma 21b","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Yoma.21b"},"S21":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Yoma 53a","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Yoma.53a"},"S22":{"author":"Exodus, JPS Tanakh (Sefaria)","title":"Exodus 13:21–22","year":"c. 6th c. BC (text)","kind":"primary","url":"https://www.sefaria.org/Exodus.13.21-22"},"S23":{"author":"Seneca, tr. F. J. Miller","title":"Oedipus, c. 303–330","year":"1907","kind":"primary","url":"https://en.wikisource.org/wiki/Tragedies_of_Seneca_(1907)_Miller/Oedipus"},"S24":{"author":"F. Rabelais, tr. Urquhart and Motteux","title":"Gargantua and Pantagruel III.17–18 (Sibyl of Panzoust)","year":"1546 / 1693","kind":"primary","url":"https://www.gutenberg.org/files/1200/1200-h/1200-h.htm"},"S25":{"author":"F. Rabelais, tr. Urquhart and Motteux","title":"Gargantua and Pantagruel III.25 (Her Trippa)","year":"1546 / 1693","kind":"primary","url":"https://www.gutenberg.org/files/8168/8168-h/8168-h.htm"},"S26":{"author":"Wikipedia","title":"\"Methods of divination\" (definitions of sideromancy, daphnomancy, causimomancy)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Methods_of_divination"},"S27":{"author":"Polybius, tr. W. R. Paton","title":"Histories 10.43–47 (LacusCurtius)","year":"c. 150 BC / 1925","kind":"primary","url":"https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Polybius/10*.html"},"S28":{"author":"Wikipedia","title":"\"Smoke signal\"","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Smoke_signal"},"S29":{"author":"百度百科 and related Chinese reference pages","title":"狼烟 (seen through search summaries)","year":"2026","kind":"tertiary","url":"https://baike.baidu.com/item/%E7%8B%BC%E7%83%9F/22851549"},"S30":{"author":"*U.S. Catholic* (citing F. J. Baumgartner, *Behind Locked Doors*, 2003)","title":"\"What is the origin of the papal smoke?\"","year":"2025","kind":"tertiary","url":"https://uscatholic.org/articles/202504/what-is-the-origin-of-the-papal-smoke/"},"S31":{"author":"Holy See Press Office (reposted)","title":"\"How the white and black fumate are produced\"","year":"2013","kind":"primary","url":"https://www.bishop-accountability.org/2013/03/how-the-white-and-black-fumate-are-produced/"},"S32":{"author":"Wikipedia","title":"\"Kōdō\"","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/K%C5%8Dd%C5%8D"},"S33":{"author":"Royal Collection Trust","title":"\"A deluge\" (Leonardo, exhibition text)","year":"c. 1517 / 2019","kind":"scholarly","url":"https://rct.uk/collection/exhibitions/leonardo-da-vinci-a-life-in-drawing/the-queens-gallery-palace-of/a-deluge"},"S34":{"author":"H. von Helmholtz","title":"\"Über Integrale der hydrodynamischen Gleichungen, welche den Wirbelbewegungen entsprechen\", J. reine angew. Math. 55 (not opened)","year":"1858","kind":"primary","url":"https://doi.org/10.1515/crll.1858.55.25"},"S35":{"author":"W. Thomson (Kelvin)","title":"\"On Vortex Atoms\", Proc. R. Soc. Edinburgh 6, 94–105 (describes Tait's box)","year":"1867","kind":"primary","url":"https://www.zapatopi.net/kelvin/papers/on_vortex_atoms.html"},"S36":{"author":"Wikipedia","title":"\"Sensitive flame\" (Tyndall 1867; smoke jets)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Sensitive_flame"},"S37":{"author":"O. Reynolds","title":"\"An experimental investigation of the circumstances which determine whether the motion of water shall be direct or sinuous…\", Phil. Trans. 174 (not opened)","year":"1883","kind":"primary","url":"https://doi.org/10.1098/rstl.1883.0029"},"S38":{"author":"Ya. B. Zel'dovich","title":"\"Limiting laws of freely rising convection currents\", Zh. Eksp. Teor. Fiz. 7, 1463–1465 (not read; title varies between citers)","year":"1937","kind":"primary","url":null},"S39":{"author":"W. Schmidt","title":"Turbulent plume papers, ZAMM 21 (two parts; exact title unverified)","year":"1941","kind":"primary","url":null},"S40":{"author":"G. K. Batchelor","title":"\"Heat convection and buoyancy effects in fluids\", Q. J. R. Meteorol. Soc. 80, 339–358 (not opened)","year":"1954","kind":"scholarly","url":"https://doi.org/10.1002/qj.49708034504"},"S41":{"author":"B. R. Morton, G. I. Taylor, J. S. Turner","title":"\"Turbulent gravitational convection from maintained and instantaneous sources\", Proc. R. Soc. A 234, 1–23 (abstract read)","year":"1956","kind":"primary","url":"https://doi.org/10.1098/rspa.1956.0011"},"S42":{"author":"J. S. Turner","title":"Buoyancy Effects in Fluids, Cambridge University Press (not read)","year":"1973","kind":"scholarly","url":null},"S43":{"author":"A. Bouché-Leclercq","title":"Histoire de la divination dans l'antiquité, 4 vols (not read)","year":"1879–82","kind":"scholarly","url":"https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=ha000474617"}}};
+/* TRADITIONS:END */
+const LENSES=[{id:'own',name:'Your own',era:'now',about:'The words you have given the smoke yourself. They grow from your notes, below.',entries:[]},...TRADITIONS.lenses];
+/* The five ways people have read smoke, each with a colour token. */
+const FAMILY={omen:{name:'Omen',tok:'--ember',about:'smoke read as a sign of what will be'},rite:{name:'Rite',tok:'--warn',about:'smoke watched as part of a rite: accepted, refused, rising true'},
+  catalogue:{name:'Catalogue',tok:'--muted',about:'the word named and listed by learned compilers'},signal:{name:'Signal',tok:'--ok',about:'smoke sent on purpose, to be read far away'},
+  science:{name:'Science',tok:'--sci',about:'the plume read as a fluid: how it rises, turns and breaks'}};
+const lensById=id=>LENSES.find(l=>l.id===id)||null;
+function lensMatch(lens,r){if(!lens)return null;for(const e of lens.entries){if(e.form&&e.form!==FORM_KEY[r.form])continue;
+  if(e.dir&&(r.form!==F.STONE||r.dir==null||e.dir!==DIR_KEY[r.dir]))continue;if(e.env&&e.env!==r.env)continue;if(e.burn&&e.burn!==BURN_WORD(r.p))continue;return e;}return null;}
 /* The cone over its burn fraction p: how much smoke (vis), how coherent the column (coh),
    how much it spills sideways unbidden (spillNat), and how fast it rises (rise, cm/s). */
 const vis=p=>smooth(0,0.08,p)*(0.55+0.45*smooth(0.05,0.6,p))*(1-0.85*smooth(0.96,1.0,p));
@@ -551,71 +620,71 @@ function reliability(trials){const by=new Map();
   for(const a of by.values()){if(a.size<2)continue;const[x,y]=[...a.values()].sort((p,q)=>p.at-q.at);n++;sits.add(y.sit);
     if(x.resp.form===y.resp.form)form++;const fx=feltOf(x),fy=feltOf(y);if(fx&&fy&&fx===fy)felt++;}
   return{n,form,felt,sits:sits.size};}
+/* The lexicon: what the reader has written about each cue, and the words that recur. A cue is a form, with
+   its side for a Stone. Words under three letters and the commonest function words are dropped; a word counts
+   once per note, so it must come back in another note to recur. */
+const STOP=new Set('the a an and or of to in on at it its is was be as if so but for with like than then this that there here just very more some something nothing not from into out up down'.split(' '));
+const cueOf=r=>FORM_KEY[r.form]+(r.form===F.STONE&&r.dir!=null?':'+DIR_KEY[r.dir]:'');
+const cueLabel=k=>{const[f,d]=k.split(':');return FORM_NAME[FORM_KEY.indexOf(f)]+(d?' '+DIR_WORD[DIR_KEY.indexOf(d)]:'');};
+const cueEntry=(k,means)=>{const[f,d]=k.split(':');return{form:f,...(d?{dir:d}:{}),means};};
+function lexicon(trials){const by=new Map();
+  for(const t of trials){const note=(t.resp.note||'').trim();if(!note)continue;const k=cueOf(t.resp);let c=by.get(k);if(!c)by.set(k,c={cue:k,notes:[],words:new Map()});
+    c.notes.push(note);const seen=new Set();for(const w of note.toLowerCase().split(/[^a-z']+/)){if(w.length<3||STOP.has(w)||seen.has(w))continue;seen.add(w);c.words.set(w,(c.words.get(w)||0)+1);}}
+  return[...by.values()].map(c=>({cue:c.cue,n:c.notes.length,notes:c.notes,recur:[...c.words].filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]).map(([w,n])=>({w,n}))})).sort((a,b)=>b.n-a.n);}
+/* How each lens has served this reader: readings kept under it, sittings, presence and reliability. */
+function lensBoard(trials){const by=new Map();for(const t of trials){const id=t.lens||'none';let a=by.get(id);if(!a)by.set(id,a=[]);a.push(t);}
+  return[...by].map(([id,ts])=>({id,n:ts.length,sits:new Set(ts.map(t=>t.sit)).size,pres:presence(ts),rel:reliability(ts)})).sort((a,b)=>b.n-a.n);}
 
 /* ====================================================================
    5. Languages and their evolution
    ==================================================================== */
-const NDIRS=[1,2,3,4,6,8,12,16],TODS=['day','dusk','night'];
-const BASELINE={nDir:4,off:0,forms:[true,true,true,true,true,false,false],T:6,reps:1,p0:0.05,span:0.65,tod:'dusk'};
-function randGenome(r){return fixG({nDir:NDIRS[Math.floor(r()*8)],off:r(),forms:SIGN_FORMS.map(()=>r()<0.5),
-  T:2+r()*10,reps:1+Math.floor(r()*3),p0:r()*0.7,span:0.15+r()*0.85,tod:TODS[Math.floor(r()*3)]});}
-function fixG(g){if(!g.forms.some(Boolean))g.forms[0]=true;g.T=clamp(g.T,2,12);g.off=wrap2Pi(g.off*TAU)/TAU;
-  g.reps=clamp(Math.round(g.reps),1,3);g.p0=clamp(g.p0,0,0.85);g.span=clamp(g.span,0.1,1);return g;}
+const TODS=['day','dusk','night'];
+/* A reading protocol: which forms to attend to, whether to read the Stone's side, when to sit and which
+   stretch of the cone to listen through. The wind sends every form; the reader chooses what to listen for. */
+const BASELINE={forms:[true,true,true,true,true,false,false],dir:true,p0:0.05,span:0.65,tod:'dusk'};
+function randGenome(r){return fixG({forms:SIGN_FORMS.map(()=>r()<0.5),dir:r()<0.5,p0:r()*0.7,span:0.15+r()*0.85,tod:TODS[Math.floor(r()*3)]});}
+function fixG(g){if(!g.forms.some(Boolean))g.forms[0]=true;g.p0=clamp(g.p0,0,0.85);g.span=clamp(g.span,0.1,1);return g;}
 const cloneG=g=>({...g,forms:g.forms.slice()});
 function mutate(g,r,rate){g=cloneG(g);const m=()=>r()<rate;
-  if(m()){const i=NDIRS.indexOf(g.nDir)+(r()<0.5?-1:1);g.nDir=NDIRS[clamp(i,0,NDIRS.length-1)];}
-  if(m())g.off+=gauss(r)*0.15;
   for(const i of SIGN_FORMS)if(r()<rate/2)g.forms[i]=!g.forms[i];
-  if(m())g.T*=Math.exp(gauss(r)*0.25); if(m())g.reps+=r()<0.5?-1:1;
-  if(m())g.p0+=gauss(r)*0.08; if(m())g.span+=gauss(r)*0.1; if(r()<rate/2)g.tod=TODS[Math.floor(r()*3)];
+  if(m())g.dir=!g.dir; if(m())g.p0+=gauss(r)*0.08; if(m())g.span+=gauss(r)*0.1; if(r()<rate/2)g.tod=TODS[Math.floor(r()*3)];
   return fixG(g);}
-function crossover(a,b,r){const c=cloneG(a);for(const k of ['nDir','off','T','reps','p0','span','tod'])if(r()<0.5)c[k]=b[k];
+function crossover(a,b,r){const c=cloneG(a);for(const k of ['dir','p0','span','tod'])if(r()<0.5)c[k]=b[k];
   for(const i of SIGN_FORMS)if(r()<0.5)c.forms[i]=b.forms[i];return fixG(c);}
-/* 'clean': a wrong mark costs what a right one earns, a missing mark costs nothing (a reader who cannot decode codes).
-   'shannon': mutual information, as if errors could later be corrected. */
-let OBJECTIVE='clean';
+/* 'shannon': mutual information, what the reader learns from the plume even through steady confusions.
+   'clean': a wrong mark costs what a right one earns, a missing mark costs nothing: a stricter reader. */
+let OBJECTIVE='shannon';
 
-/* Bits that reach the table in one cone: Monte Carlo through air + reader, repeats voted on the table. The
-   sender commits fully (hold 1); what varies is the code. */
-function evaluate(g,obs,seed,N=1200){
-  const r=rng32(seed),env=g.tod,p0=g.p0,p1=Math.min(0.98,g.p0+g.span);
-  const active=SIGN_FORMS.filter(i=>g.forms[i]),stoneOn=g.forms[0];
-  const nD=stoneOn?g.nDir:1,others=active.filter(i=>i!==0);
-  const nStone=stoneOn?nD:0,nSym=nStone+others.length,choices=[...active,F.STILL,F.WIND];
-  const V=active.length+1,eps=1-Math.exp(-obs.beta*Math.max(0,V-obs.C));
-  const per=g.reps*(g.T+WORLD.gap),signs=Math.max(0,600*(p1-p0)/per);
-  const restrict=row=>{let s=0;for(const j of choices)s+=row[j];return cumul(choices.map(j=>(1-eps)*row[j]/s+eps/choices.length));};
+/* Bits a reader following protocol g takes from one cone: Monte Carlo through air + reader. The wind sends
+   every form alike, a Stone toward any of the four sides; the reader answers only from the forms attended to,
+   plus Still and Wind, and reads the side only if the protocol says to. A form let pass is erased when it is
+   read as weather and wrong when it is taken for one attended to. */
+function evaluate(g,obs,seed,N=1200,objective=OBJECTIVE){
+  const r=rng32(seed),env=g.tod,p0=g.p0,p1=Math.min(0.98,g.p0+g.span),T=WORLD.trialT;
+  const active=SIGN_FORMS.filter(i=>g.forms[i]),stoneOn=g.forms[0],nD=stoneOn&&g.dir?4:1;
+  const choices=[...active,F.STILL,F.WIND],V=active.length+1,eps=1-Math.exp(-obs.beta*Math.max(0,V-obs.C));
+  const nSym=active.length+(stoneOn?nD-1:0),signs=Math.max(0,600*(p1-p0)/(T+WORLD.gap));
+  // a form the reader does not listen for is not spread over the forms they do: what would have been read
+  // as it is read as weather
+  const restrict=row=>{let s=0;for(const j of choices)s+=row[j];const drop=Math.max(0,1-s);return cumul(choices.map(j=>(1-eps)*(row[j]+(j===F.WIND?drop:0))+eps/choices.length));};
   const tabs=P_BINS.map(pb=>{const L=legib(env,1,pb,1);let dc=null;
-    return{L,vis:active.map(gi=>restrict(obs.M[gi])),wind:restrict(rowWind(obs.M,pb)),dir:()=>dc||(dc=dirCell(env,1,g.T,pb,1))};});
-  const nA=active.length,CG=mat(nA,nA+1),CD=mat(nD,nD),D=TAU/nD;
+    return{L,vis:SIGN_FORMS.map(gi=>restrict(obs.M[gi])),wind:restrict(rowWind(obs.M,pb)),dir:()=>dc||(dc=dirCell(env,1,T,pb,1))};});
+  const nA=active.length,nS=SIGN_FORMS.length,CG=mat(nS,nA+1),CD=mat(4,4),D=TAU/4;
   const pick=cum=>{const u=r()*cum[cum.length-1];for(let i=0;i<cum.length;i++)if(u<cum[i])return i;return cum.length-1;};
-  let both=0,exact=0,erased=0;
+  let both=0,exact=0,wrong=0,erased=0;
   for(let i=0;i<N;i++){
-    const p=p0+r()*(p1-p0),tb=tabs[nearestIdx(P_BINS,p)],sym=Math.floor(r()*nSym);
-    let gi,d=0;
-    if(sym<nStone){gi=0;d=sym;}else gi=active.indexOf(others[sym-nStone]);
-    const gF=active[gi],tally=new Array(nA).fill(0),ds=[];
-    for(let q=0;q<g.reps;q++){
-      const j=pick(r()<tb.L[gF]?tb.vis[gi]:tb.wind),jf=choices[j];
-      if(jf===F.STILL||jf===F.WIND)continue;
-      tally[j]++;
-      if(jf===F.STONE){let dd=0;
-        if(gF===F.STONE){
-          if(nD>1){const th=(d+g.off)*D,cell=tb.dir(),s=dirBin(th)*DIRSAMP+Math.floor(r()*DIRSAMP);
-            const pa=th+cell.off[s]+vmSample(r,obs.kappa*cell.vs[s]);
-            dd=((Math.round(wrap2Pi(pa)/D-g.off)%nD)+nD)%nD;}
-        }else dd=Math.floor(r()*nD);
-        ds.push(dd);}
-    }
-    let dec=nA,bt=0;for(let a=0;a<nA;a++)if(tally[a]>bt){bt=tally[a];dec=a;}
-    CG[gi][dec]++;if(dec===nA)erased++;
-    if(stoneOn&&gi===0&&dec===0){const dv=new Array(nD).fill(0);let dd=ds[0],bv=0;for(const x of ds){dv[x]++;if(dv[x]>bv){bv=dv[x];dd=x;}}
-      CD[d][dd]++;both++;if(dd===d)exact++;}
-    else if(dec===gi&&!(stoneOn&&gi===0))exact++;
+    const p=p0+r()*(p1-p0),tb=tabs[nearestIdx(P_BINS,p)],gF=Math.floor(r()*nS),d=Math.floor(r()*4);
+    const j=pick(r()<tb.L[gF]?tb.vis[gF]:tb.wind),jf=choices[j],dec=jf===F.STILL||jf===F.WIND?nA:j;
+    CG[gF][dec]++;
+    if(dec===nA){erased++;continue;}
+    if(jf!==gF){wrong++;continue;}
+    if(gF===F.STONE&&nD>1){const th=d*D,cell=tb.dir(),s=dirBin(th)*DIRSAMP+Math.floor(r()*DIRSAMP);
+      const dd=((Math.round(wrap2Pi(th+cell.off[s]+vmSample(r,obs.kappa*cell.vs[s]))/D)%4)+4)%4;CD[d][dd]++;both++;if(dd===d)exact++;else wrong++;}
+    else exact++;
   }
-  const Ig=mutualInfo(CG),Ip=both>0?(both/N)*(nD>1?mutualInfo(CD):0):0;
-  const bps=Ig+Ip,wrong=(N-exact-erased)/N,clean=Math.max(0,exact/N-wrong)*Math.log2(Math.max(2,nSym));
-  return{fit:signs*(OBJECTIVE==='clean'?clean:bps),bps,clean,signs,exact:exact/N,wrong,erased:erased/N,eps,V,nSym,cap:Math.log2(nSym)};
+  const Ig=mutualInfo(CG),Ip=both>0?(both/N)*mutualInfo(CD):0,bps=Ig+Ip;
+  const clean=Math.max(0,(exact-wrong)/N)*Math.log2(Math.max(2,nSym));
+  return{fit:signs*(objective==='clean'?clean:bps),bps,clean,signs,exact:exact/N,wrong:wrong/N,erased:erased/N,eps,V,nSym,cap:Math.log2(Math.max(2,nSym))};
 }
 
 class Evolver{
@@ -1116,7 +1185,7 @@ function drawFit(cv,hist,base){const{g,w,h}=fitCanvas(cv);if(!w)return;g.clearRe
 /* ====================================================================
    8. Storage: the artifact's db when the viewer offers it, else this browser
    ==================================================================== */
-const store={db:null,canWrite:false,trials:[],runs:[],mode:'local'};
+const store={db:null,canWrite:false,trials:[],runs:[],words:[],mode:'local'};
 const LS_KEY='smoke-speech-lab.trials.v1';   // the page's first name; kept so earlier readings still load
 function lsGet(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]');}catch(e){return[];}}
 function lsSet(a){try{localStorage.setItem(LS_KEY,JSON.stringify(a));}catch(e){}}
@@ -1124,7 +1193,7 @@ const validTrial=t=>t&&typeof t.truth==='number'&&t.resp&&typeof t.resp.form==='
 const renum=f=>f===5?F.STILL:f===6?F.WIND:f;
 const normTrial=t=>(t.v||1)>=2?t:{...t,v:2,truth:renum(t.truth),opts:t.opts.map(renum),resp:{...t.resp,form:renum(t.resp.form)}};
 async function initStore(onChange){
-  store.trials=lsGet().filter(validTrial).map(normTrial);onChange();setStoreStatus('Answers saved in this browser only');
+  store.trials=lsGet().filter(validTrial).map(normTrial);store.words=wordsFrom(lxGet());onChange();setStoreStatus('Answers saved in this browser only');
   if(!(window.claude&&window.claude.use))return;
   const[db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
   if(!db){return;}
@@ -1132,6 +1201,7 @@ async function initStore(onChange){
   store.canWrite=user?await user.isOwner():false;
   setStoreStatus(store.canWrite?'Loading saved answers…':'Viewing the owner\'s answers (read only)');
   let settled=false;const timer=setTimeout(()=>{if(!settled)setStoreStatus('Saved answers can\'t be reached yet');},10000);
+  db.collection('lexicon').onSnapshot(snap=>{store.words=wordsFrom(snap.docs.map(d=>d.data()));renderLexicon();},()=>{});
   db.collection('trials').orderBy('at').onSnapshot(snap=>{
     const rows=snap.docs.map(d=>d.data()).filter(validTrial).map(normTrial);
     if(!snap.metadata.fromCache){settled=true;clearTimeout(timer);}
@@ -1150,6 +1220,16 @@ async function saveTrial(t){
 async function saveRun(run){if(store.db&&store.canWrite){try{await store.db.collection('runs').add(run);return 'Saved to this lab';}catch(e){return 'Could not save: '+(e&&e.code||'error');}}
   try{const a=JSON.parse(localStorage.getItem(LS_KEY+'.runs')||'[]');a.push(run);localStorage.setItem(LS_KEY+'.runs',JSON.stringify(a));return 'Saved in this browser';}catch(e){return 'Could not save here';}}
 function setStoreStatus(s){const el=document.getElementById('storeStatus');if(el)el.textContent=s;}
+/* The reader's words: one per cue, the latest kept. In the artifact's db they are rows of the collection
+   'lexicon' (the latest row per cue wins, so only add is needed); elsewhere this browser. */
+const LX_KEY=LS_KEY+'.lexicon';
+function lxGet(){try{return JSON.parse(localStorage.getItem(LX_KEY)||'[]');}catch(e){return[];}}
+function wordsFrom(rows){const m=new Map();for(const w of rows)if(w&&typeof w.cue==='string'&&typeof w.word==='string'){const o=m.get(w.cue);if(!o||(w.at||0)>(o.at||0))m.set(w.cue,w);}return[...m.values()];}
+const wordFor=cue=>{const w=store.words.find(x=>x.cue===cue);return w&&w.word?w.word:null;};
+async function saveWord(cue,word){const row={cue,word:String(word).trim().slice(0,40),at:Date.now()};
+  store.words=wordsFrom([...store.words,row]);
+  if(store.db&&store.canWrite){try{await store.db.collection('lexicon').add(row);return;}catch(e){}}
+  try{localStorage.setItem(LX_KEY,JSON.stringify(wordsFrom([...lxGet(),row])));}catch(e){}}
 
 /* ====================================================================
    9. App
@@ -1159,14 +1239,14 @@ const sim=new SmokeSim();
 const READ_DIAL={nDir:4,off:0,nRing:1};
 const app={mode:'read',phase:'idle',reader:'you',stand:[],obs:{...PRIOR,M:PRIOR_M},fit:null,evo:null,running:false,
   flow:null,lastKept:'',speed:1,dial:{...READ_DIAL},marks:[],seq:null,watchEnv:'dusk',hover:null,answer:null,truthMark:null,
-  reserve:0,lastTod:null,view:null,pres:null,presRecent:null,rel:null,level:1,sinceReplay:0};
+  reserve:0,lastTod:null,view:null,pres:null,presRecent:null,rel:null,level:1,sinceReplay:0,lens:'none'};
 const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const datasetNow=()=>app.reader==='you'?store.trials:app.stand;
 function refit(){app.fit=fitObserver(datasetNow());const f=app.fit;
   app.obs={M:f.M,kappa:f.kappa,C:f.C,beta:f.beta};renderChips();}
 /* What the table says back, it says only between sittings: the presence score, the fitted model and the
    last sitting's account. Nothing here moves while a reading is open, so no moment is given away. */
-function renderSittingViews(){const d=datasetNow();app.pres=presence(d);app.presRecent=presence(d.slice(-40));app.rel=reliability(d);renderPresence();renderReliability();renderCal();renderChips();}
+function renderSittingViews(){const d=datasetNow();app.pres=presence(d);app.presRecent=presence(d.slice(-40));app.rel=reliability(d);renderPresence();renderReliability();renderCal();renderLexicon();renderChips();}
 function ambient(env){sim.reset({env,gm:1,p:0.35,seed:(Math.random()*2**32)>>>0});sim.o.burn=0;}
 let toastTimer=0;
 function toast(text){const t=$('toast');t.textContent=text;t.hidden=false;
@@ -1219,7 +1299,7 @@ function flowTick(){const fl=app.flow;if(!fl||app.mode!=='read')return;const t=s
     fl.ep=ep;fl.left--;fl.next=ep.close+FLOW.quiet[0]+r()*(FLOW.quiet[1]-FLOW.quiet[0]);}
   if(fl.ep&&app.reader!=='you'&&!fl.ep.asked&&t>=fl.ep.t0+fl.ep.T+1.5){fl.ep.asked=true;standInPick();}}
 const flowTr=(fl,ep,p)=>({seed:fl.seed,env:fl.env,gm:fl.gm,p,truth:ep?ep.truth:F.WIND,angle:ep?ep.angle:null,
-  opts:fl.opts,T:ep?ep.T:WORLD.trialT,hold:fl.hold,epi:ep?ep.i:null,sit:fl.sit,replay:fl.replay});
+  opts:fl.opts,T:ep?ep.T:WORLD.trialT,hold:fl.hold,epi:ep?ep.i:null,sit:fl.sit,replay:fl.replay,lens:app.lens==='none'?null:app.lens});
 const pickText=pd=>`${FORM_NAME[pd.form]}${pd.form===F.STONE&&pd.dir!=null?` ${DIR_WORD[pd.dir]}`:''}`;
 function pick(form,hit){const fl=app.flow;if(!fl||app.mode!=='read'||app.reader!=='you')return;const t=sim.t,ep=fl.ep;
   // a sign that began after this pick was opened is a new moment
@@ -1242,7 +1322,7 @@ function commitPend(){const fl=app.flow,pd=fl&&fl.pend;if(!pd)return;fl.pend=nul
   const rec={...trialRecord(tr,resp,{started:performance.now(),replays:0}),flow:true,rt:pd.ep?Math.round((pd.t-pd.ep.t0)*1000):null};
   fl.kept.push(rec);
   if(app.reader==='you')saveTrial(rec).then(inDb=>{if(!inDb){refit();renderChips();}});else{app.stand.push(rec);refit();}
-  app.answer=null;$('note').value='';app.lastKept=`Kept: <b>${pickText(pd)}</b>.`;updateAnswerUI();renderChips();}
+  app.answer=null;$('note').value='';app.lastKept=`Kept: <b>${pickText(pd)}</b>.${lensLine(rec)}`;updateAnswerUI();renderChips();}
 /* The sitting that just ended, told as a whole. Counts only, never which moment was which: the one place
    the table speaks back, and it waits until the smoke has changed. */
 function sittingSummary(fl){const K=fl.kept,you=fl.reader==='you',who=you?'you':'the stand-in';
@@ -1273,8 +1353,69 @@ function renderReliability(){const R=app.rel,el=$('reliab');if(!R||!el)return;if
     :`<span>Reliability</span><b>–</b><p>No sitting has come round again yet. After a week an old sitting returns under the same weather and the same signs, unannounced, so the table can see how steady your reading is.</p>`;}
 /* The practice settings live in this browser: the air's level, and how many sittings since one came round again. */
 const PR_KEY='smoke-speech-lab.practice';
-function loadPractice(){try{const o=JSON.parse(localStorage.getItem(PR_KEY)||'{}');if(o.level!=null)app.level=clamp(o.level|0,0,LEVELS.length-1);app.sinceReplay=o.sinceReplay|0;}catch(e){}}
-function savePractice(){try{localStorage.setItem(PR_KEY,JSON.stringify({level:app.level,sinceReplay:app.sinceReplay}));}catch(e){}}
+function loadPractice(){try{const o=JSON.parse(localStorage.getItem(PR_KEY)||'{}');if(o.level!=null)app.level=clamp(o.level|0,0,LEVELS.length-1);app.sinceReplay=o.sinceReplay|0;
+  if(o.lens&&(o.lens==='none'||lensById(o.lens)))app.lens=o.lens;}catch(e){}}
+function savePractice(){try{localStorage.setItem(PR_KEY,JSON.stringify({level:app.level,sinceReplay:app.sinceReplay,lens:app.lens}));}catch(e){}}
+/* The reading of your reading: what the chosen lens, and your own lexicon, make of what you just kept. It
+   speaks of what you saw, never of what was sent, so it can speak at once. */
+function lensLine(rec){const r={form:rec.resp.form,dir:rec.resp.dir,env:rec.env,p:rec.p};let s='';
+  const L=app.lens!=='none'&&app.lens!=='own'?lensById(app.lens):null,e=L&&lensMatch(L,r);if(e){const q=(e.note||'').match(/uncertain|approximate/);s+=` ${escH(L.name)}: ${escH(e.means)}${q?` (${q[0]})`:''}.`;}
+  const w=wordFor(cueOf(rec.resp));if(w)s+=` Your word: <b>${w.replace(/</g,'&lt;')}</b>.`;return s;}
+/* The readers of smoke. Time runs on a broken scale, so four thousand years and the last four centuries both
+   get room: each knot is (year, share of the width). */
+const TL_KNOTS=[[-2000,0],[-500,0.2],[0,0.29],[1000,0.4],[1500,0.52],[1700,0.64],[1850,0.77],[1950,0.89],[2030,1]];
+function tlX(y){const K=TL_KNOTS;if(y<=K[0][0])return 0;for(let i=1;i<K.length;i++)if(y<=K[i][0]){const[a,u]=K[i-1],[b,v]=K[i];return u+(v-u)*(y-a)/(b-a);}return 1;}
+const yearLabel=y=>y<0?`${-y} BC`:y<1000?`AD ${y}`:String(y);
+const escH=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function srcHtml(key){const S=TRADITIONS.sources[key];if(!S)return'';const t=`${escH(S.author)}, <i>${escH(S.title)}</i> (${escH(S.year)}; ${escH(S.kind)})`;
+  return S.url?`<a href="${escH(S.url)}" target="_blank" rel="noopener">${t}</a>`:t;}
+const readers={on:new Set(Object.keys(FAMILY)),sel:null};
+function renderReaders(){const box=$('famFilter');if(!box)return;
+  const counts={};for(const f of TRADITIONS.forms)counts[f.family]=(counts[f.family]||0)+1;for(const t of TRADITIONS.timeline)counts[t.family]=counts[t.family]||0;
+  box.innerHTML=Object.entries(FAMILY).filter(([k])=>k in counts).map(([k,F])=>`<button type="button" class="fchip" data-fam="${k}" aria-pressed="${readers.on.has(k)}" style="--c:var(${F.tok})" title="${escH(F.about)}"><i></i>${F.name}</button>`).join('');
+  box.querySelectorAll('.fchip').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.fam;if(readers.on.has(k)&&readers.on.size>1)readers.on.delete(k);else readers.on.add(k);renderReaders();}));
+  drawTimeline();renderFormsGrid();}
+function drawTimeline(){const sv=$('timeline');if(!sv)return;const T=TRADITIONS.timeline;
+  if(!T.length){sv.setAttribute('viewBox','0 0 10 1');sv.innerHTML='';$('tlDetail').textContent='';return;}
+  const W=Math.max(320,sv.clientWidth||sv.parentNode.clientWidth||800),narrow=W<560,L=12,R=12,lanes=Object.keys(FAMILY),lh=narrow?17:20,top=10,H=top+lanes.length*lh+34;
+  const X=y=>L+(W-L-R)*tlX(y),laneY=k=>top+lanes.indexOf(k)*lh+lh/2;
+  let h=`<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>`;
+  for(const k of lanes)h+=`<line x1="${L}" x2="${W-R}" y1="${laneY(k)}" y2="${laneY(k)}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
+  const ax=top+lanes.length*lh+6;h+=`<line x1="${L}" x2="${W-R}" y1="${ax}" y2="${ax}" stroke="var(--muted)"/>`;
+  for(const[y]of TL_KNOTS.slice(1,-1)){if(narrow&&(y===1700||y===0))continue;const x=X(y);h+=`<line x1="${x}" x2="${x}" y1="${ax}" y2="${ax+5}" stroke="var(--muted)"/><text x="${x}" y="${ax+18}" text-anchor="middle" font-size="10" font-family="var(--f-mono)" fill="var(--muted)">${y?yearLabel(y):'0'}</text>`;}
+  T.forEach((t,i)=>{if(!FAMILY[t.family])return;const on=readers.on.has(t.family),c=`var(${FAMILY[t.family].tok})`;
+    h+=`<g class="dot${readers.sel===i?' sel':''}" data-i="${i}" tabindex="${on?0:-1}" role="button" aria-label="${escH(t.label+', '+t.who)}" opacity="${on?1:0.15}">
+      <circle cx="${X(t.year)}" cy="${laneY(t.family)}" r="9" fill="transparent"/><circle class="ring" cx="${X(t.year)}" cy="${laneY(t.family)}" r="${narrow?4:5}" fill="${c}" stroke="var(--bg)" stroke-width="1.5"/></g>`;});
+  sv.setAttribute('viewBox',`0 0 ${W} ${H}`);sv.innerHTML=h;
+  const show=i=>{readers.sel=i;const t=T[i];sv.querySelectorAll('.dot').forEach(d=>d.classList.toggle('sel',+d.dataset.i===i));
+    $('tlDetail').innerHTML=`<span class="when">${escH(t.label)} · ${FAMILY[t.family].name}</span><br><b>${escH(t.who)}</b>: ${escH(t.what)} <span class="lens-src">${srcHtml(t.src)}</span>`;};
+  sv.querySelectorAll('.dot').forEach(d=>{const i=+d.dataset.i;d.addEventListener('click',()=>show(i));d.addEventListener('mouseenter',()=>show(i));
+    d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(i);}
+      else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const dirn=e.key==='ArrowRight'?1:-1;let j=i;do j+=dirn;while(j>=0&&j<T.length&&!readers.on.has(T[j].family));
+        if(j>=0&&j<T.length){show(j);sv.querySelector(`.dot[data-i="${j}"]`).focus();}}});});
+  if(readers.sel==null||!readers.on.has(T[readers.sel].family)){const j=T.findIndex(t=>readers.on.has(t.family));if(j>=0)show(j);}else show(readers.sel);}
+function renderFormsGrid(){const el=$('formsGrid');if(!el)return;
+  const fs=TRADITIONS.forms.filter(f=>readers.on.has(f.family)).sort((a,b)=>(a.start??0)-(b.start??0));
+  el.innerHTML=fs.map(f=>{const F=FAMILY[f.family]||FAMILY.catalogue,L=f.lens&&lensById(f.lens);
+    return`<article class="fcard" style="--c:var(${F.tok})"><span class="fam-pill">${F.name}</span><h3>${escH(f.name)}</h3><span class="where">${escH(f.region)} · ${escH(f.era)}</span>
+      <span class="reads"><b>Reads</b> ${escH(f.reads)}</span><p>${escH(f.what)}</p><span class="lens-src">${srcHtml(f.src)}</span>
+      ${L&&L.entries.length?`<button type="button" class="btn quiet" data-lens="${escH(L.id)}">Sit with this lens (${L.entries.length} rule${L.entries.length>1?'s':''})</button>`:''}</article>`;}).join('');
+  el.querySelectorAll('[data-lens]').forEach(b=>b.addEventListener('click',()=>{useLens(b.dataset.lens);if(app.mode!=='read')setMode('read');$('stage').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});}));}
+function useLens(id){app.lens=id;$('lens').value=id;savePractice();renderLexicon();const L=lensById(id);toast(L?`lens: ${L.name.toLowerCase()}`:'no lens');}
+/* The lexicon column: the lens in use, how each lens has served this reader, and the reader's own words. */
+function renderLexicon(){const el=$('lexicon'),ab=$('lensAbout'),bd=$('lensBoard');if(!el)return;const you=app.reader==='you',d=datasetNow();
+  const L=lensById(app.lens);ab.innerHTML=app.lens==='none'?"No lens: the smoke is read in its own terms. Choose a lens to sit with a tradition's way of reading; after each kept reading it says what that tradition made of what you saw."
+    :`<b>${escH(L.name)}</b> · ${escH(L.era||'')}${L.seat?` · ${escH(L.seat)}`:''}<br>${escH(L.about||'')}${L.src?` <span class="lens-src">${srcHtml(L.src)}</span>`:''}${L.id!=='own'&&!L.entries.length?' <span class="lens-src">This tradition left no rules for what was seen, so the lens says nothing yet.</span>':''}`;
+  const B=lensBoard(d).filter(b=>b.n>=6);
+  bd.innerHTML=B.length?'<table class="lex"><tr><th>Lens</th><th>Readings</th><th>Sittings</th><th>Presence d′</th><th>Same form on return</th></tr>'+B.map(b=>`<tr><td>${b.id==='none'?'no lens':(lensById(b.id)||{name:b.id}).name}</td><td>${b.n}</td><td>${b.sits}</td><td>${b.pres.ok?b.pres.d.toFixed(2):'–'}</td><td>${b.rel.n?`${b.rel.form} of ${b.rel.n}`:'–'}</td></tr>`).join('')+'</table>'
+    :'<p class="fine">Which lens serves you best shows here once six readings have been kept under one: its presence score, and how steady your reading is when a sitting comes round again.</p>';
+  LENSES[0].entries=store.words.filter(w=>w.word).map(w=>cueEntry(w.cue,w.word));
+  const lx=lexicon(d),cues=new Map(lx.map(c=>[c.cue,c]));for(const w of store.words)if(w.word&&!cues.has(w.cue))cues.set(w.cue,{cue:w.cue,n:0,notes:[],recur:[]});
+  if(!cues.size){el.innerHTML='<p class="fine">Your lexicon is empty. When a moment brings something to mind, write it in the note; words that come back in another note gather here under the form that drew them, and you can keep one as your word for it.</p>';return;}
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  el.innerHTML='<table class="lex"><tr><th>Cue</th><th>Notes</th><th>Comes back</th><th>Your word</th></tr>'+[...cues.values()].map(c=>`<tr><td>${cueLabel(c.cue)}</td><td>${c.n}${c.notes.length?`<br><span class="lens-src">${c.notes.slice(-3).map(esc).join(' · ')}</span>`:''}</td><td>${c.recur.length?c.recur.map(x=>`<button type="button" class="wchip" data-cue="${c.cue}" data-w="${esc(x.w)}">${esc(x.w)} ×${x.n}</button>`).join(''):'<span class="lens-src">not yet</span>'}</td><td><input class="word" data-cue="${c.cue}" value="${esc(wordFor(c.cue)||'')}" placeholder="a word" maxlength="40"${you?'':' disabled'}></td></tr>`).join('')+'</table>';
+  el.querySelectorAll('.wchip').forEach(b=>b.addEventListener('click',()=>{if(you)saveWord(b.dataset.cue,b.dataset.w).then(renderLexicon);}));
+  el.querySelectorAll('.word').forEach(i=>i.addEventListener('change',()=>{saveWord(i.dataset.cue,i.value).then(renderLexicon);}));}
 /* Test-retest: now and then an old sitting comes round again under its seed, so the same weather and the
    same signs are read a second time weeks later. The reader is not told. */
 function pickReplay(){if(app.sinceReplay<FLOW.replayEvery)return null;const by=new Map(),now=Date.now();
@@ -1304,8 +1445,8 @@ function updateAnswerUI(){const fl=app.flow,pd=fl&&fl.pend,you=app.reader==='you
   else if(pd.form===F.STONE&&pd.dir==null)h='Stone. Touch the side of the table it leaned to: <b>toward</b> you, <b>away</b>, <b>left</b> or <b>right</b>.';
   else h=`<b>${pickText(pd)}</b>. Change it, say how it felt, or just keep watching. It settles on its own.`;
   $('ansHint').innerHTML=h;}
-function trialRecord(tr,resp,meta){return{v:4,at:Date.now(),seed:tr.seed,env:tr.env,gm:tr.gm,p:+tr.p.toFixed(4),truth:tr.truth,angle:tr.angle==null?null:+tr.angle.toFixed(4),
-  opts:tr.opts,T:tr.T,hold:holdOf(tr),nDir:4,epi:tr.epi??null,sit:tr.sit??null,replay:!!tr.replay,resp,rt:Math.round(performance.now()-meta.started),replays:meta.replays};}
+function trialRecord(tr,resp,meta){return{v:5,at:Date.now(),seed:tr.seed,env:tr.env,gm:tr.gm,p:+tr.p.toFixed(4),truth:tr.truth,angle:tr.angle==null?null:+tr.angle.toFixed(4),
+  opts:tr.opts,T:tr.T,hold:holdOf(tr),nDir:4,epi:tr.epi??null,sit:tr.sit??null,replay:!!tr.replay,lens:tr.lens??null,resp,rt:Math.round(performance.now()-meta.started),replays:meta.replays};}
 function addStandIn(n){for(let i=0;i<n;i++){const tr=makeTrial((Math.random()*2**32)>>>0);
   app.stand.push(trialRecord(tr,standInRespond(tr,rng32(tr.seed^0x9e37)),{started:performance.now(),replays:0}));}refit();renderSittingViews();}
 
@@ -1333,29 +1474,27 @@ function renderCal(){const f=app.fit;if(!f)return;const you=app.reader==='you',n
 /* ---- evolve ---- */
 function resetEvo(){app.evo=new Evolver(app.obs,hashStr('evo'+Date.now()));app.evo.preview=evaluate(BASELINE,app.obs,777,1500);
   app.running=false;$('btnEvo').textContent='Run evolution';app.lastTod=null;drawEvo();}
-function genomeRule(g){const p1=Math.min(0.98,g.p0+g.span),forms=SIGN_FORMS.filter(i=>g.forms[i]).map(i=>FORM_NAME[i]);
-  const parts=[`Burn at ${({day:'midday',dusk:'dusk',night:'night'})[g.tod]}; listen from ${Math.round(g.p0*100)}% to ${Math.round(p1*100)}% of the cone.`];
-  if(g.forms[0])parts.push(`Lean toward ${g.nDir>1?g.nDir+' bearings':'no bearing'}${g.nDir>1&&g.off>0.05&&g.off<0.95?` with the dial turned ${(g.off*360/g.nDir).toFixed(0)}° from away`:''}.`);
-  parts.push(`Signs: ${forms.join(', ')}. Each holds ${g.T.toFixed(1)} s${g.reps>1?` and comes ${g.reps} times`:''}.`);return parts.join(' ');}
-const dialOf=g=>({nDir:g.forms[0]?g.nDir:1,off:g.off,nRing:1});
+function genomeRule(g){const p1=Math.min(0.98,g.p0+g.span),on=SIGN_FORMS.filter(i=>g.forms[i]).map(i=>FORM_NAME[i]+(i===0&&g.dir?' with its side':'')),off=SIGN_FORMS.filter(i=>!g.forms[i]).map(i=>FORM_NAME[i]);
+  return`Sit at ${({day:'midday',dusk:'dusk',night:'night'})[g.tod]}; listen from ${Math.round(g.p0*100)}% to ${Math.round(p1*100)}% of the cone. Attend to ${on.join(', ')}.${off.length?` Let ${off.join(', ')} pass as weather.`:''}`;}
+const dialOf=g=>({nDir:g.forms[0]&&g.dir?4:1,off:0,nRing:1});
 function drawEvo(){const ev=app.evo;if(!ev)return;
   const c=ev.champ||{g:BASELINE,e:ev.preview};const g=c.g,e=c.e;
   if(app.mode==='evo'&&!app.seq){app.dial=dialOf(g);if(app.lastTod!==g.tod){app.lastTod=g.tod;ambient(g.tod);}}
   drawFit($('fitChart'),ev.hist,ev.base?ev.base.fit:null);drawSpark($('spark'),ev.hist);
-  $('bestHead').textContent=ev.champ?`The sender's code after ${ev.gen} generations`:"The sender's first guess, before evolving";
+  $('bestHead').textContent=ev.champ?`Your protocol after ${ev.gen} generations`:'A first protocol, before evolving';
   $('bestRule').textContent=genomeRule(g);
   $('bestGlyphs').innerHTML=SIGN_FORMS.map(i=>`<span class="glyph ${g.forms[i]?'':'off'}">${icon(i)}${FORM_NAME[i]}</span>`).join('');
-  $('bestKV').innerHTML=`<dt>Meaning per cone</dt><dd>${e.fit.toFixed(0)} bits</dd><dt>Signs per cone</dt><dd>${e.signs.toFixed(1)}</dd>
+  $('bestKV').innerHTML=`<dt>Read per cone</dt><dd>${e.fit.toFixed(0)} bits</dd><dt>Signs per cone</dt><dd>${e.signs.toFixed(1)}</dd>
     <dt>Per sign</dt><dd>${e.clean.toFixed(2)} clean · ${e.bps.toFixed(2)} Shannon · of ${e.cap.toFixed(2)} sent</dd><dt>Marks</dt><dd>${Math.round(e.exact*100)}% right · ${Math.round(e.wrong*100)}% wrong · ${Math.round(e.erased*100)}% missing</dd>
     <dt>Vocabulary load</dt><dd>${e.V} forms incl. Still${e.eps>0.01?` · ${Math.round(e.eps*100)}% of form readings scrambled by overload`:''}</dd>`;
-  if(ev.lastTop){let h='<tr><th>Rank</th><th>Bits/cone</th><th>Signs</th><th>Bits/sign</th><th>Bearings</th><th>Forms</th><th>Hold</th><th>When</th></tr>';
-    const row=(lab,x,cls)=>`<tr class="${cls||''}"><td>${lab}</td><td>${x.e.fit.toFixed(0)}</td><td>${x.e.signs.toFixed(0)}</td><td>${(OBJECTIVE==='clean'?x.e.clean:x.e.bps).toFixed(2)}</td><td>${x.g.forms[0]?x.g.nDir:'–'}</td><td>${SIGN_FORMS.filter(i=>x.g.forms[i]).map(i=>FORM_NAME[i].slice(0,2)).join(' ')}</td><td>${x.g.T.toFixed(1)}s×${x.g.reps}</td><td>${x.g.tod}</td></tr>`;
+  if(ev.lastTop){let h='<tr><th>Rank</th><th>Bits/cone</th><th>Signs</th><th>Bits/sign</th><th>Side</th><th>Forms</th><th>When</th></tr>';
+    const row=(lab,x,cls)=>`<tr class="${cls||''}"><td>${lab}</td><td>${x.e.fit.toFixed(0)}</td><td>${x.e.signs.toFixed(0)}</td><td>${(OBJECTIVE==='clean'?x.e.clean:x.e.bps).toFixed(2)}</td><td>${x.g.forms[0]&&x.g.dir?'yes':'–'}</td><td>${SIGN_FORMS.filter(i=>x.g.forms[i]).map(i=>FORM_NAME[i].slice(0,2)).join(' ')}</td><td>${x.g.tod}</td></tr>`;
     ev.lastTop.forEach((x,i)=>h+=row(String(i+1),x));if(ev.base)h+=row('first guess',{g:BASELINE,e:ev.base},'base');$('topTable').innerHTML=h;}
   else $('topTable').innerHTML='';
-  $('evoNote').textContent=ev.base&&ev.champ?`Scored as ${OBJECTIVE==='clean'?'clean marks':'Shannon bits'}, the first guess (4 bearings, every form, dusk) carries ${ev.base.fit.toFixed(0)} bits per cone to this reader. The best code found carries ${ev.champ.e.fit.toFixed(0)}. The ranked table is this generation's population, scored on one shared draw of weather. The headline figures are re-scored on a larger independent draw so a lucky draw does not crown a winner.`
-    :'Each generation scores every code on the same simulated weather, keeps the best two, and breeds the rest by tournament, crossover and mutation.';
-  if(app.mode==='evo')$('evoHint').innerHTML=ev.champ?`The table now carries the best code so far: <b>${g.forms[0]?(g.nDir>1?g.nDir+' bearings':'no bearings'):'no stones'}</b>, ${SIGN_FORMS.filter(i=>g.forms[i]).map(i=>FORM_NAME[i]).join(', ')}, at ${g.tod}.`
-    :"The sender's side of the table: the code a sender would have to evolve so that this reader, as modelled from the readings kept, reads it. Run it to see what they would do to be heard by you.";
+  $('evoNote').textContent=ev.base&&ev.champ?`Scored as ${OBJECTIVE==='clean'?'clean marks':'Shannon bits'}, the first protocol (five forms, the Stone with its side, dusk) reads ${ev.base.fit.toFixed(0)} bits per cone for this reader. The best protocol found reads ${ev.champ.e.fit.toFixed(0)}. The ranked table is this generation's population, scored on one shared draw of weather. The headline figures are re-scored on a larger independent draw so a lucky draw does not crown a winner.`
+    :'Each generation scores every protocol on the same simulated weather, keeps the best two, and breeds the rest by tournament, crossover and mutation.';
+  if(app.mode==='evo')$('evoHint').innerHTML=ev.champ?`The best protocol so far: attend to <b>${SIGN_FORMS.filter(i=>g.forms[i]).map(i=>FORM_NAME[i]).join(', ')}</b>${g.forms[0]&&g.dir?', the Stone with its side':''}, at ${g.tod}.`
+    :'Your side of the table: the way of reading that takes most from this wind for this reader, as modelled from the readings kept. Run it to see what to attend to, what to let pass, and when to sit.';
   renderChips();}
 function evoTick(){if(!app.running||!app.evo)return;const t0=performance.now();
   while(performance.now()-t0<14){app.evo.step();if(app.evo.gen>=300){app.running=false;$('btnEvo').textContent='Run evolution';break;}}
@@ -1366,14 +1505,11 @@ function playSentence(){const ev=app.evo,g=(ev&&ev.champ)?ev.champ.g:BASELINE,r=
   app.marks=[];app.dial=dialOf(g);
   sim.reset({env:g.tod,gm:1,p:Math.max(0.1,g.p0+0.02),seed:(r()*2**32)>>>0});sim.o.burn=1;
   const list=[],caps=[];let t=2;
-  const active=SIGN_FORMS.filter(i=>g.forms[i]);
-  for(let n=0;n<5;n++){const f=active[Math.floor(r()*active.length)];let sym={form:f};
-    if(f===F.STONE){const d=Math.floor(r()*app.dial.nDir);sym={form:f,d,angle:app.dial.nDir>1?(d+g.off)*TAU/app.dial.nDir:null};}
-    for(let q=0;q<g.reps;q++){const T=g.T;
-      list.push({form:f,angle:sym.angle??null,t0:t,T,hold:1});
-      caps.push({t0:t,T,text:`Sign ${n+1} of 5 · ${FORM_NAME[f]}${f===F.STONE&&app.dial.nDir>1?` → ${app.dial.nDir===4&&!g.off?DIR_WORD[sym.d]:'direction '+(sym.d+1)}`:''}${g.reps>1?` · repeat ${q+1}/${g.reps}`:''}`,
-        mark:q===g.reps-1?(f===F.STONE?{kind:'stone',dir:sym.d,ring:1}:{kind:'glyph',form:f}):null});
-      t+=T+WORLD.gap;}}
+  const active=SIGN_FORMS.filter(i=>g.forms[i]),T=WORLD.trialT;
+  for(let n=0;n<5;n++){const f=active[Math.floor(r()*active.length)],d=Math.floor(r()*4);
+    list.push({form:f,angle:f===F.STONE?d*TAU/4:null,t0:t,T,hold:1});
+    caps.push({t0:t,T,text:`Sign ${n+1} of 5 · ${FORM_NAME[f]}${f===F.STONE&&g.dir?` ${DIR_WORD[d]}`:''}`,mark:f===F.STONE&&g.dir?{kind:'stone',dir:d,ring:1}:{kind:'glyph',form:f}});
+    t+=T+WORLD.gap;}
   sim.schedule(list);app.seq={caps,end:t+1,glyphs:[]};}
 
 /* ---- loop ---- */
@@ -1414,7 +1550,8 @@ function buildStatic(){
   const cd=$('confDots');for(const[c,lab]of [[1,'like the wind'],[3,'unclear'],[5,'sent']]){const b=document.createElement('button');b.type='button';b.className='fbtn';b.dataset.c=c;b.textContent=lab;
     b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>setConf(c));cd.appendChild(b);}
   const fs=$('freeSigns');for(const f of [1,2,3,4,5,6,7]){const b=document.createElement('button');b.type='button';b.className='gbtn';b.title=FORM_HINT[f];
-    b.innerHTML=`${icon(f)}<span>${FORM_NAME[f]}</span>`;b.addEventListener('click',()=>sendFree(f,null));fs.appendChild(b);}}
+    b.innerHTML=`${icon(f)}<span>${FORM_NAME[f]}</span>`;b.addEventListener('click',()=>sendFree(f,null));fs.appendChild(b);}
+  const ls=$('lens');for(const l of [{id:'none',name:'no lens'},...LENSES]){const o=document.createElement('option');o.value=l.id;o.textContent=l.name;ls.appendChild(o);}}
 function sendFree(f,hit){app.userStarted=true;
   sim.addSign({form:f,angle:hit?hit.dir*TAU/app.dial.nDir:null,t0:sim.t+0.1,T:6,hold:1});
   if(hit){app.marks=[{kind:'stone',dir:hit.dir,ring:1}];}
@@ -1428,6 +1565,7 @@ function wire(){
   cv.addEventListener('click',e=>{if(!canPlace())return;const[x,y]=canvasPoint(e),hit=hitTable(x,y,app.dial);if(!hit)return;
     if(app.mode==='read')placeStone(hit);else sendFree(F.STONE,hit);});
   $('btnPass').addEventListener('click',letGo);
+  $('lens').addEventListener('change',e=>{app.lens=e.target.value;savePractice();renderLexicon();});
   $('note').addEventListener('input',e=>{const pd=touchPend();if(pd)pd.note=e.target.value;});
   $('rdYou').addEventListener('click',()=>{app.autoStand=false;setReader('you');});$('rdStand').addEventListener('click',()=>{app.autoStand=false;setReader('stand');});
   $('btnStand').addEventListener('click',()=>addStandIn(20));
@@ -1454,7 +1592,7 @@ function wire(){
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readTheme();drawEvo();});
   new MutationObserver(()=>{readTheme();drawEvo();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   if(window.ResizeObserver)new ResizeObserver(measureDock).observe($('dock'));
-  window.addEventListener('resize',()=>{measureDock();drawEvo();});
+  let tlW=0;window.addEventListener('resize',()=>{measureDock();drawEvo();const w=$('timeline').clientWidth;if(w!==tlW){tlW=w;drawTimeline();}});
 }
 function setReader(r){commitPend();app.reader=r;$('rdYou').setAttribute('aria-pressed',String(r==='you'));$('rdStand').setAttribute('aria-pressed',String(r==='stand'));
   $('btnStand').hidden=r!=='stand';if(r==='stand'&&app.stand.length===0)addStandIn(60);
@@ -1481,10 +1619,10 @@ function selftest(){const out=[];const t0=performance.now();
   const pre=document.createElement('pre');pre.id='selftest';pre.textContent=out.join('\n');document.body.appendChild(pre);}
 
 /* ---- boot ---- */
-buildStatic();readTheme();wire();loadPractice();
-refit();renderSittingViews();newChapter();measureDock();
+buildStatic();readTheme();wire();loadPractice();$('lens').value=app.lens;
+refit();renderSittingViews();renderReaders();newChapter();measureDock();
 if(location.hash==='#selftest')selftest();
-if(location.hash==='#evolve'||location.hash==='#code')setMode('evo');else if(location.hash==='#free')setMode('free');
+if(location.hash==='#evolve'||location.hash==='#code'||location.hash==='#protocol')setMode('evo');else if(location.hash==='#free')setMode('free');
 initStore(()=>{if(app.reader==='you'){refit();if(!(app.flow&&app.flow.kept.length))renderSittingViews();}if(app.evo&&!app.running)drawEvo();});
 requestAnimationFrame(loop);
 </script>

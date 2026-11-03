@@ -48,7 +48,21 @@ SCENES = {
     "fork": (stage(6.5, "[{form:F.FORK,t0:3,T:6}]", seed=5, gm=0.8), "dark"),
     "ring": (stage(4.6, "[{form:F.RING,t0:1,T:6}]"), "dark"),
     "light": (stage(7.5, "[{form:F.TOWER,t0:0.5,T:7}]"), "light"),
+    # the site's menu card: a Stone leaning away under a soft dusk, cropped to 800 x 500 by card()
+    "card": (stage(5.5, "[{form:F.STONE,angle:0,hold:1,t0:0.5,T:7}]", seed=3, gm=0.5)
+             + "document.querySelector('.hud').style.visibility='hidden';$('signcap').style.visibility='hidden';", "dark"),
+    # the readers of smoke: the timeline and the first cards, scrolled into view
+    "readers": ("$('readersHead').scrollIntoView();", "dark"),
 }
+
+def card():
+    """The site's preview: the table and plume from the card scene, cropped and saved as webp."""
+    from PIL import Image
+    src = os.path.join("previews", "card.png")
+    im = Image.open(src).crop((130, 124, 1070, 712)).resize((800, 500), Image.LANCZOS)
+    out = os.path.join(HERE, "..", "..", "site", "previews", "language-of-the-plume.webp")
+    im.save(out, "WEBP", quality=82)
+    print("card ->", os.path.relpath(out))
 
 def main(names):
     html = open(PAGE, encoding="utf-8").read()
@@ -68,4 +82,7 @@ def main(names):
             print(name, "->", os.path.relpath(out) if os.path.exists(out) else "FAILED")
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or list(SCENES))
+    names = sys.argv[1:] or list(SCENES)
+    main(names)
+    if "card" in names:
+        card()

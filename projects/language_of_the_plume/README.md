@@ -33,9 +33,25 @@ picture it.
 - **Sittings that come round again.** Every sitting follows from its seed, so after a week an old
   sitting can return under the same weather and the same signs, unannounced, every fourth sitting.
   Agreement between the two readings of each sign is the reliability figure in "The reader".
-- **Codebook.** The sender's side of the table: a genetic search over burn time, number of
-  bearings, forms, hold length and repeats, scored against the reader model fitted from your
-  answers. It shows what a sender would have to do to be read by you.
+- **Lexicon and lenses.** Every note you write gathers under the cue that drew it (the form, with
+  its side for a Stone); a word that comes back in another note of the same cue is offered as your
+  word for it, and you can keep one. A lens is a dictionary from what you saw to what a tradition
+  made of it, chosen in the dock; after each kept reading the hint says what the lens made of it.
+  It speaks of what you saw, never of what was sent, so it can speak at once. "Your own" is the
+  lexicon itself. The traditions' dictionaries are lifted from
+  [docs/smoke-reading-traditions.md](../../docs/smoke-reading-traditions.md), every rule with its
+  source. The lens board shows, per lens, your presence score and how steady your reading was when
+  a sitting came round again, once six readings have been kept under it.
+- **The readers of smoke.** Every known way of reading smoke, in five families (omen, rite,
+  catalogue, signal, science), as cards and on one timeline of the people who did it, from the Old
+  Babylonian tablets to Morton, Taylor and Turner. Each item links its source; a card whose
+  tradition left rules for what was seen offers itself as a lens. All of it is lifted from the
+  writeup by `lift_traditions.py`, which refuses to run if any item cites a source missing from the
+  table.
+- **Protocol.** Your side of the table: a genetic search over which forms to attend to, whether to
+  read the Stone's side, when to sit and which stretch of the cone to listen through, scored on
+  the reader model fitted from your answers. The wind sends every form; a form let pass is read as
+  weather. Scored as bits learned (mutual information) by default, or as clean marks.
 - **Free.** Send any sign by hand and play with the time of day, gusts and burn.
 
 ## The model in one paragraph
@@ -63,13 +79,14 @@ The reader model fits from your answers:
 | File | What it does |
 |---|---|
 | `core.py` | Copies sections 1–6 of the page (the model, with no DOM in it) into `plume_core.js` so Node can run exactly the page's code. It generates that file, so never edit `plume_core.js` by hand. |
-| `check_plume.js` | Checks the behaviour the page must keep: a short smooth column, a rare tall thread, Tower still reaching about 55 cm, no false two-streams, a Fork read as two streams, a Stone leaning where the wind turned, a Still that drops the air and lets it back slowly, recovery of the stand-in reader, the presence score on the stand-in and on a toy reader, reliability on a toy pair, evolution beating the first guess by 15%, and step cost. Exit code = number of failures. Takes about 2 min. |
+| `lift_traditions.py` | Copies the JSON block (lenses, forms, timeline) and the Sources table of `docs/smoke-reading-traditions.md` into the page between the `TRADITIONS` markers. Run it whenever the writeup changes, before `core.py`. Never edit between the markers by hand. |
+| `check_plume.js` | Checks the behaviour the page must keep: a short smooth column, a rare tall thread, Tower still reaching about 55 cm, no false two-streams, a Fork read as two streams, a Stone leaning where the wind turned, a Still that drops the air and lets it back slowly, recovery of the stand-in reader, the presence score on the stand-in and on a toy reader, reliability on a toy pair, the lexicon's clustering and a lens's matching on toy notes, every lifted tradition rule in the page's cue vocabulary with a resolvable source, the protocol search beating the first protocol, and step cost. Exit code = number of failures. Takes about 2 min. |
 | `shots.py` | Headless-Edge preview renders of named scenes into `previews/`. |
-| `previews/` | `sitting`, `told` (a sitting's end: the card in the dock), `picked`, `air_day`, `air_night`, `column`, `tower`, `fork`, `ring`, `light`. |
+| `previews/` | `sitting`, `told` (a sitting's end: the card in the dock), `readers` (the timeline and the forms), `card` (cropped by `shots.py card` into `site/previews/language-of-the-plume.webp`), `picked`, `air_day`, `air_night`, `column`, `tower`, `fork`, `ring`, `light`. |
 
 ```bash
 cd projects/language_of_the_plume
-python core.py && node check_plume.js
+python lift_traditions.py && python core.py && node check_plume.js
 python shots.py            # or: python shots.py fork air_day
 ```
 
@@ -81,15 +98,13 @@ The page also has a self-test in the browser: open it with `#selftest` to append
 The page began as a channel-coding lab (`smoke-speech-lab.html`): a sender with a grip on the air,
 the wind as the adversary, a code evolved for bits per cone. The intent is the inverse, a trainer
 for reading a plume as the speech of something that lives in the wind. Phase 1 made the felt sense
-the headline and moved every word the table says back to the end of a sitting. Phase 2 (the page
-as it is now) made the sender a mode of the wind itself and retired the grip, read direction from
-the seat, dropped the puff codes and the prime opening, and added the air levels and the sittings
-that come round again. Still to do:
+the headline and moved every word the table says back to the end of a sitting. Phase 2 made the
+sender a mode of the wind itself and retired the grip, read direction from the seat, dropped the
+puff codes and the prime opening, and added the air levels and the sittings that come round
+again. Phase 3 (the page as it is now) built the lexicon from the notes, made the smoke-reading
+traditions lenses on the strength of a sourced writeup in `docs/`, and retargeted the genetic
+search from the sender's code to the reader's protocol. Still to do:
 
-- **Phase 3, lexicon and lenses.** The notes cluster into a personal lexicon the reader can name
-  and promote to words; the smoke-reading traditions become lenses (a sourced writeup in `docs/`
-  comes first); the genetic search is retargeted from the sender's code to reading protocols,
-  scored on this reader's consistency and discrimination.
 - **Phase 4, Field mode.** The same table and dock with no simulation: readings of a real cone,
   then a camera tracker that yields the same instrument readouts.
 
@@ -104,6 +119,9 @@ that come round again. Still to do:
   Records from v3 on carry `flow: true`, with `rt` measured from the start of the sign. Records
   from v4 (phase 2) carry `resp.dir` (0 away, 1 right, 2 toward you, 3 left) with `nDir: 4`, plus
   `hold`, `sit`, `epi` and `replay`. Older records carry `resp.hour` and `k`; the fit reads them
-  with twelve-hour sectors and full hold, and they can never come round again.
-- **Not yet on the site or in the menu.** `deploy.ps1` copies every `web/*.html` page to `site/`,
-  so the next deploy will publish it. Add a card to `site/index.html` when it should be listed.
+  with twelve-hour sectors and full hold, and they can never come round again. Records from v5
+  (phase 3) add `lens`, the lens in use (null for none). Your words live in the artifact's
+  collection `lexicon` (the latest row per cue wins, so only `add` is ever used) or under
+  `smoke-speech-lab.trials.v1.lexicon` in this browser.
+- **On the site menu** (`site/index.html`, with `site/previews/language-of-the-plume.webp`). The page
+  itself reaches `site/` only when `deploy.ps1` copies `web/*.html` across.
