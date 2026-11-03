@@ -30,9 +30,16 @@ def stage(sec, signs="[]", env="dusk", seed=11, gm=0.6):
             f"sim.schedule({signs});for(let i=0;i<60*{sec};i++)sim.step(1/60);sim.measure();"
             "sim.step=()=>{};")  # freeze the frame so the screenshot catches this moment
 
+# a sitting's end: fourteen readings with felt ratings are kept, then the table tells the sitting as a whole
+TOLD = ("const mk=(truth,conf,form)=>{app.flow.pend={ep:truth===F.WIND?null:{truth,angle:null,count:null,T:6,t0:sim.t,close:sim.t+18,p:sim.p},"
+        "t:sim.t,p:sim.p,conf,note:'',hour:null,count:null,form,close:sim.t+9};commitPend();};"
+        "for(let i=0;i<7;i++)mk(F.RING,i<5?5:1,i<4?F.RING:F.CURL);for(let i=0;i<7;i++)mk(F.WIND,i<6?1:5,F.WIND);"
+        "newChapter();" + adv(6))
+
 # scene: (setup script, theme)
 SCENES = {
     "sitting": ("", "dark"),
+    "told": (TOLD, "dark"),
     "picked": ("app.flow.next=sim.t;" + adv(7) + "pick(app.flow.ep?app.flow.ep.truth:app.flow.opts[0],null);setConf(5);", "dark"),
     "air_day": (air("day", 9) + "pick(F.STONE,{dir:1,ring:3});", "dark"),
     "air_night": (air("night", 4), "dark"),

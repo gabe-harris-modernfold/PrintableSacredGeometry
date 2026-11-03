@@ -26,6 +26,7 @@ function vmSample(r,k){
 }
 function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));}
 const Phi=x=>0.5*(1+erf(x/Math.SQRT2));
+const probit=p=>{let lo=-6,hi=6;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(Phi(m)<p)lo=m;else hi=m;}return(lo+hi)/2;};
 const mat=(n,m)=>Array.from({length:n},()=>new Array(m).fill(0));
 const cumul=a=>{let s=0;return a.map(v=>(s+=v));};
 const nearestIdx=(arr,x)=>{let bi=0;for(let i=1;i<arr.length;i++)if(Math.abs(arr[i]-x)<Math.abs(arr[bi]-x))bi=i;return bi;};
@@ -224,6 +225,20 @@ function fitObserver(trials){
   out.C=+Object.keys(pc).reduce((a,b)=>pc[a]>pc[b]?a:b);out.Cp=pc[out.C]/wsum;out.beta=eb2/wsum;
   out.formAcc=trials.length?trials.filter(t=>t.resp.form===t.truth).length/trials.length:null;
   return out;
+}
+
+/* Presence: how well the reader tells a sent moment from plain weather, by feel alone. Signal detection on
+   the felt rating (sent = 4 or 5, wind = 1 or 2; an unrated "Just wind" pick is a felt wind) against the truth
+   of each moment, with the log-linear correction so a perfect run gives a finite d'. c > 0 means the reader
+   waits for more before saying sent. This is the one number the practice is about, so it is shown only
+   between sittings: a score that moved after each touch would give that moment away. */
+const feltOf=t=>{const c=t.resp.conf;return c!=null?(c>=4?'sent':c<=2?'wind':'unclear'):t.resp.form===F.WIND?'wind':null;};
+function presence(trials){
+  let sN=0,sH=0,wN=0,wF=0,unc=0,n=0;
+  for(const t of trials){const f=feltOf(t);if(!f)continue;n++;if(f==='unclear')unc++;
+    if(t.truth===F.WIND){wN++;if(f==='sent')wF++;}else{sN++;if(f==='sent')sH++;}}
+  const zH=probit((sH+0.5)/(sN+1)),zF=probit((wF+0.5)/(wN+1));
+  return{n,sN,wN,hit:sN?sH/sN:null,fa:wN?wF/wN:null,unclear:n?unc/n:0,d:zH-zF,c:-(zH+zF)/2,ok:sN>=6&&wN>=6};
 }
 
 /* ====================================================================
@@ -506,4 +521,4 @@ class SmokeSim{
 function ringAt(g,q){const rr=g.R+g.a*Math.cos(q.ph);q.tx=g.x+rr*Math.sin(q.th);q.ty=g.y+rr*Math.cos(q.th);q.tz=g.z+g.a*Math.sin(q.ph);}
 
 
-module.exports={SmokeSim,F,WORLD,ENVS,hourToAng,angToHour,evaluate,BASELINE,PRIOR,PRIOR_M,STANDIN,Evolver,fitObserver,makeTrial,standInRespond,rng32,turb,smooth};
+module.exports={SmokeSim,F,WORLD,ENVS,hourToAng,angToHour,evaluate,BASELINE,PRIOR,PRIOR_M,STANDIN,Evolver,fitObserver,presence,feltOf,makeTrial,standInRespond,rng32,turb,smooth};

@@ -35,6 +35,10 @@ for(const env of ['day','dusk','night']){let two=0,n=0;for(const seed of [1,2,3,
 // 5. The reader model recovers a known stand-in, and evolution beats the first guess.
 {const st=[];for(let i=0;i<300;i++){const tr=m.makeTrial(100+i);st.push({...tr,resp:m.standInRespond(tr,m.rng32(tr.seed^0x9e37))});}
   const f=m.fitObserver(st);check('stand-in direction kappa (true 6)',f.kappa,3,14);
+  // presence: the stand-in feels the signs it can see and never the wind; an unrated "Just wind" pick is a felt wind
+  const pr=m.presence(st);check("stand-in presence d'",pr.d,1.5,6);check('stand-in false alarms',pr.fa,0,0.05);
+  const toy=[];for(let i=0;i<12;i++)toy.push({truth:i<6?m.F.RING:m.F.WIND,resp:{form:i<6?m.F.RING:m.F.WIND,conf:i<6?5:null}});
+  check("toy reader d' from 6 rated hits and 6 unrated wind picks",m.presence(toy).d,2.5,5);
   const ev=new m.Evolver({M:f.M,kappa:f.kappa,ca:f.ca,cb:f.cb,C:f.C,beta:f.beta},7);for(let i=0;i<40;i++)ev.step();
   check('evolved bits per cone over first guess',ev.champ.e.fit-ev.base.fit,50,1e9);}
 

@@ -122,6 +122,16 @@ input[type=range]{accent-color:var(--ember)}
 .metric b{display:block;font:500 1.3rem var(--f-mono);font-variant-numeric:tabular-nums}
 .metric small{display:block;color:var(--muted);font-size:.78rem;line-height:1.35}
 .metric.prior{border-top-color:var(--warn)} .metric.data{border-top-color:var(--ok)}
+/* presence: the headline. It moves only between sittings, so no single moment is given away. */
+.pres{border-top:2px solid var(--ember);padding-top:8px;display:grid;gap:4px}
+.pres span{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.pres b{font:500 1.6rem var(--f-mono);font-variant-numeric:tabular-nums;line-height:1.1}
+.pres p{font-size:.86rem;max-width:60ch}
+.pres .drift{color:var(--muted);font-size:.8rem}
+/* the last sitting, told as a whole, in the dock until the next one ends */
+.sitting{border-left:3px solid var(--ember);background:color-mix(in srgb,var(--panel) 80%,transparent);border-radius:0 8px 8px 0;padding:8px 12px;font-size:.86rem;display:grid;gap:2px;max-width:72ch}
+.sitting b{font-weight:600}
+.sitting .who{font:500 .72rem var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .scroll{overflow-x:auto;max-width:100%}
 table.cm{border-collapse:collapse;font:.74rem var(--f-mono);font-variant-numeric:tabular-nums}
 table.cm th,table.cm td{padding:4px 6px;text-align:center;border:1px solid var(--line)}
@@ -152,7 +162,7 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
 <div class="wrap">
   <header class="top">
     <h1>Language of the Plume</h1>
-    <p class="lede">Read the smoke on a ridge-top table. The lab learns how you read and which signals you favour, then evolves the signs whose reading best matches what the communicator meant.</p>
+    <p class="lede">Learn to read the plume. Sit at a ridge-top table with a burning cone and watch. The table learns how you read, when you feel a presence in the smoke and when you feel only weather, and tells you, sitting by sitting, how your reading grows.</p>
   </header>
 
   <section class="game" aria-label="Smoke table">
@@ -163,8 +173,8 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
         <div class="hud">
           <div class="seg modes" role="tablist" aria-label="Mode">
             <button role="tab" id="mRead" aria-selected="true">Read</button>
-            <button role="tab" id="mEvo" aria-selected="false">Evolve</button>
             <button role="tab" id="mFree" aria-selected="false">Free</button>
+            <button role="tab" id="mEvo" aria-selected="false">Codebook</button>
           </div>
           <div class="cap" id="caption"></div>
           <div class="chips" id="chips"></div>
@@ -176,6 +186,7 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
       <div class="dock" id="dock">
         <!-- READ: one unbroken sitting; a pick soon after a sign is the reading of it -->
         <div class="deck" id="deckRead">
+          <div class="sitting" id="sitting" aria-live="polite" hidden></div>
           <div class="glyphbar" id="formChoices" role="radiogroup" aria-label="What did the smoke just do?"></div>
           <div class="deck-row">
             <div class="conf" role="group" aria-label="How it felt (optional)"><span>it felt</span><span id="confDots" class="row" style="gap:2px"></span></div>
@@ -195,7 +206,7 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
           <div class="deck-row">
             <button class="btn" id="btnPlay">Send a sentence</button>
             <div class="seg" role="group" aria-label="Playback speed"><button id="sp1" aria-pressed="true">1×</button><button id="sp4" aria-pressed="false">4×</button></div>
-            <button class="btn" id="btnKeep">Keep this language</button>
+            <button class="btn" id="btnKeep">Keep this code</button>
             <span class="hint" id="keepStatus"></span>
             <canvas class="spark" id="spark" aria-label="Best bits per cone by generation"></canvas>
           </div>
@@ -243,9 +254,10 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
         <button class="btn" id="btnStand" hidden>Add 20 stand-in answers</button>
       </div>
       <span class="status" id="storeStatus">Connecting storage…</span>
-      <p class="fine">Readings are blind. The lab never tells you what was sent, so the record captures how you read and which signals you favour, not what correction taught you. The evolution then looks for signals whose reading lands on what the communicator meant.</p>
+      <div class="pres" id="presence"></div>
+      <p class="fine">Readings are blind in the moment: the table never says what any one moment was, so the record holds how you read, not what correction taught you. At the end of each sitting it tells the sitting as a whole, and the presence score moves. That score is the heart of the practice: how well you tell a sent moment from plain weather, by feel.</p>
       <details id="readerModel">
-        <summary>Model of the reader (shows how often readings matched what was sent; opening it ends the blindness)</summary>
+        <summary>Model of the reader (confusion, direction, counting, vocabulary; it moves between sittings)</summary>
         <div style="display:grid;gap:12px;margin-top:10px">
           <div class="metrics" id="metrics"></div>
           <div class="scroll"><table class="cm" id="cm" aria-label="Fitted form confusion: rows are what was sent, columns what was read"></table></div>
@@ -277,7 +289,7 @@ footer{color:var(--muted);font-size:.8rem;max-width:80ch}
     </div>
   </section>
 
-  <footer>The smoke is a particle model riding a stochastic ridge wind (Ornstein–Uhlenbeck gusts, divergence-free eddies, a laminar column that breaks higher in still air). The language search uses a reduced model built on the same wind code, plus the reader model fitted from your answers by maximum likelihood with weak priors. Everything here is a model of a way of reading. It shows how to tell a sign the wind could not make from one it could. It does not show that anyone is sending.</footer>
+  <footer>The smoke is a particle model riding a stochastic ridge wind (Ornstein–Uhlenbeck gusts, divergence-free eddies, a laminar column that breaks higher in still air). The reader model is fitted from your own readings by maximum likelihood with weak priors; the presence score is the signal-detection measure (d′ and criterion) of how well your felt sense separates a sent moment from plain weather. Whether anyone is sending is the question a reader trains to answer. People have read smoke this way for a very long time; this table is a place to practise.</footer>
 </div>
 
 <script>
@@ -308,6 +320,7 @@ function vmSample(r,k){
 }
 function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));}
 const Phi=x=>0.5*(1+erf(x/Math.SQRT2));
+const probit=p=>{let lo=-6,hi=6;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(Phi(m)<p)lo=m;else hi=m;}return(lo+hi)/2;};
 const mat=(n,m)=>Array.from({length:n},()=>new Array(m).fill(0));
 const cumul=a=>{let s=0;return a.map(v=>(s+=v));};
 const nearestIdx=(arr,x)=>{let bi=0;for(let i=1;i<arr.length;i++)if(Math.abs(arr[i]-x)<Math.abs(arr[bi]-x))bi=i;return bi;};
@@ -506,6 +519,20 @@ function fitObserver(trials){
   out.C=+Object.keys(pc).reduce((a,b)=>pc[a]>pc[b]?a:b);out.Cp=pc[out.C]/wsum;out.beta=eb2/wsum;
   out.formAcc=trials.length?trials.filter(t=>t.resp.form===t.truth).length/trials.length:null;
   return out;
+}
+
+/* Presence: how well the reader tells a sent moment from plain weather, by feel alone. Signal detection on
+   the felt rating (sent = 4 or 5, wind = 1 or 2; an unrated "Just wind" pick is a felt wind) against the truth
+   of each moment, with the log-linear correction so a perfect run gives a finite d'. c > 0 means the reader
+   waits for more before saying sent. This is the one number the practice is about, so it is shown only
+   between sittings: a score that moved after each touch would give that moment away. */
+const feltOf=t=>{const c=t.resp.conf;return c!=null?(c>=4?'sent':c<=2?'wind':'unclear'):t.resp.form===F.WIND?'wind':null;};
+function presence(trials){
+  let sN=0,sH=0,wN=0,wF=0,unc=0,n=0;
+  for(const t of trials){const f=feltOf(t);if(!f)continue;n++;if(f==='unclear')unc++;
+    if(t.truth===F.WIND){wN++;if(f==='sent')wF++;}else{sN++;if(f==='sent')sH++;}}
+  const zH=probit((sH+0.5)/(sN+1)),zF=probit((wF+0.5)/(wN+1));
+  return{n,sN,wN,hit:sN?sH/sN:null,fa:wN?wF/wN:null,unclear:n?unc/n:0,d:zH-zF,c:-(zH+zF)/2,ok:sN>=6&&wN>=6};
 }
 
 /* ====================================================================
@@ -1121,11 +1148,14 @@ const sim=new SmokeSim();
 const READ_DIAL={nDir:12,off:0,nRing:6};
 const app={mode:'read',phase:'idle',reader:'you',stand:[],obs:{...PRIOR,M:PRIOR_M},fit:null,evo:null,running:false,
   flow:null,lastKept:'',speed:1,dial:{...READ_DIAL},marks:[],seq:null,watchEnv:'dusk',hover:null,answer:null,truthMark:null,
-  reserve:0,lastTod:null,view:null};
+  reserve:0,lastTod:null,view:null,pres:null,presRecent:null};
 const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const datasetNow=()=>app.reader==='you'?store.trials:app.stand;
 function refit(){app.fit=fitObserver(datasetNow());const f=app.fit;
-  app.obs={M:f.M,kappa:f.kappa,ca:f.ca,cb:f.cb,C:f.C,beta:f.beta};renderCal();renderChips();}
+  app.obs={M:f.M,kappa:f.kappa,ca:f.ca,cb:f.cb,C:f.C,beta:f.beta};renderChips();}
+/* What the table says back, it says only between sittings: the presence score, the fitted model and the
+   last sitting's account. Nothing here moves while a reading is open, so no moment is given away. */
+function renderSittingViews(){const d=datasetNow();app.pres=presence(d);app.presRecent=presence(d.slice(-40));renderPresence();renderCal();renderChips();}
 function ambient(env){sim.reset({env,gm:1,p:0.35,seed:(Math.random()*2**32)>>>0,k:WORLD.k});sim.o.burn=0;}
 let toastTimer=0;
 function toast(text){const t=$('toast');t.textContent=text;t.hidden=false;
@@ -1158,11 +1188,12 @@ function startFree(){app.dial={...READ_DIAL};app.marks=[];app.seq=null;
    Every few signs the hour and the cone move on, and the communicator may change vocabulary. */
 const FLOW={after:12,linger:9,quiet:[3,12],chap:[4,7]};
 function newChapter(){commitPend();
+  const old=app.flow;if(old&&old.kept.length)endSitting(old);
   const r=rng32((Math.random()*2**32)>>>0),seed=(r()*2**32)>>>0;
   const env=['day','dusk','night'][Math.floor(r()*3)],gm=[0.5,1,1.5][Math.floor(r()*3)],p=0.12+r()*0.6;
   const opts=shuffle([0,1,2,3,4,5,6,7],r).slice(0,2+Math.floor(r()*7)).sort((a,b)=>a-b);
   dissolve();sim.reset({env,gm,p,seed,k:WORLD.k});sim.o.burn=1;for(let i=0;i<180;i++)sim.step(1/60);
-  app.flow={seed,r,env,gm,opts,left:FLOW.chap[0]+Math.floor(r()*(FLOW.chap[1]-FLOW.chap[0]+1)),ep:null,pend:null,next:sim.t+2+r()*5};
+  app.flow={seed,r,env,gm,opts,reader:app.reader,kept:[],left:FLOW.chap[0]+Math.floor(r()*(FLOW.chap[1]-FLOW.chap[0]+1)),ep:null,pend:null,next:sim.t+2+r()*5};
   app.answer=null;app.marks=[];app.seq=null;app.lastKept='';
   if(app.mode==='read')toast(ENVS[env].name.toLowerCase());buildFormChoices(opts);updateAnswerUI();}
 function flowTick(){const fl=app.flow;if(!fl||app.mode!=='read')return;const t=sim.t,r=fl.r;
@@ -1196,8 +1227,30 @@ function commitPend(){const fl=app.flow,pd=fl&&fl.pend;if(!pd)return;fl.pend=nul
   const tr=flowTr(fl,pd.ep,pd.p),stone=pd.form===F.STONE;
   const resp={form:pd.form,hour:stone?pd.hour:null,count:stone?pd.count:null,conf:pd.conf??null,note:(pd.note||'').trim().slice(0,200)};
   const rec={...trialRecord(tr,resp,{started:performance.now(),replays:0}),v:3,flow:true,rt:pd.ep?Math.round((pd.t-pd.ep.t0)*1000):null};
+  fl.kept.push(rec);
   if(app.reader==='you')saveTrial(rec).then(inDb=>{if(!inDb){refit();renderChips();}});else{app.stand.push(rec);refit();}
   app.answer=null;$('note').value='';app.lastKept=`Kept: <b>${pickText(pd)}</b>.`;updateAnswerUI();renderChips();}
+/* The sitting that just ended, told as a whole. Counts only, never which moment was which: the one place
+   the table speaks back, and it waits until the smoke has changed. */
+function sittingSummary(fl){const K=fl.kept,you=fl.reader==='you',who=you?'you':'the stand-in';
+  const signs=K.filter(t=>t.truth!==F.WIND),winds=K.filter(t=>t.truth===F.WIND);
+  const sR=signs.filter(feltOf),wR=winds.filter(feltOf),sH=sR.filter(t=>feltOf(t)==='sent').length,wF=wR.filter(t=>feltOf(t)==='sent').length;
+  const pl=(n,s,p)=>`${n} ${n===1?s:p}`;
+  const out=[`<span class="who">Last sitting · ${ENVS[fl.env].name} · ${pl(K.length,'reading','readings')} kept</span>`];
+  if(!sR.length&&!wR.length)out.push(`<span><b>Presence:</b> nothing was rated. Say how a moment felt, sent or like the wind, and the table can learn how ${who} tell${you?'':'s'} the two apart.</span>`);
+  else out.push(`<span><b>Presence:</b> ${sR.length?`felt sent in ${sH} of ${pl(sR.length,'sent moment','sent moments')}`:'no sent moment was rated'}${wR.length?`, and in ${wF} of ${pl(wR.length,'quiet stretch','quiet stretches')} of plain wind.`:'. Nothing was kept in the quiet stretches, so the wind side is still unknown.'}</span>`);
+  if(signs.length){const right=signs.filter(t=>t.resp.form===t.truth).length,pairs=new Map();
+    for(const t of signs)if(t.resp.form!==t.truth){const k=t.truth*16+t.resp.form;pairs.set(k,(pairs.get(k)||0)+1);}
+    let top=null;for(const e of pairs)if(!top||e[1]>top[1])top=e;
+    out.push(`<span><b>Forms:</b> named right in ${right} of ${signs.length}.${top&&top[1]>=2?` ${FORM_NAME[Math.floor(top[0]/16)]} read as ${FORM_NAME[top[0]%16]} ${top[1]===2?'twice':top[1]+' times'}.`:''}</span>`);}
+  return out.join('');}
+function endSitting(fl){const el=$('sitting');el.innerHTML=sittingSummary(fl);el.hidden=false;renderSittingViews();measureDock();}
+function renderPresence(){const P=app.pres,el=$('presence');if(!P||!el)return;const you=app.reader==='you',S=you?'You':'The stand-in';
+  if(!P.ok){el.innerHTML=`<span>Presence</span><b>–</b><p>${P.sN} felt reading${P.sN===1?'':'s'} of sent moments and ${P.wN} of plain wind so far. From six of each the table can say how well ${you?'you tell':'the stand-in tells'} a presence from the weather. Touch in the quiet stretches too, and say how it felt.</p>`;return;}
+  const apart=P.d<0.5?'barely apart':P.d<1.2?'faintly apart':P.d<2.2?'clearly apart':'sharply apart';
+  const lean=P.c>0.25?`${S} wait${you?'':'s'} for more before calling it sent.`:P.c<-0.25?`${S} call${you?'':'s'} it sent easily.`:'The threshold sits in the middle.';
+  const R=app.presRecent,drift=R&&R.ok&&Math.abs(R.c-P.c)>0.3?`<span class="drift">Lately the threshold has moved toward ${R.c<P.c?'sent':'wind'}.</span>`:'';
+  el.innerHTML=`<span>Presence</span><b>d′ ${P.d.toFixed(2)}</b><p>Sent moments and plain wind are ${apart} for ${you?'you':'the stand-in'}: ${you?'you feel':'it feels'} a presence in ${Math.round(P.hit*100)}% of sent moments and in ${Math.round(P.fa*100)}% of plain wind${P.unclear>0.2?`, and ${Math.round(P.unclear*100)}% of rated moments were unclear`:''}. ${lean}</p>${drift}`;}
 function buildFormChoices(opts){const box=$('formChoices');box.innerHTML='';
   [...opts,F.WIND].forEach(f=>{const b=document.createElement('button');b.type='button';b.className='gbtn';b.setAttribute('role','radio');
     b.setAttribute('aria-checked','false');b.dataset.f=f;b.title=FORM_HINT[f];
@@ -1211,18 +1264,18 @@ function updateAnswerUI(){const fl=app.flow,pd=fl&&fl.pend,you=app.reader==='you
   $('note').disabled=!you||!pd;$('btnPass').hidden=!you||!pd;
   const stoneOk=fl&&fl.opts.includes(F.STONE);let h;
   if(!you)h='The stand-in picks a moment after each sign. Its picks are kept the same way yours are.';
-  else if(!pd)h=(app.lastKept?app.lastKept+' ':'')+(app.lastKept?'Keep watching.':'There is nothing to start and nothing to get right. Just watch. When the smoke does something, touch what it was'+(stoneOk?', or touch the table where a Stone leaned':'')+'. A touch soon after counts for that moment.');
+  else if(!pd)h=(app.lastKept?app.lastKept+' ':'')+(app.lastKept?'Keep watching.':'There is nothing to start and nothing to get right. Just watch. When the smoke does something, touch what it was'+(stoneOk?', or touch the table where a Stone leaned':'')+'. Then say how it felt, sent or like the wind: that is the reading the table listens to most, in the quiet stretches as much as the busy ones.');
   else if(pd.form===F.STONE&&!pd.hour)h='Stone. Touch the table where it leaned: the <b>hour</b>, and the <b>ring</b> for its puffs (inner ring = 1).';
   else h=`<b>${pickText(pd)}</b>. Change it, say how it felt, or just keep watching. It settles on its own.`;
   $('ansHint').innerHTML=h;}
 function trialRecord(tr,resp,meta){return{v:2,at:Date.now(),seed:tr.seed,env:tr.env,gm:tr.gm,p:+tr.p.toFixed(4),truth:tr.truth,angle:tr.angle==null?null:+tr.angle.toFixed(4),
   count:tr.count,opts:tr.opts,T:tr.T,beat:tr.beat,k:tr.k,resp,rt:Math.round(performance.now()-meta.started),replays:meta.replays};}
 function addStandIn(n){for(let i=0;i<n;i++){const tr=makeTrial((Math.random()*2**32)>>>0);
-  app.stand.push(trialRecord(tr,standInRespond(tr,rng32(tr.seed^0x9e37)),{started:performance.now(),replays:0}));}refit();}
+  app.stand.push(trialRecord(tr,standInRespond(tr,rng32(tr.seed^0x9e37)),{started:performance.now(),replays:0}));}refit();renderSittingViews();}
 
 function renderChips(){const el=$('chips');
-  if(app.mode==='read'){const n=datasetNow().length,who=app.reader==='you'?'':'Stand-in · ';
-    el.innerHTML=n||who?`<span class="chip-s">${who}${n} reading${n===1?'':'s'} kept</span>`:'';}
+  if(app.mode==='read'){const n=datasetNow().length,who=app.reader==='you'?'':'Stand-in · ',P=app.pres;
+    el.innerHTML=(n||who?`<span class="chip-s">${who}${n} reading${n===1?'':'s'} kept</span>`:'')+(P&&P.ok?`<span class="chip-s">presence <b>d′ ${P.d.toFixed(1)}</b></span>`:'');}
   else if(app.mode==='evo'){const ev=app.evo,best=ev&&ev.champ?ev.champ.e.fit:null;
     el.innerHTML=`<span class="chip-s">Generation <b>${ev?ev.gen:0}</b></span><span class="chip-s">Best <b>${best==null?'–':best.toFixed(0)}</b> bits/cone</span>${ev&&ev.base?`<span class="chip-s">First guess ${ev.base.fit.toFixed(0)}</span>`:''}`;}
   else el.innerHTML='<span class="chip-s">Free stage · tap the table</span>';}
@@ -1254,7 +1307,7 @@ function drawEvo(){const ev=app.evo;if(!ev)return;
   const c=ev.champ||{g:BASELINE,e:ev.preview};const g=c.g,e=c.e;
   if(app.mode==='evo'&&!app.seq){app.dial=dialOf(g);if(app.lastTod!==g.tod){app.lastTod=g.tod;ambient(g.tod);}}
   drawFit($('fitChart'),ev.hist,ev.base?ev.base.fit:null);drawSpark($('spark'),ev.hist);
-  $('bestHead').textContent=ev.champ?`The language after ${ev.gen} generations`:'The first guess, before evolving';
+  $('bestHead').textContent=ev.champ?`The sender's code after ${ev.gen} generations`:"The sender's first guess, before evolving";
   $('bestRule').textContent=genomeRule(g);
   $('bestGlyphs').innerHTML=SIGN_FORMS.map(i=>`<span class="glyph ${g.forms[i]?'':'off'}">${icon(i)}${FORM_NAME[i]}</span>`).join('');
   $('bestKV').innerHTML=`<dt>Meaning per cone</dt><dd>${e.fit.toFixed(0)} bits</dd><dt>Signs per cone</dt><dd>${e.signs.toFixed(1)}</dd>
@@ -1264,10 +1317,10 @@ function drawEvo(){const ev=app.evo;if(!ev)return;
     const row=(lab,x,cls)=>`<tr class="${cls||''}"><td>${lab}</td><td>${x.e.fit.toFixed(0)}</td><td>${x.e.signs.toFixed(0)}</td><td>${(OBJECTIVE==='clean'?x.e.clean:x.e.bps).toFixed(2)}</td><td>${x.g.forms[0]?`${x.g.nDir}×${x.g.nRing}`:'–'}</td><td>${SIGN_FORMS.filter(i=>x.g.forms[i]).map(i=>FORM_NAME[i].slice(0,2)).join(' ')}</td><td>${x.g.T.toFixed(1)}s×${x.g.reps}</td><td>${x.g.tod}</td></tr>`;
     ev.lastTop.forEach((x,i)=>h+=row(String(i+1),x));if(ev.base)h+=row('first guess',{g:BASELINE,e:ev.base},'base');$('topTable').innerHTML=h;}
   else $('topTable').innerHTML='';
-  $('evoNote').textContent=ev.base&&ev.champ?`Scored as ${OBJECTIVE==='clean'?'clean marks':'Shannon bits'}, the first guess (12 hours, 5 rings, every form, dusk) carries ${ev.base.fit.toFixed(0)} bits per cone to this reader. The best language found carries ${ev.champ.e.fit.toFixed(0)}. The ranked table is this generation's population, scored on one shared draw of weather. The headline figures are re-scored on a larger independent draw so a lucky draw does not crown a winner.`
-    :'Each generation scores every language on the same simulated weather, keeps the best two, and breeds the rest by tournament, crossover and mutation.';
-  if(app.mode==='evo')$('evoHint').innerHTML=ev.champ?`The table now carries the best language so far: <b>${g.forms[0]?`${g.nDir>1?g.nDir+' directions':'no directions'} × ${g.nRing} ring${g.nRing>1?'s':''}`:'no stones'}</b>, ${SIGN_FORMS.filter(i=>g.forms[i]).map(i=>FORM_NAME[i]).join(', ')}, at ${g.tod}.`
-    :'Run the evolution and watch the table reshape itself around what this reader can see.';
+  $('evoNote').textContent=ev.base&&ev.champ?`Scored as ${OBJECTIVE==='clean'?'clean marks':'Shannon bits'}, the first guess (12 hours, 5 rings, every form, dusk) carries ${ev.base.fit.toFixed(0)} bits per cone to this reader. The best code found carries ${ev.champ.e.fit.toFixed(0)}. The ranked table is this generation's population, scored on one shared draw of weather. The headline figures are re-scored on a larger independent draw so a lucky draw does not crown a winner.`
+    :'Each generation scores every code on the same simulated weather, keeps the best two, and breeds the rest by tournament, crossover and mutation.';
+  if(app.mode==='evo')$('evoHint').innerHTML=ev.champ?`The table now carries the best code so far: <b>${g.forms[0]?`${g.nDir>1?g.nDir+' directions':'no directions'} × ${g.nRing} ring${g.nRing>1?'s':''}`:'no stones'}</b>, ${SIGN_FORMS.filter(i=>g.forms[i]).map(i=>FORM_NAME[i]).join(', ')}, at ${g.tod}.`
+    :"The sender's side of the table: the code a sender would have to evolve so that this reader, as modelled from the readings kept, reads it. Run it to see what they would do to be heard by you.";
   renderChips();}
 function evoTick(){if(!app.running||!app.evo)return;const t0=performance.now();
   while(performance.now()-t0<14){app.evo.step();if(app.evo.gen>=300){app.running=false;$('btnEvo').textContent='Run evolution';break;}}
@@ -1374,7 +1427,7 @@ function wire(){
 }
 function setReader(r){commitPend();app.reader=r;$('rdYou').setAttribute('aria-pressed',String(r==='you'));$('rdStand').setAttribute('aria-pressed',String(r==='stand'));
   $('btnStand').hidden=r!=='stand';if(r==='stand'&&app.stand.length===0)addStandIn(60);
-  app.answer=null;app.truthMark=null;refit();if(app.evo)resetEvo();
+  app.answer=null;app.truthMark=null;refit();renderSittingViews();if(app.evo)resetEvo();
   if(app.mode==='read')newChapter();renderChips();}
 
 /* ---- self-test (open with #selftest) ---- */
@@ -1385,6 +1438,7 @@ function selftest(){const out=[];const t0=performance.now();
   const b=evaluate(BASELINE,obs,777,3000);out.push('baseline '+JSON.stringify({fit:+b.fit.toFixed(1),bps:+b.bps.toFixed(2),signs:+b.signs.toFixed(1),exact:+b.exact.toFixed(2)}));
   const st=[];for(let i=0;i<120;i++){const tr=makeTrial(1000+i);st.push(trialRecord(tr,standInRespond(tr,rng32(tr.seed^0x9e37)),{started:0,replays:0}));}
   const f=fitObserver(st);out.push(`stand-in recovered: kappa ${f.kappa.toFixed(1)} (true ${STANDIN.kappa}) ca ${f.ca.toFixed(2)} cb ${f.cb.toFixed(2)} (true ${STANDIN.ca},${STANDIN.cb}) C ${f.C} beta ${f.beta.toFixed(2)} acc ${f.formAcc.toFixed(2)}`);
+  const pr=presence(st);out.push(`stand-in presence: d' ${pr.d.toFixed(2)} c ${pr.c.toFixed(2)} hit ${pr.hit.toFixed(2)} fa ${pr.fa.toFixed(2)} (${pr.sN} sent, ${pr.wN} wind)`);
   const ev=new Evolver({M:f.M,kappa:f.kappa,ca:f.ca,cb:f.cb,C:f.C,beta:f.beta},42);for(let i=0;i<40;i++)ev.step();
   out.push('after 40 gens: '+ev.champ.e.fit.toFixed(1)+' bits/cone vs first guess '+ev.base.fit.toFixed(1)+' · '+genomeRule(ev.champ.g));
   // a tap at a known table point must come back as the same hour and ring
@@ -1397,10 +1451,10 @@ function selftest(){const out=[];const t0=performance.now();
 
 /* ---- boot ---- */
 buildStatic();readTheme();wire();
-refit();newChapter();measureDock();
+refit();renderSittingViews();newChapter();measureDock();
 if(location.hash==='#selftest')selftest();
-if(location.hash==='#evolve')setMode('evo');else if(location.hash==='#free')setMode('free');
-initStore(()=>{if(app.reader==='you')refit();if(app.evo&&!app.running)drawEvo();});
+if(location.hash==='#evolve'||location.hash==='#code')setMode('evo');else if(location.hash==='#free')setMode('free');
+initStore(()=>{if(app.reader==='you'){refit();if(!(app.flow&&app.flow.kept.length))renderSittingViews();}if(app.evo&&!app.running)drawEvo();});
 requestAnimationFrame(loop);
 </script>
 </body>
