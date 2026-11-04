@@ -13,7 +13,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.path.join(HERE, "..", "..", "web", "language-of-the-plume.html")
 HEAD = "/* ====================================================================\n   {}"
 EXPORTS = ("SmokeSim,F,WORLD,ENVS,hourToAng,angToHour,evaluate,BASELINE,PRIOR,PRIOR_M,STANDIN,Evolver,"
-           "fitObserver,makeTrial,standInRespond,rng32,turb,smooth")
+           "fitObserver,presence,feltOf,reliability,respAng,dirOf,stoneAngle,bearingWord,QUIET,LEVELS,legib,dirCell,holdOf,"
+           "lexicon,lensMatch,lensBoard,cueOf,cueLabel,LENSES,FORM_KEY,DIR_KEY,BURN_WORD,TRADITIONS,FAMILY,"
+           "makeTrial,standInRespond,rng32,turb,smooth")
 
 html = open(PAGE, encoding="utf-8").read()
 js = re.search(r"<script>(.*)</script>", html, re.S).group(1)

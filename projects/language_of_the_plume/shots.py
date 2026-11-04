@@ -22,26 +22,47 @@ def adv(sec):
 
 def air(env, seed, sec=40):
     # hold off the communicator so the table shows the ridge's own air
-    return (f"app.flow.env='{env}';sim.reset({{env:'{env}',gm:1,p:0.4,seed:{seed},k:WORLD.k}});"
+    return (f"app.flow.env='{env}';sim.reset({{env:'{env}',gm:1,p:0.4,seed:{seed}}});"
             f"app.flow.next=1e9;" + adv(sec))
 
 def stage(sec, signs="[]", env="dusk", seed=11, gm=0.6):
-    return (f"setMode('free');sim.reset({{env:'{env}',gm:{gm},p:0.35,seed:{seed},k:0.65}});"
+    return (f"setMode('free');sim.reset({{env:'{env}',gm:{gm},p:0.35,seed:{seed}}});"
             f"sim.schedule({signs});for(let i=0;i<60*{sec};i++)sim.step(1/60);sim.measure();"
             "sim.step=()=>{};")  # freeze the frame so the screenshot catches this moment
+
+# a sitting's end: fourteen readings with felt ratings are kept, then the table tells the sitting as a whole
+TOLD = ("const mk=(truth,conf,form)=>{app.flow.pend={ep:truth===F.WIND?null:{truth,angle:null,T:6,t0:sim.t,close:sim.t+18,p:sim.p,i:app.flow.epi++},"
+        "t:sim.t,p:sim.p,conf,note:'',dir:null,form,close:sim.t+9};commitPend();};"
+        "for(let i=0;i<7;i++)mk(F.RING,i<5?5:1,i<4?F.RING:F.CURL);for(let i=0;i<7;i++)mk(F.WIND,i<6?1:5,F.WIND);"
+        "newChapter();" + adv(6))
 
 # scene: (setup script, theme)
 SCENES = {
     "sitting": ("", "dark"),
+    "told": (TOLD, "dark"),
     "picked": ("app.flow.next=sim.t;" + adv(7) + "pick(app.flow.ep?app.flow.ep.truth:app.flow.opts[0],null);setConf(5);", "dark"),
-    "air_day": (air("day", 9) + "pick(F.STONE,{dir:1,ring:3});", "dark"),
+    "air_day": (air("day", 9) + "pick(F.STONE,{dir:1,ring:1});", "dark"),
     "air_night": (air("night", 4), "dark"),
     "column": (stage(14, seed=3), "dark"),
     "tower": (stage(5.6, "[{form:F.TOWER,t0:0.5,T:7}]"), "dark"),
     "fork": (stage(6.5, "[{form:F.FORK,t0:3,T:6}]", seed=5, gm=0.8), "dark"),
     "ring": (stage(4.6, "[{form:F.RING,t0:1,T:6}]"), "dark"),
     "light": (stage(7.5, "[{form:F.TOWER,t0:0.5,T:7}]"), "light"),
+    # the site's menu card: a Stone leaning away under a soft dusk, cropped to 800 x 500 by card()
+    "card": (stage(5.5, "[{form:F.STONE,angle:0,hold:1,t0:0.5,T:7}]", seed=3, gm=0.5)
+             + "document.querySelector('.hud').style.visibility='hidden';$('signcap').style.visibility='hidden';", "dark"),
+    # the readers of smoke: the timeline and the first cards, scrolled into view
+    "readers": ("$('readersHead').scrollIntoView();", "dark"),
 }
+
+def card():
+    """The site's preview: the table and plume from the card scene, cropped and saved as webp."""
+    from PIL import Image
+    src = os.path.join("previews", "card.png")
+    im = Image.open(src).crop((130, 124, 1070, 712)).resize((800, 500), Image.LANCZOS)
+    out = os.path.join(HERE, "..", "..", "site", "previews", "language-of-the-plume.webp")
+    im.save(out, "WEBP", quality=82)
+    print("card ->", os.path.relpath(out))
 
 def main(names):
     html = open(PAGE, encoding="utf-8").read()
@@ -61,4 +82,7 @@ def main(names):
             print(name, "->", os.path.relpath(out) if os.path.exists(out) else "FAILED")
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or list(SCENES))
+    names = sys.argv[1:] or list(SCENES)
+    main(names)
+    if "card" in names:
+        card()

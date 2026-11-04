@@ -26,6 +26,7 @@ function vmSample(r,k){
 }
 function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));}
 const Phi=x=>0.5*(1+erf(x/Math.SQRT2));
+const probit=p=>{let lo=-6,hi=6;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(Phi(m)<p)lo=m;else hi=m;}return(lo+hi)/2;};
 const mat=(n,m)=>Array.from({length:n},()=>new Array(m).fill(0));
 const cumul=a=>{let s=0;return a.map(v=>(s+=v));};
 const nearestIdx=(arr,x)=>{let bi=0;for(let i=1;i<arr.length;i++)if(Math.abs(arr[i]-x)<Math.abs(arr[bi]-x))bi=i;return bi;};
@@ -65,8 +66,38 @@ const ICON=[
 const icon=f=>`<svg class="ic" viewBox="0 0 20 20" aria-hidden="true">${ICON[f]}</svg>`;
 /* Ridge weather at the crest. W: mean flow (cm/s), sig: gust std (cm/s), tau: gust memory (s). */
 const ENVS={day:{name:'Day upslope',W:35,sig:14,tau:4},dusk:{name:'Dusk hinge',W:4,sig:4,tau:7},night:{name:'Night drainage',W:16,sig:7,tau:5}};
-const WORLD={k:0.65,S:22,settle:1.5,gap:2.0,trialT:6,trialBeat:1.1,clip:11,lead:2.5};
-const PRIMES=[1,2,3,5];
+const WORLD={S:22,settle:1.5,gap:2.0,trialT:6,clip:11,lead:2.5};
+/* A sign is a mode the wind enters: how far it quietens for each form (0 = the air is untouched). The
+   shapes need a calmer column to carry them; Still and Tower are the wind holding its breath. */
+const QUIET=[0.5,0.5,0.5,0.5,0.4,0.75,0.95,0.9,0];
+/* The air the reader practises in, from easy to hard: gustier, and a wind less committed to its signs. */
+const LEVELS=[{gm:0.5,hold:1},{gm:0.75,hold:1},{gm:1,hold:0.95},{gm:1.25,hold:0.9},{gm:1.5,hold:0.8},{gm:1.75,hold:0.7},{gm:2,hold:0.6}];
+/* Direction is read from the seat: away, right, toward you, left. A sent Stone takes one of the four with a
+   hand's width of play, so the lean is never a perfect grid. */
+const DIR_WORD=['away from you','to your right','toward you','to your left'],DIR_SHORT=['away','right','toward you','left'];
+const stoneAngle=r=>Math.floor(r()*4)*TAU/4+(r()-0.5)*TAU/12;
+const dirOf=a=>Math.round(wrap2Pi(a)/(TAU/4))%4;
+const BEAR8=['away','away, right','right','toward, right','toward you','toward, left','left','away, left'];
+const bearingWord=a=>BEAR8[Math.round(wrap2Pi(a)/(TAU/8))%8];
+/* Lenses: ways of reading. Each is a dictionary from what the reader saw (form, side, hour, burn) to what a
+   tradition made of it. 'own' is the reader's own lexicon, built from their notes; the traditions' entries are
+   lifted from docs/smoke-reading-traditions.md and carry their source keys. A rule matches a reading when
+   every field it names matches. */
+const FORM_KEY=['stone','ring','curl','helix','spill','fork','tower','still','wind'],DIR_KEY=['away','right','toward','left'];
+const BURN_WORD=p=>p<0.33?'early':p<0.66?'mid':'late';
+/* The traditions: lifted verbatim from the writeup's JSON block and Sources table by
+   projects/language_of_the_plume/lift_traditions.py. Do not edit between the markers. */
+/* TRADITIONS:BEGIN */
+const TRADITIONS={"lenses":[{"id":"babylonian-qutrenu","name":"Old Babylonian smoke omens","era":"Old Babylonian, c. 1800 BC","seat":"The diviner sits facing the censer; right and left are taken as his own, though the tablets say its right and its left.","about":"Two tablets read the smoke and flame of an aromatic burnt offering by direction, shape and movement. Renderings here follow Finkel as reproduced online.","src":"S1","entries":[{"form":"stone","dir":"right","means":"You will defeat your enemy","note":"(uncertain) rendering seen only in web reproductions of Finkel","src":"S6"},{"form":"stone","dir":"left","means":"The enemy gains the upper hand","note":"(uncertain) counterpart to the right omen on hobbyist pages; not checked against the edition","src":"S5"},{"form":"fork","means":"Madness; a change of mind","note":"(uncertain) top of the smoke cleft in two","src":"S5"},{"form":"spill","means":"An even contest; neither side prevails","note":"(approximate) smoke spreading evenly on all sides","src":"S5"}]},{"id":"greek-empyra","name":"Greek burnt-offering signs","era":"Classical Greek, 5th c. BC","seat":"No seat is prescribed; the reader stands at the altar and watches whether the offering burns clean.","about":"No ancient Greek text uses the word kapnomanteia. What is attested is reading burnt offerings, with frankincense named as the exception Pythagoras allowed.","src":"S7","entries":[{"form":"spill","means":"The offering is refused; the gods will not hear","note":"(approximate) smoke and sputter without flame, Antigone 1005-1011","src":"S8"}]},{"id":"chinese-guanxiang","name":"Chinese incense watching","era":"Chinese folk practice, modern compendia","seat":"The reader faces the altar; direction plays no part, so the seat does not matter.","about":"The printed charts read stick heights, not smoke. Smoke rules survive only in modern folk compendia that name no source.","src":"S15","entries":[{"form":"still","means":"A spirit attends the altar; the offering is received","note":"thin straight column likened to a hanging pagoda","src":"S15"},{"form":"helix","means":"Something adverse or an unquiet spirit is near","note":"(approximate) smoke that swirls or spins like a whirlwind","src":"S15"},{"form":"fork","means":"A parting; people or matters separate","note":"streams dividing in opposite directions","src":"S15"}]},{"id":"european-capnomancy","name":"European capnomancy","era":"Early-modern to modern Europe, 1533 to 1920","seat":"No seat; the rule concerns the column alone.","about":"A word catalogued from Agrippa and Gaule onward, with a generic rule supplied by nineteenth- and twentieth-century encyclopaedias. No ancient text is cited for it.","src":"S13","entries":[{"form":"still","means":"Favourable; the offering is accepted","note":"smoke rising lightly and straight","src":"S13"},{"form":"spill","means":"Unfavourable","note":"smoke that hangs about the altar","src":"S13"},{"form":"wind","means":"Unfavourable","note":"(approximate) thick dark smoke hanging like a cloud","src":"S12"}]},{"id":"tibetan-dud-brda","name":"Tibetan smoke signs","era":"Tibet, ethnography of 1964","seat":"The reader watches the smoke of a juniper offering against the sky; no seat is recorded.","about":"Ekvall records a category of smoke signs read by colour, volume and drift, held by specialists. No rules are published, so this lens is empty.","src":"S17","entries":[]},{"id":"indian-agni-lakshana","name":"Indian fire signs","era":"India, 6th c. AD","seat":"The observer watches the altar fire at the final oblation; the verses read flame, not smoke.","about":"Varahamihira reads the sacrificial fire by shape, colour, sound, smell and the turn of its flames, and extends the omens to journeys and campaigns.","src":"S18","entries":[{"form":"stone","dir":"right","means":"Conquest; the undertaking succeeds","note":"(approximate) flames turning to the right, not smoke","src":"S18"}]},{"id":"temple-woodpile","name":"Temple woodpile smoke","era":"Second Temple Judea, recorded c. AD 500","seat":"The watcher stands east of the altar facing west; the mapping of compass points to sides is ours, not the Talmud.","about":"At the close of Sukkot the lean of the altar smoke forecast the rains of the coming year. Only the four compass leans are given.","src":"S19","entries":[{"form":"stone","dir":"right","means":"Heavy rain; the poor are glad, owners grieve as stores rot","note":"smoke leaning north before a south wind; right = north is our mapping; read at the close of the festival","src":"S19"},{"form":"stone","dir":"left","means":"Sparse rain; owners are glad, the poor grieve","note":"smoke leaning south before a north wind; left = south is our mapping","src":"S19"},{"form":"stone","dir":"toward","means":"Enough rain and good keeping; everyone is glad","note":"smoke leaning east before a west wind; toward = east is our mapping","src":"S19"},{"form":"stone","dir":"away","means":"Drought; everyone is sad","note":"smoke leaning west before an east wind; away = west is our mapping","src":"S19"}]},{"id":"roman-seneca","name":"Seneca at the altar","era":"Roman, 1st c. AD","seat":"The seer is blind; his daughter watches the altar for him while the king stands by the fire.","about":"A tragedy, not a manual. The smoke sinks and wraps the head of the king, marking him as the polluted one.","src":"S23","entries":[{"form":"stone","dir":"toward","means":"The fault rests with the one the smoke settles on","note":"(approximate) smoke wrapping the head of the king, Oedipus c. 325-327; literary portent","src":"S23"}]}],"forms":[{"id":"babylonian-libanomancy","name":"Babylonian smoke omens","family":"omen","region":"Mesopotamia","era":"c. 1800 BC","start":-1800,"reads":"Lean, split, spread and density of the smoke of an aromatic offering","what":"Two Old Babylonian tablets list if-then omens taken from the qutrenu offering, within the work of the baru diviner. The tablets are damaged and renderings differ.","lens":"babylonian-qutrenu","src":"S1"},{"id":"pillar-of-cloud","name":"Pillar of cloud and fire","family":"signal","region":"Hebrew Bible","era":"text c. 6th c. BC","start":-550,"reads":"A column of cloud by day and of fire by night","what":"In Exodus a pillar of cloud by day and of fire by night goes before the people to guide them. A guiding sign, with no reading rule.","src":"S22"},{"id":"greek-empyra","name":"Greek burnt-offering signs","family":"omen","region":"Greece","era":"5th c. BC","start":-441,"reads":"Whether the offering flames or only smokes and sputters","what":"Tragedy and biography show burnt offerings read for acceptance, and Pythagoras allowing only frankincense. No ancient text found uses the word kapnomanteia.","lens":"greek-empyra","src":"S8"},{"id":"greek-fire-signals","name":"Greek fire signals","family":"signal","region":"Greece","era":"4th to 2nd c. BC","start":-350,"reads":"Beacons and torches sent by agreed code","what":"Aeneas Tacticus paired beacons with graduated water vessels; Cleoxenus and Democleitus built a torch alphabet that Polybius refined. Polybius describes fire, not daytime smoke.","src":"S27"},{"id":"chinese-beacons","name":"Chinese beacon smoke","family":"signal","region":"China","era":"Han, c. 100 BC","start":-100,"reads":"Fire by night and smoke by day from frontier beacon towers","what":"Beacon lines passed alarms along the frontier. The wolf-dung origin of the word langyan is a Tang-era claim that modern writers doubt; excavated fuels are plants.","src":"S29"},{"id":"temple-woodpile","name":"Temple woodpile smoke","family":"omen","region":"Judea","era":"Second Temple, recorded c. AD 500","start":-100,"reads":"Compass lean of the altar smoke at the close of Sukkot","what":"The Babylonian Talmud records that the lean of the woodpile smoke at the end of Sukkot forecast the rains, with a verdict for north, south, east and west.","lens":"temple-woodpile","src":"S19"},{"id":"yom-kippur-incense","name":"Yom Kippur incense column","family":"rite","region":"Judea","era":"Second Temple, recorded c. AD 500","start":-100,"reads":"Incense smoke rising straight like a staff","what":"A smoke-raising herb in the incense of the high priest made the column rise straight to the roof before spreading. A requirement of the rite, not an omen.","src":"S21"},{"id":"roman-oedipus","name":"Seneca at the altar","family":"omen","region":"Rome","era":"1st c. AD","start":50,"reads":"Flame colour, a fire that splits, and smoke settling on a person","what":"In the Oedipus of Seneca the sacrificial fire changes colour and splits, and the smoke wraps the head of the king. A literary portent; no Roman smoke manual was found.","lens":"roman-seneca","src":"S23"},{"id":"indian-agni","name":"Indian fire signs","family":"omen","region":"India","era":"c. AD 550","start":550,"reads":"Flame direction, colour, sound, smell and shape at the oblation","what":"Varahamihira reads the sacrificial fire at royal rites; flames turning right at the final oblation foretell conquest. The verses read flame, not smoke.","lens":"indian-agni-lakshana","src":"S18"},{"id":"leonardo-deluge","name":"Leonardo and moving air","family":"science","region":"Italy and France","era":"c. 1517","start":1517,"reads":"Coiling motion of water, cloud, dust and smoke","what":"The late Deluge drawings study storm and debris in coiling motion; the Royal Collection notes his interest in the optics of dust and smoke.","src":"S33"},{"id":"pyromancy","name":"Pyromancy","family":"catalogue","region":"Europe","era":"1533 onward","start":1533,"reads":"Fire and flame","what":"Agrippa groups pyromancy with geomancy, hydromancy and aeromancy as divinations of the elements; Rabelais and Gaule list it. No method is given.","src":"S9"},{"id":"capnomancy","name":"Capnomancy","family":"catalogue","region":"Europe","era":"1533 onward","start":1533,"reads":"Smoke of a fire or a sacrifice","what":"Agrippa, Rabelais and Gaule name capnomancy; encyclopaedias from 1880 add the rule that thin straight smoke is good and hanging smoke bad. No ancient source is cited.","lens":"european-capnomancy","src":"S9"},{"id":"libanomancy-catalogue","name":"Libanomancy in the lists","family":"catalogue","region":"Europe","era":"1546 onward","start":1546,"reads":"Burning frankincense","what":"Rabelais and Gaule list libanomancy by burning frankincense, and Del Rio is cited for it. None of them describes a method.","src":"S25"},{"id":"daphnomancy","name":"Daphnomancy","family":"catalogue","region":"Europe","era":"1546 onward","start":1546,"reads":"Whether burning laurel crackles","what":"Rabelais stages it: the Sibyl of Panzoust burns laurel, it makes no crackle, and this is called a dismal omen. Modern lists define it as divination by burning laurel.","src":"S24"},{"id":"sideromancy","name":"Sideromancy","family":"catalogue","region":"Europe","era":"early modern, date unverified","start":1600,"reads":"Straws burned on hot iron","what":"Modern lists define it as divination by burning straw on iron. No early source was found that describes the method or a reading of its smoke.","src":"S26"},{"id":"causimomancy","name":"Causimomancy","family":"catalogue","region":"Europe","era":"early modern, date unverified","start":1600,"reads":"Objects thrown into fire and how they burn","what":"Modern lists define it only as divination by burning. No early source or rule was found.","src":"S26"},{"id":"chinese-guanxiang","name":"Chinese incense watching","family":"omen","region":"China","era":"modern compendia; Qing origin claimed","start":1800,"reads":"Shape and colour of incense smoke at a home altar","what":"Printed charts read the burn heights of three sticks; a few smoke rules survive only in modern folk compendia that name no source.","lens":"chinese-guanxiang","src":"S15"},{"id":"plains-smoke-signals","name":"Plains smoke signals","family":"signal","region":"North American Plains","era":"19th c.","start":1850,"reads":"Position and timing of smoke columns","what":"Agreed signals made with damp fuel on high ground. The only account reached cites a web page; the ethnography of Clark (1885) was located but its entry not read.","src":"S28"},{"id":"vortex-rings","name":"Smoke rings as vortices","family":"science","region":"Germany and Scotland","era":"1858 to 1867","start":1858,"reads":"Smoke rings as stable vortices","what":"Helmholtz showed vortex rings persist in an ideal fluid; Tait fired smoke rings from a box and Kelvin proposed that atoms are vortex rings.","src":"S35"},{"id":"sensitive-flames","name":"Sensitive flames and smoke jets","family":"science","region":"Britain","era":"1867","start":1867,"reads":"Flames and smoke jets that flare or break at a sound","what":"Tyndall lectured on flames that respond to sound and later showed that smoke jets do the same: a column on the edge of instability.","src":"S36"},{"id":"reynolds-transition","name":"Direct and sinuous flow","family":"science","region":"Britain","era":"1883","start":1883,"reads":"When a straight streak breaks into eddies","what":"Reynolds watched dye in a pipe and found the condition under which smooth flow turns turbulent, the same break a rising incense column shows.","src":"S37"},{"id":"papal-fumata","name":"Conclave smoke","family":"signal","region":"Vatican","era":"1914 onward","start":1914,"reads":"Black or white smoke from the conclave stove","what":"Burned ballots signal the vote: black for no election, white for a new pope. The first intentional white smoke is dated to 1914; chemicals now fix the colour.","src":"S30"},{"id":"buoyant-plume","name":"The buoyant plume","family":"science","region":"USSR, Germany and Britain","era":"1937 to 1973","start":1937,"reads":"Rise and spread of a turbulent plume above a heat source","what":"Zeldovich and Schmidt found similarity laws for the plume above a point heat source; Morton, Taylor and Turner closed the model with entrainment proportional to plume speed.","src":"S41"},{"id":"tibetan-dud-brda","name":"Tibetan smoke signs","family":"omen","region":"Tibet","era":"recorded 1964","start":1964,"reads":"Colour, volume and drift of the smoke of a juniper offering","what":"Ekvall records a specialist category of smoke signs read from bsang offerings, most finely as the smoke fades against the sky. No rules are published.","lens":"tibetan-dud-brda","src":"S17"}],"timeline":[{"year":-1800,"label":"c. 1800 BC","who":"Old Babylonian libanomancy tablets","what":"Omens read from the smoke of the qutrenu offering, written as if-then rules","family":"omen","src":"S1"},{"year":-550,"label":"c. 6th c. BC (text)","who":"Exodus 13:21-22","what":"A pillar of cloud by day and fire by night goes before the people","family":"signal","src":"S22"},{"year":-441,"label":"c. 441 BC","who":"Sophocles, Antigone","what":"Teiresias reports an offering that smokes and sputters without flame: the gods refuse it","family":"omen","src":"S8"},{"year":-350,"label":"c. 350 BC","who":"Aeneas Tacticus","what":"Beacons paired with graduated water vessels send set messages, as Polybius describes","family":"signal","src":"S27"},{"year":-150,"label":"c. 150 BC","who":"Polybius, Histories 10.43-47","what":"Describes and refines the torch alphabet of Cleoxenus and Democleitus","family":"signal","src":"S27"},{"year":-100,"label":"c. 100 BC","who":"Han frontier beacons","what":"Fire by night and smoke by day along the frontier beacon lines","family":"signal","src":"S29"},{"year":50,"label":"1st c. AD","who":"Seneca, Oedipus","what":"Sacrificial smoke sinks and wraps the head of the king","family":"omen","src":"S23"},{"year":230,"label":"3rd c. AD","who":"Diogenes Laertius 8.20","what":"Pythagoras divined by voices and auguries, never by burnt offerings beyond frankincense","family":"omen","src":"S7"},{"year":500,"label":"c. AD 500","who":"Babylonian Talmud, Bava Batra 147a","what":"Records the lean of the altar smoke at the end of Sukkot as a forecast of the rains","family":"omen","src":"S19"},{"year":500,"label":"c. AD 500","who":"Babylonian Talmud, Yoma 53a","what":"A smoke-raising herb makes the Yom Kippur incense rise straight like a staff","family":"rite","src":"S21"},{"year":550,"label":"c. AD 550","who":"Varahamihira, Brhat Samhita","what":"Reads the altar fire: flames turning right at the final oblation mean conquest","family":"omen","src":"S18"},{"year":860,"label":"c. 860","who":"Duan Chengshi, Youyang zazu","what":"Cited as the source of the doubted claim that beacon smoke was made with wolf dung","family":"signal","src":"S29"},{"year":1517,"label":"c. 1517","who":"Leonardo da Vinci, Deluge drawings","what":"Late drawings of storm, water, dust and smoke in coiling motion","family":"science","src":"S33"},{"year":1533,"label":"1533","who":"Agrippa, De occulta philosophia","what":"Names capnomancy, which searches into flame and smoke","family":"catalogue","src":"S9"},{"year":1546,"label":"1546","who":"Rabelais, Tiers Livre","what":"Her Trippa offers capnomancy, libanomancy, tephromancy and pyromancy to Panurge","family":"catalogue","src":"S25"},{"year":1599,"label":"1599-1600","who":"Martin Del Rio, Disquisitiones magicae","what":"Cited by modern references for libanomancy; not read here","family":"catalogue","src":"S6"},{"year":1610,"label":"1610","who":"John Healey, after Vives","what":"Earliest dated English use of capnomancy, divination by smoke","family":"catalogue","src":"S10"},{"year":1652,"label":"1652","who":"John Gaule, Pus-mantia","what":"Lists capnomancy by smoke and libanomancy by burning frankincense","family":"catalogue","src":"S11"},{"year":1858,"label":"1858","who":"Hermann von Helmholtz","what":"Vortex theorems: vortex lines move with the fluid, so a ring in an ideal fluid persists","family":"science","src":"S34"},{"year":1867,"label":"Jan 1867","who":"Peter Guthrie Tait","what":"Smoke-ring box: a struck cloth fires rings through a hole in a smoke-filled crate","family":"science","src":"S35"},{"year":1867,"label":"Feb 1867","who":"William Thomson (Kelvin)","what":"On Vortex Atoms proposes that atoms are vortex rings in the ether","family":"science","src":"S35"},{"year":1867,"label":"1867","who":"John Tyndall","what":"Lectures on sensitive flames; later shows that smoke jets respond to sound","family":"science","src":"S36"},{"year":1879,"label":"1879-82","who":"Auguste Bouche-Leclercq","what":"Four-volume history of ancient divination; its pages on smoke were not checked here","family":"catalogue","src":"S43"},{"year":1880,"label":"1880","who":"McClintock and Strong","what":"Cyclopedia gives the rule: thin straight smoke favourable, thick hanging smoke unfavourable","family":"catalogue","src":"S12"},{"year":1883,"label":"1883","who":"Osborne Reynolds","what":"Dye-streak experiments show when flow turns from direct to sinuous","family":"science","src":"S37"},{"year":1914,"label":"1914","who":"Conclave of Benedict XV","what":"First intentional white smoke to announce an election, per Baumgartner","family":"signal","src":"S30"},{"year":1920,"label":"1920","who":"Lewis Spence","what":"Repeats the smoke-to-the-clouds rule and adds seed-on-coals and inhalation variants","family":"catalogue","src":"S13"},{"year":1937,"label":"1937","who":"Yakov Zeldovich","what":"Similarity laws for the turbulent plume above a point source of heat","family":"science","src":"S38"},{"year":1941,"label":"1941","who":"Wilhelm Schmidt","what":"Formulates the turbulent spread of a rising stream of heated air","family":"science","src":"S39"},{"year":1954,"label":"1954","who":"George Batchelor","what":"Reviews heat convection and buoyancy effects in fluids","family":"science","src":"S40"},{"year":1956,"label":"1956","who":"Morton, Taylor and Turner","what":"Entrainment model of plumes, applied to the rise of smoke in stratified air","family":"science","src":"S41"},{"year":1964,"label":"1964","who":"Robert Ekvall","what":"Records Tibetan smoke signs read by the colour, volume and drift of bsang smoke","family":"omen","src":"S17"},{"year":1966,"label":"1966","who":"Giovanni Pettinato","what":"First edition and study of a Babylonian libanomancy text","family":"omen","src":"S2"},{"year":1973,"label":"1973","who":"J. Stewart Turner","what":"Buoyancy Effects in Fluids, the standard text on plumes and thermals","family":"science","src":"S42"},{"year":1983,"label":"1983-84","who":"Irving Finkel","what":"Publishes UCLM 9-2433, a new libanomancy tablet, collated with the earlier texts","family":"omen","src":"S1"},{"year":2005,"label":"2005","who":"Vatican conclave","what":"A second stove is added so the smoke colour cannot be mistaken","family":"signal","src":"S31"},{"year":2015,"label":"2015","who":"Ulla Susanne Koch","what":"Handbook of Mesopotamian divination treats libanomancy among solicited techniques","family":"omen","src":"S4"},{"year":2016,"label":"2016","who":"Maria Stella Cingolo","what":"Surveys the two Old Babylonian libanomancy texts and the term qutrenu","family":"omen","src":"S3"}],"sources":{"S1":{"author":"I. L. Finkel","title":"\"A New Piece of Libanomancy\", Archiv für Orientforschung 29/30, 50–55 (tablet UCLM 9-2433; not read, cited via CDLI record)","year":"1983/84","kind":"primary edition (scholarly)","url":"https://cdli.earth/authors/1002"},"S2":{"author":"G. Pettinato","title":"\"Libanomanzia presso i Babilonesi\", Rivista degli Studi Orientali 41, 303–327 (not read)","year":"1966","kind":"scholarly","url":null},"S3":{"author":"M. S. Cingolo","title":"\"Some Remarks about the Old Babylonian Libanomancy Texts\", in J. C. Fincke (ed.), Divination as Science, 93–106 (abstract read)","year":"2016","kind":"scholarly","url":"https://doi.org/10.1515/9781575064260-007"},"S4":{"author":"U. S. Koch","title":"Mesopotamian Divination Texts: Conversing with the Gods (GMTR 7, Ugarit-Verlag; smoke section not read)","year":"2015","kind":"scholarly","url":"https://www.cambridge.org/core/journals/bulletin-of-the-school-of-oriental-and-african-studies/article/abs/F533D3089CADFB7A30AD745BC5D9F818"},"S5":{"author":"J. Carlson","title":"\"Incense and Divination\" (blog reproducing Finkel's renderings)","year":"n.d.","kind":"tertiary","url":"https://www.jesscarlson.com/blog/incense-and-divination"},"S6":{"author":"Wikipedia","title":"\"Libanomancy\" (right-drift omen, via Dunwich 1988)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Libanomancy"},"S7":{"author":"Diogenes Laertius, tr. R. D. Hicks","title":"Lives of Eminent Philosophers 8.20","year":"1925","kind":"primary","url":"https://en.wikisource.org/wiki/Lives_of_the_Eminent_Philosophers/Book_VIII"},"S8":{"author":"Sophocles, tr. R. C. Jebb","title":"Antigone 1005–1011","year":"1891","kind":"primary","url":"http://classics.mit.edu/Sophocles/antigone.html"},"S9":{"author":"H. C. Agrippa, tr. J. F.","title":"Three Books of Occult Philosophy I.57 (Latin 1533)","year":"1651","kind":"primary","url":"https://www.esotericarchives.com/agrippa/agripp1c.htm"},"S10":{"author":"Wiktionary","title":"\"capnomancy\" (carries the 1610 Healey/Vives citation)","year":"2026","kind":"tertiary","url":"https://en.wiktionary.org/wiki/capnomancy"},"S11":{"author":"J. Gaule","title":"Pus-mantia the Mag-astro-mancer, ch. XIX, pp. 165–166","year":"1652","kind":"primary","url":"https://archive.org/details/pysmantiamagastr00gaul"},"S12":{"author":"J. McClintock, J. Strong","title":"Cyclopedia of Biblical, Theological, and Ecclesiastical Literature, \"Capnomancy\"","year":"1880","kind":"tertiary","url":"https://www.biblicalcyclopedia.com/C/capnomancy.html"},"S13":{"author":"L. Spence","title":"An Encyclopaedia of Occultism, \"Capnomancy\"","year":"1920","kind":"tertiary","url":"https://archive.org/details/encyclopaediaofo1920spen"},"S14":{"author":"Wikipedia","title":"\"Capnomancy\" (Celtic/Semang claims cite Dunwich 2002, Cheung 2006)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Capnomancy"},"S15":{"author":"网易订阅 (anon.)","title":"观香火看事，断吉凶（观香秘法）","year":"c. 2025","kind":"tertiary","url":"https://www.163.com/dy/article/JS0LKBFK0531PYY1.html"},"S16":{"author":"百度百科","title":"二十四香谱","year":"2026","kind":"tertiary","url":"https://baike.baidu.com/item/%E4%BA%8C%E5%8D%81%E5%9B%9B%E9%A6%99%E8%B0%B1/7944671"},"S17":{"author":"R. B. Ekvall","title":"Religious Observances in Tibet: Patterns and Function, p. 271","year":"1964","kind":"scholarly","url":"https://archive.org/details/religious-observances-in-tibet-patterns-and-function"},"S18":{"author":"Varāhamihira, tr. N. C. Iyer","title":"Bṛhat Saṃhitā 43.31–37","year":"1884","kind":"primary","url":"https://www.wisdomlib.org/hinduism/book/brihat-samhita/d/doc229188.html"},"S19":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Bava Batra 147a","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Bava_Batra.147a"},"S20":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Yoma 21b","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Yoma.21b"},"S21":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Yoma 53a","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Yoma.53a"},"S22":{"author":"Exodus, JPS Tanakh (Sefaria)","title":"Exodus 13:21–22","year":"c. 6th c. BC (text)","kind":"primary","url":"https://www.sefaria.org/Exodus.13.21-22"},"S23":{"author":"Seneca, tr. F. J. Miller","title":"Oedipus, c. 303–330","year":"1907","kind":"primary","url":"https://en.wikisource.org/wiki/Tragedies_of_Seneca_(1907)_Miller/Oedipus"},"S24":{"author":"F. Rabelais, tr. Urquhart and Motteux","title":"Gargantua and Pantagruel III.17–18 (Sibyl of Panzoust)","year":"1546 / 1693","kind":"primary","url":"https://www.gutenberg.org/files/1200/1200-h/1200-h.htm"},"S25":{"author":"F. Rabelais, tr. Urquhart and Motteux","title":"Gargantua and Pantagruel III.25 (Her Trippa)","year":"1546 / 1693","kind":"primary","url":"https://www.gutenberg.org/files/8168/8168-h/8168-h.htm"},"S26":{"author":"Wikipedia","title":"\"Methods of divination\" (definitions of sideromancy, daphnomancy, causimomancy)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Methods_of_divination"},"S27":{"author":"Polybius, tr. W. R. Paton","title":"Histories 10.43–47 (LacusCurtius)","year":"c. 150 BC / 1925","kind":"primary","url":"https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Polybius/10*.html"},"S28":{"author":"Wikipedia","title":"\"Smoke signal\"","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Smoke_signal"},"S29":{"author":"百度百科 and related Chinese reference pages","title":"狼烟 (seen through search summaries)","year":"2026","kind":"tertiary","url":"https://baike.baidu.com/item/%E7%8B%BC%E7%83%9F/22851549"},"S30":{"author":"*U.S. Catholic* (citing F. J. Baumgartner, *Behind Locked Doors*, 2003)","title":"\"What is the origin of the papal smoke?\"","year":"2025","kind":"tertiary","url":"https://uscatholic.org/articles/202504/what-is-the-origin-of-the-papal-smoke/"},"S31":{"author":"Holy See Press Office (reposted)","title":"\"How the white and black fumate are produced\"","year":"2013","kind":"primary","url":"https://www.bishop-accountability.org/2013/03/how-the-white-and-black-fumate-are-produced/"},"S32":{"author":"Wikipedia","title":"\"Kōdō\"","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/K%C5%8Dd%C5%8D"},"S33":{"author":"Royal Collection Trust","title":"\"A deluge\" (Leonardo, exhibition text)","year":"c. 1517 / 2019","kind":"scholarly","url":"https://rct.uk/collection/exhibitions/leonardo-da-vinci-a-life-in-drawing/the-queens-gallery-palace-of/a-deluge"},"S34":{"author":"H. von Helmholtz","title":"\"Über Integrale der hydrodynamischen Gleichungen, welche den Wirbelbewegungen entsprechen\", J. reine angew. Math. 55 (not opened)","year":"1858","kind":"primary","url":"https://doi.org/10.1515/crll.1858.55.25"},"S35":{"author":"W. Thomson (Kelvin)","title":"\"On Vortex Atoms\", Proc. R. Soc. Edinburgh 6, 94–105 (describes Tait's box)","year":"1867","kind":"primary","url":"https://www.zapatopi.net/kelvin/papers/on_vortex_atoms.html"},"S36":{"author":"Wikipedia","title":"\"Sensitive flame\" (Tyndall 1867; smoke jets)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Sensitive_flame"},"S37":{"author":"O. Reynolds","title":"\"An experimental investigation of the circumstances which determine whether the motion of water shall be direct or sinuous…\", Phil. Trans. 174 (not opened)","year":"1883","kind":"primary","url":"https://doi.org/10.1098/rstl.1883.0029"},"S38":{"author":"Ya. B. Zel'dovich","title":"\"Limiting laws of freely rising convection currents\", Zh. Eksp. Teor. Fiz. 7, 1463–1465 (not read; title varies between citers)","year":"1937","kind":"primary","url":null},"S39":{"author":"W. Schmidt","title":"Turbulent plume papers, ZAMM 21 (two parts; exact title unverified)","year":"1941","kind":"primary","url":null},"S40":{"author":"G. K. Batchelor","title":"\"Heat convection and buoyancy effects in fluids\", Q. J. R. Meteorol. Soc. 80, 339–358 (not opened)","year":"1954","kind":"scholarly","url":"https://doi.org/10.1002/qj.49708034504"},"S41":{"author":"B. R. Morton, G. I. Taylor, J. S. Turner","title":"\"Turbulent gravitational convection from maintained and instantaneous sources\", Proc. R. Soc. A 234, 1–23 (abstract read)","year":"1956","kind":"primary","url":"https://doi.org/10.1098/rspa.1956.0011"},"S42":{"author":"J. S. Turner","title":"Buoyancy Effects in Fluids, Cambridge University Press (not read)","year":"1973","kind":"scholarly","url":null},"S43":{"author":"A. Bouché-Leclercq","title":"Histoire de la divination dans l'antiquité, 4 vols (not read)","year":"1879–82","kind":"scholarly","url":"https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=ha000474617"}}};
+/* TRADITIONS:END */
+const LENSES=[{id:'own',name:'Your own',era:'now',about:'The words you have given the smoke yourself. They grow from your notes, below.',entries:[]},...TRADITIONS.lenses];
+/* The five ways people have read smoke, each with a colour token. */
+const FAMILY={omen:{name:'Omen',tok:'--ember',about:'smoke read as a sign of what will be'},rite:{name:'Rite',tok:'--warn',about:'smoke watched as part of a rite: accepted, refused, rising true'},
+  catalogue:{name:'Catalogue',tok:'--muted',about:'the word named and listed by learned compilers'},signal:{name:'Signal',tok:'--ok',about:'smoke sent on purpose, to be read far away'},
+  science:{name:'Science',tok:'--sci',about:'the plume read as a fluid: how it rises, turns and breaks'}};
+const lensById=id=>LENSES.find(l=>l.id===id)||null;
+function lensMatch(lens,r){if(!lens)return null;for(const e of lens.entries){if(e.form&&e.form!==FORM_KEY[r.form])continue;
+  if(e.dir&&(r.form!==F.STONE||r.dir==null||e.dir!==DIR_KEY[r.dir]))continue;if(e.env&&e.env!==r.env)continue;if(e.burn&&e.burn!==BURN_WORD(r.p))continue;return e;}return null;}
 /* The cone over its burn fraction p: how much smoke (vis), how coherent the column (coh),
    how much it spills sideways unbidden (spillNat), and how fast it rises (rise, cm/s). */
 const vis=p=>smooth(0,0.08,p)*(0.55+0.45*smooth(0.05,0.6,p))*(1-0.85*smooth(0.96,1.0,p));
@@ -81,19 +112,25 @@ const angToHour=a=>{const h=Math.round(wrap2Pi(a)/(TAU/12))%12;return h===0?12:h
 const hourToAng=h=>(h%12)*TAU/12;
 
 class Wind{
-  constructor(key,gm,r){this.key=key;this.e=ENVS[key];this.gm=gm;this.r=r;this.g=[0,0];
+  constructor(key,gm,r){this.key=key;this.e=ENVS[key];this.gm=gm;this.r=r;this.g=[0,0];this.q=0;this.qs=0;this.dv=null;this.on=false;
     this.side=r()<0.5?1:-1;this.dd=r()*TAU;this.target();this.m=this.tg.slice();
     for(let i=0;i<40;i++)this.step(0.25);}
   target(){const W=this.e.W;
     this.tg=this.key==='day'?[0,W]:this.key==='night'?[0,this.side*W]:[Math.sin(this.dd)*W,Math.cos(this.dd)*W];}
-  step(dt){const e=this.e,s=e.sig*this.gm,a=Math.exp(-dt/e.tau),b=s*Math.sqrt(1-a*a);
-    this.g[0]=this.g[0]*a+b*gauss(this.r);this.g[1]=this.g[1]*a+b*gauss(this.r);
+  /* A sign: for this step the wind commits to a bearing (dx,dy in cm/s, or nothing) and quietens by q. It is
+     the same process steered from inside, not a push laid over it: the mean turns toward the bearing on a
+     short memory while its own habit fades by q, the gusts die down, and when the sign ends the wind wanders
+     back on its slow clock. The dust, the air's arc and the instrument all see one wind. */
+  drive(dx,dy,q){this.dv=[dx||0,dy||0];this.q=q;this.on=true;}
+  step(dt){const e=this.e,q=this.q,s=e.sig*this.gm*(1-q),a=Math.exp(-dt/e.tau),b=s*Math.sqrt(1-a*a),dq=Math.exp(-dt*3*q);
+    this.g[0]=this.g[0]*a*dq+b*gauss(this.r);this.g[1]=this.g[1]*a*dq+b*gauss(this.r);
     if(this.key==='night'&&this.r()<dt/45)this.side=-this.side;
     if(this.key==='dusk')this.dd+=gauss(this.r)*Math.sqrt(dt)*0.35;
-    this.target();const c=1-Math.exp(-dt/8);
-    this.m[0]+=(this.tg[0]-this.m[0])*c;this.m[1]+=(this.tg[1]-this.m[1])*c;}
+    this.target();const dv=this.dv||[0,0],c=1-Math.exp(-dt/(this.on?1.5:8));
+    this.m[0]+=((1-q)*this.tg[0]+dv[0]-this.m[0])*c;this.m[1]+=((1-q)*this.tg[1]+dv[1]-this.m[1])*c;
+    this.qs=q;this.dv=null;this.q=0;this.on=false;}
   nat(){return[this.m[0]+this.g[0],this.m[1]+this.g[1]];}
-  sigma(){return this.e.sig*this.gm;}
+  sigma(){return this.e.sig*this.gm*(1-this.qs);}
 }
 
 /* ====================================================================
@@ -102,37 +139,34 @@ class Wind{
 const T_BINS=[2,3,4,6,8,12],P_BINS=[0.1,0.3,0.5,0.7,0.9],GM_BINS=[0.5,1,1.5,2];
 const DIRBINS=24,DIRSAMP=40;
 const dirCache=new Map();
-/* For a lean held T seconds toward each of 24 bearings: where the plume actually points
-   (offset from intended) and how visible the lean is, sampled over the ridge's gusts. */
-function dirCell(env,gm,T,p,k){
-  gm=nearest(GM_BINS,gm);T=nearest(T_BINS,T);p=nearest(P_BINS,p);k=Math.round(k*20)/20;
-  const key=env+'|'+gm+'|'+T+'|'+p+'|'+k;let c=dirCache.get(key);if(c)return c;
+/* For a lean held T seconds toward each of 24 bearings: where the plume actually points (offset from
+   intended) and how visible the lean is, sampled over the ridge's gusts. hold is the wind's commitment to
+   the sign (1 = full; the harder levels lower it). */
+function dirCell(env,gm,T,p,hold){
+  gm=nearest(GM_BINS,gm);T=nearest(T_BINS,T);p=nearest(P_BINS,p);hold=Math.round(hold*20)/20;
+  const key=env+'|'+gm+'|'+T+'|'+p+'|'+hold;let c=dirCache.get(key);if(c)return c;
   const r=rng32(hashStr(key)),off=new Float32Array(DIRBINS*DIRSAMP),vs=new Float32Array(DIRBINS*DIRSAMP);
-  const w=rise(p),dt=0.25,tauP=2.0,hold0=Math.min(WORLD.settle,T*0.4),a=1-Math.exp(-dt/tauP);
+  const w=rise(p),dt=0.25,tauP=2.0,hold0=Math.min(WORLD.settle,T*0.4),a=1-Math.exp(-dt/tauP),S=WORLD.S*(0.6+0.4*hold),q0=QUIET[F.STONE]*hold;
   for(let b=0;b<DIRBINS;b++){const th=b*TAU/DIRBINS,dx=Math.sin(th),dy=Math.cos(th);
     for(let s=0;s<DIRSAMP;s++){const wd=new Wind(env,gm,r);const n0=wd.nat();let px=n0[0],py=n0[1],ax=0,ay=0,cnt=0;
-      for(let t=0;t<T;t+=dt){wd.step(dt);const n=wd.nat(),ramp=smooth(0,0.6,t);
-        const ux=n[0]*(1-k*ramp)+WORLD.S*ramp*dx,uy=n[1]*(1-k*ramp)+WORLD.S*ramp*dy;
-        px+=(ux-px)*a;py+=(uy-py)*a;if(t>=hold0){ax+=px;ay+=py;cnt++;}}
+      for(let t=0;t<T;t+=dt){const ramp=smooth(0,0.6,t);wd.drive(S*ramp*dx,S*ramp*dy,q0*ramp);wd.step(dt);const n=wd.nat();
+        px+=(n[0]-px)*a;py+=(n[1]-py)*a;if(t>=hold0){ax+=px;ay+=py;cnt++;}}
       ax/=cnt;ay/=cnt;const lean=Math.atan2(Math.hypot(ax,ay),w);
       off[b*DIRSAMP+s]=wrapPi(Math.atan2(ax,ay)-th);
       vs[b*DIRSAMP+s]=clamp(Math.tan(lean)/Math.tan(25*D2R),0.15,1);}}
   c={off,vs};dirCache.set(key,c);return c;
 }
 const dirBin=a=>Math.round(wrap2Pi(a)/TAU*DIRBINS)%DIRBINS;
-/* Chance each form survives the air physically (it can still be misread afterwards). */
-function legib(env,gm,p,k){const e=ENVS[env],sr=(1-k)*e.sig*gm,ur=(1-k)*e.W+sr,v=vis(p),c=coh(p);
-  return[v*(0.55+0.45*Math.exp(-((sr/25)**2))), v*c*Math.exp(-((ur/14)**2)), v*Math.sqrt(c)*Math.exp(-((ur/28)**2)),
-         v*c*Math.exp(-((sr/7)**2)-(ur/30)**2), v*(1-0.6*spillNat(p)),
-         v*Math.sqrt(c)*Math.exp(-((sr/12)**2)), v*c*Math.exp(-((sr/4)**2)-(ur/10)**2), Math.exp(-((sr/8)**2)), 1];}
+/* Chance each form survives the air physically (it can still be misread afterwards). Each form quietens
+   the wind by its own QUIET times the hold, so the gust and the residual habit it faces are its own. */
+function legib(env,gm,p,hold){const e=ENVS[env],v=vis(p),c=coh(p);
+  const sr=f=>(1-QUIET[f]*hold)*e.sig*gm,ur=f=>(1-QUIET[f]*hold)*e.W*0.5+sr(f);
+  return[v*(0.55+0.45*Math.exp(-((sr(0)/25)**2))), v*c*Math.exp(-((ur(1)/14)**2)), v*Math.sqrt(c)*Math.exp(-((ur(2)/28)**2)),
+         v*c*Math.exp(-((sr(3)/7)**2)-(ur(3)/30)**2), v*(1-0.6*spillNat(p)),
+         v*Math.sqrt(c)*Math.exp(-((sr(5)/12)**2)), v*c*Math.exp(-((sr(6)/4)**2)-(ur(6)/10)**2), Math.exp(-((sr(7)/8)**2)), 1];}
+const holdOf=t=>t.hold==null?1:t.hold;   // readings from before the levels were held at full commitment
 /* What a reader reports when no sign got through: the reader's wind row, pulled toward Spill late in the burn. */
 function rowWind(M,p){const ns=0.5*spillNat(p);return M[F.WIND].map((v,j)=>v*(1-ns)+(j===F.SPILL?ns:0));}
-/* Puffs seen: neighbours blur together when the beat is shorter than the plume's blur time,
-   gusts add false puffs, then the reader's own counting noise. */
-function countDraw(r,n,beat,env,gm,p,k,obs){const sr=(1-k)*ENVS[env].sig*gm,tb=0.3+sr/20+0.4*(1-coh(p)),pm=Math.exp(-1.6*beat/tb);
-  let seen=1;for(let i=1;i<n;i++)if(r()>=pm)seen++;
-  seen+=poisson(r,0.016*sr*n*beat);
-  return Math.max(0,Math.round(seen+gauss(r)*(obs.ca+obs.cb*n)));}
 
 /* ====================================================================
    4. The reader model: priors, stand-in, fitting from trials
@@ -148,35 +182,37 @@ const PRIOR_M=[
   [.02,.04,.06,.05,.02,.04,.55,.14,.08],
   [.03,.01,.01,.03,.02,.01,.16,.55,.18],
   [.12,.02,.07,.04,.07,.07,.05,.12,.44]];
-const PRIOR={kappa:8,ca:0.35,cb:0.08,C:4,beta:0.15};
+const PRIOR={kappa:8,C:4,beta:0.15};
 const sharpen=(M,g)=>M.map(r=>{const q=r.map(v=>v**g),s=q.reduce((a,b)=>a+b,0);return q.map(v=>v/s);});
-const STANDIN={kappa:6,ca:0.3,cb:0.14,C:4,beta:0.55,M:sharpen(PRIOR_M,1.3)};
+const STANDIN={kappa:6,C:4,beta:0.55,M:sharpen(PRIOR_M,1.3)};
 
 function makeTrial(seed){const r=rng32(seed);
   const env=['day','dusk','night'][Math.floor(r()*3)],gm=[0.5,1,1.5][Math.floor(r()*3)],p=0.12+r()*0.8;
   const truth=r()<0.14?F.WIND:Math.floor(r()*8);
-  const angle=truth===F.STONE?r()*TAU:null,count=truth===F.STONE?1+Math.floor(r()*6):null;
+  const angle=truth===F.STONE?stoneAngle(r):null;
   const nOpt=2+Math.floor(r()*7);
   const pool=shuffle([0,1,2,3,4,5,6,7].filter(f=>f!==truth),r);
   const opts=(truth===F.WIND?pool.slice(0,nOpt):[truth,...pool.slice(0,nOpt-1)]).sort((a,b)=>a-b);
-  return{seed,env,gm,p,truth,angle,count,opts,T:WORLD.trialT,beat:WORLD.trialBeat,k:WORLD.k};}
+  return{seed,env,gm,p,truth,angle,opts,T:WORLD.trialT,hold:1};}
 
-function standInRespond(tr,r){const S=STANDIN,L=legib(tr.env,tr.gm,tr.p,tr.k),choices=[...tr.opts,F.WIND],g=tr.truth;
+function standInRespond(tr,r){const S=STANDIN,L=legib(tr.env,tr.gm,tr.p,holdOf(tr)),choices=[...tr.opts,F.WIND],g=tr.truth;
   const visible=g!==F.WIND&&r()<L[g],row=visible?S.M[g]:rowWind(S.M,tr.p);
   const eps=1-Math.exp(-S.beta*Math.max(0,tr.opts.length-S.C));
   const w=choices.map(j=>row[j]),sw=w.reduce((a,b)=>a+b,0);
   const form=choices[pickW(r,w.map(v=>(1-eps)*v/sw+eps/choices.length))];
-  let hour=null,count=null;
+  let dir=null;
   if(form===F.STONE){
-    if(g===F.STONE){const c=dirCell(tr.env,tr.gm,tr.T,tr.p,tr.k),s=dirBin(tr.angle)*DIRSAMP+Math.floor(r()*DIRSAMP);
-      hour=angToHour(tr.angle+c.off[s]+vmSample(r,S.kappa*c.vs[s]));
-      count=countDraw(r,tr.count,tr.beat,tr.env,tr.gm,tr.p,tr.k,S);}
-    else{hour=1+Math.floor(r()*12);count=1+Math.floor(r()*4);}
+    if(g===F.STONE){const c=dirCell(tr.env,tr.gm,tr.T,tr.p,holdOf(tr)),s=dirBin(tr.angle)*DIRSAMP+Math.floor(r()*DIRSAMP);
+      dir=dirOf(tr.angle+c.off[s]+vmSample(r,S.kappa*c.vs[s]));}
+    else dir=Math.floor(r()*4);
   }
-  return{form,hour,count,conf:visible?4:2,note:''};}
+  return{form,dir,conf:visible?4:2,note:''};}
+/* Where a reading pointed and how wide its sector was: four seat bearings now, twelve hours before. */
+const respAng=t=>t.resp.dir!=null?{a:t.resp.dir*TAU/(t.nDir||4),w:TAU/(t.nDir||4)}:t.resp.hour?{a:hourToAng(t.resp.hour),w:TAU/12}:null;
 
 /* Fit the reader: form confusion (EM separating air failures from misreadings), direction sharpness
-   kappa (likelihood over the physical lean samples), count noise, and the vocabulary limit. */
+   kappa (likelihood over the physical lean samples, integrated over the sector the reader chose), and the
+   vocabulary limit. */
 function fitObserver(trials){
   const out={n:trials.length};
   // forms
@@ -184,38 +220,28 @@ function fitObserver(trials){
   for(let it=0;it<15;it++){const C=PRIOR_M.map(r=>r.map(v=>v*PS));
     for(const t of trials){const g=t.truth,j=t.resp.form;
       if(g===F.WIND){C[F.WIND][j]+=1;continue;}
-      const L=legib(t.env,t.gm,t.p,t.k)[g],rw=rowWind(M,t.p),a=L*M[g][j],b=(1-L)*rw[j],w=a+b>0?a/(a+b):1;
+      const L=legib(t.env,t.gm,t.p,holdOf(t))[g],rw=rowWind(M,t.p),a=L*M[g][j],b=(1-L)*rw[j],w=a+b>0?a/(a+b):1;
       C[g][j]+=w;C[F.WIND][j]+=1-w;}
     M=C.map(row=>{const s=row.reduce((x,y)=>x+y,0);return row.map(v=>v/s);});}
   out.M=M;
   // direction
-  const dirT=trials.filter(t=>t.truth===F.STONE&&t.resp.form===F.STONE&&t.resp.hour);
+  const dirT=trials.filter(t=>t.truth===F.STONE&&t.resp.form===F.STONE&&respAng(t));
   const KG=[];for(let i=0;i<40;i++)KG.push(0.3*Math.pow(80/0.3,i/39));
-  const cells=dirT.map(t=>dirCell(t.env,t.gm,t.T,t.p,t.k));
+  const cells=dirT.map(t=>dirCell(t.env,t.gm,t.T,t.p,holdOf(t)));
   const ll=KG.map(k=>{let s=-0.5*((Math.log(k)-Math.log(PRIOR.kappa))/1.0)**2;
-    dirT.forEach((t,ti)=>{const c=cells[ti],b=dirBin(t.angle),ra=hourToAng(t.resp.hour);let acc=0;
+    dirT.forEach((t,ti)=>{const c=cells[ti],b=dirBin(t.angle),ra=respAng(t),st=ra.w/5;let acc=0;
       for(let si=0;si<DIRSAMP;si+=2){const o=c.off[b*DIRSAMP+si],kv=k*c.vs[b*DIRSAMP+si];
-        for(let q=-2;q<=2;q++)acc+=vmPdf(wrapPi(ra+q*TAU/60-(t.angle+o)),kv);}
-      acc=acc/(DIRSAMP/2)*(TAU/12)/5;s+=Math.log(0.95*Math.min(1,acc)+0.05/12);});return s;});
+        for(let q=-2;q<=2;q++)acc+=vmPdf(wrapPi(ra.a+q*st-(t.angle+o)),kv);}
+      acc=acc/(DIRSAMP/2)*ra.w/5;s+=Math.log(0.95*Math.min(1,acc)+0.05*ra.w/TAU);});return s;});
   const mx=Math.max(...ll),wk=ll.map(v=>Math.exp(v-mx)),sw=wk.reduce((a,b)=>a+b,0);
   let lk=0;KG.forEach((k,i)=>lk+=wk[i]/sw*Math.log(k));out.kappa=Math.exp(lk);
   let cum=0;out.kLo=KG[0];out.kHi=KG[KG.length-1];let lo=false;
   for(let i=0;i<KG.length;i++){cum+=wk[i]/sw;if(!lo&&cum>=0.1){out.kLo=KG[i];lo=true;}if(cum>=0.9){out.kHi=KG[i];break;}}
   out.nDir=dirT.length;
-  // counting
-  const cT=trials.filter(t=>t.truth===F.STONE&&t.resp.form===F.STONE&&t.resp.count!=null);
-  let best=-Infinity,post=[];
-  for(let ai=0;ai<12;ai++)for(let bi=0;bi<9;bi++){const a=0.05+ai*0.1,b=bi*0.05;
-    let s=-0.5*((a-PRIOR.ca)/0.3)**2-0.5*((b-PRIOR.cb)/0.1)**2;
-    for(const t of cT){const n=t.count,c=t.resp.count,sd=a+b*n;
-      const pr=(Phi((c+0.5-n)/sd)-(c<=0?0:Phi((c-0.5-n)/sd)));s+=Math.log(0.97*pr+0.03/8);}
-    post.push([a,b,s]);if(s>best)best=s;}
-  let ws=0,ea=0,eb=0;for(const[a,b,s]of post){const w=Math.exp(s-best);ws+=w;ea+=w*a;eb+=w*b;}
-  out.ca=ea/ws;out.cb=eb/ws;out.nCount=cT.length;
   // vocabulary limit
   const CP={2:.1,3:.2,4:.3,5:.15,6:.1,7:.08,8:.07};let lb=-Infinity;const lp=[];
   for(const Cc of [2,3,4,5,6,7,8])for(let bi=0;bi<=12;bi++){const be=bi*0.1;let s=Math.log(CP[Cc])-be/0.15;
-    for(const t of trials){const g=t.truth,ch=[...t.opts,F.WIND],L=g===F.WIND?0:legib(t.env,t.gm,t.p,t.k)[g],rw=rowWind(M,t.p);
+    for(const t of trials){const g=t.truth,ch=[...t.opts,F.WIND],L=g===F.WIND?0:legib(t.env,t.gm,t.p,holdOf(t))[g],rw=rowWind(M,t.p);
       const row=ch.map(j=>g===F.WIND?rw[j]:L*M[g][j]+(1-L)*rw[j]),sr=row.reduce((a,b)=>a+b,0);
       const pred=row[ch.indexOf(g)]/sr,eps=1-Math.exp(-be*Math.max(0,t.opts.length-Cc)),pc=clamp((1-eps)*pred+eps/ch.length,1e-4,1-1e-4);
       s+=Math.log(t.resp.form===g?pc:1-pc);}
@@ -226,76 +252,93 @@ function fitObserver(trials){
   return out;
 }
 
+/* Presence: how well the reader tells a sent moment from plain weather, by feel alone. Signal detection on
+   the felt rating (sent = 4 or 5, wind = 1 or 2; an unrated "Just wind" pick is a felt wind) against the truth
+   of each moment, with the log-linear correction so a perfect run gives a finite d'. c > 0 means the reader
+   waits for more before saying sent. This is the one number the practice is about, so it is shown only
+   between sittings: a score that moved after each touch would give that moment away. */
+const feltOf=t=>{const c=t.resp.conf;return c!=null?(c>=4?'sent':c<=2?'wind':'unclear'):t.resp.form===F.WIND?'wind':null;};
+function presence(trials){
+  let sN=0,sH=0,wN=0,wF=0,unc=0,n=0;
+  for(const t of trials){const f=feltOf(t);if(!f)continue;n++;if(f==='unclear')unc++;
+    if(t.truth===F.WIND){wN++;if(f==='sent')wF++;}else{sN++;if(f==='sent')sH++;}}
+  const zH=probit((sH+0.5)/(sN+1)),zF=probit((wF+0.5)/(wN+1));
+  return{n,sN,wN,hit:sN?sH/sN:null,fa:wN?wF/wN:null,unclear:n?unc/n:0,d:zH-zF,c:-(zH+zF)/2,ok:sN>=6&&wN>=6};
+}
+/* Reliability: when a sitting has come round again under its seed, the same sign was read twice, weeks
+   apart. How often the form and the felt sense agreed is how steady the reading is. */
+function reliability(trials){const by=new Map();
+  for(const t of trials){if(t.sit==null||t.epi==null||t.truth===F.WIND)continue;const k=t.seed+':'+t.epi;
+    let a=by.get(k);if(!a)by.set(k,a=new Map());if(!a.has(t.sit))a.set(t.sit,t);}
+  let n=0,form=0,felt=0;const sits=new Set();
+  for(const a of by.values()){if(a.size<2)continue;const[x,y]=[...a.values()].sort((p,q)=>p.at-q.at);n++;sits.add(y.sit);
+    if(x.resp.form===y.resp.form)form++;const fx=feltOf(x),fy=feltOf(y);if(fx&&fy&&fx===fy)felt++;}
+  return{n,form,felt,sits:sits.size};}
+/* The lexicon: what the reader has written about each cue, and the words that recur. A cue is a form, with
+   its side for a Stone. Words under three letters and the commonest function words are dropped; a word counts
+   once per note, so it must come back in another note to recur. */
+const STOP=new Set('the a an and or of to in on at it its is was be as if so but for with like than then this that there here just very more some something nothing not from into out up down'.split(' '));
+const cueOf=r=>FORM_KEY[r.form]+(r.form===F.STONE&&r.dir!=null?':'+DIR_KEY[r.dir]:'');
+const cueLabel=k=>{const[f,d]=k.split(':');return FORM_NAME[FORM_KEY.indexOf(f)]+(d?' '+DIR_WORD[DIR_KEY.indexOf(d)]:'');};
+const cueEntry=(k,means)=>{const[f,d]=k.split(':');return{form:f,...(d?{dir:d}:{}),means};};
+function lexicon(trials){const by=new Map();
+  for(const t of trials){const note=(t.resp.note||'').trim();if(!note)continue;const k=cueOf(t.resp);let c=by.get(k);if(!c)by.set(k,c={cue:k,notes:[],words:new Map()});
+    c.notes.push(note);const seen=new Set();for(const w of note.toLowerCase().split(/[^a-z']+/)){if(w.length<3||STOP.has(w)||seen.has(w))continue;seen.add(w);c.words.set(w,(c.words.get(w)||0)+1);}}
+  return[...by.values()].map(c=>({cue:c.cue,n:c.notes.length,notes:c.notes,recur:[...c.words].filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]).map(([w,n])=>({w,n}))})).sort((a,b)=>b.n-a.n);}
+/* How each lens has served this reader: readings kept under it, sittings, presence and reliability. */
+function lensBoard(trials){const by=new Map();for(const t of trials){const id=t.lens||'none';let a=by.get(id);if(!a)by.set(id,a=[]);a.push(t);}
+  return[...by].map(([id,ts])=>({id,n:ts.length,sits:new Set(ts.map(t=>t.sit)).size,pres:presence(ts),rel:reliability(ts)})).sort((a,b)=>b.n-a.n);}
+
 /* ====================================================================
    5. Languages and their evolution
    ==================================================================== */
-const NDIRS=[1,2,3,4,6,8,12,16],TODS=['day','dusk','night'];
-const BASELINE={nDir:12,off:0,nRing:5,forms:[true,true,true,true,true,false,false],T:6,beat:1.1,reps:1,p0:0.05,span:0.65,tod:'dusk',pre:4};
-function randGenome(r){return fixG({nDir:NDIRS[Math.floor(r()*8)],off:r(),nRing:1+Math.floor(r()*6),forms:SIGN_FORMS.map(()=>r()<0.5),
-  T:2+r()*10,beat:0.5+r()*2,reps:1+Math.floor(r()*3),p0:r()*0.7,span:0.15+r()*0.85,tod:TODS[Math.floor(r()*3)],pre:Math.floor(r()*5)});}
-function fixG(g){if(!g.forms.some(Boolean))g.forms[0]=true;g.T=clamp(g.T,2,12);g.beat=clamp(g.beat,0.5,2.5);g.off=wrap2Pi(g.off*TAU)/TAU;
-  g.nRing=clamp(Math.round(g.nRing),1,6);g.reps=clamp(Math.round(g.reps),1,3);g.p0=clamp(g.p0,0,0.85);g.span=clamp(g.span,0.1,1);g.pre=clamp(Math.round(g.pre),0,4);return g;}
+const TODS=['day','dusk','night'];
+/* A reading protocol: which forms to attend to, whether to read the Stone's side, when to sit and which
+   stretch of the cone to listen through. The wind sends every form; the reader chooses what to listen for. */
+const BASELINE={forms:[true,true,true,true,true,false,false],dir:true,p0:0.05,span:0.65,tod:'dusk'};
+function randGenome(r){return fixG({forms:SIGN_FORMS.map(()=>r()<0.5),dir:r()<0.5,p0:r()*0.7,span:0.15+r()*0.85,tod:TODS[Math.floor(r()*3)]});}
+function fixG(g){if(!g.forms.some(Boolean))g.forms[0]=true;g.p0=clamp(g.p0,0,0.85);g.span=clamp(g.span,0.1,1);return g;}
 const cloneG=g=>({...g,forms:g.forms.slice()});
 function mutate(g,r,rate){g=cloneG(g);const m=()=>r()<rate;
-  if(m()){const i=NDIRS.indexOf(g.nDir)+(r()<0.5?-1:1);g.nDir=NDIRS[clamp(i,0,NDIRS.length-1)];}
-  if(m())g.off+=gauss(r)*0.15; if(m())g.nRing+=r()<0.5?-1:1;
   for(const i of SIGN_FORMS)if(r()<rate/2)g.forms[i]=!g.forms[i];
-  if(m())g.T*=Math.exp(gauss(r)*0.25); if(m())g.beat+=gauss(r)*0.25; if(m())g.reps+=r()<0.5?-1:1;
-  if(m())g.p0+=gauss(r)*0.08; if(m())g.span+=gauss(r)*0.1; if(r()<rate/2)g.tod=TODS[Math.floor(r()*3)]; if(m())g.pre+=r()<0.5?-1:1;
+  if(m())g.dir=!g.dir; if(m())g.p0+=gauss(r)*0.08; if(m())g.span+=gauss(r)*0.1; if(r()<rate/2)g.tod=TODS[Math.floor(r()*3)];
   return fixG(g);}
-function crossover(a,b,r){const c=cloneG(a);for(const k of ['nDir','off','nRing','T','beat','reps','p0','span','tod','pre'])if(r()<0.5)c[k]=b[k];
+function crossover(a,b,r){const c=cloneG(a);for(const k of ['dir','p0','span','tod'])if(r()<0.5)c[k]=b[k];
   for(const i of SIGN_FORMS)if(r()<0.5)c.forms[i]=b.forms[i];return fixG(c);}
-/* 'clean': a wrong mark costs what a right one earns, a missing mark costs nothing (a reader who cannot decode codes).
-   'shannon': mutual information, as if errors could later be corrected. */
-let OBJECTIVE='clean';
-const tStoneOf=(g,n)=>Math.max(g.T,WORLD.settle+n*g.beat+0.5);
+/* 'shannon': mutual information, what the reader learns from the plume even through steady confusions.
+   'clean': a wrong mark costs what a right one earns, a missing mark costs nothing: a stricter reader. */
+let OBJECTIVE='shannon';
 
-/* Bits that reach the table in one cone: Monte Carlo through air + reader, repeats voted on the table. */
-function evaluate(g,obs,seed,N=1200){
-  const r=rng32(seed),k=WORLD.k,env=g.tod,p0=g.p0,p1=Math.min(0.98,g.p0+g.span);
-  const active=SIGN_FORMS.filter(i=>g.forms[i]),stoneOn=g.forms[0];
-  const nD=stoneOn?g.nDir:1,nR=stoneOn?g.nRing:1,others=active.filter(i=>i!==0);
-  const nStone=stoneOn?nD*nR:0,nSym=nStone+others.length,choices=[...active,F.STILL,F.WIND];
-  const V=active.length+1,eps=1-Math.exp(-obs.beta*Math.max(0,V-obs.C));
-  let tSum=others.length*g.T;if(stoneOn)for(let n=1;n<=nR;n++)tSum+=nD*tStoneOf(g,n);
-  const per=g.reps*(tSum/nSym+WORLD.gap);
-  let preT=0;for(let i=0;i<g.pre;i++)preT+=tStoneOf(g,PRIMES[i])+WORLD.gap;
-  const signs=Math.max(0,(600*(p1-p0)-preT)/per);
-  const restrict=row=>{let s=0;for(const j of choices)s+=row[j];return cumul(choices.map(j=>(1-eps)*row[j]/s+eps/choices.length));};
-  const tabs=P_BINS.map(pb=>{const L=legib(env,1,pb,k);let dc=null;
-    return{L,vis:active.map(gi=>restrict(obs.M[gi])),wind:restrict(rowWind(obs.M,pb)),dir:()=>dc||(dc=dirCell(env,1,g.T,pb,k))};});
-  const nA=active.length,CG=mat(nA,nA+1),CD=mat(nD,nD),CC=mat(nR,nR),D=TAU/nD;
+/* Bits a reader following protocol g takes from one cone: Monte Carlo through air + reader. The wind sends
+   every form alike, a Stone toward any of the four sides; the reader answers only from the forms attended to,
+   plus Still and Wind, and reads the side only if the protocol says to. A form let pass is erased when it is
+   read as weather and wrong when it is taken for one attended to. */
+function evaluate(g,obs,seed,N=1200,objective=OBJECTIVE){
+  const r=rng32(seed),env=g.tod,p0=g.p0,p1=Math.min(0.98,g.p0+g.span),T=WORLD.trialT;
+  const active=SIGN_FORMS.filter(i=>g.forms[i]),stoneOn=g.forms[0],nD=stoneOn&&g.dir?4:1;
+  const choices=[...active,F.STILL,F.WIND],V=active.length+1,eps=1-Math.exp(-obs.beta*Math.max(0,V-obs.C));
+  const nSym=active.length+(stoneOn?nD-1:0),signs=Math.max(0,600*(p1-p0)/(T+WORLD.gap));
+  // a form the reader does not listen for is not spread over the forms they do: what would have been read
+  // as it is read as weather
+  const restrict=row=>{let s=0;for(const j of choices)s+=row[j];const drop=Math.max(0,1-s);return cumul(choices.map(j=>(1-eps)*(row[j]+(j===F.WIND?drop:0))+eps/choices.length));};
+  const tabs=P_BINS.map(pb=>{const L=legib(env,1,pb,1);let dc=null;
+    return{L,vis:SIGN_FORMS.map(gi=>restrict(obs.M[gi])),wind:restrict(rowWind(obs.M,pb)),dir:()=>dc||(dc=dirCell(env,1,T,pb,1))};});
+  const nA=active.length,nS=SIGN_FORMS.length,CG=mat(nS,nA+1),CD=mat(4,4),D=TAU/4;
   const pick=cum=>{const u=r()*cum[cum.length-1];for(let i=0;i<cum.length;i++)if(u<cum[i])return i;return cum.length-1;};
-  let both=0,exact=0,erased=0;
+  let both=0,exact=0,wrong=0,erased=0;
   for(let i=0;i<N;i++){
-    const p=p0+r()*(p1-p0),tb=tabs[nearestIdx(P_BINS,p)],sym=Math.floor(r()*nSym);
-    let gi,d=0,c=1;
-    if(sym<nStone){gi=0;d=sym%nD;c=1+Math.floor(sym/nD);}else gi=active.indexOf(others[sym-nStone]);
-    const gF=active[gi],tally=new Array(nA).fill(0),ds=[],cs=[];
-    for(let q=0;q<g.reps;q++){
-      const j=pick(r()<tb.L[gF]?tb.vis[gi]:tb.wind),jf=choices[j];
-      if(jf===F.STILL||jf===F.WIND)continue;
-      tally[j]++;
-      if(jf===F.STONE){let dd=0,cc=1;
-        if(gF===F.STONE){
-          if(nD>1){const th=(d+g.off)*D,cell=tb.dir(),s=dirBin(th)*DIRSAMP+Math.floor(r()*DIRSAMP);
-            const pa=th+cell.off[s]+vmSample(r,obs.kappa*cell.vs[s]);
-            dd=((Math.round(wrap2Pi(pa)/D-g.off)%nD)+nD)%nD;}
-          cc=clamp(countDraw(r,c,g.beat,env,1,p,k,obs),1,nR);
-        }else{dd=Math.floor(r()*nD);cc=1+Math.floor(r()*nR);}
-        ds.push(dd);cs.push(cc);}
-    }
-    let dec=nA,bt=0;for(let a=0;a<nA;a++)if(tally[a]>bt){bt=tally[a];dec=a;}
-    CG[gi][dec]++;if(dec===nA)erased++;
-    if(stoneOn&&gi===0&&dec===0){const dv=new Array(nD).fill(0);let dd=ds[0],bv=0;for(const x of ds){dv[x]++;if(dv[x]>bv){bv=dv[x];dd=x;}}
-      const cc=cs.slice().sort((a,b)=>a-b)[(cs.length-1)>>1];CD[d][dd]++;CC[c-1][cc-1]++;both++;if(dd===d&&cc===c)exact++;}
-    else if(dec===gi&&!(stoneOn&&gi===0))exact++;
+    const p=p0+r()*(p1-p0),tb=tabs[nearestIdx(P_BINS,p)],gF=Math.floor(r()*nS),d=Math.floor(r()*4);
+    const j=pick(r()<tb.L[gF]?tb.vis[gF]:tb.wind),jf=choices[j],dec=jf===F.STILL||jf===F.WIND?nA:j;
+    CG[gF][dec]++;
+    if(dec===nA){erased++;continue;}
+    if(jf!==gF){wrong++;continue;}
+    if(gF===F.STONE&&nD>1){const th=d*D,cell=tb.dir(),s=dirBin(th)*DIRSAMP+Math.floor(r()*DIRSAMP);
+      const dd=((Math.round(wrap2Pi(th+cell.off[s]+vmSample(r,obs.kappa*cell.vs[s]))/D)%4)+4)%4;CD[d][dd]++;both++;if(dd===d)exact++;else wrong++;}
+    else exact++;
   }
-  const Ig=mutualInfo(CG),Ip=both>0?(both/N)*((nD>1?mutualInfo(CD):0)+(nR>1?mutualInfo(CC):0)):0;
-  const bps=Ig+Ip,sr=(1-k)*ENVS[env].sig,clarity=Math.exp(-((sr/12)**2))*vis((p0+p1)/2);
-  const recog=1-Math.exp(-(0.6+0.9*g.pre)*clarity);
-  const wrong=(N-exact-erased)/N,clean=Math.max(0,exact/N-wrong)*Math.log2(Math.max(2,nSym));
-  return{fit:recog*signs*(OBJECTIVE==='clean'?clean:bps),bps,clean,signs,recog,exact:exact/N,wrong,erased:erased/N,eps,V,nSym,cap:Math.log2(nSym)};
+  const Ig=mutualInfo(CG),Ip=both>0?(both/N)*mutualInfo(CD):0,bps=Ig+Ip;
+  const clean=Math.max(0,(exact-wrong)/N)*Math.log2(Math.max(2,nSym));
+  return{fit:signs*(objective==='clean'?clean:bps),bps,clean,signs,exact:exact/N,wrong:wrong/N,erased:erased/N,eps,V,nSym,cap:Math.log2(Math.max(2,nSym))};
 }
 
 class Evolver{
@@ -344,7 +387,7 @@ const W0=0.18;   // a fresh thread's half-width, cm
    comes from a field shared by its neighbours, which keeps a thread a thread. Spreading is carried as each
    particle's width (w2), not as random steps. */
 class SmokeSim{
-  constructor(){this.parts=[];this.rings=[];this.hist=[];this.reset({env:'dusk',gm:1,p:0.35,seed:7,k:WORLD.k});}
+  constructor(){this.parts=[];this.rings=[];this.hist=[];this.reset({env:'dusk',gm:1,p:0.35,seed:7});}
   reset(o){this.o=Object.assign({burn:0},o);const r=this.r=rng32(o.seed>>>0);this.wind=new Wind(o.env,o.gm,r);this.t=0;this.p=o.p;
     this.parts.length=0;this.rings.length=0;this.signs=[];
     this.modes=makeModes(r,0.12,0.4,0.8,3);this.fine=makeModes(r,0.45,0.9,2,5);this.finer=makeModes(r,1,1.8,4,8);
@@ -357,7 +400,7 @@ class SmokeSim{
   /* Dust in the air: it shows the wind around the plume and the inflow the rising smoke draws in. It has its
      own random stream, so it never changes the smoke, and it keeps drifting whatever the smoke is doing. */
   newMote(u,age){const r=this.mr;return{x:(r()-0.5)*76,y:(r()-0.5)*76,z:-12+u*96,age,tw:r()*TAU,b:0.4+0.6*r()};}
-  stepMotes(dt,t){const U=this.U,sig=(1-(this.kk||0))*this.wind.sigma()*0.5+2;
+  stepMotes(dt,t){const U=this.U,sig=this.wind.sigma()*0.5+2;
     for(let i=0;i<this.motes.length;i++){const m=this.motes[i];m.age+=dt;
       const hf=0.45+0.55*smooth(-5,35,m.z),rh2=m.x*m.x+m.y*m.y,near=Math.exp(-rh2/40)*smooth(-2,4,m.z)*(1-smooth(30,60,m.z));
       TX=0;TY=0;TZ=0;turb(this.modes,m.x,m.y,m.z,t,0.8);
@@ -378,30 +421,33 @@ class SmokeSim{
     this.mode=mode||BREAKS[pickW(r,[0.35,0.2,0.3,0.15+0.25*smooth(0.5,0.9,this.p)])];
     const a=r()*TAU;this.mdT=[Math.sin(a),Math.cos(a)];this.burstK=1;this.modeT=0;
     if(this.mode==='fork')this.startSplit(2+2*r());}
-  /* Two streams part across the wind (a buoyant plume bent by crossflow rolls up into a counter-rotating pair). */
-  startSplit(dur,shown){if(this.ez.fork.x<0.05){const U=this.U,sp=Math.hypot(U[0],U[1]);let px,py;
-      if(sp>2){px=-U[1]/sp;py=U[0]/sp;}else if(shown){px=1;py=0;}else{const a=this.r()*TAU;px=Math.sin(a);py=Math.cos(a);}
+  /* Two streams part across the wind (a buoyant plume bent by crossflow rolls up into a counter-rotating pair).
+     A Fork passes the crosswind it is bringing, so the streams part across that before the wind has turned. */
+  startSplit(dur,along){if(this.ez.fork.x<0.05){const U=this.U,sp=Math.hypot(U[0],U[1]);let px,py;
+      if(along){px=-along[1];py=along[0];}else if(sp>2){px=-U[1]/sp;py=U[0]/sp;}else{const a=this.r()*TAU;px=Math.sin(a);py=Math.cos(a);}
       this.splitDir=[px,py];}
     this.splitT=dur;}
   step(dt){
     const o=this.o,r=this.r,E=this.ez;this.t+=dt;if(o.burn)this.p=Math.min(1,this.p+dt*o.burn/600);
-    this.wind.step(dt);const nat=this.wind.nat(),s=this.active(),t=this.t;
-    let kk=0,sx=0,sy=0,gate=1,helix=0,curl=0,spill=0,tower=false;
-    if(s){const ts=t-s.t0,ramp=smooth(0,0.6,ts)*(1-smooth(s.T-0.5,s.T,ts));kk=o.k*ramp;
-      if(s.form===F.STILL)kk=Math.min(0.95,o.k+0.25)*ramp;
-      if(s.form===F.STONE){
-        if(s.angle!=null){sx=WORLD.S*ramp*Math.sin(s.angle);sy=WORLD.S*ramp*Math.cos(s.angle);}
-        if(s.count>0){const tp=ts-WORLD.settle;if(tp>=0&&tp<s.count*s.beat+0.3){const u=(tp%s.beat)/s.beat;
-          gate=u<0.4&&tp<s.count*s.beat?0.1+2.4*Math.sin(Math.PI*u/0.4)**2:0.1;}}}
+    const s=this.active(),t=this.t;
+    let q=0,gate=1,helix=0,curl=0,spill=0,tower=false;
+    // A sign is a mode the wind itself enters for a while: it turns to a bearing and holds, or holds its
+    // breath, or drops to the light crosswind that parts a plume. Nothing pushes the smoke from outside the air.
+    if(s){const ts=t-s.t0,ramp=smooth(0,0.6,ts)*(1-smooth(s.T-0.5,s.T,ts)),hold=s.hold==null?1:s.hold;q=QUIET[s.form]*hold*ramp;
+      const S=WORLD.S*(0.6+0.4*hold)*ramp;
+      if(s.form===F.STONE&&s.angle!=null)this.wind.drive(S*Math.sin(s.angle),S*Math.cos(s.angle),q);
+      else if(s.form===F.FORK){if(s.fa==null){const m=this.wind.m,sp0=Math.hypot(m[0],m[1]);s.fa=sp0>1?Math.atan2(m[0],m[1]):r()*TAU;}
+        const fx=Math.sin(s.fa),fy=Math.cos(s.fa);this.wind.drive(5*ramp*fx,5*ramp*fy,q);if(this.splitT<0.3&&ts<s.T-1)this.startSplit(Math.max(0.6,s.T-0.6-ts),[fx,fy]);}
+      else this.wind.drive(0,0,q);   // Still and Tower hold their breath; the shapes only need a calmer column
       if(s.form===F.HELIX)helix=ramp;
       if(s.form===F.CURL)curl=ramp;
       if(s.form===F.SPILL)spill=ramp;
       if(s.form===F.RING){for(const rt of [0.8,0.8+s.T/2]){const key=s.id+':'+rt;if(ts>=rt&&!this.spawned.has(key)){this.spawned.add(key);this.spawnRing();}}gate=0.3;}
-      if(s.form===F.FORK){kk=Math.max(kk,0.8*ramp);if(this.splitT<0.3&&ts<s.T-1)this.startSplit(Math.max(0.6,s.T-0.6-ts),true);}
-      if(s.form===F.TOWER){kk=Math.min(0.97,o.k+0.3)*ramp;const key=s.id+':brk';
+      if(s.form===F.TOWER){const key=s.id+':brk';
         if(ts<s.T-1.4)tower=true;else if(!this.spawned.has(key)){this.spawned.add(key);this.trip(['whip','puffs','bloom'][Math.floor(r()*3)]);}}}
-    const Ux=nat[0]*(1-kk)+sx,Uy=nat[1]*(1-kk)+sy;this.U=[Ux,Uy];this.kk=kk;
-    const sr=(1-kk)*this.wind.sigma(),sigT=0.55*sr+3,p=this.p,c=coh(p),w0=rise(p),ns=spillNat(p),sp=Math.hypot(Ux,Uy);
+    this.wind.step(dt);const nat=this.wind.nat();
+    const Ux=nat[0],Uy=nat[1];this.U=[Ux,Uy];this.quiet=q;
+    const sr=this.wind.sigma(),sigT=0.55*sr+3,p=this.p,c=coh(p),w0=rise(p),ns=spillNat(p),sp=Math.hypot(Ux,Uy);
     // every shape the communicator asks for eases in and out
     const hel=E.helix.to(helix,0.3,dt),cur=E.curl.to(curl,0.3,dt),spl=Math.max(0,E.spill.to(spill,0.3,dt));
     gate=Math.max(0,E.gate.to(gate,0.1,dt));
@@ -409,12 +455,12 @@ class SmokeSim{
     // A tall straight column needs a calm spell: rare, a minute or two apart at dusk and almost never in
     // the day or night winds. The communicator's grip (Still, Fork, Tower) makes its own calm.
     if(this.spellT>0)this.spellT-=dt;else if(r()<dt*0.02*Math.exp(-((sp/7)**2))*c)this.spellT=8+10*r();
-    const calm=E.calm.to(Math.max(this.spellT>0?1:0,smooth(0.7,0.92,kk),s&&s.form===F.FORK?0.75:0),1.2,dt);
+    const calm=E.calm.to(Math.max(this.spellT>0?1:0,smooth(0.7,0.92,q),s&&s.form===F.FORK?0.75:0),1.2,dt);
     const Lmax=tower?64:2.5+5*c*Math.exp(-((sp/12)**2))+52*clamp(calm,0,1)*Math.exp(-((sp/9)**2))*Math.exp(-((sr/12)**2))*c;
     if(this.Ldrop!=null){this.L+=(this.Ldrop-this.L)*(1-Math.exp(-dt/0.15));if(this.L-this.Ldrop<0.3)this.Ldrop=null;}
     else this.L+=(Lmax-this.L)*(1-Math.exp(-dt/(this.L<Lmax?(tower?2.5:3):0.6)));
     // trips: the restless short column breaks often; the communicator's grip keeps it from tripping
-    if(!tower&&kk<0.5&&this.Ldrop==null&&r()<dt*(this.L>15?0.02+sr/80:0.12+sr/60))this.trip();
+    if(!tower&&q<0.5&&this.Ldrop==null&&r()<dt*(this.L>15?0.02+sr/80:0.12+sr/60))this.trip();
     this.burstK*=Math.exp(-dt/1.5);const burst=Math.max(0,E.burst.to(this.burstK,0.15,dt));
     this.modeT+=dt;if(this.mode!=='bloom'&&this.modeT>6)this.mode='bloom';
     const wW=E.whip.to(this.mode==='whip'?1:0,0.35,dt),wP=E.puffs.to(this.mode==='puffs'?1:0,0.35,dt),wB=clamp(E.bloom.to(this.mode==='bloom'?1:0,0.35,dt),0,1);
@@ -506,4 +552,4 @@ class SmokeSim{
 function ringAt(g,q){const rr=g.R+g.a*Math.cos(q.ph);q.tx=g.x+rr*Math.sin(q.th);q.ty=g.y+rr*Math.cos(q.th);q.tz=g.z+g.a*Math.sin(q.ph);}
 
 
-module.exports={SmokeSim,F,WORLD,ENVS,hourToAng,angToHour,evaluate,BASELINE,PRIOR,PRIOR_M,STANDIN,Evolver,fitObserver,makeTrial,standInRespond,rng32,turb,smooth};
+module.exports={SmokeSim,F,WORLD,ENVS,hourToAng,angToHour,evaluate,BASELINE,PRIOR,PRIOR_M,STANDIN,Evolver,fitObserver,presence,feltOf,reliability,respAng,dirOf,stoneAngle,bearingWord,QUIET,LEVELS,legib,dirCell,holdOf,lexicon,lensMatch,lensBoard,cueOf,cueLabel,LENSES,FORM_KEY,DIR_KEY,BURN_WORD,TRADITIONS,FAMILY,makeTrial,standInRespond,rng32,turb,smooth};

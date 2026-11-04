@@ -1,0 +1,1630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Language of the Plume</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one game screen. The smoke table fills it; mode tabs and score chips float top-left, the wind
+   compass top-right, and every control docks along the bottom edge just under the table's rings. The table
+   itself is the main input (tap an hour and a ring). Model detail lives in two field-note columns below. */
+:root{
+  --bg:#e8ebe6; --panel:#f3f4f0; --sunk:#dadfd8; --ink:#1c2220; --muted:#59635e; --line:#c2c8c1;
+  --ember:#b4441a; --smoke:#4f5964; --table:#d3ccbf; --table-ink:#6a6154;
+  --ok:#2b7a56; --warn:#9c6a0c; --bad:#ab3838; --sci:#3b6ea5;
+  --f-display:"Marcellus","Palatino Linotype",Georgia,serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111517; --panel:#181d20; --sunk:#0c0f11; --ink:#e2e5e1; --muted:#8f9994; --line:#2a3135;
+  --ember:#ef7a3e; --smoke:#cfd7de; --table:#29251f; --table-ink:#9f9481;
+  --ok:#5fc292; --warn:#e1a83f; --bad:#e46d6d; --sci:#7fa8d8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111517; --panel:#181d20; --sunk:#0c0f11; --ink:#e2e5e1; --muted:#8f9994; --line:#2a3135;
+  --ember:#ef7a3e; --smoke:#cfd7de; --table:#29251f; --table-ink:#9f9481;
+  --ok:#5fc292; --warn:#e1a83f; --bad:#e46d6d; --sci:#7fa8d8; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.wrap>*{min-width:0}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 20px}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(1.7rem,3.2vw,2.3rem);line-height:1.1;margin:0;letter-spacing:.01em}
+h2{font-family:var(--f-display);font-weight:400;font-size:1.3rem;margin:0;text-wrap:balance}
+h3{font-size:.76rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0;font-weight:600}
+p{margin:0}
+.lede{color:var(--muted);max-width:70ch;font-size:.93rem}
+/* the game screen */
+.game{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--sunk);display:grid}
+.stagewrap{position:relative}
+.screen{position:relative;width:100%;aspect-ratio:16/10;max-height:calc(100vh - 120px);min-height:540px}
+.screen>canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
+.hud{position:absolute;top:12px;left:12px;display:grid;gap:8px;justify-items:start;max-width:calc(100% - 120px);pointer-events:none}
+.hud>*{pointer-events:auto}
+.cap{font:500 .78rem var(--f-mono);color:var(--muted);pointer-events:none}
+.cap b{color:var(--ink);font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px;pointer-events:none}
+.chip-s{font:500 .76rem var(--f-mono);background:color-mix(in srgb,var(--panel) 86%,transparent);border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.chip-s b{color:var(--ember);font-weight:600}
+.signcap{position:absolute;top:96px;right:12px;max-width:min(46%,380px);text-align:right;font:500 .84rem/1.4 var(--f-mono);color:var(--ember);pointer-events:none}
+.toast{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);font-family:var(--f-display);font-size:clamp(1.1rem,2.2vw,1.5rem);
+  color:var(--muted);pointer-events:none;opacity:0;animation:softfade 2.6s ease-in-out}
+@keyframes softfade{20%,60%{opacity:.9}}
+/* the last frame of the smoke dissolves into the next sitting instead of cutting */
+.screen>canvas.fade{pointer-events:none;opacity:0}
+/* the dock */
+.dock{position:absolute;left:0;right:0;bottom:0;padding:30px 14px 12px;display:grid;gap:8px;
+  background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--sunk) 94%,transparent) 28px)}
+.deck{display:grid;gap:8px}
+.deck-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.glyphbar{display:flex;flex-wrap:wrap;gap:6px}
+.gbtn{appearance:none;display:inline-flex;align-items:center;gap:7px;padding:7px 11px 7px 8px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);font:500 .9rem var(--f-body);cursor:pointer}
+.gbtn svg{width:20px;height:20px;flex:none}
+.gbtn:hover:not(:disabled){border-color:var(--muted)}
+.gbtn[aria-checked="true"]{border-color:var(--ember);background:color-mix(in srgb,var(--ember) 16%,var(--panel));box-shadow:inset 0 0 0 1px var(--ember)}
+.gbtn:disabled{opacity:.55;cursor:default}
+kbd{font:500 .68rem var(--f-mono);border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.6}
+.conf{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;color:var(--muted)}
+.fbtn{appearance:none;border:1px solid transparent;background:transparent;border-radius:999px;padding:4px 10px;cursor:pointer;font:500 .8rem var(--f-body);color:var(--muted)}
+.fbtn:hover:not(:disabled){border-color:var(--line)}
+.fbtn[aria-pressed="true"]{border-color:var(--ember);color:var(--ink);background:color-mix(in srgb,var(--ember) 12%,transparent)}
+.fbtn:disabled{opacity:.5;cursor:default}
+button.btn.quiet{background:transparent;border-color:transparent;color:var(--muted)}
+button.btn.quiet:hover:not(:disabled){border-color:var(--line);color:var(--ink)}
+.note{flex:1 1 180px;min-width:0;font:inherit;font-size:.86rem;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.hint{font-size:.84rem;color:var(--muted)} .hint b{color:var(--ink);font-weight:600}
+.mini{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted)}
+.mini input[type=range]{width:110px}
+.mini output{font-family:var(--f-mono);min-width:3.2em}
+.spark{width:160px;height:36px;margin-left:auto;flex:none}
+button.btn{appearance:none;display:inline-flex;align-items:center;gap:8px;font:500 .9rem var(--f-body);padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button.btn:hover:not(:disabled){border-color:var(--muted)}
+button.btn.primary{background:var(--ember);border-color:var(--ember);color:#fff}
+button.btn.big{font-size:1.05rem;padding:11px 22px}
+button.btn:disabled{opacity:.45;cursor:not-allowed}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{appearance:none;border:0;background:transparent;color:var(--muted);font:500 .85rem var(--f-body);padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.modes button{padding:8px 16px;font-size:.92rem}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+input[type=range]{accent-color:var(--ember)}
+/* instruments under the screen */
+.instruments{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;padding:10px;background:var(--panel);border-top:1px solid var(--line)}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:6px;align-content:start}
+.ro{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:5px 9px;min-width:0}
+.ro span{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ro b{font:500 .95rem var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.strip-box{position:relative;width:100%;height:112px;background:var(--bg);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.strip-box canvas{position:absolute;inset:0;width:100%;height:100%}
+@media (max-width:760px){
+  .screen{aspect-ratio:auto;height:min(105vw,560px);min-height:380px;max-height:none}
+  .dock{position:static;background:var(--panel);padding:12px;border-top:1px solid var(--line)}
+  .signcap{top:auto;bottom:10px;left:12px;right:12px;max-width:none;text-align:left}
+  .instruments{grid-template-columns:minmax(0,1fr)}
+  .spark{margin-left:0}
+}
+/* field notes */
+.notes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.notes{grid-template-columns:minmax(0,1fr)}}
+.note-col{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px;align-content:start;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.status{font:.8rem var(--f-mono);color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.metric{border-top:2px solid var(--line);padding-top:8px;min-width:0}
+.metric span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.metric b{display:block;font:500 1.3rem var(--f-mono);font-variant-numeric:tabular-nums}
+.metric small{display:block;color:var(--muted);font-size:.78rem;line-height:1.35}
+.metric.prior{border-top-color:var(--warn)} .metric.data{border-top-color:var(--ok)}
+/* presence: the headline. It moves only between sittings, so no single moment is given away. */
+.pres{border-top:2px solid var(--ember);padding-top:8px;display:grid;gap:4px}
+.pres span{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.pres b{font:500 1.6rem var(--f-mono);font-variant-numeric:tabular-nums;line-height:1.1}
+.pres p{font-size:.86rem;max-width:60ch}
+.pres .drift{color:var(--muted);font-size:.8rem}
+/* the last sitting, told as a whole, in the dock until the next one ends */
+.sitting{border-left:3px solid var(--ember);background:color-mix(in srgb,var(--panel) 80%,transparent);border-radius:0 8px 8px 0;padding:8px 12px;font-size:.86rem;display:grid;gap:2px;max-width:72ch}
+.sitting b{font-weight:600}
+.sitting .who{font:500 .72rem var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+/* the lexicon: lens in use, the lens board, the reader's words */
+.notes .lex{grid-column:1/-1}
+.mini select{font:inherit;font-size:.82rem;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+table.lex{border-collapse:collapse;width:100%;font-size:.84rem}
+table.lex th,table.lex td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+table.lex th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.wchip{appearance:none;font:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:2px 9px;background:var(--bg);color:var(--ink);cursor:pointer;margin:2px 4px 2px 0}
+.wchip:hover{border-color:var(--ember)}
+.word{font:inherit;font-size:.84rem;padding:4px 8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:11em}
+.lens-src{color:var(--muted);font-size:.78rem}
+.lens-src a,.fcard a,.tl-detail a{color:inherit;text-decoration:underline;text-decoration-color:var(--line)}
+/* the readers of smoke: family filter, timeline, detail, the forms */
+.readers code{font:.78rem var(--f-mono)}
+.fam{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{appearance:none;display:inline-flex;align-items:center;gap:6px;font:500 .82rem var(--f-body);border:1px solid var(--line);border-radius:999px;padding:4px 11px 4px 8px;background:var(--panel);color:var(--muted);cursor:pointer}
+.fchip i{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block}
+.fchip[aria-pressed="true"]{color:var(--ink);border-color:var(--c)}
+.fchip[aria-pressed="false"] i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--c)}
+.tl-box{position:relative;width:100%;overflow:hidden}
+#timeline{display:block;width:100%;height:auto}
+#timeline .dot{cursor:pointer;outline:none}
+#timeline .dot:focus-visible circle.ring,#timeline .dot.sel circle.ring{stroke:var(--ink);stroke-width:2}
+.tl-detail{min-height:3.2em;border-left:3px solid var(--line);padding:4px 0 4px 12px;font-size:.9rem}
+.tl-detail .when{font:500 .8rem var(--f-mono);color:var(--muted)}
+.forms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.fcard{border:1px solid var(--line);border-top:3px solid var(--c);border-radius:8px;padding:10px 12px;display:grid;gap:5px;align-content:start;background:var(--bg);min-width:0}
+.fcard .fam-pill{font:500 .7rem var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--c)}
+.fcard h3{font-family:var(--f-display);font-size:1.05rem;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:400}
+.fcard .where{font:.76rem var(--f-mono);color:var(--muted)}
+.fcard .reads{font-size:.84rem}.fcard .reads b{font-weight:600}
+.fcard p{font-size:.84rem;color:var(--muted)}
+.fcard .btn{justify-self:start;font-size:.8rem;padding:5px 10px}
+.scroll{overflow-x:auto;max-width:100%}
+table.cm{border-collapse:collapse;font:.74rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.cm th,table.cm td{padding:4px 6px;text-align:center;border:1px solid var(--line)}
+table.cm th{font-weight:500;color:var(--muted);background:var(--bg)}
+table.cm th.rh{text-align:right}
+table.top{border-collapse:collapse;width:100%;font:.78rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.top th,table.top td{padding:5px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+table.top th{font-weight:500;color:var(--muted)} table.top td:first-child,table.top th:first-child{text-align:left}
+table.top tr.base td{color:var(--muted);font-style:italic}
+.fine{font-size:.8rem;color:var(--muted);max-width:68ch}
+.chart-box{position:relative;width:100%;height:170px}
+.chart-box canvas{position:absolute;inset:0;width:100%;height:100%}
+.rule{border-left:3px solid var(--ember);padding:4px 0 4px 12px;font-size:.93rem}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;font-size:.84rem;margin:0}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.glyphs{display:flex;flex-wrap:wrap;gap:6px}
+.glyph{display:inline-flex;align-items:center;gap:5px;font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:3px 9px 3px 5px}
+.glyph svg{width:16px;height:16px}
+.glyph.off{opacity:.35;text-decoration:line-through}
+details{font-size:.86rem} summary{cursor:pointer;color:var(--muted);font-weight:500}
+details .kv{margin-top:8px} details .kv dd{font-family:var(--f-body)}
+svg.ic{stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+footer{color:var(--muted);font-size:.8rem;max-width:80ch}
+@media (prefers-reduced-motion: reduce){.toast{animation:softfade 2.6s steps(1,end)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Language of the Plume</h1>
+    <p class="lede">Learn to read the plume. Sit at a ridge-top table with a burning cone and watch. The table learns how you read, when you feel a presence in the smoke and when you feel only weather, and tells you, sitting by sitting, how your reading grows.</p>
+  </header>
+
+  <section class="game" aria-label="Smoke table">
+    <div class="stagewrap">
+      <div class="screen">
+        <canvas id="stage" aria-label="The table seen from your seat, with smoke rising from the cone. Tap a side of the table to mark where the smoke leaned."></canvas>
+        <canvas id="fade" class="fade" aria-hidden="true"></canvas>
+        <div class="hud">
+          <div class="seg modes" role="tablist" aria-label="Mode">
+            <button role="tab" id="mRead" aria-selected="true">Read</button>
+            <button role="tab" id="mFree" aria-selected="false">Free</button>
+            <button role="tab" id="mEvo" aria-selected="false">Protocol</button>
+          </div>
+          <div class="cap" id="caption"></div>
+          <div class="chips" id="chips"></div>
+        </div>
+        <div class="signcap" id="signcap" aria-live="polite"></div>
+        <div class="toast" id="toast" aria-live="polite" hidden></div>
+      </div>
+
+      <div class="dock" id="dock">
+        <!-- READ: one unbroken sitting; a pick soon after a sign is the reading of it -->
+        <div class="deck" id="deckRead">
+          <div class="sitting" id="sitting" aria-live="polite" hidden></div>
+          <div class="glyphbar" id="formChoices" role="radiogroup" aria-label="What did the smoke just do?"></div>
+          <div class="deck-row">
+            <div class="conf" role="group" aria-label="How it felt (optional)"><span>it felt</span><span id="confDots" class="row" style="gap:2px"></span></div>
+            <label class="mini" for="lens">lens <select id="lens" aria-label="Lens"></select></label>
+            <input type="text" id="note" class="note" maxlength="200" placeholder="what it brought to mind, if anything" aria-label="What it brought to mind">
+            <button class="btn quiet" id="btnPass" title="Esc" hidden>Let it go</button>
+          </div>
+          <span class="hint" id="ansHint" aria-live="polite"></span>
+        </div>
+        <!-- EVOLVE -->
+        <div class="deck" id="deckEvo" hidden>
+          <div class="deck-row">
+            <button class="btn primary" id="btnEvo">Run evolution</button>
+            <button class="btn" id="btnEvoReset">Start over</button>
+            <div class="seg" role="group" aria-label="What counts as success"><button id="objShannon" aria-pressed="true">Bits learned</button><button id="objClean" aria-pressed="false">Clean marks</button></div>
+          </div>
+          <div class="deck-row">
+            <button class="btn" id="btnPlay">Show these signs</button>
+            <div class="seg" role="group" aria-label="Playback speed"><button id="sp1" aria-pressed="true">1×</button><button id="sp4" aria-pressed="false">4×</button></div>
+            <button class="btn" id="btnKeep">Keep this protocol</button>
+            <span class="hint" id="keepStatus"></span>
+            <canvas class="spark" id="spark" aria-label="Best bits per cone by generation"></canvas>
+          </div>
+          <span class="hint" id="evoHint"></span>
+        </div>
+        <!-- FREE -->
+        <div class="deck" id="deckFree" hidden>
+          <div class="deck-row">
+            <div class="seg" role="group" aria-label="Time of day">
+              <button data-env="day" aria-pressed="false">Day</button>
+              <button data-env="dusk" aria-pressed="true">Dusk</button>
+              <button data-env="night" aria-pressed="false">Night</button>
+            </div>
+            <label class="mini" for="gust">Gusts <input type="range" id="gust" min="0.3" max="2" step="0.1" value="1"><output id="gustOut">1.0×</output></label>
+            <label class="mini" for="phase">Burned <input type="range" id="phase" min="0" max="100" step="1" value="35"><output id="phaseOut">35%</output></label>
+            <button class="btn" id="btnBurn">Burn 20×</button>
+          </div>
+          <div class="glyphbar" id="freeSigns" aria-label="Send a sign"></div>
+          <span class="hint">Tap a side of the table to send a <b>Stone</b>: the wind turns that way and holds. The buttons send the other forms.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="instruments" aria-label="Instrument readings">
+      <div class="readouts">
+        <div class="ro"><span>Lean toward</span><b id="roHour">–</b></div>
+        <div class="ro"><span>Lean angle</span><b id="roLean">–</b></div>
+        <div class="ro"><span>Swirl</span><b id="roSwirl">–</b></div>
+        <div class="ro"><span>Smooth column</span><b id="roBreak">–</b></div>
+        <div class="ro"><span>Streams</span><b id="roStreams">–</b></div>
+        <div class="ro"><span>Air at cone</span><b id="roWind">–</b></div>
+      </div>
+      <div class="strip-box"><canvas id="strip" aria-label="Last 30 seconds: lean bearing, smoke density and swirl"></canvas></div>
+    </div>
+  </section>
+
+  <section class="notes">
+    <div class="note-col">
+      <h2>The reader</h2>
+      <div class="row">
+        <div class="seg" role="group" aria-label="Reader">
+          <button id="rdYou" aria-pressed="true">You</button>
+          <button id="rdStand" aria-pressed="false">Stand-in (example)</button>
+        </div>
+        <button class="btn" id="btnStand" hidden>Add 20 stand-in answers</button>
+      </div>
+      <span class="status" id="storeStatus">Connecting storage…</span>
+      <div class="pres" id="presence"></div>
+      <div class="pres" id="reliab"></div>
+      <p class="fine">Readings are blind in the moment: the table never says what any one moment was, so the record holds how you read, not what correction taught you. At the end of each sitting it tells the sitting as a whole, and the presence score moves. That score is the heart of the practice: how well you tell a sent moment from plain weather, by feel.</p>
+      <details id="readerModel">
+        <summary>Model of the reader (confusion, direction, counting, vocabulary; it moves between sittings)</summary>
+        <div style="display:grid;gap:12px;margin-top:10px">
+          <div class="metrics" id="metrics"></div>
+          <div class="scroll"><table class="cm" id="cm" aria-label="Fitted form confusion: rows are what was sent, columns what was read"></table></div>
+          <p class="fine" id="calNote"></p>
+        </div>
+      </details>
+    </div>
+    <div class="note-col">
+      <h2 id="bestHead">The language</h2>
+      <p class="rule" id="bestRule"></p>
+      <div class="glyphs" id="bestGlyphs"></div>
+      <dl class="kv" id="bestKV"></dl>
+      <div class="chart-box"><canvas id="fitChart" aria-label="Bits per cone by generation"></canvas></div>
+      <div class="scroll"><table class="top" id="topTable"></table></div>
+      <p class="fine" id="evoNote"></p>
+      <details>
+        <summary>About the ridge</summary>
+        <dl class="kv">
+          <dt>Ridge</dt><dd>The crest runs left to right across the table and the slopes fall away from you and toward you. You sit on the near slope.</dd>
+          <dt>Day</dt><dd>The sunlit slope's upslope flow wins at the crest and carries the smoke away from you.</dd>
+          <dt>Dusk</dt><dd>The hinge between breaths: weak, wandering air. The best time to be heard.</dd>
+          <dt>Night</dt><dd>Cold air drains off the crest down one slope, then the other.</dd>
+          <dt>Column</dt><dd>Most of the time the smoke stays smooth for only a few centimetres above the cone and is busy from there up. In a rare calm spell it climbs as one thin straight column, up to about two feet, then suddenly takes a new form: a sideways whip, a chain of puffs, a turbulent bloom, or two streams.</dd>
+          <dt>Air's arc</dt><dd>The bright stretch of the table's rim is where the wind has lately been carrying the smoke: its habit. There is one wind, signs and all, so a lean that turns against its own habit and holds there is the wind saying something.</dd>
+          <dt>Signs</dt><dd>A sign is a mode the wind enters for a few seconds, not a push laid over it: it turns toward a side of the table and holds, or holds its breath so the column can stand or carry a shape, or drops to the light crosswind that parts a plume. When the sign ends the wind wanders back on its own slow clock.</dd>
+          <dt>Levels</dt><dd>Seven airs, from a soft, committed wind to a gusty one that only half means its signs. After a sitting in which your felt sense clearly told sent from wind the air moves up one; after one in which it could not, down one.</dd>
+          <dt>Fork</dt><dd>In a light crosswind, and late in the burn when the ember is a ring, the plume can split into two streams for a few seconds.</dd>
+          <dt>Late burn</dt><dd>The ash cap and the cooling cup make weak smoke that spills to every side on its own.</dd>
+        </dl>
+      </details>
+    </div>
+    <div class="note-col lex">
+      <h2>The lexicon</h2>
+      <p class="fine" id="lensAbout"></p>
+      <div id="lensBoard"></div>
+      <div id="lexicon"></div>
+    </div>
+  </section>
+
+  <section class="readers" aria-labelledby="readersHead">
+    <div class="note-col">
+      <h2 id="readersHead">The readers of smoke</h2>
+      <p class="fine">Every way people are known to have read smoke, and the people who did it, from two Babylonian tablets to the fluid dynamicists. Each has its source, and the writeup behind this page (<code>docs/smoke-reading-traditions.md</code>) says plainly where the evidence is thin. Where a tradition left rules for what was seen, you can sit with it as a lens.</p>
+      <div class="fam" id="famFilter" role="group" aria-label="Show these families"></div>
+      <div class="tl-box"><svg id="timeline" role="group" aria-label="Timeline of smoke readers" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <div class="tl-detail" id="tlDetail" aria-live="polite"></div>
+      <div class="forms-grid" id="formsGrid"></div>
+    </div>
+  </section>
+
+  <footer>The smoke is a particle model riding a stochastic ridge wind (Ornstein–Uhlenbeck gusts, divergence-free eddies, a laminar column that breaks higher in still air). The reader model is fitted from your own readings by maximum likelihood with weak priors; the presence score is the signal-detection measure (d′ and criterion) of how well your felt sense separates a sent moment from plain weather. Whether anyone is sending is the question a reader trains to answer. People have read smoke this way for a very long time; this table is a place to practise.</footer>
+</div>
+
+<script>
+"use strict";
+/* ====================================================================
+   1. Maths
+   ==================================================================== */
+const TAU=Math.PI*2, D2R=Math.PI/180, R2D=180/Math.PI;
+const clamp=(x,a,b)=>x<a?a:x>b?b:x;
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const wrapPi=a=>{a=(a+Math.PI)%TAU;if(a<0)a+=TAU;return a-Math.PI;};
+const wrap2Pi=a=>{a%=TAU;return a<0?a+TAU:a;};
+function rng32(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+function hashStr(s){let h=2166136261>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;}
+function gauss(r){let u=r();while(u<1e-12)u=r();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*r());}
+function poisson(r,l){if(l<=0)return 0;const L=Math.exp(-l);let k=0,p=1;do{k++;p*=r();}while(p>L&&k<50);return k-1;}
+function i0e(x){x=Math.abs(x);if(x<=3.75){const t=(x/3.75)**2;return(1+t*(3.5156229+t*(3.0899424+t*(1.2067492+t*(0.2659732+t*(0.0360768+t*0.0045813))))))*Math.exp(-x);}const t=3.75/x;return(0.39894228+t*(0.01328592+t*(0.00225319+t*(-0.00157565+t*(0.00916281+t*(-0.02057706+t*(0.02635537+t*(-0.01647633+t*0.00392377))))))))/Math.sqrt(x);}
+function i1e(x){const ax=Math.abs(x);let v;if(ax<=3.75){const t=(ax/3.75)**2;v=ax*(0.5+t*(0.87890594+t*(0.51498869+t*(0.15084934+t*(0.02658733+t*(0.00301532+t*0.00032411))))))*Math.exp(-ax);}else{const t=3.75/ax;v=(0.39894228+t*(-0.03988024+t*(-0.00362018+t*(0.00163801+t*(-0.01031555+t*(0.02282967+t*(-0.02895312+t*(0.01787654-t*0.00420059))))))))/Math.sqrt(ax);}return x<0?-v:v;}
+const vmPdf=(e,k)=>Math.exp(k*(Math.cos(e)-1))/(TAU*i0e(k));
+const vmR=k=>k<1e-9?0:i1e(k)/i0e(k);
+const circSdDeg=k=>Math.sqrt(-2*Math.log(Math.max(1e-9,vmR(k))))*R2D;
+function vmSample(r,k){
+  if(k<1e-3)return r()*TAU-Math.PI;
+  const a=1+Math.sqrt(1+4*k*k),b=(a-Math.sqrt(2*a))/(2*k),rr=(1+b*b)/(2*b);
+  for(let i=0;i<200;i++){const z=Math.cos(Math.PI*r()),f=(1+rr*z)/(rr+z),c=k*(rr-f),u2=r();
+    if(c*(2-c)-u2>0||Math.log(c/u2)+1-c>=0)return(r()<0.5?-1:1)*Math.acos(clamp(f,-1,1));}
+  return 0;
+}
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));}
+const Phi=x=>0.5*(1+erf(x/Math.SQRT2));
+const probit=p=>{let lo=-6,hi=6;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(Phi(m)<p)lo=m;else hi=m;}return(lo+hi)/2;};
+const mat=(n,m)=>Array.from({length:n},()=>new Array(m).fill(0));
+const cumul=a=>{let s=0;return a.map(v=>(s+=v));};
+const nearestIdx=(arr,x)=>{let bi=0;for(let i=1;i<arr.length;i++)if(Math.abs(arr[i]-x)<Math.abs(arr[bi]-x))bi=i;return bi;};
+const nearest=(arr,x)=>arr[nearestIdx(arr,x)];
+function shuffle(a,r){for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pickW(r,w){let s=0;for(const v of w)s+=v;let u=r()*s;for(let i=0;i<w.length;i++){u-=w[i];if(u<=0)return i;}return w.length-1;}
+/* Plug-in mutual information of a confusion count matrix, with the Miller–Madow bias correction. */
+function mutualInfo(C){
+  let N=0;const R=C.length,K=C[0].length,rs=new Array(R).fill(0),cs=new Array(K).fill(0);
+  for(let i=0;i<R;i++)for(let j=0;j<K;j++){const v=C[i][j];N+=v;rs[i]+=v;cs[j]+=v;}
+  if(N===0)return 0;
+  let I=0,nz=0;
+  for(let i=0;i<R;i++)for(let j=0;j<K;j++){const v=C[i][j];if(v>0){nz++;I+=v/N*Math.log2(v*N/(rs[i]*cs[j]));}}
+  const rr=rs.filter(v=>v>0).length,cc=cs.filter(v=>v>0).length;
+  I-=Math.max(0,nz-rr-cc+1)/(2*N*Math.LN2);
+  return Math.max(0,I);
+}
+
+/* ====================================================================
+   2. The world: forms, ridge weather, the burning cone
+   ==================================================================== */
+const F={STONE:0,RING:1,CURL:2,HELIX:3,SPILL:4,FORK:5,TOWER:6,STILL:7,WIND:8};
+/* The forms a communicator can choose for a sign (Still separates signs; Wind is no sign). */
+const SIGN_FORMS=[0,1,2,3,4,5,6];
+const FORM_NAME=['Stone','Ring','Curl','Helix','Spill','Fork','Tower','Still','Just wind'];
+const FORM_HINT=['leans toward an hour and pulses a count','a smoke ring rises and holds','a loop rolls up in the column','the column winds like a corkscrew','smoke pours out to every side','the plume splits into two streams for a few seconds','a tall straight column, up to two feet, that suddenly takes a new form','the column stands smooth and straight','nothing deliberate, only the ridge'];
+const ICON=[
+  '<circle cx="6" cy="14" r="2.4" fill="currentColor" stroke="none"/><path d="M8 12 16 4M11 4h5v5"/>',
+  '<ellipse cx="10" cy="10" rx="7" ry="3.6"/><ellipse cx="10" cy="10" rx="3.4" ry="1.4"/>',
+  '<path d="M10 18V12c0-3 4-3 4 0s-5 4-6 0 2-7 6-6"/>',
+  '<path d="M10 18c-5-2 5-4 0-6s5-4 0-6 5-3 0-4"/>',
+  '<circle cx="10" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M3 15l4-2M17 15l-4-2M10 18v-3M4 9l4 2M16 9l-4 2"/>',
+  '<path d="M10 18v-7M10 11C9 8 6 6 5 2M10 11c1-3 4-5 5-9"/>',
+  '<path d="M10 18V8M10 8C6 8 5 5 7 4s2-3 4-1 4 1 3 3-2 2-4 2"/>',
+  '<path d="M10 18V3"/><circle cx="10" cy="18" r="1.3" fill="currentColor" stroke="none"/>',
+  '<path d="M2 7c3-2 5 2 8 0s5-2 8 0M2 13c3-2 5 2 8 0s5-2 8 0"/>'];
+const icon=f=>`<svg class="ic" viewBox="0 0 20 20" aria-hidden="true">${ICON[f]}</svg>`;
+/* Ridge weather at the crest. W: mean flow (cm/s), sig: gust std (cm/s), tau: gust memory (s). */
+const ENVS={day:{name:'Day upslope',W:35,sig:14,tau:4},dusk:{name:'Dusk hinge',W:4,sig:4,tau:7},night:{name:'Night drainage',W:16,sig:7,tau:5}};
+const WORLD={S:22,settle:1.5,gap:2.0,trialT:6,clip:11,lead:2.5};
+/* A sign is a mode the wind enters: how far it quietens for each form (0 = the air is untouched). The
+   shapes need a calmer column to carry them; Still and Tower are the wind holding its breath. */
+const QUIET=[0.5,0.5,0.5,0.5,0.4,0.75,0.95,0.9,0];
+/* The air the reader practises in, from easy to hard: gustier, and a wind less committed to its signs. */
+const LEVELS=[{gm:0.5,hold:1},{gm:0.75,hold:1},{gm:1,hold:0.95},{gm:1.25,hold:0.9},{gm:1.5,hold:0.8},{gm:1.75,hold:0.7},{gm:2,hold:0.6}];
+/* Direction is read from the seat: away, right, toward you, left. A sent Stone takes one of the four with a
+   hand's width of play, so the lean is never a perfect grid. */
+const DIR_WORD=['away from you','to your right','toward you','to your left'],DIR_SHORT=['away','right','toward you','left'];
+const stoneAngle=r=>Math.floor(r()*4)*TAU/4+(r()-0.5)*TAU/12;
+const dirOf=a=>Math.round(wrap2Pi(a)/(TAU/4))%4;
+const BEAR8=['away','away, right','right','toward, right','toward you','toward, left','left','away, left'];
+const bearingWord=a=>BEAR8[Math.round(wrap2Pi(a)/(TAU/8))%8];
+/* Lenses: ways of reading. Each is a dictionary from what the reader saw (form, side, hour, burn) to what a
+   tradition made of it. 'own' is the reader's own lexicon, built from their notes; the traditions' entries are
+   lifted from docs/smoke-reading-traditions.md and carry their source keys. A rule matches a reading when
+   every field it names matches. */
+const FORM_KEY=['stone','ring','curl','helix','spill','fork','tower','still','wind'],DIR_KEY=['away','right','toward','left'];
+const BURN_WORD=p=>p<0.33?'early':p<0.66?'mid':'late';
+/* The traditions: lifted verbatim from the writeup's JSON block and Sources table by
+   projects/language_of_the_plume/lift_traditions.py. Do not edit between the markers. */
+/* TRADITIONS:BEGIN */
+const TRADITIONS={"lenses":[{"id":"babylonian-qutrenu","name":"Old Babylonian smoke omens","era":"Old Babylonian, c. 1800 BC","seat":"The diviner sits facing the censer; right and left are taken as his own, though the tablets say its right and its left.","about":"Two tablets read the smoke and flame of an aromatic burnt offering by direction, shape and movement. Renderings here follow Finkel as reproduced online.","src":"S1","entries":[{"form":"stone","dir":"right","means":"You will defeat your enemy","note":"(uncertain) rendering seen only in web reproductions of Finkel","src":"S6"},{"form":"stone","dir":"left","means":"The enemy gains the upper hand","note":"(uncertain) counterpart to the right omen on hobbyist pages; not checked against the edition","src":"S5"},{"form":"fork","means":"Madness; a change of mind","note":"(uncertain) top of the smoke cleft in two","src":"S5"},{"form":"spill","means":"An even contest; neither side prevails","note":"(approximate) smoke spreading evenly on all sides","src":"S5"}]},{"id":"greek-empyra","name":"Greek burnt-offering signs","era":"Classical Greek, 5th c. BC","seat":"No seat is prescribed; the reader stands at the altar and watches whether the offering burns clean.","about":"No ancient Greek text uses the word kapnomanteia. What is attested is reading burnt offerings, with frankincense named as the exception Pythagoras allowed.","src":"S7","entries":[{"form":"spill","means":"The offering is refused; the gods will not hear","note":"(approximate) smoke and sputter without flame, Antigone 1005-1011","src":"S8"}]},{"id":"chinese-guanxiang","name":"Chinese incense watching","era":"Chinese folk practice, modern compendia","seat":"The reader faces the altar; direction plays no part, so the seat does not matter.","about":"The printed charts read stick heights, not smoke. Smoke rules survive only in modern folk compendia that name no source.","src":"S15","entries":[{"form":"still","means":"A spirit attends the altar; the offering is received","note":"thin straight column likened to a hanging pagoda","src":"S15"},{"form":"helix","means":"Something adverse or an unquiet spirit is near","note":"(approximate) smoke that swirls or spins like a whirlwind","src":"S15"},{"form":"fork","means":"A parting; people or matters separate","note":"streams dividing in opposite directions","src":"S15"}]},{"id":"european-capnomancy","name":"European capnomancy","era":"Early-modern to modern Europe, 1533 to 1920","seat":"No seat; the rule concerns the column alone.","about":"A word catalogued from Agrippa and Gaule onward, with a generic rule supplied by nineteenth- and twentieth-century encyclopaedias. No ancient text is cited for it.","src":"S13","entries":[{"form":"still","means":"Favourable; the offering is accepted","note":"smoke rising lightly and straight","src":"S13"},{"form":"spill","means":"Unfavourable","note":"smoke that hangs about the altar","src":"S13"},{"form":"wind","means":"Unfavourable","note":"(approximate) thick dark smoke hanging like a cloud","src":"S12"}]},{"id":"tibetan-dud-brda","name":"Tibetan smoke signs","era":"Tibet, ethnography of 1964","seat":"The reader watches the smoke of a juniper offering against the sky; no seat is recorded.","about":"Ekvall records a category of smoke signs read by colour, volume and drift, held by specialists. No rules are published, so this lens is empty.","src":"S17","entries":[]},{"id":"indian-agni-lakshana","name":"Indian fire signs","era":"India, 6th c. AD","seat":"The observer watches the altar fire at the final oblation; the verses read flame, not smoke.","about":"Varahamihira reads the sacrificial fire by shape, colour, sound, smell and the turn of its flames, and extends the omens to journeys and campaigns.","src":"S18","entries":[{"form":"stone","dir":"right","means":"Conquest; the undertaking succeeds","note":"(approximate) flames turning to the right, not smoke","src":"S18"}]},{"id":"temple-woodpile","name":"Temple woodpile smoke","era":"Second Temple Judea, recorded c. AD 500","seat":"The watcher stands east of the altar facing west; the mapping of compass points to sides is ours, not the Talmud.","about":"At the close of Sukkot the lean of the altar smoke forecast the rains of the coming year. Only the four compass leans are given.","src":"S19","entries":[{"form":"stone","dir":"right","means":"Heavy rain; the poor are glad, owners grieve as stores rot","note":"smoke leaning north before a south wind; right = north is our mapping; read at the close of the festival","src":"S19"},{"form":"stone","dir":"left","means":"Sparse rain; owners are glad, the poor grieve","note":"smoke leaning south before a north wind; left = south is our mapping","src":"S19"},{"form":"stone","dir":"toward","means":"Enough rain and good keeping; everyone is glad","note":"smoke leaning east before a west wind; toward = east is our mapping","src":"S19"},{"form":"stone","dir":"away","means":"Drought; everyone is sad","note":"smoke leaning west before an east wind; away = west is our mapping","src":"S19"}]},{"id":"roman-seneca","name":"Seneca at the altar","era":"Roman, 1st c. AD","seat":"The seer is blind; his daughter watches the altar for him while the king stands by the fire.","about":"A tragedy, not a manual. The smoke sinks and wraps the head of the king, marking him as the polluted one.","src":"S23","entries":[{"form":"stone","dir":"toward","means":"The fault rests with the one the smoke settles on","note":"(approximate) smoke wrapping the head of the king, Oedipus c. 325-327; literary portent","src":"S23"}]}],"forms":[{"id":"babylonian-libanomancy","name":"Babylonian smoke omens","family":"omen","region":"Mesopotamia","era":"c. 1800 BC","start":-1800,"reads":"Lean, split, spread and density of the smoke of an aromatic offering","what":"Two Old Babylonian tablets list if-then omens taken from the qutrenu offering, within the work of the baru diviner. The tablets are damaged and renderings differ.","lens":"babylonian-qutrenu","src":"S1"},{"id":"pillar-of-cloud","name":"Pillar of cloud and fire","family":"signal","region":"Hebrew Bible","era":"text c. 6th c. BC","start":-550,"reads":"A column of cloud by day and of fire by night","what":"In Exodus a pillar of cloud by day and of fire by night goes before the people to guide them. A guiding sign, with no reading rule.","src":"S22"},{"id":"greek-empyra","name":"Greek burnt-offering signs","family":"omen","region":"Greece","era":"5th c. BC","start":-441,"reads":"Whether the offering flames or only smokes and sputters","what":"Tragedy and biography show burnt offerings read for acceptance, and Pythagoras allowing only frankincense. No ancient text found uses the word kapnomanteia.","lens":"greek-empyra","src":"S8"},{"id":"greek-fire-signals","name":"Greek fire signals","family":"signal","region":"Greece","era":"4th to 2nd c. BC","start":-350,"reads":"Beacons and torches sent by agreed code","what":"Aeneas Tacticus paired beacons with graduated water vessels; Cleoxenus and Democleitus built a torch alphabet that Polybius refined. Polybius describes fire, not daytime smoke.","src":"S27"},{"id":"chinese-beacons","name":"Chinese beacon smoke","family":"signal","region":"China","era":"Han, c. 100 BC","start":-100,"reads":"Fire by night and smoke by day from frontier beacon towers","what":"Beacon lines passed alarms along the frontier. The wolf-dung origin of the word langyan is a Tang-era claim that modern writers doubt; excavated fuels are plants.","src":"S29"},{"id":"temple-woodpile","name":"Temple woodpile smoke","family":"omen","region":"Judea","era":"Second Temple, recorded c. AD 500","start":-100,"reads":"Compass lean of the altar smoke at the close of Sukkot","what":"The Babylonian Talmud records that the lean of the woodpile smoke at the end of Sukkot forecast the rains, with a verdict for north, south, east and west.","lens":"temple-woodpile","src":"S19"},{"id":"yom-kippur-incense","name":"Yom Kippur incense column","family":"rite","region":"Judea","era":"Second Temple, recorded c. AD 500","start":-100,"reads":"Incense smoke rising straight like a staff","what":"A smoke-raising herb in the incense of the high priest made the column rise straight to the roof before spreading. A requirement of the rite, not an omen.","src":"S21"},{"id":"roman-oedipus","name":"Seneca at the altar","family":"omen","region":"Rome","era":"1st c. AD","start":50,"reads":"Flame colour, a fire that splits, and smoke settling on a person","what":"In the Oedipus of Seneca the sacrificial fire changes colour and splits, and the smoke wraps the head of the king. A literary portent; no Roman smoke manual was found.","lens":"roman-seneca","src":"S23"},{"id":"indian-agni","name":"Indian fire signs","family":"omen","region":"India","era":"c. AD 550","start":550,"reads":"Flame direction, colour, sound, smell and shape at the oblation","what":"Varahamihira reads the sacrificial fire at royal rites; flames turning right at the final oblation foretell conquest. The verses read flame, not smoke.","lens":"indian-agni-lakshana","src":"S18"},{"id":"leonardo-deluge","name":"Leonardo and moving air","family":"science","region":"Italy and France","era":"c. 1517","start":1517,"reads":"Coiling motion of water, cloud, dust and smoke","what":"The late Deluge drawings study storm and debris in coiling motion; the Royal Collection notes his interest in the optics of dust and smoke.","src":"S33"},{"id":"pyromancy","name":"Pyromancy","family":"catalogue","region":"Europe","era":"1533 onward","start":1533,"reads":"Fire and flame","what":"Agrippa groups pyromancy with geomancy, hydromancy and aeromancy as divinations of the elements; Rabelais and Gaule list it. No method is given.","src":"S9"},{"id":"capnomancy","name":"Capnomancy","family":"catalogue","region":"Europe","era":"1533 onward","start":1533,"reads":"Smoke of a fire or a sacrifice","what":"Agrippa, Rabelais and Gaule name capnomancy; encyclopaedias from 1880 add the rule that thin straight smoke is good and hanging smoke bad. No ancient source is cited.","lens":"european-capnomancy","src":"S9"},{"id":"libanomancy-catalogue","name":"Libanomancy in the lists","family":"catalogue","region":"Europe","era":"1546 onward","start":1546,"reads":"Burning frankincense","what":"Rabelais and Gaule list libanomancy by burning frankincense, and Del Rio is cited for it. None of them describes a method.","src":"S25"},{"id":"daphnomancy","name":"Daphnomancy","family":"catalogue","region":"Europe","era":"1546 onward","start":1546,"reads":"Whether burning laurel crackles","what":"Rabelais stages it: the Sibyl of Panzoust burns laurel, it makes no crackle, and this is called a dismal omen. Modern lists define it as divination by burning laurel.","src":"S24"},{"id":"sideromancy","name":"Sideromancy","family":"catalogue","region":"Europe","era":"early modern, date unverified","start":1600,"reads":"Straws burned on hot iron","what":"Modern lists define it as divination by burning straw on iron. No early source was found that describes the method or a reading of its smoke.","src":"S26"},{"id":"causimomancy","name":"Causimomancy","family":"catalogue","region":"Europe","era":"early modern, date unverified","start":1600,"reads":"Objects thrown into fire and how they burn","what":"Modern lists define it only as divination by burning. No early source or rule was found.","src":"S26"},{"id":"chinese-guanxiang","name":"Chinese incense watching","family":"omen","region":"China","era":"modern compendia; Qing origin claimed","start":1800,"reads":"Shape and colour of incense smoke at a home altar","what":"Printed charts read the burn heights of three sticks; a few smoke rules survive only in modern folk compendia that name no source.","lens":"chinese-guanxiang","src":"S15"},{"id":"plains-smoke-signals","name":"Plains smoke signals","family":"signal","region":"North American Plains","era":"19th c.","start":1850,"reads":"Position and timing of smoke columns","what":"Agreed signals made with damp fuel on high ground. The only account reached cites a web page; the ethnography of Clark (1885) was located but its entry not read.","src":"S28"},{"id":"vortex-rings","name":"Smoke rings as vortices","family":"science","region":"Germany and Scotland","era":"1858 to 1867","start":1858,"reads":"Smoke rings as stable vortices","what":"Helmholtz showed vortex rings persist in an ideal fluid; Tait fired smoke rings from a box and Kelvin proposed that atoms are vortex rings.","src":"S35"},{"id":"sensitive-flames","name":"Sensitive flames and smoke jets","family":"science","region":"Britain","era":"1867","start":1867,"reads":"Flames and smoke jets that flare or break at a sound","what":"Tyndall lectured on flames that respond to sound and later showed that smoke jets do the same: a column on the edge of instability.","src":"S36"},{"id":"reynolds-transition","name":"Direct and sinuous flow","family":"science","region":"Britain","era":"1883","start":1883,"reads":"When a straight streak breaks into eddies","what":"Reynolds watched dye in a pipe and found the condition under which smooth flow turns turbulent, the same break a rising incense column shows.","src":"S37"},{"id":"papal-fumata","name":"Conclave smoke","family":"signal","region":"Vatican","era":"1914 onward","start":1914,"reads":"Black or white smoke from the conclave stove","what":"Burned ballots signal the vote: black for no election, white for a new pope. The first intentional white smoke is dated to 1914; chemicals now fix the colour.","src":"S30"},{"id":"buoyant-plume","name":"The buoyant plume","family":"science","region":"USSR, Germany and Britain","era":"1937 to 1973","start":1937,"reads":"Rise and spread of a turbulent plume above a heat source","what":"Zeldovich and Schmidt found similarity laws for the plume above a point heat source; Morton, Taylor and Turner closed the model with entrainment proportional to plume speed.","src":"S41"},{"id":"tibetan-dud-brda","name":"Tibetan smoke signs","family":"omen","region":"Tibet","era":"recorded 1964","start":1964,"reads":"Colour, volume and drift of the smoke of a juniper offering","what":"Ekvall records a specialist category of smoke signs read from bsang offerings, most finely as the smoke fades against the sky. No rules are published.","lens":"tibetan-dud-brda","src":"S17"}],"timeline":[{"year":-1800,"label":"c. 1800 BC","who":"Old Babylonian libanomancy tablets","what":"Omens read from the smoke of the qutrenu offering, written as if-then rules","family":"omen","src":"S1"},{"year":-550,"label":"c. 6th c. BC (text)","who":"Exodus 13:21-22","what":"A pillar of cloud by day and fire by night goes before the people","family":"signal","src":"S22"},{"year":-441,"label":"c. 441 BC","who":"Sophocles, Antigone","what":"Teiresias reports an offering that smokes and sputters without flame: the gods refuse it","family":"omen","src":"S8"},{"year":-350,"label":"c. 350 BC","who":"Aeneas Tacticus","what":"Beacons paired with graduated water vessels send set messages, as Polybius describes","family":"signal","src":"S27"},{"year":-150,"label":"c. 150 BC","who":"Polybius, Histories 10.43-47","what":"Describes and refines the torch alphabet of Cleoxenus and Democleitus","family":"signal","src":"S27"},{"year":-100,"label":"c. 100 BC","who":"Han frontier beacons","what":"Fire by night and smoke by day along the frontier beacon lines","family":"signal","src":"S29"},{"year":50,"label":"1st c. AD","who":"Seneca, Oedipus","what":"Sacrificial smoke sinks and wraps the head of the king","family":"omen","src":"S23"},{"year":230,"label":"3rd c. AD","who":"Diogenes Laertius 8.20","what":"Pythagoras divined by voices and auguries, never by burnt offerings beyond frankincense","family":"omen","src":"S7"},{"year":500,"label":"c. AD 500","who":"Babylonian Talmud, Bava Batra 147a","what":"Records the lean of the altar smoke at the end of Sukkot as a forecast of the rains","family":"omen","src":"S19"},{"year":500,"label":"c. AD 500","who":"Babylonian Talmud, Yoma 53a","what":"A smoke-raising herb makes the Yom Kippur incense rise straight like a staff","family":"rite","src":"S21"},{"year":550,"label":"c. AD 550","who":"Varahamihira, Brhat Samhita","what":"Reads the altar fire: flames turning right at the final oblation mean conquest","family":"omen","src":"S18"},{"year":860,"label":"c. 860","who":"Duan Chengshi, Youyang zazu","what":"Cited as the source of the doubted claim that beacon smoke was made with wolf dung","family":"signal","src":"S29"},{"year":1517,"label":"c. 1517","who":"Leonardo da Vinci, Deluge drawings","what":"Late drawings of storm, water, dust and smoke in coiling motion","family":"science","src":"S33"},{"year":1533,"label":"1533","who":"Agrippa, De occulta philosophia","what":"Names capnomancy, which searches into flame and smoke","family":"catalogue","src":"S9"},{"year":1546,"label":"1546","who":"Rabelais, Tiers Livre","what":"Her Trippa offers capnomancy, libanomancy, tephromancy and pyromancy to Panurge","family":"catalogue","src":"S25"},{"year":1599,"label":"1599-1600","who":"Martin Del Rio, Disquisitiones magicae","what":"Cited by modern references for libanomancy; not read here","family":"catalogue","src":"S6"},{"year":1610,"label":"1610","who":"John Healey, after Vives","what":"Earliest dated English use of capnomancy, divination by smoke","family":"catalogue","src":"S10"},{"year":1652,"label":"1652","who":"John Gaule, Pus-mantia","what":"Lists capnomancy by smoke and libanomancy by burning frankincense","family":"catalogue","src":"S11"},{"year":1858,"label":"1858","who":"Hermann von Helmholtz","what":"Vortex theorems: vortex lines move with the fluid, so a ring in an ideal fluid persists","family":"science","src":"S34"},{"year":1867,"label":"Jan 1867","who":"Peter Guthrie Tait","what":"Smoke-ring box: a struck cloth fires rings through a hole in a smoke-filled crate","family":"science","src":"S35"},{"year":1867,"label":"Feb 1867","who":"William Thomson (Kelvin)","what":"On Vortex Atoms proposes that atoms are vortex rings in the ether","family":"science","src":"S35"},{"year":1867,"label":"1867","who":"John Tyndall","what":"Lectures on sensitive flames; later shows that smoke jets respond to sound","family":"science","src":"S36"},{"year":1879,"label":"1879-82","who":"Auguste Bouche-Leclercq","what":"Four-volume history of ancient divination; its pages on smoke were not checked here","family":"catalogue","src":"S43"},{"year":1880,"label":"1880","who":"McClintock and Strong","what":"Cyclopedia gives the rule: thin straight smoke favourable, thick hanging smoke unfavourable","family":"catalogue","src":"S12"},{"year":1883,"label":"1883","who":"Osborne Reynolds","what":"Dye-streak experiments show when flow turns from direct to sinuous","family":"science","src":"S37"},{"year":1914,"label":"1914","who":"Conclave of Benedict XV","what":"First intentional white smoke to announce an election, per Baumgartner","family":"signal","src":"S30"},{"year":1920,"label":"1920","who":"Lewis Spence","what":"Repeats the smoke-to-the-clouds rule and adds seed-on-coals and inhalation variants","family":"catalogue","src":"S13"},{"year":1937,"label":"1937","who":"Yakov Zeldovich","what":"Similarity laws for the turbulent plume above a point source of heat","family":"science","src":"S38"},{"year":1941,"label":"1941","who":"Wilhelm Schmidt","what":"Formulates the turbulent spread of a rising stream of heated air","family":"science","src":"S39"},{"year":1954,"label":"1954","who":"George Batchelor","what":"Reviews heat convection and buoyancy effects in fluids","family":"science","src":"S40"},{"year":1956,"label":"1956","who":"Morton, Taylor and Turner","what":"Entrainment model of plumes, applied to the rise of smoke in stratified air","family":"science","src":"S41"},{"year":1964,"label":"1964","who":"Robert Ekvall","what":"Records Tibetan smoke signs read by the colour, volume and drift of bsang smoke","family":"omen","src":"S17"},{"year":1966,"label":"1966","who":"Giovanni Pettinato","what":"First edition and study of a Babylonian libanomancy text","family":"omen","src":"S2"},{"year":1973,"label":"1973","who":"J. Stewart Turner","what":"Buoyancy Effects in Fluids, the standard text on plumes and thermals","family":"science","src":"S42"},{"year":1983,"label":"1983-84","who":"Irving Finkel","what":"Publishes UCLM 9-2433, a new libanomancy tablet, collated with the earlier texts","family":"omen","src":"S1"},{"year":2005,"label":"2005","who":"Vatican conclave","what":"A second stove is added so the smoke colour cannot be mistaken","family":"signal","src":"S31"},{"year":2015,"label":"2015","who":"Ulla Susanne Koch","what":"Handbook of Mesopotamian divination treats libanomancy among solicited techniques","family":"omen","src":"S4"},{"year":2016,"label":"2016","who":"Maria Stella Cingolo","what":"Surveys the two Old Babylonian libanomancy texts and the term qutrenu","family":"omen","src":"S3"}],"sources":{"S1":{"author":"I. L. Finkel","title":"\"A New Piece of Libanomancy\", Archiv für Orientforschung 29/30, 50–55 (tablet UCLM 9-2433; not read, cited via CDLI record)","year":"1983/84","kind":"primary edition (scholarly)","url":"https://cdli.earth/authors/1002"},"S2":{"author":"G. Pettinato","title":"\"Libanomanzia presso i Babilonesi\", Rivista degli Studi Orientali 41, 303–327 (not read)","year":"1966","kind":"scholarly","url":null},"S3":{"author":"M. S. Cingolo","title":"\"Some Remarks about the Old Babylonian Libanomancy Texts\", in J. C. Fincke (ed.), Divination as Science, 93–106 (abstract read)","year":"2016","kind":"scholarly","url":"https://doi.org/10.1515/9781575064260-007"},"S4":{"author":"U. S. Koch","title":"Mesopotamian Divination Texts: Conversing with the Gods (GMTR 7, Ugarit-Verlag; smoke section not read)","year":"2015","kind":"scholarly","url":"https://www.cambridge.org/core/journals/bulletin-of-the-school-of-oriental-and-african-studies/article/abs/F533D3089CADFB7A30AD745BC5D9F818"},"S5":{"author":"J. Carlson","title":"\"Incense and Divination\" (blog reproducing Finkel's renderings)","year":"n.d.","kind":"tertiary","url":"https://www.jesscarlson.com/blog/incense-and-divination"},"S6":{"author":"Wikipedia","title":"\"Libanomancy\" (right-drift omen, via Dunwich 1988)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Libanomancy"},"S7":{"author":"Diogenes Laertius, tr. R. D. Hicks","title":"Lives of Eminent Philosophers 8.20","year":"1925","kind":"primary","url":"https://en.wikisource.org/wiki/Lives_of_the_Eminent_Philosophers/Book_VIII"},"S8":{"author":"Sophocles, tr. R. C. Jebb","title":"Antigone 1005–1011","year":"1891","kind":"primary","url":"http://classics.mit.edu/Sophocles/antigone.html"},"S9":{"author":"H. C. Agrippa, tr. J. F.","title":"Three Books of Occult Philosophy I.57 (Latin 1533)","year":"1651","kind":"primary","url":"https://www.esotericarchives.com/agrippa/agripp1c.htm"},"S10":{"author":"Wiktionary","title":"\"capnomancy\" (carries the 1610 Healey/Vives citation)","year":"2026","kind":"tertiary","url":"https://en.wiktionary.org/wiki/capnomancy"},"S11":{"author":"J. Gaule","title":"Pus-mantia the Mag-astro-mancer, ch. XIX, pp. 165–166","year":"1652","kind":"primary","url":"https://archive.org/details/pysmantiamagastr00gaul"},"S12":{"author":"J. McClintock, J. Strong","title":"Cyclopedia of Biblical, Theological, and Ecclesiastical Literature, \"Capnomancy\"","year":"1880","kind":"tertiary","url":"https://www.biblicalcyclopedia.com/C/capnomancy.html"},"S13":{"author":"L. Spence","title":"An Encyclopaedia of Occultism, \"Capnomancy\"","year":"1920","kind":"tertiary","url":"https://archive.org/details/encyclopaediaofo1920spen"},"S14":{"author":"Wikipedia","title":"\"Capnomancy\" (Celtic/Semang claims cite Dunwich 2002, Cheung 2006)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Capnomancy"},"S15":{"author":"网易订阅 (anon.)","title":"观香火看事，断吉凶（观香秘法）","year":"c. 2025","kind":"tertiary","url":"https://www.163.com/dy/article/JS0LKBFK0531PYY1.html"},"S16":{"author":"百度百科","title":"二十四香谱","year":"2026","kind":"tertiary","url":"https://baike.baidu.com/item/%E4%BA%8C%E5%8D%81%E5%9B%9B%E9%A6%99%E8%B0%B1/7944671"},"S17":{"author":"R. B. Ekvall","title":"Religious Observances in Tibet: Patterns and Function, p. 271","year":"1964","kind":"scholarly","url":"https://archive.org/details/religious-observances-in-tibet-patterns-and-function"},"S18":{"author":"Varāhamihira, tr. N. C. Iyer","title":"Bṛhat Saṃhitā 43.31–37","year":"1884","kind":"primary","url":"https://www.wisdomlib.org/hinduism/book/brihat-samhita/d/doc229188.html"},"S19":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Bava Batra 147a","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Bava_Batra.147a"},"S20":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Yoma 21b","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Yoma.21b"},"S21":{"author":"Babylonian Talmud, William Davidson ed. (Sefaria)","title":"Yoma 53a","year":"c. 500 / 2017","kind":"primary","url":"https://www.sefaria.org/Yoma.53a"},"S22":{"author":"Exodus, JPS Tanakh (Sefaria)","title":"Exodus 13:21–22","year":"c. 6th c. BC (text)","kind":"primary","url":"https://www.sefaria.org/Exodus.13.21-22"},"S23":{"author":"Seneca, tr. F. J. Miller","title":"Oedipus, c. 303–330","year":"1907","kind":"primary","url":"https://en.wikisource.org/wiki/Tragedies_of_Seneca_(1907)_Miller/Oedipus"},"S24":{"author":"F. Rabelais, tr. Urquhart and Motteux","title":"Gargantua and Pantagruel III.17–18 (Sibyl of Panzoust)","year":"1546 / 1693","kind":"primary","url":"https://www.gutenberg.org/files/1200/1200-h/1200-h.htm"},"S25":{"author":"F. Rabelais, tr. Urquhart and Motteux","title":"Gargantua and Pantagruel III.25 (Her Trippa)","year":"1546 / 1693","kind":"primary","url":"https://www.gutenberg.org/files/8168/8168-h/8168-h.htm"},"S26":{"author":"Wikipedia","title":"\"Methods of divination\" (definitions of sideromancy, daphnomancy, causimomancy)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Methods_of_divination"},"S27":{"author":"Polybius, tr. W. R. Paton","title":"Histories 10.43–47 (LacusCurtius)","year":"c. 150 BC / 1925","kind":"primary","url":"https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Polybius/10*.html"},"S28":{"author":"Wikipedia","title":"\"Smoke signal\"","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Smoke_signal"},"S29":{"author":"百度百科 and related Chinese reference pages","title":"狼烟 (seen through search summaries)","year":"2026","kind":"tertiary","url":"https://baike.baidu.com/item/%E7%8B%BC%E7%83%9F/22851549"},"S30":{"author":"*U.S. Catholic* (citing F. J. Baumgartner, *Behind Locked Doors*, 2003)","title":"\"What is the origin of the papal smoke?\"","year":"2025","kind":"tertiary","url":"https://uscatholic.org/articles/202504/what-is-the-origin-of-the-papal-smoke/"},"S31":{"author":"Holy See Press Office (reposted)","title":"\"How the white and black fumate are produced\"","year":"2013","kind":"primary","url":"https://www.bishop-accountability.org/2013/03/how-the-white-and-black-fumate-are-produced/"},"S32":{"author":"Wikipedia","title":"\"Kōdō\"","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/K%C5%8Dd%C5%8D"},"S33":{"author":"Royal Collection Trust","title":"\"A deluge\" (Leonardo, exhibition text)","year":"c. 1517 / 2019","kind":"scholarly","url":"https://rct.uk/collection/exhibitions/leonardo-da-vinci-a-life-in-drawing/the-queens-gallery-palace-of/a-deluge"},"S34":{"author":"H. von Helmholtz","title":"\"Über Integrale der hydrodynamischen Gleichungen, welche den Wirbelbewegungen entsprechen\", J. reine angew. Math. 55 (not opened)","year":"1858","kind":"primary","url":"https://doi.org/10.1515/crll.1858.55.25"},"S35":{"author":"W. Thomson (Kelvin)","title":"\"On Vortex Atoms\", Proc. R. Soc. Edinburgh 6, 94–105 (describes Tait's box)","year":"1867","kind":"primary","url":"https://www.zapatopi.net/kelvin/papers/on_vortex_atoms.html"},"S36":{"author":"Wikipedia","title":"\"Sensitive flame\" (Tyndall 1867; smoke jets)","year":"2026","kind":"tertiary","url":"https://en.wikipedia.org/wiki/Sensitive_flame"},"S37":{"author":"O. Reynolds","title":"\"An experimental investigation of the circumstances which determine whether the motion of water shall be direct or sinuous…\", Phil. Trans. 174 (not opened)","year":"1883","kind":"primary","url":"https://doi.org/10.1098/rstl.1883.0029"},"S38":{"author":"Ya. B. Zel'dovich","title":"\"Limiting laws of freely rising convection currents\", Zh. Eksp. Teor. Fiz. 7, 1463–1465 (not read; title varies between citers)","year":"1937","kind":"primary","url":null},"S39":{"author":"W. Schmidt","title":"Turbulent plume papers, ZAMM 21 (two parts; exact title unverified)","year":"1941","kind":"primary","url":null},"S40":{"author":"G. K. Batchelor","title":"\"Heat convection and buoyancy effects in fluids\", Q. J. R. Meteorol. Soc. 80, 339–358 (not opened)","year":"1954","kind":"scholarly","url":"https://doi.org/10.1002/qj.49708034504"},"S41":{"author":"B. R. Morton, G. I. Taylor, J. S. Turner","title":"\"Turbulent gravitational convection from maintained and instantaneous sources\", Proc. R. Soc. A 234, 1–23 (abstract read)","year":"1956","kind":"primary","url":"https://doi.org/10.1098/rspa.1956.0011"},"S42":{"author":"J. S. Turner","title":"Buoyancy Effects in Fluids, Cambridge University Press (not read)","year":"1973","kind":"scholarly","url":null},"S43":{"author":"A. Bouché-Leclercq","title":"Histoire de la divination dans l'antiquité, 4 vols (not read)","year":"1879–82","kind":"scholarly","url":"https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=ha000474617"}}};
+/* TRADITIONS:END */
+const LENSES=[{id:'own',name:'Your own',era:'now',about:'The words you have given the smoke yourself. They grow from your notes, below.',entries:[]},...TRADITIONS.lenses];
+/* The five ways people have read smoke, each with a colour token. */
+const FAMILY={omen:{name:'Omen',tok:'--ember',about:'smoke read as a sign of what will be'},rite:{name:'Rite',tok:'--warn',about:'smoke watched as part of a rite: accepted, refused, rising true'},
+  catalogue:{name:'Catalogue',tok:'--muted',about:'the word named and listed by learned compilers'},signal:{name:'Signal',tok:'--ok',about:'smoke sent on purpose, to be read far away'},
+  science:{name:'Science',tok:'--sci',about:'the plume read as a fluid: how it rises, turns and breaks'}};
+const lensById=id=>LENSES.find(l=>l.id===id)||null;
+function lensMatch(lens,r){if(!lens)return null;for(const e of lens.entries){if(e.form&&e.form!==FORM_KEY[r.form])continue;
+  if(e.dir&&(r.form!==F.STONE||r.dir==null||e.dir!==DIR_KEY[r.dir]))continue;if(e.env&&e.env!==r.env)continue;if(e.burn&&e.burn!==BURN_WORD(r.p))continue;return e;}return null;}
+/* The cone over its burn fraction p: how much smoke (vis), how coherent the column (coh),
+   how much it spills sideways unbidden (spillNat), and how fast it rises (rise, cm/s). */
+const vis=p=>smooth(0,0.08,p)*(0.55+0.45*smooth(0.05,0.6,p))*(1-0.85*smooth(0.96,1.0,p));
+const coh=p=>1-0.6*smooth(0.55,1,p);
+const spillNat=p=>smooth(0.6,0.95,p);
+/* The cone sits in the bowl and burns from the tip down; smoke leaves the top of its ash cap. */
+const CONE_BASE=-1.5,CONE_H=3.0,CONE_RB=1.45;
+const coneEmber=p=>CONE_BASE+CONE_H*(1-0.85*p);
+const coneTop=p=>{const ze=coneEmber(p);return ze+0.15+0.6*CONE_RB*(1-(ze-CONE_BASE)/CONE_H);};
+const rise=p=>4+16*(0.6+0.4*smooth(0.05,0.6,p))*coh(p);
+const angToHour=a=>{const h=Math.round(wrap2Pi(a)/(TAU/12))%12;return h===0?12:h;};
+const hourToAng=h=>(h%12)*TAU/12;
+
+class Wind{
+  constructor(key,gm,r){this.key=key;this.e=ENVS[key];this.gm=gm;this.r=r;this.g=[0,0];this.q=0;this.qs=0;this.dv=null;this.on=false;
+    this.side=r()<0.5?1:-1;this.dd=r()*TAU;this.target();this.m=this.tg.slice();
+    for(let i=0;i<40;i++)this.step(0.25);}
+  target(){const W=this.e.W;
+    this.tg=this.key==='day'?[0,W]:this.key==='night'?[0,this.side*W]:[Math.sin(this.dd)*W,Math.cos(this.dd)*W];}
+  /* A sign: for this step the wind commits to a bearing (dx,dy in cm/s, or nothing) and quietens by q. It is
+     the same process steered from inside, not a push laid over it: the mean turns toward the bearing on a
+     short memory while its own habit fades by q, the gusts die down, and when the sign ends the wind wanders
+     back on its slow clock. The dust, the air's arc and the instrument all see one wind. */
+  drive(dx,dy,q){this.dv=[dx||0,dy||0];this.q=q;this.on=true;}
+  step(dt){const e=this.e,q=this.q,s=e.sig*this.gm*(1-q),a=Math.exp(-dt/e.tau),b=s*Math.sqrt(1-a*a),dq=Math.exp(-dt*3*q);
+    this.g[0]=this.g[0]*a*dq+b*gauss(this.r);this.g[1]=this.g[1]*a*dq+b*gauss(this.r);
+    if(this.key==='night'&&this.r()<dt/45)this.side=-this.side;
+    if(this.key==='dusk')this.dd+=gauss(this.r)*Math.sqrt(dt)*0.35;
+    this.target();const dv=this.dv||[0,0],c=1-Math.exp(-dt/(this.on?1.5:8));
+    this.m[0]+=((1-q)*this.tg[0]+dv[0]-this.m[0])*c;this.m[1]+=((1-q)*this.tg[1]+dv[1]-this.m[1])*c;
+    this.qs=q;this.dv=null;this.q=0;this.on=false;}
+  nat(){return[this.m[0]+this.g[0],this.m[1]+this.g[1]];}
+  sigma(){return this.e.sig*this.gm*(1-this.qs);}
+}
+
+/* ====================================================================
+   3. Reduced physical channel (same Wind code as the stage)
+   ==================================================================== */
+const T_BINS=[2,3,4,6,8,12],P_BINS=[0.1,0.3,0.5,0.7,0.9],GM_BINS=[0.5,1,1.5,2];
+const DIRBINS=24,DIRSAMP=40;
+const dirCache=new Map();
+/* For a lean held T seconds toward each of 24 bearings: where the plume actually points (offset from
+   intended) and how visible the lean is, sampled over the ridge's gusts. hold is the wind's commitment to
+   the sign (1 = full; the harder levels lower it). */
+function dirCell(env,gm,T,p,hold){
+  gm=nearest(GM_BINS,gm);T=nearest(T_BINS,T);p=nearest(P_BINS,p);hold=Math.round(hold*20)/20;
+  const key=env+'|'+gm+'|'+T+'|'+p+'|'+hold;let c=dirCache.get(key);if(c)return c;
+  const r=rng32(hashStr(key)),off=new Float32Array(DIRBINS*DIRSAMP),vs=new Float32Array(DIRBINS*DIRSAMP);
+  const w=rise(p),dt=0.25,tauP=2.0,hold0=Math.min(WORLD.settle,T*0.4),a=1-Math.exp(-dt/tauP),S=WORLD.S*(0.6+0.4*hold),q0=QUIET[F.STONE]*hold;
+  for(let b=0;b<DIRBINS;b++){const th=b*TAU/DIRBINS,dx=Math.sin(th),dy=Math.cos(th);
+    for(let s=0;s<DIRSAMP;s++){const wd=new Wind(env,gm,r);const n0=wd.nat();let px=n0[0],py=n0[1],ax=0,ay=0,cnt=0;
+      for(let t=0;t<T;t+=dt){const ramp=smooth(0,0.6,t);wd.drive(S*ramp*dx,S*ramp*dy,q0*ramp);wd.step(dt);const n=wd.nat();
+        px+=(n[0]-px)*a;py+=(n[1]-py)*a;if(t>=hold0){ax+=px;ay+=py;cnt++;}}
+      ax/=cnt;ay/=cnt;const lean=Math.atan2(Math.hypot(ax,ay),w);
+      off[b*DIRSAMP+s]=wrapPi(Math.atan2(ax,ay)-th);
+      vs[b*DIRSAMP+s]=clamp(Math.tan(lean)/Math.tan(25*D2R),0.15,1);}}
+  c={off,vs};dirCache.set(key,c);return c;
+}
+const dirBin=a=>Math.round(wrap2Pi(a)/TAU*DIRBINS)%DIRBINS;
+/* Chance each form survives the air physically (it can still be misread afterwards). Each form quietens
+   the wind by its own QUIET times the hold, so the gust and the residual habit it faces are its own. */
+function legib(env,gm,p,hold){const e=ENVS[env],v=vis(p),c=coh(p);
+  const sr=f=>(1-QUIET[f]*hold)*e.sig*gm,ur=f=>(1-QUIET[f]*hold)*e.W*0.5+sr(f);
+  return[v*(0.55+0.45*Math.exp(-((sr(0)/25)**2))), v*c*Math.exp(-((ur(1)/14)**2)), v*Math.sqrt(c)*Math.exp(-((ur(2)/28)**2)),
+         v*c*Math.exp(-((sr(3)/7)**2)-(ur(3)/30)**2), v*(1-0.6*spillNat(p)),
+         v*Math.sqrt(c)*Math.exp(-((sr(5)/12)**2)), v*c*Math.exp(-((sr(6)/4)**2)-(ur(6)/10)**2), Math.exp(-((sr(7)/8)**2)), 1];}
+const holdOf=t=>t.hold==null?1:t.hold;   // readings from before the levels were held at full commitment
+/* What a reader reports when no sign got through: the reader's wind row, pulled toward Spill late in the burn. */
+function rowWind(M,p){const ns=0.5*spillNat(p);return M[F.WIND].map((v,j)=>v*(1-ns)+(j===F.SPILL?ns:0));}
+
+/* ====================================================================
+   4. The reader model: priors, stand-in, fitting from trials
+   ==================================================================== */
+/* rows = sent, cols = read: Stone Ring Curl Helix Spill Fork Tower Still Wind */
+const PRIOR_M=[
+  [.76,.01,.03,.03,.03,.03,.01,.02,.08],
+  [.02,.68,.12,.04,.02,.02,.03,.02,.05],
+  [.04,.10,.52,.14,.03,.04,.03,.01,.09],
+  [.05,.03,.15,.55,.02,.05,.05,.04,.06],
+  [.04,.01,.03,.02,.66,.06,.01,.02,.15],
+  [.06,.02,.06,.05,.10,.55,.02,.02,.12],
+  [.02,.04,.06,.05,.02,.04,.55,.14,.08],
+  [.03,.01,.01,.03,.02,.01,.16,.55,.18],
+  [.12,.02,.07,.04,.07,.07,.05,.12,.44]];
+const PRIOR={kappa:8,C:4,beta:0.15};
+const sharpen=(M,g)=>M.map(r=>{const q=r.map(v=>v**g),s=q.reduce((a,b)=>a+b,0);return q.map(v=>v/s);});
+const STANDIN={kappa:6,C:4,beta:0.55,M:sharpen(PRIOR_M,1.3)};
+
+function makeTrial(seed){const r=rng32(seed);
+  const env=['day','dusk','night'][Math.floor(r()*3)],gm=[0.5,1,1.5][Math.floor(r()*3)],p=0.12+r()*0.8;
+  const truth=r()<0.14?F.WIND:Math.floor(r()*8);
+  const angle=truth===F.STONE?stoneAngle(r):null;
+  const nOpt=2+Math.floor(r()*7);
+  const pool=shuffle([0,1,2,3,4,5,6,7].filter(f=>f!==truth),r);
+  const opts=(truth===F.WIND?pool.slice(0,nOpt):[truth,...pool.slice(0,nOpt-1)]).sort((a,b)=>a-b);
+  return{seed,env,gm,p,truth,angle,opts,T:WORLD.trialT,hold:1};}
+
+function standInRespond(tr,r){const S=STANDIN,L=legib(tr.env,tr.gm,tr.p,holdOf(tr)),choices=[...tr.opts,F.WIND],g=tr.truth;
+  const visible=g!==F.WIND&&r()<L[g],row=visible?S.M[g]:rowWind(S.M,tr.p);
+  const eps=1-Math.exp(-S.beta*Math.max(0,tr.opts.length-S.C));
+  const w=choices.map(j=>row[j]),sw=w.reduce((a,b)=>a+b,0);
+  const form=choices[pickW(r,w.map(v=>(1-eps)*v/sw+eps/choices.length))];
+  let dir=null;
+  if(form===F.STONE){
+    if(g===F.STONE){const c=dirCell(tr.env,tr.gm,tr.T,tr.p,holdOf(tr)),s=dirBin(tr.angle)*DIRSAMP+Math.floor(r()*DIRSAMP);
+      dir=dirOf(tr.angle+c.off[s]+vmSample(r,S.kappa*c.vs[s]));}
+    else dir=Math.floor(r()*4);
+  }
+  return{form,dir,conf:visible?4:2,note:''};}
+/* Where a reading pointed and how wide its sector was: four seat bearings now, twelve hours before. */
+const respAng=t=>t.resp.dir!=null?{a:t.resp.dir*TAU/(t.nDir||4),w:TAU/(t.nDir||4)}:t.resp.hour?{a:hourToAng(t.resp.hour),w:TAU/12}:null;
+
+/* Fit the reader: form confusion (EM separating air failures from misreadings), direction sharpness
+   kappa (likelihood over the physical lean samples, integrated over the sector the reader chose), and the
+   vocabulary limit. */
+function fitObserver(trials){
+  const out={n:trials.length};
+  // forms
+  const PS=4;let M=PRIOR_M.map(r=>r.slice());
+  for(let it=0;it<15;it++){const C=PRIOR_M.map(r=>r.map(v=>v*PS));
+    for(const t of trials){const g=t.truth,j=t.resp.form;
+      if(g===F.WIND){C[F.WIND][j]+=1;continue;}
+      const L=legib(t.env,t.gm,t.p,holdOf(t))[g],rw=rowWind(M,t.p),a=L*M[g][j],b=(1-L)*rw[j],w=a+b>0?a/(a+b):1;
+      C[g][j]+=w;C[F.WIND][j]+=1-w;}
+    M=C.map(row=>{const s=row.reduce((x,y)=>x+y,0);return row.map(v=>v/s);});}
+  out.M=M;
+  // direction
+  const dirT=trials.filter(t=>t.truth===F.STONE&&t.resp.form===F.STONE&&respAng(t));
+  const KG=[];for(let i=0;i<40;i++)KG.push(0.3*Math.pow(80/0.3,i/39));
+  const cells=dirT.map(t=>dirCell(t.env,t.gm,t.T,t.p,holdOf(t)));
+  const ll=KG.map(k=>{let s=-0.5*((Math.log(k)-Math.log(PRIOR.kappa))/1.0)**2;
+    dirT.forEach((t,ti)=>{const c=cells[ti],b=dirBin(t.angle),ra=respAng(t),st=ra.w/5;let acc=0;
+      for(let si=0;si<DIRSAMP;si+=2){const o=c.off[b*DIRSAMP+si],kv=k*c.vs[b*DIRSAMP+si];
+        for(let q=-2;q<=2;q++)acc+=vmPdf(wrapPi(ra.a+q*st-(t.angle+o)),kv);}
+      acc=acc/(DIRSAMP/2)*ra.w/5;s+=Math.log(0.95*Math.min(1,acc)+0.05*ra.w/TAU);});return s;});
+  const mx=Math.max(...ll),wk=ll.map(v=>Math.exp(v-mx)),sw=wk.reduce((a,b)=>a+b,0);
+  let lk=0;KG.forEach((k,i)=>lk+=wk[i]/sw*Math.log(k));out.kappa=Math.exp(lk);
+  let cum=0;out.kLo=KG[0];out.kHi=KG[KG.length-1];let lo=false;
+  for(let i=0;i<KG.length;i++){cum+=wk[i]/sw;if(!lo&&cum>=0.1){out.kLo=KG[i];lo=true;}if(cum>=0.9){out.kHi=KG[i];break;}}
+  out.nDir=dirT.length;
+  // vocabulary limit
+  const CP={2:.1,3:.2,4:.3,5:.15,6:.1,7:.08,8:.07};let lb=-Infinity;const lp=[];
+  for(const Cc of [2,3,4,5,6,7,8])for(let bi=0;bi<=12;bi++){const be=bi*0.1;let s=Math.log(CP[Cc])-be/0.15;
+    for(const t of trials){const g=t.truth,ch=[...t.opts,F.WIND],L=g===F.WIND?0:legib(t.env,t.gm,t.p,holdOf(t))[g],rw=rowWind(M,t.p);
+      const row=ch.map(j=>g===F.WIND?rw[j]:L*M[g][j]+(1-L)*rw[j]),sr=row.reduce((a,b)=>a+b,0);
+      const pred=row[ch.indexOf(g)]/sr,eps=1-Math.exp(-be*Math.max(0,t.opts.length-Cc)),pc=clamp((1-eps)*pred+eps/ch.length,1e-4,1-1e-4);
+      s+=Math.log(t.resp.form===g?pc:1-pc);}
+    lp.push([Cc,be,s]);if(s>lb)lb=s;}
+  const pc={};let wsum=0,eb2=0;for(const[Cc,be,s]of lp){const w=Math.exp(s-lb);pc[Cc]=(pc[Cc]||0)+w;wsum+=w;eb2+=w*be;}
+  out.C=+Object.keys(pc).reduce((a,b)=>pc[a]>pc[b]?a:b);out.Cp=pc[out.C]/wsum;out.beta=eb2/wsum;
+  out.formAcc=trials.length?trials.filter(t=>t.resp.form===t.truth).length/trials.length:null;
+  return out;
+}
+
+/* Presence: how well the reader tells a sent moment from plain weather, by feel alone. Signal detection on
+   the felt rating (sent = 4 or 5, wind = 1 or 2; an unrated "Just wind" pick is a felt wind) against the truth
+   of each moment, with the log-linear correction so a perfect run gives a finite d'. c > 0 means the reader
+   waits for more before saying sent. This is the one number the practice is about, so it is shown only
+   between sittings: a score that moved after each touch would give that moment away. */
+const feltOf=t=>{const c=t.resp.conf;return c!=null?(c>=4?'sent':c<=2?'wind':'unclear'):t.resp.form===F.WIND?'wind':null;};
+function presence(trials){
+  let sN=0,sH=0,wN=0,wF=0,unc=0,n=0;
+  for(const t of trials){const f=feltOf(t);if(!f)continue;n++;if(f==='unclear')unc++;
+    if(t.truth===F.WIND){wN++;if(f==='sent')wF++;}else{sN++;if(f==='sent')sH++;}}
+  const zH=probit((sH+0.5)/(sN+1)),zF=probit((wF+0.5)/(wN+1));
+  return{n,sN,wN,hit:sN?sH/sN:null,fa:wN?wF/wN:null,unclear:n?unc/n:0,d:zH-zF,c:-(zH+zF)/2,ok:sN>=6&&wN>=6};
+}
+/* Reliability: when a sitting has come round again under its seed, the same sign was read twice, weeks
+   apart. How often the form and the felt sense agreed is how steady the reading is. */
+function reliability(trials){const by=new Map();
+  for(const t of trials){if(t.sit==null||t.epi==null||t.truth===F.WIND)continue;const k=t.seed+':'+t.epi;
+    let a=by.get(k);if(!a)by.set(k,a=new Map());if(!a.has(t.sit))a.set(t.sit,t);}
+  let n=0,form=0,felt=0;const sits=new Set();
+  for(const a of by.values()){if(a.size<2)continue;const[x,y]=[...a.values()].sort((p,q)=>p.at-q.at);n++;sits.add(y.sit);
+    if(x.resp.form===y.resp.form)form++;const fx=feltOf(x),fy=feltOf(y);if(fx&&fy&&fx===fy)felt++;}
+  return{n,form,felt,sits:sits.size};}
+/* The lexicon: what the reader has written about each cue, and the words that recur. A cue is a form, with
+   its side for a Stone. Words under three letters and the commonest function words are dropped; a word counts
+   once per note, so it must come back in another note to recur. */
+const STOP=new Set('the a an and or of to in on at it its is was be as if so but for with like than then this that there here just very more some something nothing not from into out up down'.split(' '));
+const cueOf=r=>FORM_KEY[r.form]+(r.form===F.STONE&&r.dir!=null?':'+DIR_KEY[r.dir]:'');
+const cueLabel=k=>{const[f,d]=k.split(':');return FORM_NAME[FORM_KEY.indexOf(f)]+(d?' '+DIR_WORD[DIR_KEY.indexOf(d)]:'');};
+const cueEntry=(k,means)=>{const[f,d]=k.split(':');return{form:f,...(d?{dir:d}:{}),means};};
+function lexicon(trials){const by=new Map();
+  for(const t of trials){const note=(t.resp.note||'').trim();if(!note)continue;const k=cueOf(t.resp);let c=by.get(k);if(!c)by.set(k,c={cue:k,notes:[],words:new Map()});
+    c.notes.push(note);const seen=new Set();for(const w of note.toLowerCase().split(/[^a-z']+/)){if(w.length<3||STOP.has(w)||seen.has(w))continue;seen.add(w);c.words.set(w,(c.words.get(w)||0)+1);}}
+  return[...by.values()].map(c=>({cue:c.cue,n:c.notes.length,notes:c.notes,recur:[...c.words].filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]).map(([w,n])=>({w,n}))})).sort((a,b)=>b.n-a.n);}
+/* How each lens has served this reader: readings kept under it, sittings, presence and reliability. */
+function lensBoard(trials){const by=new Map();for(const t of trials){const id=t.lens||'none';let a=by.get(id);if(!a)by.set(id,a=[]);a.push(t);}
+  return[...by].map(([id,ts])=>({id,n:ts.length,sits:new Set(ts.map(t=>t.sit)).size,pres:presence(ts),rel:reliability(ts)})).sort((a,b)=>b.n-a.n);}
+
+/* ====================================================================
+   5. Languages and their evolution
+   ==================================================================== */
+const TODS=['day','dusk','night'];
+/* A reading protocol: which forms to attend to, whether to read the Stone's side, when to sit and which
+   stretch of the cone to listen through. The wind sends every form; the reader chooses what to listen for. */
+const BASELINE={forms:[true,true,true,true,true,false,false],dir:true,p0:0.05,span:0.65,tod:'dusk'};
+function randGenome(r){return fixG({forms:SIGN_FORMS.map(()=>r()<0.5),dir:r()<0.5,p0:r()*0.7,span:0.15+r()*0.85,tod:TODS[Math.floor(r()*3)]});}
+function fixG(g){if(!g.forms.some(Boolean))g.forms[0]=true;g.p0=clamp(g.p0,0,0.85);g.span=clamp(g.span,0.1,1);return g;}
+const cloneG=g=>({...g,forms:g.forms.slice()});
+function mutate(g,r,rate){g=cloneG(g);const m=()=>r()<rate;
+  for(const i of SIGN_FORMS)if(r()<rate/2)g.forms[i]=!g.forms[i];
+  if(m())g.dir=!g.dir; if(m())g.p0+=gauss(r)*0.08; if(m())g.span+=gauss(r)*0.1; if(r()<rate/2)g.tod=TODS[Math.floor(r()*3)];
+  return fixG(g);}
+function crossover(a,b,r){const c=cloneG(a);for(const k of ['dir','p0','span','tod'])if(r()<0.5)c[k]=b[k];
+  for(const i of SIGN_FORMS)if(r()<0.5)c.forms[i]=b.forms[i];return fixG(c);}
+/* 'shannon': mutual information, what the reader learns from the plume even through steady confusions.
+   'clean': a wrong mark costs what a right one earns, a missing mark costs nothing: a stricter reader. */
+let OBJECTIVE='shannon';
+
+/* Bits a reader following protocol g takes from one cone: Monte Carlo through air + reader. The wind sends
+   every form alike, a Stone toward any of the four sides; the reader answers only from the forms attended to,
+   plus Still and Wind, and reads the side only if the protocol says to. A form let pass is erased when it is
+   read as weather and wrong when it is taken for one attended to. */
+function evaluate(g,obs,seed,N=1200,objective=OBJECTIVE){
+  const r=rng32(seed),env=g.tod,p0=g.p0,p1=Math.min(0.98,g.p0+g.span),T=WORLD.trialT;
+  const active=SIGN_FORMS.filter(i=>g.forms[i]),stoneOn=g.forms[0],nD=stoneOn&&g.dir?4:1;
+  const choices=[...active,F.STILL,F.WIND],V=active.length+1,eps=1-Math.exp(-obs.beta*Math.max(0,V-obs.C));
+  const nSym=active.length+(stoneOn?nD-1:0),signs=Math.max(0,600*(p1-p0)/(T+WORLD.gap));
+  // a form the reader does not listen for is not spread over the forms they do: what would have been read
+  // as it is read as weather
+  const restrict=row=>{let s=0;for(const j of choices)s+=row[j];const drop=Math.max(0,1-s);return cumul(choices.map(j=>(1-eps)*(row[j]+(j===F.WIND?drop:0))+eps/choices.length));};
+  const tabs=P_BINS.map(pb=>{const L=legib(env,1,pb,1);let dc=null;
+    return{L,vis:SIGN_FORMS.map(gi=>restrict(obs.M[gi])),wind:restrict(rowWind(obs.M,pb)),dir:()=>dc||(dc=dirCell(env,1,T,pb,1))};});
+  const nA=active.length,nS=SIGN_FORMS.length,CG=mat(nS,nA+1),CD=mat(4,4),D=TAU/4;
+  const pick=cum=>{const u=r()*cum[cum.length-1];for(let i=0;i<cum.length;i++)if(u<cum[i])return i;return cum.length-1;};
+  let both=0,exact=0,wrong=0,erased=0;
+  for(let i=0;i<N;i++){
+    const p=p0+r()*(p1-p0),tb=tabs[nearestIdx(P_BINS,p)],gF=Math.floor(r()*nS),d=Math.floor(r()*4);
+    const j=pick(r()<tb.L[gF]?tb.vis[gF]:tb.wind),jf=choices[j],dec=jf===F.STILL||jf===F.WIND?nA:j;
+    CG[gF][dec]++;
+    if(dec===nA){erased++;continue;}
+    if(jf!==gF){wrong++;continue;}
+    if(gF===F.STONE&&nD>1){const th=d*D,cell=tb.dir(),s=dirBin(th)*DIRSAMP+Math.floor(r()*DIRSAMP);
+      const dd=((Math.round(wrap2Pi(th+cell.off[s]+vmSample(r,obs.kappa*cell.vs[s]))/D)%4)+4)%4;CD[d][dd]++;both++;if(dd===d)exact++;else wrong++;}
+    else exact++;
+  }
+  const Ig=mutualInfo(CG),Ip=both>0?(both/N)*mutualInfo(CD):0,bps=Ig+Ip;
+  const clean=Math.max(0,(exact-wrong)/N)*Math.log2(Math.max(2,nSym));
+  return{fit:signs*(objective==='clean'?clean:bps),bps,clean,signs,exact:exact/N,wrong:wrong/N,erased:erased/N,eps,V,nSym,cap:Math.log2(Math.max(2,nSym))};
+}
+
+class Evolver{
+  constructor(obs,seed){this.obs=obs;this.r=rng32(seed);this.gen=0;this.hist=[];this.pop=[];this.champ=null;
+    this.pop.push({g:cloneG(BASELINE)});
+    for(let i=1;i<40;i++)this.pop.push({g:randGenome(this.r)});}
+  step(){const seed=hashStr('gen'+this.gen),r=this.r;
+    for(const ind of this.pop)ind.e=evaluate(ind.g,this.obs,seed);
+    this.pop.sort((a,b)=>b.e.fit-a.e.fit);
+    const fits=this.pop.map(x=>x.e.fit),med=fits[fits.length>>1];
+    const top=this.pop[0],check=evaluate(top.g,this.obs,777,3000);
+    if(!this.champ||check.fit>this.champ.e.fit)this.champ={g:cloneG(top.g),e:check};
+    if(!this.base)this.base=evaluate(BASELINE,this.obs,777,3000);
+    this.hist.push({best:check.fit,med});
+    const next=[{g:cloneG(this.pop[0].g)},{g:cloneG(this.pop[1].g)}];
+    const tour=()=>{let b=null;for(let i=0;i<3;i++){const c=this.pop[Math.floor(r()*this.pop.length)];if(!b||c.e.fit>b.e.fit)b=c;}return b.g;};
+    while(next.length<this.pop.length){let c=r()<0.7?crossover(tour(),tour(),r):cloneG(tour());next.push({g:mutate(c,r,0.22)});}
+    this.lastTop=this.pop.slice(0,6).map(x=>({g:cloneG(x.g),e:x.e}));
+    this.pop=next;this.gen++;}
+}
+
+/* ====================================================================
+   6. The smoke stage
+   ==================================================================== */
+const TABLE_Z=-14,TABLE_R=45,CAM=28*D2R,SINC=Math.sin(CAM),COSC=Math.cos(CAM);
+/* Divergence-free sine modes. The large octave sways the whole column; the two finer octaves act only on
+   smoke that has broken, where they fold the thread into wisps. */
+function makeModes(r,k0,k1,w0,w1){const m=[];for(let c=0;c<3;c++)for(let i=0;i<3;i++)
+  m.push({c,k1:(k0+r()*(k1-k0))*(r()<.5?-1:1),k2:(k0+r()*(k1-k0))*(r()<.5?-1:1),w:w0+r()*(w1-w0),ph:r()*TAU});return m;}
+let TX=0,TY=0,TZ=0;
+function turb(m,x,y,z,t,a){for(const q of m){
+  if(q.c===0)TX+=a*Math.sin(q.k1*y+q.k2*z+q.w*t+q.ph);else if(q.c===1)TY+=a*Math.sin(q.k1*x+q.k2*z+q.w*t+q.ph);else TZ+=a*Math.sin(q.k1*x+q.k2*y+q.w*t+q.ph);}}
+/* Critically damped follower: eases toward its target with no jump in value or in rate, so one form of
+   smoke hands over to the next instead of switching. */
+class Ease{constructor(x=0){this.x=x;this.v=0;}
+  to(y,tau,dt){const w=2/tau;this.v+=(w*w*(y-this.x)-2*w*this.v)*dt;this.x+=this.v*dt;return this.x;}}
+/* What a laminar column turns into when it breaks: a sideways whip, a chain of puffs,
+   a turbulent bloom, or two streams. */
+const BREAKS=['whip','puffs','bloom','fork'];
+const BREAK_NAME={whip:'whips sideways',puffs:'rolls into a chain of puffs',bloom:'blooms into turbulence',fork:'splits into two streams'};
+const W0=0.18;   // a fresh thread's half-width, cm
+
+/* The smoke is a set of threads. Each particle belongs to a strand (the column, each side of a fork, each
+   cascade over the rim, each loop of a ring) and the particles stay in the order they left the cone, so the
+   drawing can run one smooth curve through each strand. Nothing jitters a particle on its own: every motion
+   comes from a field shared by its neighbours, which keeps a thread a thread. Spreading is carried as each
+   particle's width (w2), not as random steps. */
+class SmokeSim{
+  constructor(){this.parts=[];this.rings=[];this.hist=[];this.reset({env:'dusk',gm:1,p:0.35,seed:7});}
+  reset(o){this.o=Object.assign({burn:0},o);const r=this.r=rng32(o.seed>>>0);this.wind=new Wind(o.env,o.gm,r);this.t=0;this.p=o.p;
+    this.parts.length=0;this.rings.length=0;this.signs=[];
+    this.modes=makeModes(r,0.12,0.4,0.8,3);this.fine=makeModes(r,0.45,0.9,2,5);this.finer=makeModes(r,1,1.8,4,8);
+    this.emitAcc=0;this.spawned=new Set();this.U=[0,0];this.read={};this.hist.length=0;this.histT=0;this.sid=0;
+    this.L=4;this.Ldrop=null;this.spellT=0;this.mode='bloom';this.modeT=99;this.mdT=[1,0];this.burstK=0;this.splitT=0;this.splitDir=[1,0];this.lastBreak=null;
+    this.ez={helix:new Ease(),curl:new Ease(),spill:new Ease(),fork:new Ease(),gate:new Ease(1),burst:new Ease(),
+      whip:new Ease(),puffs:new Ease(),bloom:new Ease(1),calm:new Ease(),mdx:new Ease(1),mdy:new Ease()};
+    this.slots=[];this.strandN=0;this.rr=0;this.closed=new Set();this.angPh=[r()*TAU,r()*TAU];
+    const mr=rng32((o.seed^0x5eed)>>>0);this.mr=mr;this.motes=[];for(let i=0;i<70;i++)this.motes.push(this.newMote(mr(),1));}
+  /* Dust in the air: it shows the wind around the plume and the inflow the rising smoke draws in. It has its
+     own random stream, so it never changes the smoke, and it keeps drifting whatever the smoke is doing. */
+  newMote(u,age){const r=this.mr;return{x:(r()-0.5)*76,y:(r()-0.5)*76,z:-12+u*96,age,tw:r()*TAU,b:0.4+0.6*r()};}
+  stepMotes(dt,t){const U=this.U,sig=this.wind.sigma()*0.5+2;
+    for(let i=0;i<this.motes.length;i++){const m=this.motes[i];m.age+=dt;
+      const hf=0.45+0.55*smooth(-5,35,m.z),rh2=m.x*m.x+m.y*m.y,near=Math.exp(-rh2/40)*smooth(-2,4,m.z)*(1-smooth(30,60,m.z));
+      TX=0;TY=0;TZ=0;turb(this.modes,m.x,m.y,m.z,t,0.8);
+      const inflow=-2.5*Math.exp(-rh2/150)*(1-smooth(10,40,m.z))/Math.sqrt(rh2+4);
+      m.x+=(U[0]*hf+sig*TX+inflow*m.x)*dt;m.y+=(U[1]*hf+sig*TY+inflow*m.y)*dt;m.z+=(sig*TZ*0.6+9*near-0.3)*dt;
+      if(Math.abs(m.x)>40||Math.abs(m.y)>40||m.z>86||m.z<-13){const n=this.newMote(this.mr(),0);
+        if(Math.abs(m.x)>40)n.x=-Math.sign(m.x)*39;if(Math.abs(m.y)>40)n.y=-Math.sign(m.y)*39;if(m.z>86)n.z=-12;this.motes[i]=n;}}}
+  schedule(list){this.signs=list.map(s=>({id:++this.sid,...s}));}
+  addSign(s){this.signs.push({id:++this.sid,...s});}
+  active(){for(const s of this.signs)if(this.t>=s.t0&&this.t<s.t0+s.T)return s;return null;}
+  /* A smoke ring: five closed loops of thread rolling round one core, so it reads as a torus. */
+  spawnRing(){const g={x:0,y:0,z:1.5,R:0.88,a:0.4,age:0,life:4.5,cross:0};this.rings.push(g);
+    for(let k=0;k<5;k++){const st=++this.strandN;this.closed.add(st);
+      for(let j=0;j<40;j++){const q={th:j*TAU/40,ph:k*TAU/5,age:0,life:g.life+5,vx:0,vy:0,vz:0,hx:0,hy:0,b:0.3,ang:j*TAU/40,side:0,st,si:99,tb:0,w2:0.3,m:2.4,brk:null,ring:true,rg:g};
+        ringAt(g,q);q.x=q.tx;q.y=q.ty;q.z=q.tz;this.parts.push(q);}}}
+  /* The column trips: the smooth part drops within a fraction of a second and the smoke above takes a new form. */
+  trip(mode){const r=this.r;this.lastBreak={z:this.L,t:this.t};this.Ldrop=Math.max(2,this.L*(0.25+0.3*r()));
+    this.mode=mode||BREAKS[pickW(r,[0.35,0.2,0.3,0.15+0.25*smooth(0.5,0.9,this.p)])];
+    const a=r()*TAU;this.mdT=[Math.sin(a),Math.cos(a)];this.burstK=1;this.modeT=0;
+    if(this.mode==='fork')this.startSplit(2+2*r());}
+  /* Two streams part across the wind (a buoyant plume bent by crossflow rolls up into a counter-rotating pair).
+     A Fork passes the crosswind it is bringing, so the streams part across that before the wind has turned. */
+  startSplit(dur,along){if(this.ez.fork.x<0.05){const U=this.U,sp=Math.hypot(U[0],U[1]);let px,py;
+      if(along){px=-along[1];py=along[0];}else if(sp>2){px=-U[1]/sp;py=U[0]/sp;}else{const a=this.r()*TAU;px=Math.sin(a);py=Math.cos(a);}
+      this.splitDir=[px,py];}
+    this.splitT=dur;}
+  step(dt){
+    const o=this.o,r=this.r,E=this.ez;this.t+=dt;if(o.burn)this.p=Math.min(1,this.p+dt*o.burn/600);
+    const s=this.active(),t=this.t;
+    let q=0,gate=1,helix=0,curl=0,spill=0,tower=false;
+    // A sign is a mode the wind itself enters for a while: it turns to a bearing and holds, or holds its
+    // breath, or drops to the light crosswind that parts a plume. Nothing pushes the smoke from outside the air.
+    if(s){const ts=t-s.t0,ramp=smooth(0,0.6,ts)*(1-smooth(s.T-0.5,s.T,ts)),hold=s.hold==null?1:s.hold;q=QUIET[s.form]*hold*ramp;
+      const S=WORLD.S*(0.6+0.4*hold)*ramp;
+      if(s.form===F.STONE&&s.angle!=null)this.wind.drive(S*Math.sin(s.angle),S*Math.cos(s.angle),q);
+      else if(s.form===F.FORK){if(s.fa==null){const m=this.wind.m,sp0=Math.hypot(m[0],m[1]);s.fa=sp0>1?Math.atan2(m[0],m[1]):r()*TAU;}
+        const fx=Math.sin(s.fa),fy=Math.cos(s.fa);this.wind.drive(5*ramp*fx,5*ramp*fy,q);if(this.splitT<0.3&&ts<s.T-1)this.startSplit(Math.max(0.6,s.T-0.6-ts),[fx,fy]);}
+      else this.wind.drive(0,0,q);   // Still and Tower hold their breath; the shapes only need a calmer column
+      if(s.form===F.HELIX)helix=ramp;
+      if(s.form===F.CURL)curl=ramp;
+      if(s.form===F.SPILL)spill=ramp;
+      if(s.form===F.RING){for(const rt of [0.8,0.8+s.T/2]){const key=s.id+':'+rt;if(ts>=rt&&!this.spawned.has(key)){this.spawned.add(key);this.spawnRing();}}gate=0.3;}
+      if(s.form===F.TOWER){const key=s.id+':brk';
+        if(ts<s.T-1.4)tower=true;else if(!this.spawned.has(key)){this.spawned.add(key);this.trip(['whip','puffs','bloom'][Math.floor(r()*3)]);}}}
+    this.wind.step(dt);const nat=this.wind.nat();
+    const Ux=nat[0],Uy=nat[1];this.U=[Ux,Uy];this.quiet=q;
+    const sr=this.wind.sigma(),sigT=0.55*sr+3,p=this.p,c=coh(p),w0=rise(p),ns=spillNat(p),sp=Math.hypot(Ux,Uy);
+    // every shape the communicator asks for eases in and out
+    const hel=E.helix.to(helix,0.3,dt),cur=E.curl.to(curl,0.3,dt),spl=Math.max(0,E.spill.to(spill,0.3,dt));
+    gate=Math.max(0,E.gate.to(gate,0.1,dt));
+    // Most of the time the smoke stays smooth for only a few cm above the cone and is busy from there up.
+    // A tall straight column needs a calm spell: rare, a minute or two apart at dusk and almost never in
+    // the day or night winds. The communicator's grip (Still, Fork, Tower) makes its own calm.
+    if(this.spellT>0)this.spellT-=dt;else if(r()<dt*0.02*Math.exp(-((sp/7)**2))*c)this.spellT=8+10*r();
+    const calm=E.calm.to(Math.max(this.spellT>0?1:0,smooth(0.7,0.92,q),s&&s.form===F.FORK?0.75:0),1.2,dt);
+    const Lmax=tower?64:2.5+5*c*Math.exp(-((sp/12)**2))+52*clamp(calm,0,1)*Math.exp(-((sp/9)**2))*Math.exp(-((sr/12)**2))*c;
+    if(this.Ldrop!=null){this.L+=(this.Ldrop-this.L)*(1-Math.exp(-dt/0.15));if(this.L-this.Ldrop<0.3)this.Ldrop=null;}
+    else this.L+=(Lmax-this.L)*(1-Math.exp(-dt/(this.L<Lmax?(tower?2.5:3):0.6)));
+    // trips: the restless short column breaks often; the communicator's grip keeps it from tripping
+    if(!tower&&q<0.5&&this.Ldrop==null&&r()<dt*(this.L>15?0.02+sr/80:0.12+sr/60))this.trip();
+    this.burstK*=Math.exp(-dt/1.5);const burst=Math.max(0,E.burst.to(this.burstK,0.15,dt));
+    this.modeT+=dt;if(this.mode!=='bloom'&&this.modeT>6)this.mode='bloom';
+    const wW=E.whip.to(this.mode==='whip'?1:0,0.35,dt),wP=E.puffs.to(this.mode==='puffs'?1:0,0.35,dt),wB=clamp(E.bloom.to(this.mode==='bloom'?1:0,0.35,dt),0,1);
+    const mdx=E.mdx.to(this.mdT[0],0.4,dt),mdy=E.mdy.to(this.mdT[1],0.4,dt);
+    if(this.splitT<=0&&r()<dt*(0.03*smooth(6,14,sp)*(1-smooth(30,45,sp))+0.02*smooth(0.5,0.9,p)))this.startSplit(2+3*r());
+    if(this.splitT>0)this.splitT-=dt;
+    const fs=clamp(E.fork.to(this.splitT>0?1:0,this.splitT>0?0.25:0.4,dt),0,1);
+    const zb=this.L;this.zb=zb;
+    // emit: one thread, two while the plume forks, three cascades when smoke pours over the rim
+    const forking=this.splitT>0||fs>0.02,nStr=spl>0.05||ns>0.3?3:forking?2:1;
+    const ea=1.3*Math.sin(0.7*t+this.angPh[0])+0.9*Math.sin(1.3*t+this.angPh[1])+0.4*t,rate=110*vis(p)*gate;
+    this.emitAcc+=rate*dt;if(this.emitAcc>4)this.emitAcc=4;
+    while(this.emitAcc>=1&&this.parts.length<2000){this.emitAcc--;
+      const k=this.rr++%nStr;let sl=this.slots[k];if(!sl||t-sl.t>0.25)sl=this.slots[k]={id:++this.strandN,t:0,n:0};sl.t=t;
+      const a=ea+k*TAU/nStr,rv=ns*10,b=1-0.5*ns;
+      const q={x:0,y:0,z:coneTop(p)+0.1+(w0*b+2)*this.emitAcc/Math.max(1,rate),age:0,life:7.5,vx:0,vy:0,vz:0,hx:Math.sin(a)*rv,hy:Math.cos(a)*rv,b,ang:a,
+        side:forking?(k%2?1:-1):0,st:sl.id,si:sl.n++,tb:0,w2:0,m:1,brk:null};
+      if(hel){const A=9*hel,wt=TAU/1.6*t;q.hx+=A*Math.cos(wt);q.hy+=A*Math.sin(wt);}
+      this.parts.push(q);}
+    // rings: centre, radius and core grow out of the puff, then drift and slow
+    for(const g of this.rings){g.age+=dt;const hf=0.45+0.55*smooth(-5,35,g.z);g.cross=Math.hypot(Ux,Uy)*hf;
+      if(g.cross>9)g.age+=dt*(g.cross-9)/8;
+      g.x+=Ux*hf*0.85*dt;g.y+=Uy*hf*0.85*dt;g.z+=(22*Math.exp(-g.age/3)+3)*dt;
+      g.R=2.2*(1-0.6*Math.exp(-g.age/0.2))+0.7*g.age;g.a=0.9*(1-0.55*Math.exp(-g.age/0.2));}
+    // particles
+    const P=this.parts;
+    for(const q of P){q.age+=dt;if(q.age>q.life||q.z>110){q.dead=true;continue;}
+      // smoke above the laminar length breaks: the disturbance grows fast but not in one frame
+      if(q.rg)q.tb+=dt*(0.1+0.05*Math.max(0,q.rg.cross-9))*(1-q.tb);
+      else if(q.z>zb*0.95)q.tb+=dt*7*(q.tb+0.04)*(1+2*burst)*(1-q.tb);
+      const tb=q.tb;if(tb>0.3&&q.brk==null)q.brk=q.age;
+      const hf=0.45+0.55*smooth(-5,35,q.z);
+      let ux=Ux*hf,uy=Uy*hf,uz=w0*q.b*(0.35+0.65*Math.exp(-q.age/4))+2;
+      const tA=sigT*(0.06+0.94*tb*(0.45+0.55*wB))*(1+1.5*burst*tb)+6*(1-c)*smooth(0,10,q.z);
+      TX=0;TY=0;TZ=0;turb(this.modes,q.x,q.y,q.z,t,0.8);
+      if(tb>0.02){turb(this.fine,q.x,q.y,q.z,t,0.9*tb);turb(this.finer,q.x,q.y,q.z,t,0.25*tb);}
+      const tx=tA*TX,ty=tA*TY,tz=tA*TZ*0.7;ux+=tx;uy+=ty;uz+=tz;
+      if(tb>0.01){
+        if(wW>0.01){const v=(5+0.25*Math.max(0,q.z-zb))*tb*wW*Math.sin(2.4*t-0.14*q.z);ux+=mdx*v;uy+=mdy*v;}
+        if(wP>0.01){const ph=2.8*t-0.2*q.z;uz+=8*tb*wP*Math.sin(ph);const sw=3.5*tb*wP*Math.cos(ph);ux+=Math.sin(q.ang)*sw;uy+=Math.cos(q.ang)*sw;}}
+      if(fs>0.001&&q.side){const f=smooth(4,9,q.z)*fs;ux+=this.splitDir[0]*q.side*6*f-tx*0.7*f;uy+=this.splitDir[1]*q.side*6*f-ty*0.7*f;}
+      const hd=Math.exp(-q.age/1.4);ux+=q.hx*hd;uy+=q.hy*hd;
+      if(cur>0.002){const cx=Ux*0.25,cz=16,dx=q.x-cx,dz=q.z-cz,rr=Math.hypot(dx,dz)+1e-6,rc=4,G=cur*260;
+        const vt=rr<rc?G*rr/(TAU*rc*rc):G/(TAU*rr),f=Math.exp(-(q.y*q.y)/60);ux+=-dz/rr*vt*f;uz+=dx/rr*vt*f;}
+      if(spl>0.002){const rh=Math.hypot(q.x,q.y),ex=rh>0.6?q.x/rh:Math.sin(q.ang),ey=rh>0.6?q.y/rh:Math.cos(q.ang);
+        uz-=spl*(w0*q.b+6)*smooth(2,9,q.z);const rad=spl*15*(1-smooth(6,22,q.z));ux+=ex*rad;uy+=ey*rad;}
+      if(q.rg){// a ring particle rolls with its core; as the ring dies its roll fades into the air's own motion
+        const g=q.rg,ox=q.tx,oy=q.ty,oz=q.tz;q.ph+=7*dt;ringAt(g,q);const wf=smooth(g.life-1.5,g.life,g.age),a=1-wf;
+        ux=a*((q.tx-ox)/dt+tx*0.5)+wf*ux;uy=a*((q.ty-oy)/dt+ty*0.5)+wf*uy;uz=a*((q.tz-oz)/dt+tz*0.5)+wf*uz;
+        if(g.age>=g.life)q.rg=null;}
+      q.vx=ux;q.vy=uy;q.vz=uz;q.x+=ux*dt;q.y+=uy*dt;q.z+=uz*dt;if(q.z<TABLE_Z+0.5)q.z=TABLE_Z+0.5;
+      q.w2+=2*(0.006+tb*(0.1+0.2*burst))*dt;}
+    let j=0;for(let i=0;i<P.length;i++)if(!P[i].dead)P[j++]=P[i];P.length=j;
+    for(let i=this.rings.length-1;i>=0;i--)if(this.rings[i].age>this.rings[i].life)this.rings.splice(i,1);
+    // instrument
+    this.histT+=dt;if(this.histT>=0.1){this.histT=0;this.measure();}
+  }
+  /* The instrument reads the column only (rings are counted as puffs). A particle's width counts as spread. */
+  measure(){const P=this.parts;let n=0,mx=0,my=0,mz=0;
+    for(const q of P)if(!q.ring&&q.age<3.5&&q.z>6&&q.z<32){n++;mx+=q.x;my+=q.y;mz+=q.z;}
+    const R={};
+    if(n>8){mx/=n;my/=n;mz/=n;let L=0,r2=0,Lv=0,rv2=0;
+      for(const q of P)if(!q.ring&&q.age<3.5&&q.z>6&&q.z<32){const dx=q.x-mx,dy=q.y-my,dz=q.z-mz;
+        L+=dx*q.vz-dz*q.vx;r2+=dx*dx+dz*dz;Lv+=dx*q.vy-dy*q.vx;rv2+=dx*dx+dy*dy;}
+      const off=Math.hypot(mx,my);R.bearing=Math.atan2(mx,my);R.lean=Math.atan2(off,mz)*R2D;R.off=off;
+      R.swirl=r2>0?L/r2:0;R.swirlV=rv2>0?Lv/rv2:0;}
+    let dens=0;for(const q of P)if(q.z>3&&q.z<9){if(q.rg)dens+=0.2;else if(!q.ring&&q.age<2.5)dens++;}
+    R.dens=dens;
+    // break height: first 3 cm band where young smoke spreads wider than a smooth column
+    let bz=null;for(let z0=0;z0<78;z0+=3){let m=0,sx=0,sy=0,sxx=0,syy=0,sw=0;
+      for(const q of P)if(!q.ring&&q.z>=z0&&q.z<z0+3&&q.age<4){m++;sx+=q.x;sy+=q.y;sxx+=q.x*q.x;syy+=q.y*q.y;sw+=q.w2;}
+      if(m<6)continue;const v=(sxx-sx*sx/m+syy-sy*sy/m+2*sw)/m;if(Math.sqrt(v)>2.6+0.04*z0){bz=z0;break;}}
+    R.breakZ=bz;
+    // streams: in 5 cm height bands, split young smoke across the wind into its best two groups (Otsu);
+    // two tight, well-separated groups in several bands means the plume has forked
+    const Us=Math.hypot(this.U[0],this.U[1]);let split=0,bands=0;
+    for(let z0=6;z0<50;z0+=5){const pts=[];let ax=0,ay=0;
+      for(const q of P)if(!q.ring&&q.tb<0.8&&q.z>=z0&&q.z<z0+5&&q.age<3){pts.push(q);ax+=q.x;ay+=q.y;}
+      if(pts.length<16)continue;bands++;ax/=pts.length;ay/=pts.length;let ex,ey;
+      if(Us>3){ex=-this.U[1]/Us;ey=this.U[0]/Us;}else{let sxx=0,sxy=0,syy=0;for(const q of pts){const dx=q.x-ax,dy=q.y-ay;sxx+=dx*dx;sxy+=dx*dy;syy+=dy*dy;}
+        const th=0.5*Math.atan2(2*sxy,sxx-syy);ex=Math.cos(th);ey=Math.sin(th);}
+      const pr=pts.map(q=>(q.x-ax)*ex+(q.y-ay)*ey).sort((a,b)=>a-b),N=pr.length;let tot=0;for(const v of pr)tot+=v*v;for(const q of pts)tot+=q.w2;
+      let best=0,bk=0,cs=0;for(let k=0;k<N-1;k++){cs+=pr[k];const n1=k+1,n2=N-n1;if(n1<N*0.25||n2<N*0.25)continue;const m1=cs/n1,m2=-cs/n2,bv=n1*m1*m1+n2*m2*m2;if(bv>best){best=bv;bk=k;}}
+      if(tot>0&&best/tot>0.86){let c1=0;for(let k=0;k<=bk;k++)c1+=pr[k];const m1=c1/(bk+1),m2=-c1/(N-bk-1);if(m2-m1>4)split++;}}
+    R.streams=bands&&split>=3?2:1;
+    R.L=this.L;R.U=this.U;R.t=this.t;this.read=R;this.hist.push(R);if(this.hist.length>300)this.hist.shift();}
+}
+/* Where a ring particle sits on its rolling core. */
+function ringAt(g,q){const rr=g.R+g.a*Math.cos(q.ph);q.tx=g.x+rr*Math.sin(q.th);q.ty=g.y+rr*Math.cos(q.th);q.tz=g.z+g.a*Math.sin(q.ph);}
+
+/* ====================================================================
+   7. Drawing
+   ==================================================================== */
+const css={};
+function readTheme(){const s=getComputedStyle(document.documentElement);
+  for(const k of ['bg','panel','sunk','ink','muted','line','ember','smoke','table','table-ink','ok','warn','bad','f-mono'])css[k]=s.getPropertyValue('--'+k).trim();
+  sprite=null;}
+let sprite=null;
+function getSprite(){if(sprite)return sprite;const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');
+  const gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,css.smoke);gr.addColorStop(1,'transparent');
+  g.fillStyle=gr;g.fillRect(0,0,64,64);sprite=c;return c;}
+function fitCanvas(cv){const dpr=Math.min(2,window.devicePixelRatio||1),w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return{g,w,h};}
+
+const RING0=7,RING1=TABLE_R-3;
+/* Where a stone sits on the table: sector centre and ring centre, in table cm. */
+function stoneXY(dir,ring,dial){const nD=dial.nDir,nR=dial.nRing,a=nD>1?(dir+dial.off)*TAU/nD:0,
+  rr=nD>1?RING0+(RING1-RING0)*(ring-0.5)/nR:RING0*0.4+(RING1-RING0)*(ring-0.5)/nR;return[rr*Math.sin(a),rr*Math.cos(a)];}
+/* Screen point -> {dir, ring} on the table, using the last frame's view. */
+function hitTable(sx,sy,dial){const v=app.view;if(!v)return null;
+  const xr=(sx-v.cx)/v.s,yr=((v.cy-sy)/v.s-TABLE_Z*COSC)/SINC,c=Math.cos(v.yaw||0),sn=Math.sin(v.yaw||0),x=xr*c+yr*sn,y=-xr*sn+yr*c,r=Math.hypot(x,y);
+  if(r<RING0||r>TABLE_R+3)return null;
+  const nD=dial.nDir,nR=dial.nRing,ring=clamp(Math.floor((r-RING0)/(RING1-RING0)*nR)+1,1,nR);
+  const dir=nD>1?((Math.round(wrap2Pi(Math.atan2(x,y))/(TAU/nD)-dial.off)%nD)+nD)%nD:0;return{dir,ring};}
+const dirLabel=(dir,dial)=>dial.nDir===4&&!dial.off?DIR_WORD[dir]:dial.nDir===12&&!dial.off?`${dir===0?12:dir} o'clock`:`direction ${dir+1}`;
+
+/* Smoke is drawn as threads, not dots. Each strand is one smooth curve through its particles, midpoint to
+   midpoint, and a stretch of thread is as dark as the smoke it carries over the area it covers: it fades as it
+   is stretched and widened and deepens where it bunches or is seen end-on. Pieces of similar width and
+   darkness share one path, so overlaps within a path do not double up. The same curves, drawn wide and faint
+   at quarter resolution, make the soft veil that broken smoke spreads into; because the veil follows the
+   threads, bunched smoke thickens it a little instead of piling into balls. */
+let hazeCv=null;
+const SMOKE_K=0.05,SMOKE_GAP=12,SMOKE_TONE=0.8,HAZE_K=0.3;
+function bucketPut(B,wpx,al,x0,y0,cx,cy,x1,y1){if(al<0.004)return;
+  const wb=Math.round(Math.log2(Math.max(0.7,wpx)/0.7)*3),ab=Math.min(63,Math.round(Math.log2(al/0.004)*3)),key=wb*64+ab;
+  let a=B.get(key);if(!a)B.set(key,a=[]);a.push(x0,y0,cx,cy,x1,y1);}
+function bucketStroke(g,B,k){for(const [key,a] of B){const wb=Math.floor(key/64),ab=key-wb*64;
+    g.lineWidth=0.7*2**(wb/3);g.globalAlpha=Math.min(1,0.004*2**(ab/3));g.beginPath();
+    for(let i=0;i<a.length;i+=6){g.moveTo(a[i]*k,a[i+1]*k);g.quadraticCurveTo(a[i+2]*k,a[i+3]*k,a[i+4]*k,a[i+5]*k);}g.stroke();}
+  g.globalAlpha=1;}
+function drawSmoke(g,sim,P,s,w,h){const parts=sim.parts;if(!parts.length)return;
+  for(const q of parts){const pp=P(q.x,q.y,q.z);q.sx=pp[0];q.sy=pp[1];q.W=Math.sqrt(W0*W0+q.w2);
+    q.fd=(1-smooth(q.life-3,q.life,q.age))*(q.ring?smooth(0,0.4,q.age):smooth(0,14,q.si));}
+  const hs=0.25,B=new Map(),HB=new Map(),st=new Map(),d2=(a,b)=>Math.hypot(a.sx-b.sx,a.sy-b.sy);
+  const put=(S,q,x0,y0,cx,cy,x1,y1,len)=>{S.ln=S.ln==null?len:S.ln*0.65+len*0.35;const Lcm=S.ln/s,Wd=2*q.W,Lc=Math.max(Lcm,0.6*Wd);
+    bucketPut(B,Wd*s,(1-Math.exp(-SMOKE_K*q.m/(Lc*Wd)))**SMOKE_TONE*q.fd,x0,y0,cx,cy,x1,y1);
+    const Wh=2.5*Wd+1.5+3*q.tb*Math.min(2,q.brk==null?0:q.age-q.brk);
+    bucketPut(HB,Wh*s*hs,(1-Math.exp(-HAZE_K*q.m/(Math.max(Lcm,0.3*Wh)*Wh)))*q.fd*(0.2+0.8*q.tb),x0,y0,cx,cy,x1,y1);};
+  const mid=(a,b)=>[(a.sx+b.sx)/2,(a.sy+b.sy)/2];
+  const finish=S=>{const a=S.p0,b=S.p1;if(!a)return;
+    if(S.closed&&S.f1&&Math.hypot(b.x-S.f0.x,b.y-S.f0.y,b.z-S.f0.z)<SMOKE_GAP){const m0=mid(a,b),m1=mid(b,S.f0),m2=mid(S.f0,S.f1);
+      put(S,b,m0[0],m0[1],b.sx,b.sy,m1[0],m1[1],(d2(a,b)+d2(b,S.f0))/2);put(S,S.f0,m1[0],m1[1],S.f0.sx,S.f0.sy,m2[0],m2[1],(d2(b,S.f0)+d2(S.f0,S.f1))/2);}
+    else{const m0=mid(a,b);put(S,b,m0[0],m0[1],b.sx,b.sy,b.sx,b.sy,d2(a,b));}};
+  for(const q of parts){let S=st.get(q.st);
+    if(S&&Math.hypot(S.p1.x-q.x,S.p1.y-q.y,S.p1.z-q.z)>SMOKE_GAP){finish(S);S.p0=null;S.p1=q;S.f0=q;S.f1=null;S.closed=false;S.ln=null;continue;}
+    if(!S){st.set(q.st,{p0:null,p1:q,f0:q,f1:null,closed:sim.closed.has(q.st)});continue;}
+    const a=S.p0,b=S.p1,m1=mid(b,q);
+    if(!a){S.f1=q;if(!S.closed)put(S,b,b.sx,b.sy,b.sx,b.sy,m1[0],m1[1],d2(b,q));}
+    else{const m0=mid(a,b);put(S,b,m0[0],m0[1],b.sx,b.sy,m1[0],m1[1],(d2(a,b)+d2(b,q))/2);}
+    S.p0=b;S.p1=q;}
+  for(const S of st.values())finish(S);
+  // the veil, blurred by drawing it small and scaling it up
+  const hw=Math.max(1,Math.ceil(w*hs)),hh=Math.max(1,Math.ceil(h*hs));
+  if(!hazeCv)hazeCv=document.createElement('canvas');if(hazeCv.width!==hw||hazeCv.height!==hh){hazeCv.width=hw;hazeCv.height=hh;}
+  const hg=hazeCv.getContext('2d');hg.clearRect(0,0,hw,hh);hg.strokeStyle=css.smoke;hg.lineCap='round';hg.lineJoin='round';
+  bucketStroke(hg,HB,hs);g.drawImage(hazeCv,0,0,w,h);
+  // butt ends: the pieces meet tangent to each other, and round caps would bead where buckets meet
+  g.strokeStyle=css.smoke;g.lineCap='butt';g.lineJoin='round';bucketStroke(g,B,1);g.lineCap='butt';}
+
+/* The burner is a turned metal piece: a stepped foot, a stem with a knop, and a bowl that flares to a rolled
+   lip. It is drawn as a solid of revolution from its profile (height, radius in cm), smoothed with a
+   Catmull-Rom curve and shaded band by band so the light wraps the narrow stem as well as the wide foot. */
+const BURNER=[[-14,4.4],[-13.75,4.55],[-13.4,4.45],[-13.05,3.9],[-12.5,2.7],[-11.8,1.6],[-11,1.08],[-9.8,0.95],[-8.9,1.2],
+  [-8.2,1.6],[-7.6,1.6],[-6.9,1.15],[-6,0.92],[-4.8,0.95],[-4,1.3],[-3.3,2.05],[-2.5,2.9],[-1.8,3.45],[-1.25,3.75],[-1,3.85]];
+const CUP_TOP=-1,CUP_R=3.85,CONE_Z0=CONE_BASE;
+let burnerProf=null;
+function burnerProfile(){if(burnerProf)return burnerProf;const B=BURNER,out=[];
+  for(let i=0;i<B.length-1;i++){const p0=B[Math.max(0,i-1)],p1=B[i],p2=B[i+1],p3=B[Math.min(B.length-1,i+2)];
+    for(let k=0;k<8;k++){const t=k/8,t2=t*t,t3=t2*t,f=(a,b,c,d)=>0.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);
+      out.push([f(p0[0],p1[0],p2[0],p3[0]),Math.max(0.3,f(p0[1],p1[1],p2[1],p3[1]))]);}}
+  out.push(B[B.length-1]);return burnerProf=out;}
+/* Horizontal metal shading for one band of radius rr (screen px) centred on x. */
+function metalBand(g,x,rr,dark){const gr=g.createLinearGradient(x-rr,0,x+rr,0);
+  gr.addColorStop(0,`rgba(0,0,0,${0.42+dark})`);gr.addColorStop(0.22,`rgba(0,0,0,${0.12+dark})`);gr.addColorStop(0.36,'rgba(255,255,255,0.30)');
+  gr.addColorStop(0.44,'rgba(255,255,255,0.12)');gr.addColorStop(0.72,`rgba(0,0,0,${0.18+dark})`);gr.addColorStop(0.9,`rgba(0,0,0,${0.36+dark})`);
+  gr.addColorStop(1,`rgba(0,0,0,${0.22+dark})`);return gr;}
+function drawBurner(g,P,s,sim){const prof=burnerProfile(),o=P(0,0,0),X=o[0],Y=z=>P(0,0,z)[1],t=sim.t,p=sim.p;
+  // soft contact shadow on the table
+  const fb=P(0,0,TABLE_Z),sh=g.createRadialGradient(fb[0],fb[1],0,fb[0],fb[1],6.5*s);
+  sh.addColorStop(0,'rgba(0,0,0,0.35)');sh.addColorStop(1,'rgba(0,0,0,0)');
+  g.save();g.translate(fb[0],fb[1]);g.scale(1,SINC);g.translate(-fb[0],-fb[1]);g.fillStyle=sh;g.beginPath();g.arc(fb[0],fb[1],6.5*s,0,TAU);g.fill();g.restore();
+  // silhouette: up the right side, over the back of the lip, down the left, round the front of the foot
+  const body=new Path2D();body.moveTo(X+prof[0][1]*s,Y(prof[0][0]));
+  for(const [z,r] of prof)body.lineTo(X+r*s,Y(z));
+  body.ellipse(X,Y(CUP_TOP),CUP_R*s,CUP_R*s*SINC,0,0,-Math.PI,true);
+  for(let i=prof.length-1;i>=0;i--)body.lineTo(X-prof[i][1]*s,Y(prof[i][0]));
+  body.ellipse(X,Y(TABLE_Z),prof[0][1]*s,prof[0][1]*s*SINC,0,Math.PI,0,true);
+  g.fillStyle=css.muted;g.fill(body);
+  g.save();g.clip(body);
+  for(let i=0;i<prof.length-1;i++){const [z0,r0]=prof[i],[z1,r1]=prof[i+1],rr=Math.max(r0,r1)*s,y0=Y(z0),y1=Y(z1);
+    g.fillStyle=metalBand(g,X,rr,0);g.fillRect(X-rr-1,Math.min(y0,y1),rr*2+2,Math.abs(y1-y0)+(i?0.5:rr*SINC+2));}
+  // turned grooves and the knop's bright ring
+  for(const [z,a] of [[-13.4,0.35],[-13.05,0.25],[-8.2,0.3],[-6.9,0.25],[-4,0.25]]){const r=prof.reduce((b,q)=>Math.abs(q[0]-z)<Math.abs(b[0]-z)?q:b)[1];
+    g.strokeStyle=`rgba(0,0,0,${a})`;g.lineWidth=1;g.beginPath();g.ellipse(X,Y(z),r*s,r*s*SINC,0,0.08,Math.PI-0.08);g.stroke();
+    g.strokeStyle='rgba(255,255,255,0.16)';g.beginPath();g.ellipse(X,Y(z)+1,r*s,r*s*SINC,0,0.25,Math.PI*0.6);g.stroke();}
+  g.restore();
+  g.strokeStyle='rgba(0,0,0,0.35)';g.lineWidth=1;g.stroke(body);
+  // inside the bowl: dark wall, an ash bed, the ember's warm light
+  const yc=Y(CUP_TOP),ri=(CUP_R-0.3)*s;
+  g.save();g.beginPath();g.ellipse(X,yc,ri,ri*SINC,0,0,TAU);g.clip();
+  const wall=g.createLinearGradient(0,yc-ri*SINC,0,yc+ri*SINC);wall.addColorStop(0,'rgba(0,0,0,0.25)');wall.addColorStop(1,'rgba(0,0,0,0.6)');
+  g.fillStyle=css.muted;g.fillRect(X-ri,yc-ri,ri*2,ri*2);g.fillStyle=wall;g.fillRect(X-ri,yc-ri,ri*2,ri*2);
+  const ab=P(0,0,CONE_Z0);g.fillStyle=css['table-ink'];g.globalAlpha=0.55;g.beginPath();g.ellipse(ab[0],ab[1],2.9*s,2.9*s*SINC,0,0,TAU);g.fill();
+  g.fillStyle='rgba(255,255,255,0.18)';g.beginPath();g.ellipse(ab[0],ab[1]-0.3*s,2.4*s,2.4*s*SINC,0,0,TAU);g.fill();g.globalAlpha=1;
+  g.restore();
+  drawCone(g,P,s,t,p);
+  // rolled lip: a bright back edge, and the front edge passing in front of the cone's foot
+  g.lineWidth=Math.max(1.2,0.32*s);g.strokeStyle=css.muted;g.beginPath();g.ellipse(X,yc,(CUP_R-0.15)*s,(CUP_R-0.15)*s*SINC,0,0,TAU);g.stroke();
+  g.strokeStyle='rgba(255,255,255,0.35)';g.lineWidth=Math.max(0.8,0.12*s);
+  g.beginPath();g.ellipse(X,yc-0.06*s,(CUP_R-0.15)*s,(CUP_R-0.15)*s*SINC,0,Math.PI*1.08,Math.PI*1.75);g.stroke();
+  g.strokeStyle='rgba(0,0,0,0.3)';g.beginPath();g.ellipse(X,yc+0.1*s,(CUP_R-0.05)*s,(CUP_R-0.05)*s*SINC,0,0.15,Math.PI-0.15);g.stroke();}
+/* The cone burns from the tip down: an unburned body with gently swelling sides, a glowing ring where it burns,
+   and a cap of pale ash above. */
+function drawCone(g,P,s,t,p){const z0=CONE_Z0,H=CONE_H,rb=CONE_RB,ze=coneEmber(p),re=rb*(1-(ze-z0)/H),zt=coneTop(p);
+  const b=P(0,0,z0),e=P(0,0,ze),top=P(0,0,zt),X=b[0];
+  const cone=new Path2D();cone.moveTo(X-rb*s,b[1]);
+  cone.quadraticCurveTo(X-(rb+re)/2*s-0.12*s,(b[1]+e[1])/2,X-re*s,e[1]);
+  cone.ellipse(X,e[1],re*s,re*s*SINC,0,Math.PI,0,false);
+  cone.quadraticCurveTo(X+(rb+re)/2*s+0.12*s,(b[1]+e[1])/2,X+rb*s,b[1]);
+  cone.ellipse(X,b[1],rb*s,rb*s*SINC,0,0,Math.PI,false);
+  g.fillStyle=css['table-ink'];g.fill(cone);g.fillStyle='rgba(70,36,18,0.55)';g.fill(cone);   // incense brown
+  const sh=g.createLinearGradient(X-rb*s,0,X+rb*s,0);sh.addColorStop(0,'rgba(0,0,0,0.4)');sh.addColorStop(0.38,'rgba(255,255,255,0.14)');sh.addColorStop(1,'rgba(0,0,0,0.45)');
+  g.fillStyle=sh;g.fill(cone);
+  if(p<0.01)return;   // unlit
+  // ash cap, rounded, sitting on the burning ring
+  g.fillStyle='rgba(205,200,190,0.92)';g.beginPath();g.moveTo(X-re*s,e[1]);
+  g.bezierCurveTo(X-re*s,e[1]-(zt-ze)*0.7*s*COSC,X-0.25*re*s,top[1],X,top[1]);
+  g.bezierCurveTo(X+0.25*re*s,top[1],X+re*s,e[1]-(zt-ze)*0.7*s*COSC,X+re*s,e[1]);
+  g.ellipse(X,e[1],re*s,re*s*SINC,0,0,Math.PI,false);g.fill();
+  g.fillStyle='rgba(0,0,0,0.18)';g.beginPath();g.ellipse(X+0.35*re*s,(e[1]+top[1])/2,0.45*re*s,(e[1]-top[1])*0.35,0,0,TAU);g.fill();
+  // the ember breathes
+  const fl=0.78+0.14*Math.sin(t*5.3)+0.08*Math.sin(t*13.1+1.7),gw=g.createRadialGradient(X,e[1],0,X,e[1],(re+1.4)*s);
+  gw.addColorStop(0,css.ember);gw.addColorStop(1,'rgba(0,0,0,0)');
+  g.globalAlpha=0.35*fl;g.fillStyle=gw;g.beginPath();g.arc(X,e[1],(re+1.4)*s,0,TAU);g.fill();
+  g.globalAlpha=0.95*fl;g.strokeStyle=css.ember;g.lineWidth=Math.max(1.2,0.22*s);g.beginPath();g.ellipse(X,e[1],re*s,re*s*SINC,0,0,TAU);g.stroke();
+  g.globalAlpha=1;}
+
+/* Motes: tiny, faint, and brighter when they pass the ember or catch the light. */
+function drawMotes(g,P,s,sim){const ct=coneTop(sim.p),t=performance.now()/1000;g.fillStyle=css.smoke;
+  for(const m of sim.motes){const pp=P(m.x,m.y,m.z),dep=clamp(0.5-m.y/80,0.2,1),fade=smooth(0,1.5,m.age);
+    const d2=m.x*m.x+m.y*m.y+(m.z-ct)**2,warm=Math.exp(-d2/60),tw=0.6+0.4*Math.sin(t*1.7+m.tw);
+    const al=(0.08+0.2*dep*tw)*m.b*fade;if(al<0.01)continue;const rr=Math.max(0.5,(0.35+0.55*dep)*s*0.12);
+    g.globalAlpha=al;g.beginPath();g.arc(pp[0],pp[1],rr,0,TAU);g.fill();
+    if(warm>0.05){g.globalAlpha=Math.min(0.8,warm*fade);g.fillStyle=css.ember;g.beginPath();g.arc(pp[0],pp[1],rr*1.2,0,TAU);g.fill();g.fillStyle=css.smoke;}}
+  g.globalAlpha=1;}
+/* The air's arc: where the wind has lately been carrying the smoke, its habit, as a slowly forgetting tally
+   over 48 bearings, seeded from the hour's known flow whenever the air is new. There is one wind, signs and
+   all; a lean that turns against the habit and holds is what a reader learns to notice. */
+const AIR_BINS=48,airArc={h:new Float32Array(AIR_BINS),key:null};
+function airAdd(h,bear,w){for(let i=0;i<AIR_BINS;i++)h[i]+=w*Math.exp(6*(Math.cos(i*TAU/AIR_BINS-bear)-1));}
+function stepAir(sim,dt){const A=airArc,wd=sim.wind;if(!wd)return;
+  if(A.key!==sim.o){A.key=sim.o;A.h.fill(0);const sg=wd.sigma();
+    for(let n=0;n<300;n++){const x=wd.m[0]+sg*gauss(Math.random),y=wd.m[1]+sg*gauss(Math.random);airAdd(A.h,Math.atan2(x,y),0.3*smooth(2,12,Math.hypot(x,y)));}}
+  if(!(dt>0))return;const a=Math.exp(-dt/90);for(let i=0;i<AIR_BINS;i++)A.h[i]*=a;
+  const n=wd.nat();airAdd(A.h,Math.atan2(n[0],n[1]),dt*smooth(2,12,Math.hypot(n[0],n[1])));}
+function drawAirArc(g,P,s,H){let pk=0,sx=0,sy=0,sw=0;
+  for(let i=0;i<AIR_BINS;i++){const a=i*TAU/AIR_BINS;pk=Math.max(pk,H[i]);sw+=H[i];sx+=H[i]*Math.sin(a);sy+=H[i]*Math.cos(a);}
+  if(pk<=0)return;const st=smooth(0.12,0.55,Math.hypot(sx,sy)/sw),da=TAU/AIR_BINS;if(st<0.02)return;   // wandering air has no arc
+  const sect=(a0,a1,r0,r1)=>{g.beginPath();for(let k=0;k<=6;k++){const a=a0+(a1-a0)*k/6,q=P(r1*Math.sin(a),r1*Math.cos(a),TABLE_Z);k?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);}
+    for(let k=6;k>=0;k--){const a=a0+(a1-a0)*k/6,q=P(r0*Math.sin(a),r0*Math.cos(a),TABLE_Z);g.lineTo(q[0],q[1]);}g.fill();};
+  g.fillStyle=css.ember;
+  for(let i=0;i<AIR_BINS;i++){const v=H[i]/pk;if(v<0.05)continue;g.globalAlpha=0.7*st*v*v;sect((i-0.5)*da,(i+0.5)*da,RING1,TABLE_R);}
+  // the dominant arc: the run of bearings around the peak that get at least 60% of its hits
+  let ip=0;for(let i=1;i<AIR_BINS;i++)if(H[i]>H[ip])ip=i;let i0=ip,i1=ip;
+  while(i1-i0<AIR_BINS-1&&H[(i0-1+AIR_BINS)%AIR_BINS]>=0.6*pk)i0--;while(i1-i0<AIR_BINS-1&&H[(i1+1)%AIR_BINS]>=0.6*pk)i1++;
+  g.globalAlpha=0.08*st;sect((i0-0.5)*da,(i1+0.5)*da,RING0,RING1);
+  g.globalAlpha=0.9*st;g.strokeStyle=css.ember;g.lineWidth=Math.max(2,0.55*s);g.lineCap='round';g.beginPath();
+  for(let k=0;k<=24;k++){const a=(i0-0.5+(i1-i0+1)*k/24)*da,r=TABLE_R+0.9,q=P(r*Math.sin(a),r*Math.cos(a),TABLE_Z);k?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);}g.stroke();
+  // the label sits outside the hour numbers, set away from the rim on whichever side it falls
+  const am=(i0+i1)/2*da,lp=P((TABLE_R+11)*Math.sin(am),(TABLE_R+11)*Math.cos(am),TABLE_Z),sx2=Math.sin(am-(app.view?app.view.yaw:0));
+  g.globalAlpha=st;g.fillStyle=css.ember;g.font=`500 ${Math.max(10,s*1.4)}px ${css['f-mono']||'monospace'}`;g.textAlign=sx2<-0.35?'right':sx2>0.35?'left':'center';g.textBaseline='middle';
+  g.fillText('dominant air',lp[0],lp[1]);g.globalAlpha=1;g.lineCap='butt';g.textAlign='center';}
+function drawStage(cv,sim,dial,marks,ui){
+  const{g,w,h}=fitCanvas(cv);if(!w||!h)return;
+  const hA=Math.max(220,h-(ui.reserve||0)),s=Math.min((w-24)/94,(hA-16)/104),cx=w/2,cy=Math.max(8,(hA-104*s)/2)+66*s;
+  const yaw=ui.yaw||0,cY=Math.cos(yaw),sY=Math.sin(yaw);app.view={s,cx,cy,yaw};
+  const P=(x,y,z)=>[cx+s*(x*cY-y*sY),cy-s*((x*sY+y*cY)*SINC+z*COSC)],mono=css['f-mono']||'monospace';
+  g.clearRect(0,0,w,h);g.fillStyle=css.sunk;g.fillRect(0,0,w,h);
+  // ridge silhouette behind the table
+  g.fillStyle=css.panel;g.beginPath();const ry=P(0,60,TABLE_Z)[1];
+  const rx=-yaw*w*0.7;g.moveTo(0,h);g.lineTo(0,ry+10+rx*0.04);g.quadraticCurveTo(w*0.5+rx,ry-16,w,ry+10-rx*0.04);g.lineTo(w,h);g.fill();   // the far ridge slides against the table
+  // table, rings, spokes
+  const tc=P(0,0,TABLE_Z);g.fillStyle=css.table;g.beginPath();g.ellipse(tc[0],tc[1],TABLE_R*s,TABLE_R*s*SINC,0,0,TAU);g.fill();
+  g.strokeStyle=css['table-ink'];g.lineWidth=1;g.globalAlpha=0.55;
+  const nD=dial.nDir,nR=dial.nRing;
+  for(let i=0;i<=nR;i++){const rr=RING0+(RING1-RING0)*i/nR;g.beginPath();g.ellipse(tc[0],tc[1],rr*s,rr*s*SINC,0,0,TAU);g.stroke();}
+  if(nD>1)for(let i=0;i<nD;i++){const a=(i+dial.off+0.5)*TAU/nD,p1=P(RING0*Math.sin(a),RING0*Math.cos(a),TABLE_Z),p2=P(RING1*Math.sin(a),RING1*Math.cos(a),TABLE_Z);
+    g.beginPath();g.moveTo(p1[0],p1[1]);g.lineTo(p2[0],p2[1]);g.stroke();}
+  if(ui.air)drawAirArc(g,P,s,ui.air.h);
+  // hovered sector glows
+  if(ui.hover){const a0=nD>1?(ui.hover.dir+dial.off-0.5)*TAU/nD:0,a1=nD>1?a0+TAU/nD:TAU,r0=RING0+(RING1-RING0)*(ui.hover.ring-1)/nR,r1=r0+(RING1-RING0)/nR;
+    g.globalAlpha=0.22;g.fillStyle=css.ember;g.beginPath();
+    for(let k=0;k<=16;k++){const a=a0+(a1-a0)*k/16,p=P(r1*Math.sin(a),r1*Math.cos(a),TABLE_Z);k?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]);}
+    for(let k=16;k>=0;k--){const a=a0+(a1-a0)*k/16,p=P(r0*Math.sin(a),r0*Math.cos(a),TABLE_Z);g.lineTo(p[0],p[1]);}
+    g.fill();}
+  g.globalAlpha=1;g.fillStyle=css['table-ink'];g.font=`500 ${Math.max(10,s*1.8)}px ${mono}`;g.textAlign='center';g.textBaseline='middle';
+  if(nD>1)for(let i=0;i<nD;i++){const a=(i+dial.off)*TAU/nD,rr=TABLE_R+3.4,pp=P(rr*Math.sin(a),rr*Math.cos(a),TABLE_Z);
+    g.fillText(nD===4&&!dial.off?DIR_SHORT[i]:nD===12&&!dial.off?String(i===0?12:i):String(i+1),pp[0],pp[1]);}
+  const you=P(13,-TABLE_R-4,TABLE_Z);g.fillStyle=css.muted;g.font=`${Math.max(10,s*1.5)}px sans-serif`;g.textAlign='left';
+  g.fillText('← your seat',you[0],Math.min(hA-8,you[1]));g.textAlign='center';
+  // height ruler beside the plume
+  { const X=-TABLE_R*0.62,b0=P(X,0,0),b1=P(X,0,61),b2=P(X,0,30);g.strokeStyle=css.muted;g.globalAlpha=0.5;g.lineWidth=1;g.setLineDash([2,4]);
+    g.beginPath();g.moveTo(b0[0],b0[1]);g.lineTo(b1[0],b1[1]);g.stroke();g.setLineDash([]);
+    for(const t of [b0,b2,b1]){g.beginPath();g.moveTo(t[0]-4,t[1]);g.lineTo(t[0]+4,t[1]);g.stroke();}
+    g.globalAlpha=0.85;g.fillStyle=css.muted;g.font=`10px ${mono}`;g.textAlign='right';g.fillText('2 ft',b1[0]-7,b1[1]);g.fillText('1 ft',b2[0]-7,b2[1]);g.textAlign='center';g.globalAlpha=1; }
+  // stones: sentence marks, the true stone, your stone, the hover ghost
+  const disc=(xy,fill,stroke,rad)=>{const pp=P(xy[0],xy[1],TABLE_Z);g.beginPath();g.ellipse(pp[0],pp[1],s*rad,s*rad*SINC+1,0,0,TAU);
+    if(fill){g.fillStyle=fill;g.fill();}if(stroke){g.strokeStyle=stroke;g.lineWidth=2.2;g.stroke();}return pp;};
+  for(const m of marks)if(m.kind==='stone')disc(stoneXY(m.dir,m.ring,dial),css.ember,null,1.6);
+  if(ui.truth)disc(stoneXY(ui.truth.dir,ui.truth.ring,dial),null,css.ember,2.8);
+  if(ui.answer)disc(stoneXY(ui.answer.dir,ui.answer.ring,dial),css.ink,null,1.5);
+  let hoverPt=null;if(ui.hover)hoverPt=disc(stoneXY(ui.hover.dir,ui.hover.ring,dial),null,css.ink,1.5);
+  // the burner: foot, stem, bowl and the burning cone
+  drawBurner(g,P,s,sim);
+  // smoke
+  drawMotes(g,P,s,sim);
+  drawSmoke(g,sim,P,s,w,h);
+  // hover label on top of the smoke
+  if(hoverPt){const t=dirLabel(ui.hover.dir,dial);g.font=`500 13px ${mono}`;
+    const tw=g.measureText(t).width+14,bx=clamp(hoverPt[0]-tw/2,4,w-tw-4),by=hoverPt[1]-s*2-26;
+    g.fillStyle=css.panel;g.globalAlpha=0.92;g.fillRect(bx,by,tw,22);g.globalAlpha=1;g.strokeStyle=css.line;g.lineWidth=1;g.strokeRect(bx+0.5,by+0.5,tw-1,21);
+    g.fillStyle=css.ink;g.textAlign='left';g.fillText(t,bx+7,by+11);g.textAlign='center';}
+  // wind compass (top-down, north up)
+  const R=28,ox=w-R-16,oy=R+18;g.fillStyle=css.panel;g.globalAlpha=0.8;g.beginPath();g.arc(ox,oy,R,0,TAU);g.fill();g.globalAlpha=1;
+  g.strokeStyle=css.line;g.lineWidth=1;g.beginPath();g.arc(ox,oy,R,0,TAU);g.stroke();
+  g.fillStyle=css.muted;g.font=`9px sans-serif`;g.fillText('12',ox,oy-R-7);
+  const U=sim.U,sp2=Math.hypot(U[0],U[1]),L=Math.min(R-3,sp2*0.7);
+  if(sp2>0.5){const ux=U[0]/sp2,uy=U[1]/sp2;g.strokeStyle=css.ember;g.lineWidth=2;g.beginPath();g.moveTo(ox-ux*L*0.4,oy+uy*L*0.4);g.lineTo(ox+ux*L,oy-uy*L);g.stroke();
+    g.beginPath();g.arc(ox+ux*L,oy-uy*L,2.5,0,TAU);g.fillStyle=css.ember;g.fill();}
+  g.fillStyle=css.muted;g.fillText(sp2.toFixed(0)+' cm/s air',ox,oy+R+11);
+  // trial clock
+  if(ui.progress!=null){g.fillStyle=css.line;g.fillRect(0,0,w,4);g.fillStyle=css.ember;g.fillRect(0,0,w*clamp(ui.progress,0,1),4);}
+}
+
+function drawStrip(cv,hist){const{g,w,h}=fitCanvas(cv);if(!w)return;g.clearRect(0,0,w,h);
+  const top=6,mid=h*0.56,bot=h-6,t1=hist.length?hist[hist.length-1].t:0,t0=t1-30,X=t=>36+(w-44)*(t-t0)/30;
+  g.strokeStyle=css.line;g.lineWidth=1;g.fillStyle=css.muted;g.font='9px sans-serif';g.textAlign='right';g.textBaseline='middle';
+  const hy=hh=>top+(mid-6-top)*(hh/12);
+  for(const hh of [0,3,6,9,12]){g.globalAlpha=0.5;g.beginPath();g.moveTo(36,hy(hh));g.lineTo(w-8,hy(hh));g.stroke();g.globalAlpha=1;g.fillText(['away','right','toward','left','away'][hh/3],30,hy(hh));}
+  g.fillText('smoke',30,mid+(bot-mid)*0.35);g.fillText('swirl',30,mid+(bot-mid)*0.8);
+  for(const R of hist){if(R.bearing==null)continue;const hh=wrap2Pi(R.bearing)/TAU*12,a=clamp(R.lean/45,0.15,1);
+    g.globalAlpha=a;g.fillStyle=css.ember;g.beginPath();g.arc(X(R.t),hy(hh),1.2+2.2*a,0,TAU);g.fill();}
+  g.globalAlpha=1;
+  const dmax=Math.max(20,...hist.map(R=>R.dens||0));g.strokeStyle=css.smoke;g.lineWidth=1.3;g.beginPath();
+  hist.forEach((R,i)=>{const y=bot-(bot-mid)*0.25-((bot-mid)*0.5)*(R.dens/dmax);i?g.lineTo(X(R.t),y):g.moveTo(X(R.t),y);});g.stroke();
+  const sy0=mid+(bot-mid)*0.8;g.strokeStyle=css.line;g.beginPath();g.moveTo(36,sy0);g.lineTo(w-8,sy0);g.stroke();
+  g.strokeStyle=css.ok;g.beginPath();hist.forEach((R,i)=>{const y=sy0-clamp((R.swirl||0)/3,-1,1)*(bot-mid)*0.18;i?g.lineTo(X(R.t),y):g.moveTo(X(R.t),y);});g.stroke();}
+
+function drawSpark(cv,hist){const{g,w,h}=fitCanvas(cv);if(!w)return;g.clearRect(0,0,w,h);
+  if(hist.length<2){g.fillStyle=css.muted;g.font='10px sans-serif';g.textAlign='right';g.textBaseline='middle';g.fillText('fitness appears here',w-2,h/2);return;}
+  let run=0;const pts=hist.map(x=>(run=Math.max(run,x.best)));const ymax=Math.max(1,run)*1.05;
+  const X=i=>2+(w-4)*i/(pts.length-1),Y=v=>h-3-(h-6)*v/ymax;
+  g.fillStyle=css.ember;g.globalAlpha=0.15;g.beginPath();g.moveTo(X(0),h);pts.forEach((v,i)=>g.lineTo(X(i),Y(v)));g.lineTo(X(pts.length-1),h);g.fill();
+  g.globalAlpha=1;g.strokeStyle=css.ember;g.lineWidth=1.6;g.beginPath();pts.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));g.stroke();
+  g.beginPath();g.arc(X(pts.length-1),Y(run),2.5,0,TAU);g.fillStyle=css.ember;g.fill();}
+
+function drawFit(cv,hist,base){const{g,w,h}=fitCanvas(cv);if(!w)return;g.clearRect(0,0,w,h);
+  const L=44,Rm=12,T=12,B=26,n=Math.max(10,hist.length),ymax=Math.max(10,base||0,...hist.map(x=>x.best))*1.1;
+  const X=i=>L+(w-L-Rm)*i/(n-1),Y=v=>h-B-(h-B-T)*v/ymax;
+  const step=[5,10,20,25,50,100,200,250,500,1000].find(s=>ymax/s<=5)||2000;
+  g.font='10px sans-serif';g.fillStyle=css.muted;g.textAlign='right';g.textBaseline='middle';g.strokeStyle=css.line;g.lineWidth=1;
+  for(let v=0;v<=ymax;v+=step){g.beginPath();g.moveTo(L,Y(v));g.lineTo(w-Rm,Y(v));g.stroke();g.fillText(String(v),L-6,Y(v));}
+  g.textAlign='center';g.textBaseline='top';const xs=Math.max(1,Math.ceil((n-1)/6/5)*5);
+  for(let i=0;i<n;i+=xs)g.fillText(String(i),X(i),h-B+6);
+  g.save();g.translate(11,(h-B+T)/2);g.rotate(-Math.PI/2);g.textBaseline='middle';g.fillText('bits per cone',0,0);g.restore();
+  if(base!=null){g.setLineDash([5,4]);g.strokeStyle=css.muted;g.beginPath();g.moveTo(L,Y(base));g.lineTo(w-Rm,Y(base));g.stroke();g.setLineDash([]);
+    g.fillStyle=css.muted;g.textAlign='left';g.textBaseline='bottom';g.fillText('first guess',L+4,Y(base)-3);}
+  if(hist.length){g.strokeStyle=css.muted;g.lineWidth=1.2;g.beginPath();hist.forEach((x,i)=>i?g.lineTo(X(i),Y(x.med)):g.moveTo(X(i),Y(x.med)));g.stroke();
+    let run=0;g.strokeStyle=css.ember;g.lineWidth=2;g.beginPath();hist.forEach((x,i)=>{run=Math.max(run,x.best);i?g.lineTo(X(i),Y(run)):g.moveTo(X(i),Y(run));});g.stroke();
+    const li=hist.length-1;g.fillStyle=css.ember;g.beginPath();g.arc(X(li),Y(run),3.5,0,TAU);g.fill();
+    g.textAlign='right';g.textBaseline='bottom';g.fillText('best '+run.toFixed(0),w-Rm,Y(run)-6);
+    g.fillStyle=css.muted;g.textBaseline='top';g.fillText('population median',w-Rm,Y(hist[li].med)+4);}}
+
+/* ====================================================================
+   8. Storage: the artifact's db when the viewer offers it, else this browser
+   ==================================================================== */
+const store={db:null,canWrite:false,trials:[],runs:[],words:[],mode:'local'};
+const LS_KEY='smoke-speech-lab.trials.v1';   // the page's first name; kept so earlier readings still load
+function lsGet(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]');}catch(e){return[];}}
+function lsSet(a){try{localStorage.setItem(LS_KEY,JSON.stringify(a));}catch(e){}}
+const validTrial=t=>t&&typeof t.truth==='number'&&t.resp&&typeof t.resp.form==='number'&&ENVS[t.env]&&Array.isArray(t.opts);
+const renum=f=>f===5?F.STILL:f===6?F.WIND:f;
+const normTrial=t=>(t.v||1)>=2?t:{...t,v:2,truth:renum(t.truth),opts:t.opts.map(renum),resp:{...t.resp,form:renum(t.resp.form)}};
+async function initStore(onChange){
+  store.trials=lsGet().filter(validTrial).map(normTrial);store.words=wordsFrom(lxGet());onChange();setStoreStatus('Answers saved in this browser only');
+  if(!(window.claude&&window.claude.use))return;
+  const[db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
+  if(!db){return;}
+  store.db=db;store.mode='db';
+  store.canWrite=user?await user.isOwner():false;
+  setStoreStatus(store.canWrite?'Loading saved answers…':'Viewing the owner\'s answers (read only)');
+  let settled=false;const timer=setTimeout(()=>{if(!settled)setStoreStatus('Saved answers can\'t be reached yet');},10000);
+  db.collection('lexicon').onSnapshot(snap=>{store.words=wordsFrom(snap.docs.map(d=>d.data()));renderLexicon();},()=>{});
+  db.collection('trials').orderBy('at').onSnapshot(snap=>{
+    const rows=snap.docs.map(d=>d.data()).filter(validTrial).map(normTrial);
+    if(!snap.metadata.fromCache){settled=true;clearTimeout(timer);}
+    // carry over anything answered in this browser before the store was reachable
+    if(store.canWrite&&!store.migrated&&!snap.metadata.fromCache){store.migrated=true;const have=new Set(rows.map(t=>t.at+':'+t.seed));
+      const extra=lsGet().filter(validTrial).filter(t=>!have.has(t.at+':'+t.seed));
+      (async()=>{for(const t of extra){try{await db.collection('trials').add(t);}catch(e){break;}}if(extra.length)lsSet([]);})();}
+    store.trials=rows;
+    setStoreStatus(store.canWrite?`${rows.length} answers saved to this lab`:`Viewing ${rows.length} of the owner's answers (read only)`);
+    onChange();
+  },err=>{settled=true;clearTimeout(timer);setStoreStatus('Saved answers unavailable; saving in this browser');store.db=null;store.mode='local';});
+}
+async function saveTrial(t){
+  if(store.db&&store.canWrite){try{await store.db.collection('trials').add(t);return true;}catch(e){}}
+  const a=lsGet();a.push(t);lsSet(a);store.trials.push(t);return false;}
+async function saveRun(run){if(store.db&&store.canWrite){try{await store.db.collection('runs').add(run);return 'Saved to this lab';}catch(e){return 'Could not save: '+(e&&e.code||'error');}}
+  try{const a=JSON.parse(localStorage.getItem(LS_KEY+'.runs')||'[]');a.push(run);localStorage.setItem(LS_KEY+'.runs',JSON.stringify(a));return 'Saved in this browser';}catch(e){return 'Could not save here';}}
+function setStoreStatus(s){const el=document.getElementById('storeStatus');if(el)el.textContent=s;}
+/* The reader's words: one per cue, the latest kept. In the artifact's db they are rows of the collection
+   'lexicon' (the latest row per cue wins, so only add is needed); elsewhere this browser. */
+const LX_KEY=LS_KEY+'.lexicon';
+function lxGet(){try{return JSON.parse(localStorage.getItem(LX_KEY)||'[]');}catch(e){return[];}}
+function wordsFrom(rows){const m=new Map();for(const w of rows)if(w&&typeof w.cue==='string'&&typeof w.word==='string'){const o=m.get(w.cue);if(!o||(w.at||0)>(o.at||0))m.set(w.cue,w);}return[...m.values()];}
+const wordFor=cue=>{const w=store.words.find(x=>x.cue===cue);return w&&w.word?w.word:null;};
+async function saveWord(cue,word){const row={cue,word:String(word).trim().slice(0,40),at:Date.now()};
+  store.words=wordsFrom([...store.words,row]);
+  if(store.db&&store.canWrite){try{await store.db.collection('lexicon').add(row);return;}catch(e){}}
+  try{localStorage.setItem(LX_KEY,JSON.stringify(wordsFrom([...lxGet(),row])));}catch(e){}}
+
+/* ====================================================================
+   9. App
+   ==================================================================== */
+const $=id=>document.getElementById(id);
+const sim=new SmokeSim();
+const READ_DIAL={nDir:4,off:0,nRing:1};
+const app={mode:'read',phase:'idle',reader:'you',stand:[],obs:{...PRIOR,M:PRIOR_M},fit:null,evo:null,running:false,
+  flow:null,lastKept:'',speed:1,dial:{...READ_DIAL},marks:[],seq:null,watchEnv:'dusk',hover:null,answer:null,truthMark:null,
+  reserve:0,lastTod:null,view:null,pres:null,presRecent:null,rel:null,level:1,sinceReplay:0,lens:'none'};
+const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const datasetNow=()=>app.reader==='you'?store.trials:app.stand;
+function refit(){app.fit=fitObserver(datasetNow());const f=app.fit;
+  app.obs={M:f.M,kappa:f.kappa,C:f.C,beta:f.beta};renderChips();}
+/* What the table says back, it says only between sittings: the presence score, the fitted model and the
+   last sitting's account. Nothing here moves while a reading is open, so no moment is given away. */
+function renderSittingViews(){const d=datasetNow();app.pres=presence(d);app.presRecent=presence(d.slice(-40));app.rel=reliability(d);renderPresence();renderReliability();renderCal();renderLexicon();renderChips();}
+function ambient(env){sim.reset({env,gm:1,p:0.35,seed:(Math.random()*2**32)>>>0});sim.o.burn=0;}
+let toastTimer=0;
+function toast(text){const t=$('toast');t.textContent=text;t.hidden=false;
+  t.style.animation='none';void t.offsetWidth;t.style.animation='';clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},2700);}
+/* Hold the last frame over the stage and let it fade, so a new sitting arrives the way smoke does. */
+function dissolve(){if(reduceMotion)return;const a=$('stage'),f=$('fade');if(!a.width)return;
+  f.width=a.width;f.height=a.height;f.getContext('2d').drawImage(a,0,0);
+  f.getAnimations().forEach(x=>x.cancel());f.animate([{opacity:1},{opacity:0}],{duration:1600,easing:'ease-in-out'});}
+function measureDock(){const d=$('dock');app.reserve=getComputedStyle(d).position==='absolute'?d.offsetHeight:0;}
+
+/* ---- modes ---- */
+function setMode(m){if(app.mode==='read'&&m!=='read'){commitPend();app.flow=null;}app.mode=m;$('toast').hidden=true;
+  for(const[id,name]of [['mRead','read'],['mEvo','evo'],['mFree','free']])$(id).setAttribute('aria-selected',String(name===m));
+  $('deckRead').hidden=m!=='read';$('deckEvo').hidden=m!=='evo';$('deckFree').hidden=m!=='free';
+  app.seq=null;app.marks=[];app.hover=null;app.answer=null;app.truthMark=null;$('signcap').textContent='';
+  if(m==='read'){app.dial={...READ_DIAL};newChapter();}
+  if(m==='evo'){if(!app.evo)resetEvo();app.lastTod=null;drawEvo();}
+  if(m==='free')startFree();
+  renderChips();measureDock();}
+function startFree(){app.dial={...READ_DIAL};app.marks=[];app.seq=null;
+  sim.reset({env:app.watchEnv,gm:+$('gust').value,p:+$('phase').value/100,seed:(Math.random()*2**32)>>>0});
+  sim.o.burn=0;$('btnBurn').textContent='Burn 20×';}
+
+/* ---- read: one unbroken sitting ----
+   There is no start and no clip. Now and then the communicator sends a sign into the smoke. A pick made
+   while a sign shows, or within FLOW.after seconds of its end, is the reading of that sign; a pick in a
+   quiet stretch is a reading of the plain wind. Which one it is gets fixed at the first touch. The pick
+   can then be changed, felt and annotated, and is kept once it has been left alone for FLOW.linger
+   seconds: a clock of the reader's own, so nothing on screen changes when a sign starts or ends.
+   Every few signs the hour and the cone move on, and the communicator may change vocabulary. */
+const FLOW={after:12,linger:9,quiet:[3,12],chap:[4,7],replayAfter:7*86400e3,replayEvery:4};
+function newChapter(rep){commitPend();
+  const old=app.flow;if(old&&old.kept.length)endSitting(old);
+  if(!rep&&app.reader==='you')rep=pickReplay();
+  // everything about a sitting follows from its seed, so a sitting can come round again under the same weather
+  const seed=rep?rep.seed:(Math.random()*2**32)>>>0,r=rng32(seed),lv=LEVELS[app.level];
+  const env=['day','dusk','night'][Math.floor(r()*3)],p=0.12+r()*0.6,gm=rep?rep.gm:lv.gm,hold=rep?rep.hold:lv.hold;
+  const opts=shuffle([0,1,2,3,4,5,6,7],r).slice(0,2+Math.floor(r()*7)).sort((a,b)=>a-b);
+  dissolve();sim.reset({env,gm,p,seed});sim.o.burn=1;for(let i=0;i<180;i++)sim.step(1/60);
+  app.flow={seed,r,env,gm,hold,opts,reader:app.reader,kept:[],sit:Date.now(),replay:!!rep,epi:0,left:FLOW.chap[0]+Math.floor(r()*(FLOW.chap[1]-FLOW.chap[0]+1)),ep:null,pend:null,next:sim.t+2+r()*5};
+  app.answer=null;app.marks=[];app.seq=null;app.lastKept='';
+  if(app.mode==='read')toast(ENVS[env].name.toLowerCase());buildFormChoices(opts);updateAnswerUI();}
+function flowTick(){const fl=app.flow;if(!fl||app.mode!=='read')return;const t=sim.t,r=fl.r;
+  if(fl.pend&&t>=fl.pend.close)commitPend();
+  if(fl.ep&&t>=fl.ep.close){fl.ep=null;if(fl.left<=0)fl.done=true;}
+  if(fl.done){if(!fl.pend)newChapter();return;}
+  if(!fl.ep&&t>=fl.next){const truth=fl.opts[Math.floor(r()*fl.opts.length)],T=WORLD.trialT;
+    const ep={truth,angle:truth===F.STONE?stoneAngle(r):null,T,t0:t,close:t+T+FLOW.after,p:sim.p,i:fl.epi++};
+    sim.addSign({form:truth,angle:ep.angle,t0:t,T,hold:fl.hold});
+    fl.ep=ep;fl.left--;fl.next=ep.close+FLOW.quiet[0]+r()*(FLOW.quiet[1]-FLOW.quiet[0]);}
+  if(fl.ep&&app.reader!=='you'&&!fl.ep.asked&&t>=fl.ep.t0+fl.ep.T+1.5){fl.ep.asked=true;standInPick();}}
+const flowTr=(fl,ep,p)=>({seed:fl.seed,env:fl.env,gm:fl.gm,p,truth:ep?ep.truth:F.WIND,angle:ep?ep.angle:null,
+  opts:fl.opts,T:ep?ep.T:WORLD.trialT,hold:fl.hold,epi:ep?ep.i:null,sit:fl.sit,replay:fl.replay,lens:app.lens==='none'?null:app.lens});
+const pickText=pd=>`${FORM_NAME[pd.form]}${pd.form===F.STONE&&pd.dir!=null?` ${DIR_WORD[pd.dir]}`:''}`;
+function pick(form,hit){const fl=app.flow;if(!fl||app.mode!=='read'||app.reader!=='you')return;const t=sim.t,ep=fl.ep;
+  // a sign that began after this pick was opened is a new moment
+  if(fl.pend&&ep&&fl.pend.ep!==ep&&ep.t0>fl.pend.t)commitPend();
+  if(!fl.pend){fl.pend={ep,t,p:ep?ep.p:sim.p,conf:null,note:'',dir:null};$('note').value='';}
+  const pd=fl.pend;pd.form=form;pd.close=t+FLOW.linger;
+  if(form===F.STONE){if(hit)pd.dir=hit.dir;}else pd.dir=null;
+  app.answer=pd.form===F.STONE&&pd.dir!=null?{dir:pd.dir,ring:1}:null;updateAnswerUI();}
+function touchPend(){const pd=app.flow&&app.flow.pend;if(pd)pd.close=Math.max(pd.close,sim.t+FLOW.linger);return pd;}
+function setConf(c){const pd=touchPend();if(!pd||app.reader!=='you')return;pd.conf=pd.conf===c?null:c;updateAnswerUI();}
+/* Moving on without keeping anything records nothing. */
+function letGo(){const fl=app.flow;if(!fl||!fl.pend||app.reader!=='you')return;fl.pend=null;app.answer=null;$('note').value='';
+  app.lastKept='Let go. Nothing kept.';updateAnswerUI();}
+function standInPick(){const fl=app.flow,ep=fl.ep,resp=standInRespond(flowTr(fl,ep,ep.p),rng32((fl.seed^Math.round(ep.t0*1000))>>>0));
+  commitPend();fl.pend={ep,t:sim.t,p:ep.p,close:sim.t+FLOW.linger,...resp};
+  app.answer=resp.form===F.STONE&&resp.dir!=null?{dir:resp.dir,ring:1}:null;updateAnswerUI();}
+function commitPend(){const fl=app.flow,pd=fl&&fl.pend;if(!pd)return;fl.pend=null;
+  const tr=flowTr(fl,pd.ep,pd.p),stone=pd.form===F.STONE;
+  const resp={form:pd.form,dir:stone?pd.dir:null,conf:pd.conf??null,note:(pd.note||'').trim().slice(0,200)};
+  const rec={...trialRecord(tr,resp,{started:performance.now(),replays:0}),flow:true,rt:pd.ep?Math.round((pd.t-pd.ep.t0)*1000):null};
+  fl.kept.push(rec);
+  if(app.reader==='you')saveTrial(rec).then(inDb=>{if(!inDb){refit();renderChips();}});else{app.stand.push(rec);refit();}
+  app.answer=null;$('note').value='';app.lastKept=`Kept: <b>${pickText(pd)}</b>.${lensLine(rec)}`;updateAnswerUI();renderChips();}
+/* The sitting that just ended, told as a whole. Counts only, never which moment was which: the one place
+   the table speaks back, and it waits until the smoke has changed. */
+function sittingSummary(fl){const K=fl.kept,you=fl.reader==='you',who=you?'you':'the stand-in';
+  const signs=K.filter(t=>t.truth!==F.WIND),winds=K.filter(t=>t.truth===F.WIND);
+  const sR=signs.filter(feltOf),wR=winds.filter(feltOf),sH=sR.filter(t=>feltOf(t)==='sent').length,wF=wR.filter(t=>feltOf(t)==='sent').length;
+  const pl=(n,s,p)=>`${n} ${n===1?s:p}`;
+  const out=[`<span class="who">Last sitting · ${ENVS[fl.env].name} · ${pl(K.length,'reading','readings')} kept</span>`];
+  if(!sR.length&&!wR.length)out.push(`<span><b>Presence:</b> nothing was rated. Say how a moment felt, sent or like the wind, and the table can learn how ${who} tell${you?'':'s'} the two apart.</span>`);
+  else out.push(`<span><b>Presence:</b> ${sR.length?`felt sent in ${sH} of ${pl(sR.length,'sent moment','sent moments')}`:'no sent moment was rated'}${wR.length?`, and in ${wF} of ${pl(wR.length,'quiet stretch','quiet stretches')} of plain wind.`:'. Nothing was kept in the quiet stretches, so the wind side is still unknown.'}</span>`);
+  if(signs.length){const right=signs.filter(t=>t.resp.form===t.truth).length,pairs=new Map();
+    for(const t of signs)if(t.resp.form!==t.truth){const k=t.truth*16+t.resp.form;pairs.set(k,(pairs.get(k)||0)+1);}
+    let top=null;for(const e of pairs)if(!top||e[1]>top[1])top=e;
+    out.push(`<span><b>Forms:</b> named right in ${right} of ${signs.length}.${top&&top[1]>=2?` ${FORM_NAME[Math.floor(top[0]/16)]} read as ${FORM_NAME[top[0]%16]} ${top[1]===2?'twice':top[1]+' times'}.`:''}</span>`);}
+  if(fl.levelNote)out.push(`<span>${fl.levelNote}: air ${app.level+1} of ${LEVELS.length}.</span>`);
+  return out.join('');}
+/* Between sittings the air moves one step: harder after a sitting in which the felt sense clearly told sent
+   from wind, easier after one in which it could not. A sitting that came round again leaves the level alone. */
+function endSitting(fl){
+  if(fl.reader==='you'){
+    if(!fl.replay){const K=fl.kept,sr=K.filter(t=>t.truth!==F.WIND&&feltOf(t)),wr=K.filter(t=>t.truth===F.WIND&&feltOf(t));
+      const h=sr.filter(t=>feltOf(t)==='sent').length/Math.max(1,sr.length),fa=wr.length?wr.filter(t=>feltOf(t)==='sent').length/wr.length:0;
+      const step=sr.length<3?0:h-fa>=0.5?1:h-fa<=0.15?-1:0,nl=clamp(app.level+step,0,LEVELS.length-1);
+      fl.levelNote=nl>app.level?'The air gets a little harder':nl<app.level?'The air eases':'';app.level=nl;}
+    app.sinceReplay=fl.replay?0:app.sinceReplay+1;savePractice();}
+  const el=$('sitting');el.innerHTML=sittingSummary(fl);el.hidden=false;renderSittingViews();measureDock();}
+function renderReliability(){const R=app.rel,el=$('reliab');if(!R||!el)return;if(app.reader!=='you'){el.hidden=true;return;}el.hidden=false;
+  el.innerHTML=R.n?`<span>Reliability</span><b>${Math.round(R.form/R.n*100)}%</b><p>On ${R.sits} sitting${R.sits===1?'':'s'} that came round again, you named the same form ${R.form} of ${R.n} times and felt the same ${R.felt} of ${R.n}.</p>`
+    :`<span>Reliability</span><b>–</b><p>No sitting has come round again yet. After a week an old sitting returns under the same weather and the same signs, unannounced, so the table can see how steady your reading is.</p>`;}
+/* The practice settings live in this browser: the air's level, and how many sittings since one came round again. */
+const PR_KEY='smoke-speech-lab.practice';
+function loadPractice(){try{const o=JSON.parse(localStorage.getItem(PR_KEY)||'{}');if(o.level!=null)app.level=clamp(o.level|0,0,LEVELS.length-1);app.sinceReplay=o.sinceReplay|0;
+  if(o.lens&&(o.lens==='none'||lensById(o.lens)))app.lens=o.lens;}catch(e){}}
+function savePractice(){try{localStorage.setItem(PR_KEY,JSON.stringify({level:app.level,sinceReplay:app.sinceReplay,lens:app.lens}));}catch(e){}}
+/* The reading of your reading: what the chosen lens, and your own lexicon, make of what you just kept. It
+   speaks of what you saw, never of what was sent, so it can speak at once. */
+function lensLine(rec){const r={form:rec.resp.form,dir:rec.resp.dir,env:rec.env,p:rec.p};let s='';
+  const L=app.lens!=='none'&&app.lens!=='own'?lensById(app.lens):null,e=L&&lensMatch(L,r);if(e){const q=(e.note||'').match(/uncertain|approximate/);s+=` ${escH(L.name)}: ${escH(e.means)}${q?` (${q[0]})`:''}.`;}
+  const w=wordFor(cueOf(rec.resp));if(w)s+=` Your word: <b>${w.replace(/</g,'&lt;')}</b>.`;return s;}
+/* The readers of smoke. Time runs on a broken scale, so four thousand years and the last four centuries both
+   get room: each knot is (year, share of the width). */
+const TL_KNOTS=[[-2000,0],[-500,0.2],[0,0.29],[1000,0.4],[1500,0.52],[1700,0.64],[1850,0.77],[1950,0.89],[2030,1]];
+function tlX(y){const K=TL_KNOTS;if(y<=K[0][0])return 0;for(let i=1;i<K.length;i++)if(y<=K[i][0]){const[a,u]=K[i-1],[b,v]=K[i];return u+(v-u)*(y-a)/(b-a);}return 1;}
+const yearLabel=y=>y<0?`${-y} BC`:y<1000?`AD ${y}`:String(y);
+const escH=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function srcHtml(key){const S=TRADITIONS.sources[key];if(!S)return'';const t=`${escH(S.author)}, <i>${escH(S.title)}</i> (${escH(S.year)}; ${escH(S.kind)})`;
+  return S.url?`<a href="${escH(S.url)}" target="_blank" rel="noopener">${t}</a>`:t;}
+const readers={on:new Set(Object.keys(FAMILY)),sel:null};
+function renderReaders(){const box=$('famFilter');if(!box)return;
+  const counts={};for(const f of TRADITIONS.forms)counts[f.family]=(counts[f.family]||0)+1;for(const t of TRADITIONS.timeline)counts[t.family]=counts[t.family]||0;
+  box.innerHTML=Object.entries(FAMILY).filter(([k])=>k in counts).map(([k,F])=>`<button type="button" class="fchip" data-fam="${k}" aria-pressed="${readers.on.has(k)}" style="--c:var(${F.tok})" title="${escH(F.about)}"><i></i>${F.name}</button>`).join('');
+  box.querySelectorAll('.fchip').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.fam;if(readers.on.has(k)&&readers.on.size>1)readers.on.delete(k);else readers.on.add(k);renderReaders();}));
+  drawTimeline();renderFormsGrid();}
+function drawTimeline(){const sv=$('timeline');if(!sv)return;const T=TRADITIONS.timeline;
+  if(!T.length){sv.setAttribute('viewBox','0 0 10 1');sv.innerHTML='';$('tlDetail').textContent='';return;}
+  const W=Math.max(320,sv.clientWidth||sv.parentNode.clientWidth||800),narrow=W<560,L=12,R=12,lanes=Object.keys(FAMILY),lh=narrow?17:20,top=10,H=top+lanes.length*lh+34;
+  const X=y=>L+(W-L-R)*tlX(y),laneY=k=>top+lanes.indexOf(k)*lh+lh/2;
+  let h=`<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>`;
+  for(const k of lanes)h+=`<line x1="${L}" x2="${W-R}" y1="${laneY(k)}" y2="${laneY(k)}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
+  const ax=top+lanes.length*lh+6;h+=`<line x1="${L}" x2="${W-R}" y1="${ax}" y2="${ax}" stroke="var(--muted)"/>`;
+  for(const[y]of TL_KNOTS.slice(1,-1)){if(narrow&&(y===1700||y===0))continue;const x=X(y);h+=`<line x1="${x}" x2="${x}" y1="${ax}" y2="${ax+5}" stroke="var(--muted)"/><text x="${x}" y="${ax+18}" text-anchor="middle" font-size="10" font-family="var(--f-mono)" fill="var(--muted)">${y?yearLabel(y):'0'}</text>`;}
+  T.forEach((t,i)=>{if(!FAMILY[t.family])return;const on=readers.on.has(t.family),c=`var(${FAMILY[t.family].tok})`;
+    h+=`<g class="dot${readers.sel===i?' sel':''}" data-i="${i}" tabindex="${on?0:-1}" role="button" aria-label="${escH(t.label+', '+t.who)}" opacity="${on?1:0.15}">
+      <circle cx="${X(t.year)}" cy="${laneY(t.family)}" r="9" fill="transparent"/><circle class="ring" cx="${X(t.year)}" cy="${laneY(t.family)}" r="${narrow?4:5}" fill="${c}" stroke="var(--bg)" stroke-width="1.5"/></g>`;});
+  sv.setAttribute('viewBox',`0 0 ${W} ${H}`);sv.innerHTML=h;
+  const show=i=>{readers.sel=i;const t=T[i];sv.querySelectorAll('.dot').forEach(d=>d.classList.toggle('sel',+d.dataset.i===i));
+    $('tlDetail').innerHTML=`<span class="when">${escH(t.label)} · ${FAMILY[t.family].name}</span><br><b>${escH(t.who)}</b>: ${escH(t.what)} <span class="lens-src">${srcHtml(t.src)}</span>`;};
+  sv.querySelectorAll('.dot').forEach(d=>{const i=+d.dataset.i;d.addEventListener('click',()=>show(i));d.addEventListener('mouseenter',()=>show(i));
+    d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(i);}
+      else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const dirn=e.key==='ArrowRight'?1:-1;let j=i;do j+=dirn;while(j>=0&&j<T.length&&!readers.on.has(T[j].family));
+        if(j>=0&&j<T.length){show(j);sv.querySelector(`.dot[data-i="${j}"]`).focus();}}});});
+  if(readers.sel==null||!readers.on.has(T[readers.sel].family)){const j=T.findIndex(t=>readers.on.has(t.family));if(j>=0)show(j);}else show(readers.sel);}
+function renderFormsGrid(){const el=$('formsGrid');if(!el)return;
+  const fs=TRADITIONS.forms.filter(f=>readers.on.has(f.family)).sort((a,b)=>(a.start??0)-(b.start??0));
+  el.innerHTML=fs.map(f=>{const F=FAMILY[f.family]||FAMILY.catalogue,L=f.lens&&lensById(f.lens);
+    return`<article class="fcard" style="--c:var(${F.tok})"><span class="fam-pill">${F.name}</span><h3>${escH(f.name)}</h3><span class="where">${escH(f.region)} · ${escH(f.era)}</span>
+      <span class="reads"><b>Reads</b> ${escH(f.reads)}</span><p>${escH(f.what)}</p><span class="lens-src">${srcHtml(f.src)}</span>
+      ${L&&L.entries.length?`<button type="button" class="btn quiet" data-lens="${escH(L.id)}">Sit with this lens (${L.entries.length} rule${L.entries.length>1?'s':''})</button>`:''}</article>`;}).join('');
+  el.querySelectorAll('[data-lens]').forEach(b=>b.addEventListener('click',()=>{useLens(b.dataset.lens);if(app.mode!=='read')setMode('read');$('stage').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});}));}
+function useLens(id){app.lens=id;$('lens').value=id;savePractice();renderLexicon();const L=lensById(id);toast(L?`lens: ${L.name.toLowerCase()}`:'no lens');}
+/* The lexicon column: the lens in use, how each lens has served this reader, and the reader's own words. */
+function renderLexicon(){const el=$('lexicon'),ab=$('lensAbout'),bd=$('lensBoard');if(!el)return;const you=app.reader==='you',d=datasetNow();
+  const L=lensById(app.lens);ab.innerHTML=app.lens==='none'?"No lens: the smoke is read in its own terms. Choose a lens to sit with a tradition's way of reading; after each kept reading it says what that tradition made of what you saw."
+    :`<b>${escH(L.name)}</b> · ${escH(L.era||'')}${L.seat?` · ${escH(L.seat)}`:''}<br>${escH(L.about||'')}${L.src?` <span class="lens-src">${srcHtml(L.src)}</span>`:''}${L.id!=='own'&&!L.entries.length?' <span class="lens-src">This tradition left no rules for what was seen, so the lens says nothing yet.</span>':''}`;
+  const B=lensBoard(d).filter(b=>b.n>=6);
+  bd.innerHTML=B.length?'<table class="lex"><tr><th>Lens</th><th>Readings</th><th>Sittings</th><th>Presence d′</th><th>Same form on return</th></tr>'+B.map(b=>`<tr><td>${b.id==='none'?'no lens':(lensById(b.id)||{name:b.id}).name}</td><td>${b.n}</td><td>${b.sits}</td><td>${b.pres.ok?b.pres.d.toFixed(2):'–'}</td><td>${b.rel.n?`${b.rel.form} of ${b.rel.n}`:'–'}</td></tr>`).join('')+'</table>'
+    :'<p class="fine">Which lens serves you best shows here once six readings have been kept under one: its presence score, and how steady your reading is when a sitting comes round again.</p>';
+  LENSES[0].entries=store.words.filter(w=>w.word).map(w=>cueEntry(w.cue,w.word));
+  const lx=lexicon(d),cues=new Map(lx.map(c=>[c.cue,c]));for(const w of store.words)if(w.word&&!cues.has(w.cue))cues.set(w.cue,{cue:w.cue,n:0,notes:[],recur:[]});
+  if(!cues.size){el.innerHTML='<p class="fine">Your lexicon is empty. When a moment brings something to mind, write it in the note; words that come back in another note gather here under the form that drew them, and you can keep one as your word for it.</p>';return;}
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  el.innerHTML='<table class="lex"><tr><th>Cue</th><th>Notes</th><th>Comes back</th><th>Your word</th></tr>'+[...cues.values()].map(c=>`<tr><td>${cueLabel(c.cue)}</td><td>${c.n}${c.notes.length?`<br><span class="lens-src">${c.notes.slice(-3).map(esc).join(' · ')}</span>`:''}</td><td>${c.recur.length?c.recur.map(x=>`<button type="button" class="wchip" data-cue="${c.cue}" data-w="${esc(x.w)}">${esc(x.w)} ×${x.n}</button>`).join(''):'<span class="lens-src">not yet</span>'}</td><td><input class="word" data-cue="${c.cue}" value="${esc(wordFor(c.cue)||'')}" placeholder="a word" maxlength="40"${you?'':' disabled'}></td></tr>`).join('')+'</table>';
+  el.querySelectorAll('.wchip').forEach(b=>b.addEventListener('click',()=>{if(you)saveWord(b.dataset.cue,b.dataset.w).then(renderLexicon);}));
+  el.querySelectorAll('.word').forEach(i=>i.addEventListener('change',()=>{saveWord(i.dataset.cue,i.value).then(renderLexicon);}));}
+/* Test-retest: now and then an old sitting comes round again under its seed, so the same weather and the
+   same signs are read a second time weeks later. The reader is not told. */
+function pickReplay(){if(app.sinceReplay<FLOW.replayEvery)return null;const by=new Map(),now=Date.now();
+  for(const t of store.trials){if(t.sit==null)continue;let s=by.get(t.seed);if(!s)by.set(t.seed,s={seed:t.seed,gm:t.gm,hold:holdOf(t),first:t.at,sits:new Set()});s.sits.add(t.sit);if(t.at<s.first)s.first=t.at;}
+  let best=null;for(const s of by.values())if(s.sits.size===1&&now-s.first>=FLOW.replayAfter&&(!best||s.first<best.first))best=s;
+  return best;}
+function renderPresence(){const P=app.pres,el=$('presence');if(!P||!el)return;const you=app.reader==='you',S=you?'You':'The stand-in';
+  if(!P.ok){el.innerHTML=`<span>Presence</span><b>–</b><p>${P.sN} felt reading${P.sN===1?'':'s'} of sent moments and ${P.wN} of plain wind so far. From six of each the table can say how well ${you?'you tell':'the stand-in tells'} a presence from the weather. Touch in the quiet stretches too, and say how it felt.</p>`;return;}
+  const apart=P.d<0.5?'barely apart':P.d<1.2?'faintly apart':P.d<2.2?'clearly apart':'sharply apart';
+  const lean=P.c>0.25?`${S} wait${you?'':'s'} for more before calling it sent.`:P.c<-0.25?`${S} call${you?'':'s'} it sent easily.`:'The threshold sits in the middle.';
+  const R=app.presRecent,drift=R&&R.ok&&Math.abs(R.c-P.c)>0.3?`<span class="drift">Lately the threshold has moved toward ${R.c<P.c?'sent':'wind'}.</span>`:'';
+  el.innerHTML=`<span>Presence</span><b>d′ ${P.d.toFixed(2)}</b><p>Sent moments and plain wind are ${apart} for ${you?'you':'the stand-in'}: ${you?'you feel':'it feels'} a presence in ${Math.round(P.hit*100)}% of sent moments and in ${Math.round(P.fa*100)}% of plain wind${P.unclear>0.2?`, and ${Math.round(P.unclear*100)}% of rated moments were unclear`:''}. ${lean}</p>${drift}`;}
+function buildFormChoices(opts){const box=$('formChoices');box.innerHTML='';
+  [...opts,F.WIND].forEach(f=>{const b=document.createElement('button');b.type='button';b.className='gbtn';b.setAttribute('role','radio');
+    b.setAttribute('aria-checked','false');b.dataset.f=f;b.title=FORM_HINT[f];
+    b.innerHTML=`${icon(f)}<span>${FORM_NAME[f]}</span>`;b.addEventListener('click',()=>pick(f,null));box.appendChild(b);});
+  if(!reduceMotion&&box.animate)box.animate([{opacity:0},{opacity:1}],{duration:900,easing:'ease-out'});measureDock();}
+function canPlace(){return app.mode==='free'||(app.mode==='read'&&app.reader==='you'&&!!app.flow&&app.flow.opts.includes(F.STONE));}
+function placeStone(hit){pick(F.STONE,hit);}
+function updateAnswerUI(){const fl=app.flow,pd=fl&&fl.pend,you=app.reader==='you';
+  $('formChoices').querySelectorAll('.gbtn').forEach(b=>{b.disabled=!you;b.setAttribute('aria-checked',String(!!pd&&+b.dataset.f===pd.form));});
+  document.querySelectorAll('.fbtn').forEach(b=>{b.disabled=!you||!pd;b.setAttribute('aria-pressed',String(!!pd&&+b.dataset.c===pd.conf));});
+  $('note').disabled=!you||!pd;$('btnPass').hidden=!you||!pd;
+  const stoneOk=fl&&fl.opts.includes(F.STONE);let h;
+  if(!you)h='The stand-in picks a moment after each sign. Its picks are kept the same way yours are.';
+  else if(!pd)h=(app.lastKept?app.lastKept+' ':'')+(app.lastKept?'Keep watching.':'There is nothing to start and nothing to get right. Just watch. When the smoke does something, touch what it was'+(stoneOk?', or touch the table where a Stone leaned':'')+'. Then say how it felt, sent or like the wind: that is the reading the table listens to most, in the quiet stretches as much as the busy ones.');
+  else if(pd.form===F.STONE&&pd.dir==null)h='Stone. Touch the side of the table it leaned to: <b>toward</b> you, <b>away</b>, <b>left</b> or <b>right</b>.';
+  else h=`<b>${pickText(pd)}</b>. Change it, say how it felt, or just keep watching. It settles on its own.`;
+  $('ansHint').innerHTML=h;}
+function trialRecord(tr,resp,meta){return{v:5,at:Date.now(),seed:tr.seed,env:tr.env,gm:tr.gm,p:+tr.p.toFixed(4),truth:tr.truth,angle:tr.angle==null?null:+tr.angle.toFixed(4),
+  opts:tr.opts,T:tr.T,hold:holdOf(tr),nDir:4,epi:tr.epi??null,sit:tr.sit??null,replay:!!tr.replay,lens:tr.lens??null,resp,rt:Math.round(performance.now()-meta.started),replays:meta.replays};}
+function addStandIn(n){for(let i=0;i<n;i++){const tr=makeTrial((Math.random()*2**32)>>>0);
+  app.stand.push(trialRecord(tr,standInRespond(tr,rng32(tr.seed^0x9e37)),{started:performance.now(),replays:0}));}refit();renderSittingViews();}
+
+function renderChips(){const el=$('chips');
+  if(app.mode==='read'){const n=datasetNow().length,who=app.reader==='you'?'':'Stand-in · ',P=app.pres;
+    el.innerHTML=(n||who?`<span class="chip-s">${who}${n} reading${n===1?'':'s'} kept</span>`:'')+(P&&P.ok?`<span class="chip-s">presence <b>d′ ${P.d.toFixed(1)}</b></span>`:'')
+      +(app.reader==='you'?`<span class="chip-s">air <b>${app.level+1}</b> of ${LEVELS.length}</span>`:'');}
+  else if(app.mode==='evo'){const ev=app.evo,best=ev&&ev.champ?ev.champ.e.fit:null;
+    el.innerHTML=`<span class="chip-s">Generation <b>${ev?ev.gen:0}</b></span><span class="chip-s">Best <b>${best==null?'–':best.toFixed(0)}</b> bits/cone</span>${ev&&ev.base?`<span class="chip-s">First guess ${ev.base.fit.toFixed(0)}</span>`:''}`;}
+  else el.innerHTML='<span class="chip-s">Free stage · tap the table</span>';}
+
+function renderCal(){const f=app.fit;if(!f)return;const you=app.reader==='you',n=f.n;
+  const card=(label,val,note,isData)=>`<div class="metric ${isData?'data':'prior'}"><span>${label}</span><b>${val}</b><small>${note}</small></div>`;
+  $('metrics').innerHTML=
+    card('Direction',`±${circSdDeg(f.kappa).toFixed(0)}°`,`typical miss of the eye itself, after the gusts' share is taken out · ${f.nDir?`from ${f.nDir} stone readings (80% range ±${circSdDeg(f.kHi).toFixed(0)}–${circSdDeg(f.kLo).toFixed(0)}°)`:'prior only'}`,f.nDir>=5)+
+    card('Forms',f.formAcc==null?'–':`${Math.round(f.formAcc*100)}%`,`of ${n} trials named the right form (wind included)`,n>=8)+
+    card('Holds at once',`${f.C} forms`,`most likely vocabulary before extra forms cost accuracy (${Math.round(f.Cp*100)}% of the posterior) · load cost ${f.beta.toFixed(2)}`,n>=15);
+  const M=f.M;let h='<tr><th class="rh">sent ↓ read →</th>'+FORM_NAME.map(x=>`<th>${x}</th>`).join('')+'</tr>';
+  M.forEach((row,i)=>{h+=`<tr><th class="rh">${FORM_NAME[i]}</th>`+row.map((v,j)=>`<td style="background:color-mix(in srgb,var(${i===j?'--ember':'--smoke'}) ${Math.round(v*(i===j?70:90))}%,transparent);${v>0.5?'color:var(--bg)':''}">${Math.round(v*100)}</td>`).join('')+'</tr>';});
+  $('cm').innerHTML=h;
+  $('calNote').textContent=you?(n<10?`With ${n} answers the model leans on its priors (amber cards). Around 30 answers it starts to describe you rather than people in general, and 60 or more lets the vocabulary limit show. Table: of 100 times a form is sent and survives the air, how often each form is read.`
+    :`Fitted from your ${n} answers. Table: of 100 times a form is sent and survives the air, how often you read each form. Air failures (the ridge wrecking a ring, say) are separated out using the recorded weather of each trial.`)
+    :`Example data from a synthetic reader with known settings (direction ±${circSdDeg(STANDIN.kappa).toFixed(0)}°, holds ${STANDIN.C} forms). Use it to watch the method recover them. Switch to "You" to calibrate yourself.`;}
+
+/* ---- evolve ---- */
+function resetEvo(){app.evo=new Evolver(app.obs,hashStr('evo'+Date.now()));app.evo.preview=evaluate(BASELINE,app.obs,777,1500);
+  app.running=false;$('btnEvo').textContent='Run evolution';app.lastTod=null;drawEvo();}
+function genomeRule(g){const p1=Math.min(0.98,g.p0+g.span),on=SIGN_FORMS.filter(i=>g.forms[i]).map(i=>FORM_NAME[i]+(i===0&&g.dir?' with its side':'')),off=SIGN_FORMS.filter(i=>!g.forms[i]).map(i=>FORM_NAME[i]);
+  return`Sit at ${({day:'midday',dusk:'dusk',night:'night'})[g.tod]}; listen from ${Math.round(g.p0*100)}% to ${Math.round(p1*100)}% of the cone. Attend to ${on.join(', ')}.${off.length?` Let ${off.join(', ')} pass as weather.`:''}`;}
+const dialOf=g=>({nDir:g.forms[0]&&g.dir?4:1,off:0,nRing:1});
+function drawEvo(){const ev=app.evo;if(!ev)return;
+  const c=ev.champ||{g:BASELINE,e:ev.preview};const g=c.g,e=c.e;
+  if(app.mode==='evo'&&!app.seq){app.dial=dialOf(g);if(app.lastTod!==g.tod){app.lastTod=g.tod;ambient(g.tod);}}
+  drawFit($('fitChart'),ev.hist,ev.base?ev.base.fit:null);drawSpark($('spark'),ev.hist);
+  $('bestHead').textContent=ev.champ?`Your protocol after ${ev.gen} generations`:'A first protocol, before evolving';
+  $('bestRule').textContent=genomeRule(g);
+  $('bestGlyphs').innerHTML=SIGN_FORMS.map(i=>`<span class="glyph ${g.forms[i]?'':'off'}">${icon(i)}${FORM_NAME[i]}</span>`).join('');
+  $('bestKV').innerHTML=`<dt>Read per cone</dt><dd>${e.fit.toFixed(0)} bits</dd><dt>Signs per cone</dt><dd>${e.signs.toFixed(1)}</dd>
+    <dt>Per sign</dt><dd>${e.clean.toFixed(2)} clean · ${e.bps.toFixed(2)} Shannon · of ${e.cap.toFixed(2)} sent</dd><dt>Marks</dt><dd>${Math.round(e.exact*100)}% right · ${Math.round(e.wrong*100)}% wrong · ${Math.round(e.erased*100)}% missing</dd>
+    <dt>Vocabulary load</dt><dd>${e.V} forms incl. Still${e.eps>0.01?` · ${Math.round(e.eps*100)}% of form readings scrambled by overload`:''}</dd>`;
+  if(ev.lastTop){let h='<tr><th>Rank</th><th>Bits/cone</th><th>Signs</th><th>Bits/sign</th><th>Side</th><th>Forms</th><th>When</th></tr>';
+    const row=(lab,x,cls)=>`<tr class="${cls||''}"><td>${lab}</td><td>${x.e.fit.toFixed(0)}</td><td>${x.e.signs.toFixed(0)}</td><td>${(OBJECTIVE==='clean'?x.e.clean:x.e.bps).toFixed(2)}</td><td>${x.g.forms[0]&&x.g.dir?'yes':'–'}</td><td>${SIGN_FORMS.filter(i=>x.g.forms[i]).map(i=>FORM_NAME[i].slice(0,2)).join(' ')}</td><td>${x.g.tod}</td></tr>`;
+    ev.lastTop.forEach((x,i)=>h+=row(String(i+1),x));if(ev.base)h+=row('first guess',{g:BASELINE,e:ev.base},'base');$('topTable').innerHTML=h;}
+  else $('topTable').innerHTML='';
+  $('evoNote').textContent=ev.base&&ev.champ?`Scored as ${OBJECTIVE==='clean'?'clean marks':'Shannon bits'}, the first protocol (five forms, the Stone with its side, dusk) reads ${ev.base.fit.toFixed(0)} bits per cone for this reader. The best protocol found reads ${ev.champ.e.fit.toFixed(0)}. The ranked table is this generation's population, scored on one shared draw of weather. The headline figures are re-scored on a larger independent draw so a lucky draw does not crown a winner.`
+    :'Each generation scores every protocol on the same simulated weather, keeps the best two, and breeds the rest by tournament, crossover and mutation.';
+  if(app.mode==='evo')$('evoHint').innerHTML=ev.champ?`The best protocol so far: attend to <b>${SIGN_FORMS.filter(i=>g.forms[i]).map(i=>FORM_NAME[i]).join(', ')}</b>${g.forms[0]&&g.dir?', the Stone with its side':''}, at ${g.tod}.`
+    :'Your side of the table: the way of reading that takes most from this wind for this reader, as modelled from the readings kept. Run it to see what to attend to, what to let pass, and when to sit.';
+  renderChips();}
+function evoTick(){if(!app.running||!app.evo)return;const t0=performance.now();
+  while(performance.now()-t0<14){app.evo.step();if(app.evo.gen>=300){app.running=false;$('btnEvo').textContent='Run evolution';break;}}
+  drawEvo();}
+
+/* ---- sentences in the smoke ---- */
+function playSentence(){const ev=app.evo,g=(ev&&ev.champ)?ev.champ.g:BASELINE,r=rng32((Math.random()*2**32)>>>0);
+  app.marks=[];app.dial=dialOf(g);
+  sim.reset({env:g.tod,gm:1,p:Math.max(0.1,g.p0+0.02),seed:(r()*2**32)>>>0});sim.o.burn=1;
+  const list=[],caps=[];let t=2;
+  const active=SIGN_FORMS.filter(i=>g.forms[i]),T=WORLD.trialT;
+  for(let n=0;n<5;n++){const f=active[Math.floor(r()*active.length)],d=Math.floor(r()*4);
+    list.push({form:f,angle:f===F.STONE?d*TAU/4:null,t0:t,T,hold:1});
+    caps.push({t0:t,T,text:`Sign ${n+1} of 5 · ${FORM_NAME[f]}${f===F.STONE&&g.dir?` ${DIR_WORD[d]}`:''}`,mark:f===F.STONE&&g.dir?{kind:'stone',dir:d,ring:1}:{kind:'glyph',form:f}});
+    t+=T+WORLD.gap;}
+  sim.schedule(list);app.seq={caps,end:t+1,glyphs:[]};}
+
+/* ---- loop ---- */
+let last=performance.now(),acc=0,frame=0;
+function loop(now){const dt=Math.min(0.1,(now-last)/1000);last=now;
+  const speed=app.seq?app.speed:1;let run=true;
+  if(app.seq&&sim.t>=app.seq.end)run=false;
+  if(reduceMotion&&app.mode!=='read'&&!app.seq&&!app.userStarted)run=false;
+  if(run){acc+=dt*speed;let n=0;while(acc>=1/60&&n<8){sim.step(1/60);acc-=1/60;n++;}if(n>=8)acc=0;stepAir(sim,n/60);flowTick();}
+  if(app.seq){const cap=app.seq.caps.find(c=>sim.t>=c.t0&&sim.t<c.t0+c.T);
+    let txt=cap?cap.text:(sim.t<2?'Listening…':(sim.t>=app.seq.end-1?'Sentence complete':''));
+    for(const c of app.seq.caps)if(c.mark&&!c.done&&sim.t>=c.t0+c.T){c.done=true;if(c.mark.kind==='stone')app.marks.push(c.mark);else app.seq.glyphs.push(c.mark.form);}
+    if(app.seq.glyphs.length)txt+=` · margin: ${app.seq.glyphs.map(f=>FORM_NAME[f]).join(', ')}`;$('signcap').textContent=txt;}
+  sim.stepMotes(Math.min(dt,0.05),now/1000);
+  // the viewpoint drifts a few degrees, the way a seated head does, so depth and lean toward or away show by parallax
+  const T=now/1000,yaw=reduceMotion?0:D2R*(4.5*Math.sin(TAU*T/31+0.7)+2*Math.sin(TAU*T/13+2.1)+0.8*Math.sin(TAU*T/5.3));
+  drawStage($('stage'),sim,app.dial,app.marks,{reserve:app.reserve,hover:app.hover,answer:app.answer,truth:app.truthMark,air:airArc,yaw});
+  if(++frame%6===0)updateReadouts();
+  if(app.running)evoTick();
+  requestAnimationFrame(loop);}
+function updateReadouts(){const R=sim.read;
+  $('roHour').textContent=R.bearing==null?'–':(R.lean<6?'upright':bearingWord(R.bearing));
+  $('roLean').textContent=R.lean==null?'–':`${R.lean.toFixed(0)}°`;
+  $('roSwirl').textContent=R.swirl==null?'–':`${Math.abs(R.swirl).toFixed(2)} ${Math.abs(R.swirl)<0.05?'':R.swirl>0?'↺':'↻'}`;
+  $('roBreak').textContent=R.breakZ==null?`${Math.round(sim.L)} cm+`:`${R.breakZ} cm`;
+  $('roStreams').textContent=R.streams===2?'two':'one';
+  if(sim.lastBreak&&sim.t-sim.lastBreak.t<2.5&&sim.lastBreak.z>30&&app.mode==='free'&&!app.seq)$('signcap').textContent=`The ${Math.round(sim.lastBreak.z)} cm column ${BREAK_NAME[sim.mode]||'breaks'}`;
+  $('roWind').textContent=`${Math.hypot(sim.U[0],sim.U[1]).toFixed(0)} cm/s`;
+  let tail='';
+  if(app.seq)tail=app.speed>1?` · sentence at ${app.speed}×`:' · sentence';
+  else if(sim.o.burn>1)tail=' · burning 20×';
+  $('caption').innerHTML=`<b>${ENVS[sim.o.env].name}</b> · cone ${Math.round(sim.p*100)}% burned${tail}`;
+  drawStrip($('strip'),sim.hist);}
+
+/* ---- wiring ---- */
+function buildStatic(){
+  // how it felt, on the old 1 to 5 scale (wind to sign) so earlier readings still compare
+  const cd=$('confDots');for(const[c,lab]of [[1,'like the wind'],[3,'unclear'],[5,'sent']]){const b=document.createElement('button');b.type='button';b.className='fbtn';b.dataset.c=c;b.textContent=lab;
+    b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>setConf(c));cd.appendChild(b);}
+  const fs=$('freeSigns');for(const f of [1,2,3,4,5,6,7]){const b=document.createElement('button');b.type='button';b.className='gbtn';b.title=FORM_HINT[f];
+    b.innerHTML=`${icon(f)}<span>${FORM_NAME[f]}</span>`;b.addEventListener('click',()=>sendFree(f,null));fs.appendChild(b);}
+  const ls=$('lens');for(const l of [{id:'none',name:'no lens'},...LENSES]){const o=document.createElement('option');o.value=l.id;o.textContent=l.name;ls.appendChild(o);}}
+function sendFree(f,hit){app.userStarted=true;
+  sim.addSign({form:f,angle:hit?hit.dir*TAU/app.dial.nDir:null,t0:sim.t+0.1,T:6,hold:1});
+  if(hit){app.marks=[{kind:'stone',dir:hit.dir,ring:1}];}
+  $('signcap').textContent=`Sent: ${FORM_NAME[f]}${hit?` ${DIR_WORD[hit.dir]}`:''}`;}
+function canvasPoint(e){const r=$('stage').getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];}
+function wire(){
+  for(const[id,name]of [['mRead','read'],['mEvo','evo'],['mFree','free']])$(id).addEventListener('click',()=>setMode(name));
+  const cv=$('stage');
+  cv.addEventListener('pointermove',e=>{const[x,y]=canvasPoint(e);app.hover=canPlace()?hitTable(x,y,app.dial):null;cv.style.cursor=app.hover?'pointer':'default';});
+  cv.addEventListener('pointerleave',()=>{app.hover=null;});
+  cv.addEventListener('click',e=>{if(!canPlace())return;const[x,y]=canvasPoint(e),hit=hitTable(x,y,app.dial);if(!hit)return;
+    if(app.mode==='read')placeStone(hit);else sendFree(F.STONE,hit);});
+  $('btnPass').addEventListener('click',letGo);
+  $('lens').addEventListener('change',e=>{app.lens=e.target.value;savePractice();renderLexicon();});
+  $('note').addEventListener('input',e=>{const pd=touchPend();if(pd)pd.note=e.target.value;});
+  $('rdYou').addEventListener('click',()=>{app.autoStand=false;setReader('you');});$('rdStand').addEventListener('click',()=>{app.autoStand=false;setReader('stand');});
+  $('btnStand').addEventListener('click',()=>addStandIn(20));
+  $('btnEvo').addEventListener('click',()=>{if(!app.evo)resetEvo();app.running=!app.running;$('btnEvo').textContent=app.running?'Pause':'Run evolution';});
+  $('btnEvoReset').addEventListener('click',()=>{refit();resetEvo();});
+  for(const[id,o]of [['objClean','clean'],['objShannon','shannon']])$(id).addEventListener('click',()=>{OBJECTIVE=o;
+    $('objClean').setAttribute('aria-pressed',String(o==='clean'));$('objShannon').setAttribute('aria-pressed',String(o==='shannon'));resetEvo();});
+  $('btnPlay').addEventListener('click',playSentence);
+  $('sp1').addEventListener('click',()=>{app.speed=1;$('sp1').setAttribute('aria-pressed','true');$('sp4').setAttribute('aria-pressed','false');});
+  $('sp4').addEventListener('click',()=>{app.speed=4;$('sp4').setAttribute('aria-pressed','true');$('sp1').setAttribute('aria-pressed','false');});
+  $('btnKeep').addEventListener('click',async()=>{const ev=app.evo;if(!ev||!ev.champ){$('keepStatus').textContent='Run the evolution first';return;}
+    const c=ev.champ;$('keepStatus').textContent='Saving…';
+    $('keepStatus').textContent=await saveRun({at:Date.now(),reader:app.reader,trials:datasetNow().length,gen:ev.gen,objective:OBJECTIVE,genome:c.g,
+      bitsPerCone:+c.e.fit.toFixed(1),signs:+c.e.signs.toFixed(2),bitsPerSign:+c.e.bps.toFixed(3),rule:genomeRule(c.g)});});
+  document.querySelectorAll('[data-env]').forEach(b=>b.addEventListener('click',()=>{app.watchEnv=b.dataset.env;
+    document.querySelectorAll('[data-env]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));app.userStarted=true;startFree();}));
+  $('gust').addEventListener('input',e=>{$('gustOut').textContent=(+e.target.value).toFixed(1)+'×';sim.wind.gm=+e.target.value;sim.o.gm=+e.target.value;});
+  $('phase').addEventListener('input',e=>{$('phaseOut').textContent=e.target.value+'%';sim.p=+e.target.value/100;});
+  $('btnBurn').addEventListener('click',()=>{app.userStarted=true;
+    if(sim.o.burn>1){sim.o.burn=0;$('btnBurn').textContent='Burn 20×';}else{if(sim.p>=0.99)sim.p=0;sim.o.burn=20;$('btnBurn').textContent='Stop burning';}});
+  document.addEventListener('keydown',e=>{if(app.mode!=='read'||e.target.closest('input,textarea,select'))return;
+    if(e.key==='Escape')letGo();
+    else if(/^[1-9]$/.test(e.key)){const b=$('formChoices').children[+e.key-1];if(b&&!b.disabled)b.click();}});
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readTheme();drawEvo();});
+  new MutationObserver(()=>{readTheme();drawEvo();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  if(window.ResizeObserver)new ResizeObserver(measureDock).observe($('dock'));
+  let tlW=0;window.addEventListener('resize',()=>{measureDock();drawEvo();const w=$('timeline').clientWidth;if(w!==tlW){tlW=w;drawTimeline();}});
+}
+function setReader(r){commitPend();app.reader=r;$('rdYou').setAttribute('aria-pressed',String(r==='you'));$('rdStand').setAttribute('aria-pressed',String(r==='stand'));
+  $('btnStand').hidden=r!=='stand';if(r==='stand'&&app.stand.length===0)addStandIn(60);
+  app.answer=null;app.truthMark=null;refit();renderSittingViews();if(app.evo)resetEvo();
+  if(app.mode==='read')newChapter();renderChips();}
+
+/* ---- self-test (open with #selftest) ---- */
+function selftest(){const out=[];const t0=performance.now();
+  const obs={...PRIOR,M:PRIOR_M};
+  for(const env of ['day','dusk','night']){const c=dirCell(env,1,6,0.3,1);let R0=0,R1=0;for(let i=0;i<c.off.length;i++){R0+=Math.cos(c.off[i]);R1+=Math.sin(c.off[i]);}
+    out.push(`${env}: lean resultant ${(Math.hypot(R0,R1)/c.off.length).toFixed(3)}`);}
+  const b=evaluate(BASELINE,obs,777,3000);out.push('baseline '+JSON.stringify({fit:+b.fit.toFixed(1),bps:+b.bps.toFixed(2),signs:+b.signs.toFixed(1),exact:+b.exact.toFixed(2)}));
+  const st=[];for(let i=0;i<120;i++){const tr=makeTrial(1000+i);st.push(trialRecord(tr,standInRespond(tr,rng32(tr.seed^0x9e37)),{started:0,replays:0}));}
+  const f=fitObserver(st);out.push(`stand-in recovered: kappa ${f.kappa.toFixed(1)} (true ${STANDIN.kappa}) C ${f.C} beta ${f.beta.toFixed(2)} acc ${f.formAcc.toFixed(2)}`);
+  const pr=presence(st);out.push(`stand-in presence: d' ${pr.d.toFixed(2)} c ${pr.c.toFixed(2)} hit ${pr.hit.toFixed(2)} fa ${pr.fa.toFixed(2)} (${pr.sN} sent, ${pr.wN} wind)`);
+  const ev=new Evolver({M:f.M,kappa:f.kappa,C:f.C,beta:f.beta},42);for(let i=0;i<40;i++)ev.step();
+  out.push('after 40 gens: '+ev.champ.e.fit.toFixed(1)+' bits/cone vs first guess '+ev.base.fit.toFixed(1)+' · '+genomeRule(ev.champ.g));
+  // a tap at a known table point must come back as the same hour and ring
+  drawStage($('stage'),sim,READ_DIAL,[],{reserve:app.reserve});const v=app.view,xy=stoneXY(1,1,READ_DIAL);
+  const hit=hitTable(v.cx+v.s*xy[0],v.cy-v.s*(xy[1]*SINC+TABLE_Z*COSC),READ_DIAL);out.push('tap round-trip (right) -> '+JSON.stringify(hit));
+  sim.reset({env:'dusk',gm:1,p:0.4,seed:5});sim.schedule([{form:F.STONE,angle:TAU/4,hold:1,t0:1,T:6}]);for(let i=0;i<60*5;i++)sim.step(1/60);
+  out.push(`stage: ${sim.parts.length} particles, lean ${bearingWord(sim.read.bearing)} at ${sim.read.lean.toFixed(0)}°`);
+  out.push(`selftest ms ${(performance.now()-t0).toFixed(0)}`);
+  const pre=document.createElement('pre');pre.id='selftest';pre.textContent=out.join('\n');document.body.appendChild(pre);}
+
+/* ---- boot ---- */
+buildStatic();readTheme();wire();loadPractice();$('lens').value=app.lens;
+refit();renderSittingViews();renderReaders();newChapter();measureDock();
+if(location.hash==='#selftest')selftest();
+if(location.hash==='#evolve'||location.hash==='#code'||location.hash==='#protocol')setMode('evo');else if(location.hash==='#free')setMode('free');
+initStore(()=>{if(app.reader==='you'){refit();if(!(app.flow&&app.flow.kept.length))renderSittingViews();}if(app.evo&&!app.running)drawEvo();});
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
