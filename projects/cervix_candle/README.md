@@ -7,7 +7,7 @@ edges. The back is domed. The cavity is hollowed into the face like the inside o
 half. A wax birthday candle is held by light pressure where the walls close round it at the
 internal orifice. Its flame burns in the hollow under the closed fundus band, and heat leaves
 along the tube-lumen grooves that run out through the tabs. The sculpture stands in a socket in
-the middle of a round dish that catches the wax.
+the middle of a vesica piscis dish that catches the wax.
 
 | file | what |
 |---|---|
@@ -43,9 +43,15 @@ the middle of a round dish that catches the wax.
   to the fundus band, and a typical 15–20 mm birthday flame leaves 21–26 mm. Use the Milliput
   coat on the hollow's upper part. Keep the canal, the candle channel and the 3 mm lumen grooves
   free of Milliput (mask them), or the candle won't fit.
-- Dish 155 × 155 × 18 mm. A wax well 22 mm wide runs round a 10 mm boss. The boss has a 5 mm-deep
-  socket (0.4 mm clearance) shaped like the sculpture's base, so the sculpture seats one way
-  only.
+- Dish: a vesica piscis, two R = 120 mm circles each through the other's centre, so
+  207.8 × 120 × 18 mm. Its points lie left and right, along the sculpture's width. Every contour
+  (foot, rolled lip, well floor) is the lens between two circles on the same two centres, so
+  each is an exact inset of the outline and the points stay sharp. The centre boss, 10 mm high,
+  is a smaller vesica (R = 46 mm, 80 × 46 mm top) on the same axis. It is the smallest that clears
+  the socket by 8 mm all round. The wax well runs 11.5 mm wide front and back and 34 mm wide
+  towards the points, about 5,400 mm² of floor. The boss has a 5 mm-deep socket (0.4 mm
+  clearance) shaped like the sculpture's base, so the sculpture seats one way only. Change
+  `R_VESICA` in `dish.py` to resize it.
 
 ## Printing (PETG)
 
