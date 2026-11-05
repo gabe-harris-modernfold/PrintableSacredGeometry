@@ -53,9 +53,12 @@ HOURS = (0, 4, 8, 12, 16, 20)
 U_GRID = np.arange(0.25, 12.01, 0.25)
 STEPS = np.array([1e-3, 1e-3, 1e-3, 1e-7, 1e-7, 1e-3, 1e-3, 1e-3])
 LIMITS = np.array([20, 20, 20, 0.02, 0.02, 20, 20, 20])
-BOUNDS = [(500, 690), (-0.3, 2.0), (-0.3, 1.3), (0.2, 2.5), (0.0, 30.0), (1.0, 14.0)] + [(0, 15)] * 8
-INTEGRALITY = [False] * 6 + [True] * 8
-REV1 = np.array([609.5 + S_TIP + S_END, 6.0, math.log10(2.0), 0.8, 20.0, 1.0, 10, 7, 4, 2, 10, 7, 4, 2], float)
+BOUNDS = [(500, 690), (-0.3, 2.0), (-0.3, 1.3), (0.2, 2.5), (0.0, 30.0), (1.0, 14.0)] + [(0, 15)] * 8 \
+    + [(0, 1), (0, 1)]                            # frame: 0 PETG, 1 carbon cores; tensioner: 0 springs, 1 steelyard
+INTEGRALITY = [False] * 6 + [True] * 10
+REV1 = np.array([609.5 + S_TIP + S_END, 6.0, math.log10(2.0), 0.8, 20.0, 1.0, 10, 7, 4, 2, 10, 7, 4, 2, 0, 0], float)
+LEVER = 8.0                                       # steelyard advantage: poise weight = tension / 8
+POISE_ARM = 120.0                                 # mm, poise working radius
 
 
 # ---------------------------------------------------------------- tolerances and environment
@@ -74,6 +77,7 @@ def tolerances(n, seed=7, zero=False):
         m_bottom=M_BOTTOM * (1 + z * rng.normal(0, 0.1, n)),
         kfac=1 + z * rng.normal(0, 0.08, (n, 12)),
         cte=65e-6 if zero else rng.uniform(55e-6, 75e-6, n),
+        cte_cf=9e-6 if zero else rng.uniform(7e-6, 11e-6, n),     # carbon core + PETG tip node
         st=1 + z * rng.normal(0, 0.04, n),
         creep=rng.uniform(0, 0.0012, (n, 4)) * (0 if zero else 1),
         sun=rng.uniform(2, 8, n) * (0 if zero else 1),
@@ -159,11 +163,16 @@ def decode(v):
     edge, lkg, lkw, delta, t_set, n_c = v[:6]
     ge = CATALOG[np.clip(np.round(v[6:10]).astype(int), 0, len(CATALOG) - 1)]
     gh = CATALOG[np.clip(np.round(v[10:14]).astype(int), 0, len(CATALOG) - 1)]
-    return dict(edge=edge, kg=10 ** lkg, kw=10 ** lkw, delta=delta, t_set=t_set, n_c=n_c, ge=ge, gh=gh)
+    frame = int(round(v[14])) if len(v) > 14 else 0
+    tens = int(round(v[15])) if len(v) > 15 else 0
+    kg = 0.02 if tens else 10 ** lkg               # a steelyard is a near-zero-rate tensioner
+    return dict(edge=edge, kg=kg, kw=10 ** lkw, delta=delta, t_set=t_set, n_c=n_c, ge=ge, gh=gh,
+                frame=frame, tens=tens)
 
 
-def build(D, tol, n):
-    """Per-sample constants for one design: strings 0-3 heaven, 4-7 earth, 8-11 waist."""
+def build(D, tol, n, shift=0.0):
+    """Per-sample constants for one design: strings 0-3 heaven, 4-7 earth, 8-11 waist.
+    shift transposes every target by that many cents (tunability checks)."""
     g_in = np.concatenate([D["gh"], D["ge"], D["ge"]])[None, :] + tol["dg"][:n]
     d_m = g_in * 0.0254
     area = math.pi * (d_m * 1000) ** 2 / 4                       # mm^2
@@ -175,7 +184,8 @@ def build(D, tol, n):
     k = 1 / (1 / ks + ell0 / (E * area))
     r0 = D["edge"] / math.sqrt(2) + tol["dr"][:n]
     tube_len = D["edge"] / math.sqrt(2) - HUB_R - TIP_R
-    m_tube = 1.27e-3 * math.pi / 4 * (30 ** 2 - 26 ** 2) * tube_len / 1000 * tol["m_tube"][:n]
+    m_tube = 1.27e-3 * math.pi / 4 * (30 ** 2 - 26 ** 2) * tube_len / 1000 * tol["m_tube"][:n] \
+        + (0.03 if D.get("frame") else 0.0)
     mid = (HUB_R + tube_len / 2) / (D["edge"] / math.sqrt(2))
 
     # targets with inharmonicity pre-compensation at harmonic n_c
@@ -191,7 +201,7 @@ def build(D, tol, n):
     nc = D["n_c"]
     fe = fe * math.sqrt(1 + be[0] * nc ** 2) / np.sqrt(1 + be * nc ** 2)
     fh = fh * math.sqrt(1 + bh[0] * nc ** 2) / np.sqrt(1 + bh * nc ** 2)
-    fstar = np.concatenate([fh, fe, fe + D["delta"]])
+    fstar = np.concatenate([fh, fe, fe + D["delta"]]) * 2 ** (shift / 1200)
     return dict(d_m=d_m, area=area, mu=mu, E=E, sad=sad, ks=ks, k=k, r0=r0, tube_len=tube_len,
                 m_tube=m_tube, mid=mid, fstar=fstar)
 
@@ -201,8 +211,8 @@ def tension_targets(S, dist):
     return (2 * lv * S["fstar"]) ** 2 * S["mu"]
 
 
-def install(D, tol, n):
-    S = build(D, tol, n)
+def install(D, tol, n, shift=0.0):
+    S = build(D, tol, n, shift)
     h = D["edge"] / math.sqrt(2)
     x = np.zeros((n, 8))
     x[:, 2], x[:, 7] = -h, -2 * h
@@ -212,8 +222,11 @@ def install(D, tol, n):
     dist[:, 8:] = span
     tstar = tension_targets(S, dist)
     ell = dist - tstar / S["k"]
+    # steelyards sit at the poles: heaven poises hang from the hook (outside the frame), earth poises
+    # are part of the bob, so neither loads the tip nodes
+    tipnode = tol["m_tipnode"][:n].copy()
     m_bob = (tstar[:, 4:8] * math.cos(math.pi / 4)).sum(1) / G - tol["m_bottom"][:n]
-    frame = m_bob + tol["m_bottom"][:n] + tol["m_hub"][:n] + S["m_tube"].sum(1) + tol["m_tipnode"][:n].sum(1)
+    frame = m_bob + tol["m_bottom"][:n] + tol["m_hub"][:n] + S["m_tube"].sum(1) + tipnode.sum(1)
     trim = ((tstar[:, 0:4] * math.cos(math.pi / 4)).sum(1) / G - frame) / 4
     ell[:, 8:] = span - tstar[:, 8:] / S["k"][:, 8:]
 
@@ -222,24 +235,25 @@ def install(D, tol, n):
         rr = lambda a: np.repeat(a, reps, axis=0)
         nn = len(y)
         P = dict(tipR=rr(tipR), ell=np.concatenate([y[:, :8], rr(ell[:, 8:])], 1), k=rr(S["k"]),
-                 m_tip=rr(tol["m_tipnode"][:n]) + y[:, 9:10], m_tube=rr(S["m_tube"]),
+                 m_tip=rr(tipnode) + y[:, 9:10], m_tube=rr(S["m_tube"]),
                  m_hub=rr(tol["m_hub"][:n]), m_bob=y[:, 8] + rr(tol["m_bottom"][:n]),
                  mid=np.full(nn, S["mid"]), drag_c=np.zeros((nn, 3)), drag_b=np.zeros((nn, 3)))
         return solve(P, x0)
 
     # the builder's tuning passes as a coupled Newton step: anchors, shot and trim together
-    steps = np.r_[np.full(8, 0.02), 0.01, 0.005]
+    steps = np.concatenate([np.clip(0.3 / S["k"][:, :8], 0.005, 50), np.full((n, 1), 0.01),
+                            np.full((n, 1), 0.005)], 1)                       # (n, 10), ~0.3 N per step
     y = np.concatenate([ell[:, :8], m_bob[:, None], trim[:, None]], 1)
     step_lim = np.concatenate([6.0 / S["k"][:, :8], np.full((n, 1), 2.0), np.full((n, 1), 0.5)], 1)
     for _ in range(14):
         yy = np.repeat(y[:, None, :], 11, axis=1)
-        yy[:, 1:, :] += np.diag(steps)[None]
+        yy[:, 1:, :] += steps[:, :, None] * np.eye(10)[None]
         xs, (r, tu, tl, du, dl, tips, p), ok = forward(yy.reshape(n * 11, 10), np.repeat(x, 11, 0), 11)
         T8 = np.concatenate([tu, tl], 1).reshape(n, 11, 8)
         d8 = np.concatenate([du, dl], 1).reshape(n, 11, 8)
         lv = (d8 - S["sad"][:, None, :8]) / 1000
         F = T8 - (2 * lv * S["fstar"][:8]) ** 2 * S["mu"][:, None, :8]
-        jac = np.swapaxes((F[:, 1:, :] - F[:, :1, :]) / steps[None, :, None], 1, 2)     # (n, 8, 10)
+        jac = np.swapaxes((F[:, 1:, :] - F[:, :1, :]) / steps[:, :, None], 1, 2)       # (n, 8, 10)
         dy = -(np.linalg.pinv(jac) @ F[:, 0, :, None])[..., 0]
         scale = np.max(np.abs(dy) / step_lim, axis=1, keepdims=True)
         y = y + dy / np.maximum(1, scale)
@@ -249,11 +263,62 @@ def install(D, tol, n):
     x, (r, tu, tl, du, dl, tips, p), ok = forward(y, x, 1)
     ell[:, :8] = y[:, :8]
     m_bob, trim = y[:, 8], y[:, 9]
-    m_tip = tol["m_tipnode"][:n] + trim[:, None]
+    m_tip = tipnode + trim[:, None]
     tw = S["k"][:, 8:] * np.maximum(span - ell[:, 8:], 0)
     T = np.concatenate([tu, tl, tw], 1)
-    return S, dict(x=x, ell=ell, m_bob=m_bob, trim=trim, m_tip=m_tip, T=T, ok=ok,
+    return S, dict(x=x, ell=ell, m_bob=m_bob, trim=trim, m_tip=m_tip, T=T, ok=ok, jac=jac,
                    dist=np.concatenate([du, dl, span], 1))
+
+
+def tunability(D, tol, n, S, I):
+    """Can a person retune it?
+    * whole harp +/-200 cents (shot and trim, or every poise);
+    * any one gravity string +/-100 cents on its own adjuster or poise, the others held;
+    * resolution: cents per turn of an M5 x 0.8 adjuster, or per 4 mm of poise.
+    Limits: springs - anchor travel 12 mm, spring stretch 40 mm, 40 cents per turn;
+            steelyard - poise travel 20 mm for one string and 40 mm for the whole harp."""
+    steel = bool(D["tens"])
+    lim_one, lim_all = (20.0, 40.0) if steel else (12.0, 12.0)
+    v, out = 0.0, {}
+    for shift in (-200.0, 200.0):
+        St, It = install(D, tol, n, shift)
+        mass = It["m_bob"] + M_BOTTOM + M_HUB + St["m_tube"].sum(1) + It["m_tip"].sum(1)             + (It["T"][:, 0:4].sum(1) / (LEVER * G) if steel else 0.0)
+        stress = (It["T"] / (BREAK_MPA * St["area"])).max()
+        sprung = slice(8, 12) if steel else slice(0, 12)
+        ext = (It["T"][:, sprung] / St["ks"][:, sprung]).max()
+        if steel:
+            travel = float((np.abs(It["T"][:, :8] / I["T"][:, :8] - 1) * POISE_ARM).max())
+        else:
+            travel = float(np.percentile(np.abs(It["ell"] - I["ell"]), 95))
+        ok = bool(It["ok"].all())
+        v += (0 if ok else 3) + max(0, mass.max() - 22) / 2 + max(0, stress - 0.45) / 0.05             + max(0, ext - 40) / 5 + max(0, -It["trim"].min()) / 0.1 + max(0, travel - lim_all) / 3
+        out["transpose_" + ("up" if shift > 0 else "down")] = dict(
+            ok=ok, mass_kg=float(mass.max()), stress=float(stress), spring_ext_mm=float(ext),
+            travel_mm=travel, bob_kg=float(It["m_bob"].mean()), trim_kg=float(It["trim"].mean()))
+    T8 = I["T"][:, :8]
+    ratio = np.array([2 ** (2 / 12) - 1, 2 ** (-2 / 12) - 1])
+    tw = I["T"][:, 8:]
+    ext_w = float((tw * 2 ** (2 / 12) / S["ks"][:, 8:]).max())
+    if steel:
+        one = float(np.abs(ratio).max() * POISE_ARM)                    # one poise, nothing else moves
+        ext_g = 0.0
+        per_turn = np.full_like(T8, 600 * math.log2(1 + 4 / POISE_ARM))
+    else:
+        dT = np.zeros((n, 8, 16))
+        for i in range(8):
+            dT[:, i, 2 * i] = T8[:, i] * ratio[0]
+            dT[:, i, 2 * i + 1] = T8[:, i] * ratio[1]
+        dy = np.linalg.pinv(I["jac"]) @ dT                              # coupled adjusters, linear
+        one = float(np.percentile(np.abs(dy[:, :8, :]).max(1), 95))
+        ext_g = float(((T8[:, :, None] + dT) / S["ks"][:, :8, None]).max())
+        diag = np.abs(np.einsum("nii->ni", I["jac"][:, :, :8]))
+        per_turn = 600 * np.log2(1 + 0.8 * diag / T8)
+    worst_turn = float(per_turn.max())
+    v += max(0, one - lim_one) / 3 + max(0, max(ext_g, ext_w) - 40) / 5 + max(0, worst_turn - 40) / 10
+    out.update(tensioner="steelyard" if steel else "springs", single_string_travel_mm=one,
+               cents_per_turn_max=worst_turn, cents_per_turn_median=float(np.median(per_turn)),
+               spring_ext_after_mm=max(ext_g, ext_w), violation=float(v))
+    return v, out
 
 
 def pitch(S, T, dist, idx=slice(None)):
@@ -263,7 +328,7 @@ def pitch(S, T, dist, idx=slice(None)):
     return f1, B
 
 
-def evaluate(v, tol, wind_mean=3.0, n=N_MC, detail=False):
+def evaluate(v, tol, wind_mean=3.0, n=N_MC, detail=False, tune_req=False):
     D = decode(v)
     pen = 0.0
     if D["edge"] / math.sqrt(2) - HUB_R - TIP_R > 310:
@@ -277,15 +342,20 @@ def evaluate(v, tol, wind_mean=3.0, n=N_MC, detail=False):
     pen += 20 * max(0, install_err - 0.5)
     trim = I["trim"]
     pen += 300 * np.maximum(0, -trim).max()
-    total_mass = I["m_bob"] + M_BOTTOM + M_HUB + S["m_tube"].sum(1) + 4 * M_TIPNODE + 4 * trim
+    total_mass = I["m_bob"] + M_BOTTOM + M_HUB + S["m_tube"].sum(1) + I["m_tip"].sum(1)         + (I["T"][:, 0:4].sum(1) / (LEVER * G) if D["tens"] else 0.0)
     pen += 20 * max(0, total_mass.max() - 20)
     stress = (I["T"] / (BREAK_MPA * S["area"])).max()
     pen += 300 * max(0, stress - 0.45)
-    ext = (I["T"] / S["ks"]).max()
+    sprung = slice(8, 12) if D["tens"] else slice(0, 12)       # steelyards have no spring to overstretch
+    ext = (I["T"][:, sprung] / S["ks"][:, sprung]).max()
     pen += 1.0 * max(0, ext - 40)
     ref_S, ref_I = install(D, tolerances(1, zero=True), 1)
-    travel = np.percentile(np.abs(I["ell"] - ref_I["ell"]), 95)
+    travel = 0.0 if D["tens"] else np.percentile(np.abs(I["ell"] - ref_I["ell"]), 95)
     pen += 2 * max(0, travel - 12)
+    tune_info = {}
+    if tune_req:
+        tv, tune_info = tunability(D, tol, n, S, I)
+        pen += 20 * tv
 
     # operating states
     st = states()
@@ -294,9 +364,12 @@ def evaluate(v, tol, wind_mean=3.0, n=N_MC, detail=False):
     asym = np.array([1.0, 0.0, -1.0, 0.0])
     cte = np.broadcast_to(np.asarray(tol["cte"]) if np.ndim(tol["cte"]) else np.full(len(tol["st"]), tol["cte"]),
                           (len(tol["st"]),))[:n]
+    if D["frame"]:
+        cte = np.broadcast_to(np.asarray(tol["cte_cf"]), (len(tol["st"]),))[:n]
+    creep_scale = 0.1 if D["frame"] else 1.0
     dT_tube = t_env[..., None] + (tol["sun"][:n, None, None] * st[:, 1][None, :, None] * asym)
     tipR = S["r0"][:, None, :] * (1 + cte[:, None, None] * dT_tube) \
-        - (tol["creep"][:n, None, :] * st[:, 2][None, :, None]) * S["tube_len"]
+        - (creep_scale * tol["creep"][:n, None, :] * st[:, 2][None, :, None]) * S["tube_len"]
     ell = I["ell"][:, None, :] * (1 + 12e-6 * t_env[..., None])
     nb = n * ns
     rep = lambda a: np.repeat(a, ns, axis=0)
@@ -361,6 +434,16 @@ def evaluate(v, tol, wind_mean=3.0, n=N_MC, detail=False):
                 num += (ww * err).sum()
                 den += ww.sum()
     e2 = num / max(den, 1e-9)
+    # coherence: the chord keeps its shape only if a star's strings sound on the same harmonic
+    co_num = co_den = 0.0
+    for base_i in (0, 4):
+        for i in range(4):
+            for j in range(i + 1, 4):
+                a, b = base_i + i, base_i + j
+                ww = w[..., a] * w[..., b] * pw
+                co_num += (ww * (best_n[..., a] == best_n[..., b])).sum()
+                co_den += ww.sum()
+    coherence = co_num / max(co_den, 1e-9)
     # theta: waist i against earth i on the same harmonic
     hit = np.zeros(w.shape[:2])
     for i in range(4):
@@ -377,7 +460,7 @@ def evaluate(v, tol, wind_mean=3.0, n=N_MC, detail=False):
     f_hub = ROOT * np.sqrt((t_abs + 273.15) / (D["t_set"] + 273.15))
     e3 = np.abs(1200 * np.log2(f_hub / f1[:, 0, 4])).mean()
 
-    J = e1 + 0.5 * e2 + 0.15 * e3 + 50 * (1 - cover) + pen
+    J = e1 + W_E2 * e2 + 0.15 * e3 + 50 * (1 - cover) + 30 * (1 - coherence) + pen
     if not detail:
         return float(J)
     by_u = (hit.reshape(n, ns, -1).mean((0, 1)), sounding.reshape(n, ns, -1).mean((0, 1)))
@@ -387,7 +470,7 @@ def evaluate(v, tol, wind_mean=3.0, n=N_MC, detail=False):
     for s_i, (t, day, aged) in enumerate(st):
         if aged == 0 and abs(t - st[st[:, 2] == 0][:, 0].mean()) < 99:
             beat_day.append((float(t), float(np.abs(fn_r[0, s_i, i3, 8] - fn_r[0, s_i, i3, 4]))))
-    info = dict(J=float(J), e1_cents=float(e1), e2_cents=float(e2), e3_cents=float(e3),
+    info = dict(J=float(J), e1_cents=float(e1), e2_cents=float(e2), e3_cents=float(e3), coherence=float(coherence),
                 theta_cover_sounding=float(cover), theta_cover_all=float(cover_all), penalty=float(pen),
                 install_err_cents=float(install_err), total_mass_kg=float(total_mass.mean()),
                 bob_kg=float(I["m_bob"].mean()), trim_kg=float(trim.mean()),
@@ -398,12 +481,14 @@ def evaluate(v, tol, wind_mean=3.0, n=N_MC, detail=False):
                                                 for k_, v_ in D.items()},
                 tension_N=I["T"][0].round(2).tolist(), f1_Hz=f1[0, 0].round(2).tolist(),
                 theta_by_u=dict(u=U_GRID.tolist(), hit=by_u[0].tolist(), sounding=by_u[1].tolist()),
-                beat_vs_temp_3ms=beat_day)
+                beat_vs_temp_3ms=beat_day, tunability=tune_info)
     return float(J), info
 
 
 # ---------------------------------------------------------------- run
 TOL = None
+TUNE = True
+W_E2 = 0.5                                        # weight on interval error (v4 raises it)
 
 
 def fitness(v):
@@ -411,7 +496,7 @@ def fitness(v):
     if TOL is None:
         TOL = tolerances(N_MC)
     try:
-        return evaluate(v, TOL)
+        return evaluate(v, TOL, tune_req=TUNE)
     except (FloatingPointError, ValueError, np.linalg.LinAlgError):
         return 1e4
 
@@ -435,7 +520,12 @@ def main():
     ap.add_argument("--maxiter", type=int, default=45)
     ap.add_argument("--popsize", type=int, default=10)
     ap.add_argument("--wind-mean", type=float, default=3.0)
+    ap.add_argument("--tag", default="v2")
+    ap.add_argument("--w-interval", type=float, default=0.5)
+    ap.add_argument("--seed-from", default="")
     a = ap.parse_args()
+    global W_E2
+    W_E2 = a.w_interval
     np.seterr(all="ignore")
     if a.check:
         check()
@@ -444,10 +534,10 @@ def main():
     fresh = tolerances(48, seed=99)            # out-of-sample check, never seen by the evolution
     t0 = time.time()
     skip = ("theta_by_u", "beat_vs_temp_3ms")
-    j1, rev1 = evaluate(REV1.copy(), tol, a.wind_mean, detail=True)
+    j1, rev1 = evaluate(REV1.copy(), tol, a.wind_mean, detail=True, tune_req=True)
     rev1b_x = REV1.copy()
     rev1b_x[1] = math.log10(2.0)
-    j1b, rev1b = evaluate(rev1b_x, tol, a.wind_mean, detail=True)
+    j1b, rev1b = evaluate(rev1b_x, tol, a.wind_mean, detail=True, tune_req=True)
     print(f"rev 1 as drawn: J {j1:.2f}; rev 1 + 2 N/mm springs: J {j1b:.2f}")
     print(json.dumps({k: v for k, v in rev1b.items() if k not in skip}, indent=1))
     sys.stdout.flush()
@@ -459,30 +549,30 @@ def main():
 
     res = differential_evolution(fitness, BOUNDS, integrality=INTEGRALITY, popsize=a.popsize,
                                  maxiter=a.maxiter, tol=1e-4, seed=11, polish=False, updating="deferred",
-                                 workers=1, callback=cb, init="sobol", x0=REV1.clip(
+                                 workers=1, callback=cb, init="sobol", x0=(np.array(json.load(open(a.seed_from))["x"]) if a.seed_from else np.r_[rev1b_x[:14], 1, 1]).clip(
                                      [b[0] for b in BOUNDS], [b[1] for b in BOUNDS]))
-    jb, best = evaluate(res.x, tol, a.wind_mean, detail=True)
+    jb, best = evaluate(res.x, tol, a.wind_mean, detail=True, tune_req=True)
     print(f"evolved: J {jb:.2f}")
     print(json.dumps({k: v for k, v in best.items() if k not in skip}, indent=1))
-    _, val_b = evaluate(res.x, fresh, a.wind_mean, n=48, detail=True)
-    _, val_1b = evaluate(rev1b_x, fresh, a.wind_mean, n=48, detail=True)
+    _, val_b = evaluate(res.x, fresh, a.wind_mean, n=48, detail=True, tune_req=True)
+    _, val_1b = evaluate(rev1b_x, fresh, a.wind_mean, n=48, detail=True, tune_req=True)
     sens = {}
     for wm in (2.0, 4.0):
-        sens[str(wm)] = dict(evolved=evaluate(res.x, tol, wm, detail=True)[1]["theta_cover_sounding"],
-                             rev1b=evaluate(rev1b_x, tol, wm, detail=True)[1]["theta_cover_sounding"])
+        sens[str(wm)] = dict(evolved=evaluate(res.x, tol, wm, detail=True, tune_req=True)[1]["theta_cover_sounding"],
+                             rev1b=evaluate(rev1b_x, tol, wm, detail=True, tune_req=True)[1]["theta_cover_sounding"])
     print("validation (48 fresh samples):",
           {k: round(val_b[k], 3) for k in ("J", "e1_cents", "e2_cents", "theta_cover_sounding")},
           {k: round(val_1b[k], 3) for k in ("J", "e1_cents", "e2_cents", "theta_cover_sounding")})
     rows = []
     for g_i, xk in enumerate(history, 1):
-        jk, ik = evaluate(xk, tol, a.wind_mean, detail=True)
-        rows.append((g_i, jk, ik["e1_cents"], ik["e2_cents"], ik["theta_cover_sounding"]))
-    with open("evolution_history.csv", "w") as fh:
-        fh.write("generation,fitness,fund_err_cents,interval_err_cents,theta_cover\n")
+        jk, ik = evaluate(xk, tol, a.wind_mean, detail=True, tune_req=True)
+        rows.append((g_i, jk, ik["e1_cents"], ik["e2_cents"], ik["theta_cover_sounding"], ik["coherence"]))
+    with open(f"evolution_history_{a.tag}.csv", "w") as fh:
+        fh.write("generation,fitness,fund_err_cents,interval_err_cents,theta_cover,coherence\n")
         for r in rows:
             fh.write(",".join(f"{x:.4f}" if isinstance(x, float) else str(x) for x in r) + "\n")
-    with open("evolution_result.json", "w") as fh:
-        json.dump(dict(rev1=rev1, rev1b=rev1b, evolved=best, validation=dict(evolved=val_b, rev1b=val_1b),
+    with open(f"evolution_result_{a.tag}.json", "w") as fh:
+        json.dump(dict(w_interval=W_E2, rev1=rev1, rev1b=rev1b, evolved=best, validation=dict(evolved=val_b, rev1b=val_1b),
                        wind_sensitivity=sens, x=res.x.tolist(), nfev=int(res.nfev), wind_mean=a.wind_mean,
                        n_mc=N_MC, seconds=time.time() - t0), fh, indent=1)
     print(f"done in {time.time() - t0:.0f} s, {res.nfev} evaluations")
