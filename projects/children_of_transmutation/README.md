@@ -18,6 +18,22 @@ tooling that checks the page.
 
 ## What is on the page
 
+0. **The emblem**, *The Transformer*, beside the opening. The source is
+   [`the-transformer.png`](the-transformer.png) in this folder; the page uses a 700 px WebP at
+   `site/assets/transmutation/the-transformer.webp`. Its crow, dove and phoenix are hotspots that open
+   the nigredo, albedo and rubedo rungs of the colours ladder, and the ouroboros opens the
+   "Nothing lost, all transformed" card. The image loads only from `site/`, where `assets/` lives.
+
+   Five more engraved plates explain the hardest concepts. They were generated from
+   [image-prompts.md](image-prompts.md); the sources are the `illus-*.png` files here and the WebPs
+   are in `site/assets/transmutation/`.
+   - *The two roads* (IV): a single step versus a chain through heat.
+   - *The tithe of heat* (V): the losses at each station of the coal chain.
+   - *The near miss* (VI): lead into gold at the LHC.
+   - *The valley of iron* (VI): fusion and fission both falling toward iron.
+   - *One heat, two readings* (VII): the measured effect versus the tradition's reading of it.
+
+   Every caption links its parts to the matching chart, and clicking any plate enlarges it.
 1. **Born of transmutation**: a ring chart of the body's mass by where its atoms were made. About 76%
    came from exploding massive stars, 14% from dying low-mass stars and 10% from Big Bang hydrogen,
    with traces from white dwarfs and neutron-star mergers. Composition follows ICRP Reference Man and

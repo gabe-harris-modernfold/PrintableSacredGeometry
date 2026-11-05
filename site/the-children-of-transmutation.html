@@ -110,6 +110,34 @@ h1{ font-size:clamp(2.3rem, 6.4vw, 4rem); line-height:1.05; margin:0.5rem 0 0.5r
 .epi{ border-left:2px solid var(--gold); padding:0.3rem 0 0.3rem 1rem; margin:0 0 1.6rem; font-style:italic; color:var(--ink-2); max-width:var(--measure); }
 .epi cite{ display:block; font-style:normal; font-family:var(--label); font-size:0.78rem; letter-spacing:0.06em; color:var(--muted); margin-top:0.2rem; }
 .lede{ font-size:1.1rem; }
+/* hero: the emblem beside the opening (first in the DOM so it sits under the title on phones) */
+.hero{ display:grid; grid-template-columns:minmax(0,1fr) minmax(14rem,19rem); grid-template-areas:"text fig"; gap:1.5rem 3rem; align-items:start; }
+.hero-text{ grid-area:text; }
+.hero-fig{ grid-area:fig; margin:0; }
+@media (max-width:820px){ .hero{ grid-template-columns:1fr; grid-template-areas:"fig" "text"; } .hero-fig{ max-width:19rem; margin:0 auto 0.4rem; } }
+.hero-img{ position:relative; border-radius:2px; box-shadow:0 10px 34px rgba(0,0,0,0.45), 0 0 0 1px var(--rule); line-height:0; }
+.hero-img img{ display:block; width:100%; height:auto; border-radius:2px; }
+.hs{ position:absolute; background:transparent; border:1px solid transparent; border-radius:50%; cursor:pointer; padding:0; transition:border-color .15s, box-shadow .15s; }
+.hs:hover, .hs:focus-visible{ border-color:var(--gold); box-shadow:0 0 0 3px color-mix(in srgb, var(--gold) 30%, transparent); outline:none; }
+.hero-fig figcaption{ font-size:0.86rem; line-height:1.55; color:var(--muted); margin-top:0.8rem; }
+.hero-fig figcaption i{ color:var(--ink-2); }
+/* section illustrations: text beside a plate (stacked on phones), or a wide plate under the text */
+.sfig-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(14rem, var(--fw, 22rem)); gap:1.2rem 2.5rem; align-items:start; }
+@media (max-width:860px){ .sfig-row{ grid-template-columns:1fr; } .sfig-row > .sfig{ max-width:30rem; } }
+.sfig{ margin:0; }
+.sfig.wide{ max-width:50rem; margin-top:1.3rem; }
+.sfig img{ display:block; width:100%; height:auto; border-radius:2px; box-shadow:0 10px 30px rgba(0,0,0,0.4), 0 0 0 1px var(--rule); }
+img.zoom{ cursor:zoom-in; }
+.sfig figcaption{ font-size:0.86rem; line-height:1.55; color:var(--muted); margin-top:0.7rem; }
+.sfig figcaption i{ color:var(--ink-2); }
+.lb{ border:0; padding:0; background:transparent; max-width:min(94vw, 80rem); max-height:96vh; margin:auto; color:var(--ink); overflow:visible; }
+.lb::backdrop{ background:rgba(5,6,10,0.88); }
+.lb figure{ margin:0; display:flex; flex-direction:column; align-items:center; gap:0.7rem; }
+.lb img{ display:block; max-width:min(94vw, 80rem); max-height:78vh; width:auto; height:auto; border-radius:2px; box-shadow:0 0 0 1px var(--rule); }
+.lb figcaption{ max-width:46rem; font-size:0.92rem; line-height:1.55; color:var(--ink-2); background:var(--ground-2); padding:0.6rem 0.9rem; border-radius:3px; }
+.lb-x{ position:fixed; top:14px; right:16px; background:var(--ground-2); z-index:2; }
+.inl{ background:none; border:0; padding:0; color:var(--link); cursor:pointer; font:inherit; text-decoration:underline; text-decoration-color:color-mix(in srgb, var(--link) 45%, transparent); text-underline-offset:3px; }
+.inl:hover{ text-decoration-color:var(--link); }
 .toc{ display:flex; flex-wrap:wrap; gap:0.4rem 1.1rem; margin-top:1.8rem; padding-top:1rem; border-top:1px solid var(--rule-soft);
   font-family:var(--label); font-size:0.86rem; letter-spacing:0.03em; }
 .toc a{ color:var(--muted); text-decoration:none; }
@@ -363,11 +391,26 @@ footer{ margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule-s
     <div class="eyebrow">A catalogue and a chronicle</div>
     <h1>The Children of Transmutation</h1>
     <p class="axline">What humans have turned into what &mdash; energy, matter and the self &mdash; and how to tell which kind of turning each one was.</p>
+    <div class="hero">
+    <figure class="hero-fig">
+      <div class="hero-img">
+        <img class="zoom" src="assets/transmutation/the-transformer.webp" width="700" height="1043"
+             alt="An emblem on aged paper: a serpent biting its own tail encircles a sealed glass flask holding a white dove; a red phoenix rises from flames above the serpent's head between a sun and a crescent moon, and a black crow stands on a dark hill below">
+        <button type="button" class="hs" data-go="colours:3" style="left:34%;top:6%;width:33%;height:19%" title="The phoenix: rubedo, the reddening" aria-label="Phoenix: rubedo, the reddening"></button>
+        <button type="button" class="hs" data-go="colours:1" style="left:37%;top:50%;width:26%;height:17%" title="The dove in the vessel: albedo, the whitening" aria-label="Dove in the vessel: albedo, the whitening"></button>
+        <button type="button" class="hs" data-go="colours:0" style="left:36%;top:76%;width:27%;height:17%" title="The crow: nigredo, the blackening" aria-label="Crow: nigredo, the blackening"></button>
+        <button type="button" class="hs" data-go="touch:conserved" style="left:43%;top:24%;width:16%;height:6.5%" title="The serpent eating its tail: the one matter that becomes all things" aria-label="Ouroboros: the one matter that becomes all things"></button>
+      </div>
+      <figcaption><i>The Transformer.</i> The Work in one emblem. The <button type="button" class="inl" data-go="colours:0">crow</button> on its dark hill is the blackening, the <button type="button" class="inl" data-go="colours:1">dove</button> in the sealed vessel the whitening, the <button type="button" class="inl" data-go="colours:3">phoenix</button> rising from fire the reddening. Sun and Moon are the paired opposites, and the <button type="button" class="inl" data-go="touch:conserved">serpent eating its tail</button> is the one matter that becomes all things and returns: in the early Greek <i>Chrysopoeia of Cleopatra</i> it circles the words <i>hen to pan</i>, &ldquo;the all is one&rdquo;.</figcaption>
+    </figure>
+    <div class="hero-text">
     <blockquote class="epi">&ldquo;I am a child of Earth and starry Heaven.&rdquo;<cite>Orphic gold tablet, Petelia, 4th century BC: the password of a soul seeking release</cite></blockquote>
     <div class="col lede">
       <p>Nine-tenths of the mass of your body was made by transmutation. The hydrogen came out of the first minutes of the universe; nearly everything else, the oxygen in your blood, the carbon in every cell, the calcium of your bones, was fused inside stars and scattered when they died. You are a child of transmutation in the most literal sense physics allows.</p>
       <p>For about a million years the children have been transmuting in return. They have turned wood into warmth, wind into motion, falling water into light and, since 1919, one element into another. For as long, they have practised turning themselves into something else: essence into spirit, poison into wisdom, the lead of the soul into its gold.</p>
       <p>This page catalogues both and keeps them apart. A motor, a nuclear reaction and Daoist inner alchemy do not make the same kind of claim, so every entry carries a chip that says which kind it makes.</p>
+    </div>
+    </div>
     </div>
     <nav class="toc" aria-label="Sections">
       <a href="#born"><span>I</span>Born of transmutation</a>
@@ -463,9 +506,16 @@ footer{ margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule-s
   <!-- ═════════════ IV ═════════════ -->
   <section id="octagon">
     <h2><span class="no">IV</span>The octagon of forms</h2>
+    <div class="sfig-row" style="--fw:25rem">
     <div class="col">
       <p>Eight forms of energy, and every conversion between them that people have harnessed or built. An arrow marks the principal useful conversion; real devices make several outputs at once, waste heat among them. A dashed arrow is a chain rather than a single step, and it is drawn running through the form it passes through: an engine turns fuel into motion only by way of heat, while a muscle does it directly.</p>
       <p>The difference matters. A fuel-burning power station does not turn chemical energy into electricity; it goes through heat and motion first. A photovoltaic cell turns light into current with no heat-engine stage, and a thermoelectric junction turns a temperature difference into current with no rotating generator.</p>
+    </div>
+    <figure class="sfig">
+      <img class="zoom" src="assets/transmutation/two-roads.webp" width="1200" height="896" loading="lazy" decoding="async"
+           alt="Engraving: under one sun, a labourer beside a wheat sheaf and a loaf hauls on a rope to turn a wooden wheel; beside it an identical wheel is turned by a piston from a copper boiler over a furnace fed with a lump of coal bearing a fossil fern, smoke rising from its chimney">
+      <figcaption><i>The two roads.</i> Bread and coal both hold sunlight as chemical energy. The <button type="button" class="inl" data-go="oct:chemical>mechanical">labourer</button> turns the wheel in a single step; the engine turns its twin through fire, boiler and piston, a chain that runs through heat. Both lose energy as heat (the warm breath is most of what the bread gave): the difference is the route, not the loss.</figcaption>
+    </figure>
     </div>
     <div class="ctrl">
       <button class="tog" id="oct-direct" type="button" aria-pressed="false">Hide chains</button>
@@ -488,6 +538,11 @@ footer{ margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule-s
     <div class="col">
       <p>Follow one hundred joules from a source to a lamp. Each conversion is a child that keeps only part of what it inherits; the rest leaves as heat. Faint stages are the ancestry, where the numbers are too uncertain to draw. Change the lamp and see how much the last step decides.</p>
     </div>
+    <figure class="sfig wide">
+      <img class="zoom" src="assets/transmutation/tithe-of-heat.webp" width="1376" height="768" loading="lazy" decoding="async"
+           alt="Engraving: a sun pours a golden stream down a staircase past a tree, a lump of coal, a furnace and boiler, a steam-driven wheel, a jar holding lightning and a lantern, to a human eye; at every step part of the stream falls as flame into a long fire-trough below, the largest fall at the wheel">
+      <figcaption><i>The tithe of heat.</i> Sunlight passes from tree to coal, furnace, turbine, lightning jar and lantern to the eye, and at every station part of the stream falls into one fire-trough below. The largest spill is at the steam turbine, the heat engine; the lightning jar, standing for the generator and its wires, loses little. Even the lantern's light, once seen, ends in the same trough. The <button type="button" class="inl" data-go="joule:coal">coal chain</button> below puts numbers on it.</figcaption>
+    </figure>
     <div class="ctrl">
       <span class="lab">Source</span><div class="seg" id="jl-chain" role="group" aria-label="Energy chain"></div>
       <span class="lab">Lamp</span><div class="seg" id="jl-lamp" role="group" aria-label="Lamp"></div>
@@ -500,13 +555,27 @@ footer{ margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule-s
   <!-- ═════════════ VI ═════════════ -->
   <section id="elements">
     <h2><span class="no">VI</span>The ladder of elements</h2>
+    <div class="sfig-row" style="--fw:19rem">
     <div class="col">
       <p>Proton number climbs the page; time runs across it. Arrows are transmutations people made or first understood. Dots are the elements people made that nature had lost or never made in quantity. Most transmutations move one or two rungs. Fission is the long fall.</p>
       <p>In 2025 CERN's ALICE collaboration reported that when lead nuclei narrowly miss each other in the LHC, the intense electromagnetic field can knock three protons out of one, turning lead (82 protons) into gold (79). The gold nuclei are so energetic that they break apart almost at once on striking the accelerator. It is real transmutation, not bullion. Mercury can be made into gold too, first in 1941, but never as an economical way to make gold.</p>
     </div>
+    <figure class="sfig">
+      <img class="zoom" src="assets/transmutation/near-miss.webp" width="896" height="1200" loading="lazy" decoding="async"
+           alt="Engraving: down a long riveted tunnel, two grey discs of packed spheres pass each other without touching while three small spheres fly from one; further down the same disc glows gold, then shatters against the tunnel wall; Saturn with a scythe and a sun with a face watch from the upper corners">
+      <figcaption><i>The near miss.</i> Flattened by their speed, the two lead nuclei never touch. Three protons leave, <button type="button" class="inl" data-go="el:a-pbau">lead becomes gold</button>, and the gold shatters on the beam pipe. Saturn, the alchemists' sign for lead, and the Sun, their sign for gold, watch from the corners.</figcaption>
+    </figure>
+    </div>
     <div class="el-box" style="margin-top:1rem"><svg id="el-svg" viewBox="0 0 960 540" role="img" aria-label="Chart of proton number against year, showing artificial elements and landmark transmutations"></svg></div>
-    <p class="note" style="margin-top:0.6rem">Below iron (26), fusing nuclei releases energy; above it, splitting them does, which is why stars stop at iron and why fission falls toward it. Above uranium (92) nothing survives in nature in quantity. A ring marks a one-rung change too short to draw as an arrow; gold marks every arrow that ends at gold.</p>
-    <div class="dcard" id="el-card" aria-live="polite"></div>
+    <p class="note" style="margin-top:0.6rem">Above uranium (92) nothing survives in nature in quantity. A ring marks a one-rung change too short to draw as an arrow; gold marks every arrow that ends at gold.</p>
+    <div class="sfig-row" style="--fw:27rem;margin-top:1rem">
+      <div class="dcard" id="el-card" aria-live="polite" style="margin-top:0"></div>
+      <figure class="sfig">
+        <img class="zoom" src="assets/transmutation/valley-of-iron.webp" width="1264" height="848" loading="lazy" decoding="async"
+             alt="Engraving: a deep valley in profile; small spheres merge and fall down a towering cliff on the left trailing golden rays, a boulder on the gentler right slope splits into two stones that roll down trailing sparks, and an iron anvil rests on the valley floor; a star burns above the cliff">
+        <figcaption><i>The valley of iron.</i> The binding-energy curve turned upside down. Iron, the anvil, is the most settled nucleus, so light elements fall toward it by <button type="button" class="inl" data-go="el:a-mike">fusing</button>, down the steep cliff, and heavy ones by <button type="button" class="inl" data-go="el:a-fis">splitting</button>, down the long gentle slope; both falls give off energy. The star's fire stops at the anvil, because fusing beyond iron costs energy instead of releasing it. The chart's &ldquo;iron peak&rdquo; is the same fact seen from the other side.</figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- ═════════════ VII ═════════════ -->
@@ -526,10 +595,17 @@ footer{ margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule-s
   <div class="dcard" id="lad-card" aria-live="polite"></div>
 </div>
 <div class="wrap">
-  <div class="col" style="margin-top:1.4rem">
+  <div class="sfig-row" style="--fw:19rem;margin-top:1.8rem">
+  <div class="col">
     <h3>Where instruments have looked</h3>
     <p class="note" style="margin-top:0.3rem">A few practices have had their bodily effects measured. The measurement says what changed in the body; it does not say what the tradition says changed.</p>
     <div class="measured" id="lad-measured"></div>
+  </div>
+  <figure class="sfig">
+    <img class="zoom" src="assets/transmutation/one-heat-two-readings.webp" width="848" height="1264" loading="lazy" decoding="async"
+         alt="Engraving: a cross-legged meditator on a snowy ledge, divided down the middle; the left half is drawn as anatomy with lungs, muscles and vessels, thermometers at fingertips and toes and instruments on a shelf; the right half shows a furnace glowing below the navel and a channel up the spine, with a salamander in flames behind">
+    <figcaption><i>One heat, two readings.</i> The instruments on the left read a body warming by breath and muscle, the change <button type="button" class="inl" data-go="ev:tummo1982">Benson</button> and <button type="button" class="inl" data-go="ev:tummo2013">Kozhevnikov</button> measured. The right half is the tradition's reading of the same heat: a furnace below the navel and a channel up the spine, as in <button type="button" class="inl" data-go="lad:neidan">inner alchemy</button>. The two halves meet; neither proves the other.</figcaption>
+  </figure>
   </div>
 
   <!-- ═════════════ VIII ═════════════ -->
@@ -552,6 +628,10 @@ footer{ margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule-s
   <footer>Everything on this page was changed from something else. So were you.</footer>
 </div>
 <div class="tip" id="tip" role="tooltip"></div>
+<dialog class="lb" id="lightbox" aria-label="Enlarged illustration">
+  <button type="button" class="pill lb-x" id="lb-x">Close</button>
+  <figure><img id="lb-img" alt=""><figcaption id="lb-cap"></figcaption></figure>
+</dialog>
 
 <!-- ═══════════════════════ DATA ═══════════════════════ -->
 <script type="application/json" id="d-sources">{
@@ -1467,7 +1547,7 @@ function initElements(){
       sv('circle', { class:'hit', r:7 }), sv('circle', { class:'ring', r:6.5 }), sv('circle', { r:3.6, style:'fill:var(--l-matter)' }),
       p.lab === false ? null : sv('text', { x:p.lx || 6, y:3.5, 'text-anchor':p.lx < 0 ? 'end' : 'start' }, p.s));
     g.addEventListener('click', () => selectEl('z' + p.z));
-    g.addEventListener('mousemove', ev => showTip(ev, `${p.n} (${p.s}, ${p.z})`, String(p.y)));
+    g.addEventListener('mousemove', ev => showTip(ev, `${p.n} (${p.s}, ${p.z})`, String(Math.floor(p.y))));
     g.addEventListener('mouseleave', hideTip);
     svg.append(g);
   }
@@ -1483,7 +1563,7 @@ function initElements(){
     g.append(sv('rect', { class:'hit', x:x - 8, y:ymin - 8, width:16, height:ymax - ymin + 16 }), sv('rect', { class:'ring', x:x - 7, y:ymin - 7, width:14, height:ymax - ymin + 14, rx:4 }));
     if (a.lab) g.append(sv('text', { x:x + (a.lx || 8), y:(a.ly != null ? Y(a.ly) : ymin - 6), style:'fill:' + col, 'text-anchor':(a.lx || 8) < 0 ? 'end' : 'start' }, a.lab));
     g.addEventListener('click', () => selectEl(a.id));
-    g.addEventListener('mousemove', ev => showTip(ev, a.t, String(a.y)));
+    g.addEventListener('mousemove', ev => showTip(ev, a.t, String(Math.floor(a.y))));
     g.addEventListener('mouseleave', hideTip);
     svg.append(g);
   }
@@ -1495,10 +1575,10 @@ function selectEl(id){
   const card = $('#el-card'); card.innerHTML = '';
   if (id[0] === 'z'){
     const p = ELS.synth.find(q => 'z' + q.z === id);
-    card.append(h('div', { class:'eyebrow' }, ldot('matter'), 'Made by people · ' + p.y), h('h3', {}, `${p.n} — element ${p.z}`), h('p', { html:p.x }), h('div', { class:'foot' }, chip('dem')), srcs(p.src || ['rsc_pt']));
+    card.append(h('div', { class:'eyebrow' }, ldot('matter'), 'Made by people · ' + Math.floor(p.y)), h('h3', {}, `${p.n} — element ${p.z}`), h('p', { html:p.x }), h('div', { class:'foot' }, chip('dem')), srcs(p.src || ['rsc_pt']));
   } else {
     const a = ELS.arrows.find(q => q.id === id);
-    card.append(h('div', { class:'eyebrow' }, ldot('matter'), 'Transmutation · ' + a.y), h('h3', {}, a.t), h('div', { class:'what' }, a.w), h('p', { html:a.x }),
+    card.append(h('div', { class:'eyebrow' }, ldot('matter'), 'Transmutation · ' + Math.floor(a.y)), h('h3', {}, a.t), h('div', { class:'what' }, a.w), h('p', { html:a.x }),
       h('div', { class:'foot' }, chip(a.reg || 'dem'), a.ev ? goBtn({ ev:a.ev }) : null), srcs(a.s));
   }
 }
@@ -1558,6 +1638,32 @@ function initSources(){
   Object.entries(SRC).sort((a, b) => a[1].a.localeCompare(b[1].a)).forEach(([id, s]) =>
     ol.append(h('li', { id:'src-' + id }, h('span', { class:'a', html:s.a }), h('span', { html:s.t }), s.u ? [' ', h('a', { href:s.u, rel:'noopener', target:'_blank' }, 'link')] : null)));
 }
+
+/* ═══════════════════════ ILLUSTRATIONS ═══════════════════════ */
+// every [data-go] button (hotspots and caption words, including copies shown in the lightbox) uses one rule:
+// "colours:<rung>" opens that rung of the colours ladder; any other "key:value" goes through goTo()
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-go]'); if (!b) return;
+  const lb = $('#lightbox'); if (lb.open) lb.close();
+  const s = b.dataset.go, i = s.indexOf(':'), k = s.slice(0, i), v = s.slice(i + 1);
+  if (k === 'colours'){ selectLadder('colours', +v); scrollToId('ladders'); } else goTo({ [k]:v });
+});
+(function(){
+  const lb = $('#lightbox'), img = $('#lb-img'), cap = $('#lb-cap');
+  const open = z => {
+    img.src = z.currentSrc || z.src; img.alt = z.alt;
+    const fc = z.closest('figure') && z.closest('figure').querySelector('figcaption');
+    cap.innerHTML = fc ? fc.innerHTML : ''; cap.hidden = !fc;
+    lb.showModal();
+  };
+  $$('img.zoom').forEach(z => {
+    z.tabIndex = 0; z.setAttribute('role', 'button'); z.title = 'Enlarge';
+    z.addEventListener('click', () => open(z));
+    z.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); open(z); } });
+  });
+  $('#lb-x').addEventListener('click', () => lb.close());
+  lb.addEventListener('click', ev => { if (ev.target === lb) lb.close(); });
+})();
 
 /* ═══════════════════════ BOOT ═══════════════════════ */
 drawBody(); drawLegends(); initTimeline(); selectEvent('fire', false); initOctagon(); initJoule(); initElements(); initLadders(); initTouch(); initSources();
