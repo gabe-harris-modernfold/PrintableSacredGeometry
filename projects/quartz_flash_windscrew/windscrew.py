@@ -13,23 +13,33 @@ World frame: axle along +x (wind blows +x; the rotor nose is upwind at -x),
 z up, yaw axis at x = y = 0.
 
   clear PETG   rotor          Liam-type conical Archimedes screw, 3 blades, one piece
-               ico_inboard    icosahedron half facing the riser (sleeve hole), beaded edges
-               ico_outboard   icosahedron half facing the disc (nut-trap hub), beaded edges
-  dark brown   base           three-tier ziggurat, sunburst, MCMXXVI plaque
+               drum_shell     round tumbler drum, 12 dovetail rails; its inboard plate is
+                              the planet carrier and hangs on two 608s (no through-axle)
+  dark brown   tile x12       liner tiles on the rails; quartz chips epoxied on their faces
+               rib_* x6       interchangeable lifters on the tiles (4 height/face profiles)
+               gear_housing   stationary governor chamber + 57-tooth ring, on block_mouth
+               drive_hub      pinch-clamped to the rod; the governor shoes grip it
+               sun_governor   15-tooth sun on two 688s + cage disc; shoe_cage, shoe x3
+               planet x3      21 teeth on 4 mm dowels in the carrier
+               spacer_a/_b    inner-race spacers on the shaft
+               rotor_clamp    keys into the rotor's nose hex and pinch-clamps the rod
+               base           three-tier ziggurat, sunburst, MCMXXVI plaque
                post           fluted column with a stepped capital
                yaw_hub        stepped octagon, ziggurat corbels under the pad
                yoke_nose/_mouth  setback risers, knee rondels, banding; sunburst fan fin
-               block_nose/_mouth octagonal 608 blocks with stepped caps; mouth carries the
-                              fixed sleeve (608 in its tip) and the pointer seat
-               paddle         stationary striker inside the icosahedron
-               comm_disc      spirit-board dial: words, symbols, number ring, sunburst
+               block_nose/_mouth octagonal 608 blocks; the nose block has stepped caps, the
+                              mouth block two floating 608s, the gear housing and the pointer seat
+               comm_disc      spirit-board dial (words + Major Arcana 0-XXI + four suits), the drum's lid
                               (swap to brass/gold filament at Z = DISC_T for the relief)
                pointer        stepped column, pierced fan bracket, arrow tip
-               finial x2      stepped spires over the two axle-end nuts (brass filament)
-               race_spacer    pushes the nose bearing's inner race
-Hardware: M8 rod 550 mm (axle) + 360 mm (yaw/post), 5x 608-2RS, M8 nuts/washers,
-M5x30 x4 + nuts (yoke feet), M5x35 x4 self-tapping (block feet into the risers),
-M3x16 x6 (icosahedron flange), M3x20 x2 (pointer), M3x10 x1 (paddle).
+               finial x2      stepped spires: over the nose collar and the dial post (brass)
+               race_spacer    nose bearing's inner race to the nose collar
+Hardware: plain 8 mm aluminium rod, 6061-T6 or 6082-T6 (5/16" in the US): ~480 mm axle +
+~370 mm post; 5x 8 mm shaft collars (nose, drum hub, under the base, post top, yaw-hub
+top); 7x 608-2RS, 2x 688-2RS, 3x 4x16 mm dowels, M3x12 x2 + nuts (pinch clamps), M5x30 x4
++ nuts (yoke feet), M5x35 x4 self-tapping (block feet), M3x10 countersunk x3 (housing),
+M3x5 x3 (shoe cage), M3x10 countersunk x6 (lid), M3x20 x2 (pointer), up to 12x M5 nuts
+(governor tuning mass), a 1.5 mm O-ring, cork sheet 1.5 mm, Loctite 641 for the inner races.
 """
 import math, os, sys
 import numpy as np
@@ -40,13 +50,20 @@ from shapely.ops import unary_union
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "lib"))
 import deco_motifs as DM
+import gears as GR
+import tumbler as TB
+from shapely import affinity
 
 BED = 320.0
 RHO_PETG = 1.27e-3          # g/mm^3
 
 # ------------------------------------------------------------------ hardware
 ROD_CLEAR = 8.6             # M8 clearance
-NUT_AF = 13.3               # M8 nut trap across flats
+NUT_AF = 13.3               # M8 nut trap across flats (the rotor hub keeps these; the clamp keys into one)
+ROD_D = 8.0                 # plain aluminium rod, 6061-T6 / 6082-T6 (5/16" in the US)
+COLLAR_D, COLLAR_W = 16.0, 9.5   # 8 mm shaft collar with a set screw
+B608_SLIP = 22.25           # mouth-block pockets: the outer races float axially
+FLOAT = 1.5                 # axial float room in those pockets
 NUT_H = 7.0
 B608_D, B608_W = 22.15, 7.0 # press fit for PETG
 B608_SHOULDER = 18.0        # bore behind the pocket: outer race only
@@ -70,8 +87,9 @@ BLOCK_LEN = 16.0
 BLOCK_RF = 18.0             # octagonal block, half across flats
 FOOT_Z = (-30.0, 8.0)       # block foot / riser pad extent along the axle, block-local (+ = outboard)
 BLOCK_BOLTS = (-24.0, -13.0)
-SEAT_Z = (-12.0, 12.0)      # pointer seat on the mouth block, block-local z
-SEAT_SCREWS = (-8.5, 8.5)
+SEAT_Z = (-16.0, 8.0)       # pointer seat on the mouth block, block-local z
+SEAT_SCREWS = (-12.5, 4.5)
+POINTER_DX = -4.0           # pointer sits 4 mm inboard of the block centre, clear of the gear housing
 Z_AX = 200.0                # axle above the yaw-hub pad top
 YOKE_T = 20.0               # yoke thickness (y)
 ARM_W = 22.0
@@ -88,31 +106,57 @@ POST_L = 280.0
 POST_D = 40.0
 BASE = 200.0
 BASE_T = 8.0
+POST_Z0 = 12.0              # socket floor: 10 mm counterbore for the rod collar under the base
+POST_GAP = 10.5             # post top to yaw hub: the post-top collar
 YAW_H = 50.0
-PAD_T = 8.0
-SKIRT_H = 7.0              # yaw-hub skirt hiding the post-top nut (stops 1 mm above the post)
+PAD_T = 10.0               # deep enough for the collar above the top yaw bearing
+SKIRT_H = POST_GAP - 1.0   # yaw-hub skirt hiding the post-top collar (stops 1 mm above the post)
 FOOT_BOLTS = (30.0, 47.0)   # yoke-foot bolt x positions, clear of the yaw-hub barrel
-Z_PAD = BASE_T + POST_L + 8.0 + YAW_H + PAD_T  # world z of the pad top (post-top nut + washer = 8)
+Z_PAD = POST_Z0 + POST_L + POST_GAP + YAW_H + PAD_T  # world z of the pad top
 RELIEF = 1.0                # raised ornament height
 ENGRAVE = 0.8               # the same ornament cut into bed-side faces
 
-# ------------------------------------------------------------------ icosahedron tumbler
-ICO_RC = 70.0               # circumradius
-ICO_WALL = 2.4
-ICO_EDGE = ICO_RC / math.sin(2 * math.pi / 5)
-ICO_RI = ICO_EDGE * math.sqrt(3) * (3 + math.sqrt(5)) / 12      # inradius
-RAIL_R = 1.8                # beaded edges -- a cut crystal in a leaded frame
-STUD_R = 3.2
-SLEEVE_D = 30.0
-SLEEVE_HEX = 28.0           # tip section, across flats, carries the paddle
-SLEEVE_GAP = 12.0           # block face to icosahedron face
-X_ICO = X_RISER + BLOCK_LEN / 2 + SLEEVE_GAP + ICO_RI
-SLEEVE_HOLE = 34.0
-TAB_N = 6
-STONE_GAP = 6.0             # paddle tip stays this far inside the walls
-PADDLE_T = 10.0
-PADDLE_HALF = 30.0
-PADDLE_STONE_D = 16.5       # through-hole: one quartz stone epoxied through, both faces
+# ------------------------------------------------------------------ drum tumbler (physics in tumbler.py)
+R_IN = TB.R_IN * 1000       # shell inner radius
+DRUM_L = TB.DRUM_L * 1000   # inner length
+R_W = TB.R_W * 1000         # quartz liner surface
+SHELL_T = 2.4
+N_RAILS = TB.N_RAILS
+RAIL = (2.5, 4.0, 2.5)      # dovetail: half-width at its root, at its crown, height
+TILE_FACE = R_IN - 4.2      # tile face; ~3 mm of epoxied quartz chips brings it to R_W
+FIT = 0.25
+RIB_BASE = 6.0              # rib leading-edge offset on the tile
+PLATE_T = 7.0               # drum inboard plate = planet carrier, holds 608 #1
+LUG_R = 66.0                # lid screws, on the dial's sector dividers
+
+# ------------------------------------------------------------------ gearbox + governor
+GEAR_M = 1.5
+ZS, ZP, ZR = 15, 21, 57     # sun, planet, fixed ring: the carrier (drum) turns at 1/4.8 of the shaft
+XS, XP = 0.15, -0.15        # profile shift: no undercut on the 15-tooth sun
+FACE = 10.0
+N_PLANETS = 3
+A_GEAR = GEAR_M * (ZS + ZP) / 2
+RATIO = 1 + ZR / ZS
+B688_D, B688_W = 16.1, 5.0
+PIN_D = 4.0                 # 4 x 16 mm steel dowels pressed into the carrier
+HOUSING_R = 51.0
+CHAMBER_R = 40.0
+HUB_R = 16.0                # governor drive hub on the shaft
+SHOE_W = 20.0
+SHOE_AX = 11.0
+SHOE_R = (HUB_R + 1.8, 36.0)                   # 1.5 mm cork pad on the inner face
+CAGE_R = 38.0
+X_CAP = X_RISER + BLOCK_LEN / 2                # mouth block's outboard face (no caps: the housing sits there)
+X_NOSE_CAP = X_RISER + BLOCK_LEN / 2 + 4       # nose block's stepped-cap face
+X_HB = (X_CAP, X_CAP + 4.0)                    # housing back plate, flush on the block face
+X_HUB = (X_CAP + 5.7, X_CAP + 24.7)            # drive hub: 6 mm pinch-clamp collar, then the friction band
+X_SHOE = (X_HUB[0] + 6.5, X_HUB[0] + 6.5 + SHOE_AX)
+X_CAGE = (X_CAP + 25.5, X_CAP + 28.5)          # cage disc (the shoe cage base sits inboard of it)
+X_RING = (X_CAP + 29.5, X_CAP + 40.5)          # ring gear
+X_SUN = (X_CAGE[1], X_RING[1] - 0.5)
+X_PLANET = (X_RING[0], X_RING[0] + FACE)
+X_DRUM0 = X_RING[1] + 1.0                      # carrier plate face
+X_DISC = X_DRUM0 + PLATE_T + DRUM_L            # the dial is the drum's outboard lid
 
 # ------------------------------------------------------------------ disc
 DISC_R = 110.0
@@ -122,8 +166,8 @@ WORDS = ["YES", "ABOVE", "MAYBE", "NO", "BELOW", "NOT HUMAN"]   # opposite pairs
 SYMBOLS = {"YES": lambda: DM.sun(), "NO": lambda: DM.crescent(),
            "ABOVE": lambda: DM.chevrons(up=True), "BELOW": lambda: DM.chevrons(up=False),
            "MAYBE": lambda: DM.sunrise(), "NOT HUMAN": lambda: DM.eye()}
-NUMBERS = [str(i) for i in range(10)]
-X_DISC = X_ICO + ICO_RI + 0.6                                     # disc back face
+NUMBERS = DM.ROMAN          # tarot spinner notation: the 22 Major Arcana, 0 (The Fool) to XXI (The World)
+SUIT_R = 36.0               # the four suit signs sit in medallions in the sunburst
 POINTER_APEX = 105.8        # arrow tip radius: just outside the number track
 
 # ================================================================== helpers
@@ -192,6 +236,27 @@ def extrude_xz(poly, y0, y1):
         m.fix_normals()
         out.append(m)
     return out[0] if len(out) == 1 else trimesh.util.concatenate(out) if out else None
+
+def x_cyl(r, x0, x1, y=0.0, z=0.0, n=24):
+    m = cyl(r, x0, x1, n)
+    m.apply_transform(rotation_matrix(math.pi / 2, [0, 1, 0]))      # +z -> +x
+    m.apply_translation([0, y, z])
+    return m
+
+def x_hex(af, x0, x1, y=0.0, z=0.0):
+    m = hexp(af, x0, x1)
+    m.apply_transform(rotation_matrix(math.pi / 2, [0, 1, 0]))
+    m.apply_translation([0, y, z])
+    return m
+
+def pinch_cutters(r_out, z0, z1, y_screw, z_screw):
+    """Split clamp on a bore along z: a slit on +y and an M3 screw across it (along x),
+    head counterbore on -x, nut pocket on +x.  Grips a plain rod without denting it."""
+    half = math.sqrt(max(r_out**2 - y_screw**2, 1.0))
+    return [box(-0.6, 0.6, ROD_D / 2 - 0.2, r_out + 1, z0 - 1, z1 + 1),
+            x_cyl(1.7, -half - 1, half + 1, y_screw, z_screw, 16),
+            x_cyl(3.1, -half - 1, -3.4, y_screw, z_screw, 24),
+            x_hex(5.7, 3.4, half + 1, y_screw, z_screw)]
 
 def oct_prism(r_flat, z0, z1):
     return extrude(DM.octagon(r_flat), z0, z1)[0]
@@ -279,69 +344,203 @@ def overhang_report(m, limit_deg=45.0):
     bad = down & ~on_bed
     return a[bad].sum() / a.sum()
 
-# ================================================================== icosahedron
-def ico_solid(scale):
-    ico = trimesh.creation.icosahedron()
-    ico.apply_scale(ICO_RC / np.linalg.norm(ico.vertices[0]))
-    n = ico.face_normals[0]
-    ico.apply_transform(trimesh.geometry.align_vectors(n, [0, 0, -1]))
-    # one bottom-face vertex onto +x so the tab ring is mirror-symmetric
-    bot = ico.vertices[ico.faces[0]]
-    ang = math.atan2(bot[0, 1], bot[0, 0])
-    ico.apply_transform(rotation_matrix(-ang, [0, 0, 1]))
-    ico.apply_scale(scale)
-    return ico
+# ================================================================== drum tumbler
+def ann_sector(r0, r1, a0, a1, n=48):
+    a = np.linspace(a0, a1, n)
+    return Polygon([(r1 * math.cos(t), r1 * math.sin(t)) for t in a] +
+                   [(r0 * math.cos(t), r0 * math.sin(t)) for t in a[::-1]])
 
-def ico_inner_min_radius(zl):
-    """Inscribed radius of the inner cross-section at local height zl (exact for a
-    convex polytope: min over face planes of the distance to the slice line)."""
-    inner = ico_solid((ICO_RI - ICO_WALL) / ICO_RI)
-    d = np.einsum("ij,ij->i", inner.face_normals, inner.triangles[:, 0])
-    nxy = np.linalg.norm(inner.face_normals[:, :2], axis=1)
-    ok = nxy > 1e-6
-    return np.min((d[ok] - inner.face_normals[ok, 2] * zl) / nxy[ok])
+def rot2(geom, deg):
+    return affinity.rotate(geom, deg, origin=(0, 0))
 
-def ico_halves():
-    outer = ico_solid(1.0)
-    inner = ico_solid((ICO_RI - ICO_WALL) / ICO_RI)
-    big = 2 * ICO_RC
-    # beaded edges and vertex studs, clipped to the two face planes so each half
-    # still sits flat on its outer face
-    rails = [trimesh.creation.cylinder(radius=RAIL_R, segment=outer.vertices[e], sections=16)
-             for e in outer.edges_unique]
-    studs = []
-    for v in outer.vertices:
-        s = trimesh.creation.icosphere(subdivisions=2, radius=STUD_R)
-        s.apply_translation(v)
-        studs.append(s)
-    dressed = I(U(outer, *rails, *studs), box(-big, big, -big, big, -ICO_RI, ICO_RI))
-    shell = D(dressed, inner)
-    lower = I(shell, box(-big, big, -big, big, -big, 0))
-    upper = I(shell, box(-big, big, -big, big, 0, big))
-    tabs_l, tabs_u, holes = [], [], []
-    for k in range(TAB_N):
-        a = 2 * math.pi * k / TAB_N
-        loc, _, _ = outer.ray.intersects_location([[0, 0, -0.2]], [[math.cos(a), math.sin(a), 0]])
-        rw = np.linalg.norm(loc[:, :2], axis=1).max()
-        R = rotation_matrix(a, [0, 0, 1])
-        pts_l = [(rw - 3, -6, -4), (rw - 3, 6, -4), (rw + 9, -6, -4), (rw + 9, 6, -4),
-                 (rw - 3, -6, 0), (rw - 3, 6, 0), (rw + 9, -6, 0), (rw + 9, 6, 0),
-                 (rw - 3, -6, -15), (rw - 3, 6, -15)]
-        t = trimesh.convex.convex_hull(np.array(pts_l))
-        t.apply_transform(R)
-        tabs_l.append(t)
-        tu = t.copy()
-        tu.apply_transform(np.diag([1, 1, -1, 1]))
-        tu.fix_normals()
-        tabs_u.append(tu)
-        holes.append(at(cyl(1.7, -20, 20, 24), (rw + 4.5) * math.cos(a), (rw + 4.5) * math.sin(a)))
-    lower = D(U(lower, *tabs_l), inner, *holes)
-    upper = D(U(upper, *tabs_u), inner, *holes)
-    lower = D(lower, cyl(SLEEVE_HOLE / 2, -ICO_RC, 0))          # inboard: sleeve hole
-    boss = cyl(16, ICO_RI - 12, ICO_RI - 1)                     # outboard: hub boss inside
-    upper = U(upper, I(boss, ico_solid(1.0)))
-    upper = D(upper, cyl(ROD_CLEAR / 2, 0, ICO_RC, 48), hexp(NUT_AF, ICO_RI - NUT_H, ICO_RC))
-    return clean(lower), clean(upper)
+def dovetail(w_wall, r_wall, w_top, r_top):
+    """Dovetail centred on +y: half-width w_wall at radius r_wall, w_top at r_top."""
+    return Polygon([(-w_wall, r_wall), (w_wall, r_wall), (w_top, r_top), (-w_top, r_top)])
+
+def lid_angles():
+    """Dial screw angles (clockwise from 12 o'clock in the dial frame): on the dividers."""
+    return [(k + 0.5) * 2 * math.pi / len(WORDS) for k in range(len(WORDS))]
+
+def drum_shell():
+    """Local z along the axle from the inboard (carrier) face.  Clear PETG, printed on
+    the carrier plate.  The dial screws on as the outboard lid."""
+    z_top = PLATE_T + DRUM_L
+    parts = [cyl(R_IN + SHELL_T, 0, PLATE_T, 180), cyl(R_IN + 4.0, 0, 3, 180),
+             D(cyl(R_IN + SHELL_T, PLATE_T - 0.1, z_top, 180), cyl(R_IN, PLATE_T - 0.2, z_top + 1, 180)),
+             D(cyl(R_IN + 4.4, z_top - 5, z_top, 180), cyl(R_IN + 1, z_top - 6, z_top + 1, 180)),
+             cyl(15.0, PLATE_T - 0.1, PLATE_T + 8.0, 64)]                  # holds 608 #2; the collar sits beyond
+    rail = dovetail(RAIL[0], R_IN + 0.6, RAIL[1], R_IN - RAIL[2])
+    parts += extrude(unary_union([rot2(rail, 360 * k / N_RAILS) for k in range(N_RAILS)]), PLATE_T - 0.1, z_top)
+    for a in lid_angles():
+        lx, ly = -math.cos(a), math.sin(a)                       # dial frame -> drum-local frame
+        tx, ty = -ly, lx
+        pts = []
+        for rr in (R_IN + 1.0, LUG_R + 4.0):
+            for s in (-4.5, 4.5):
+                for zz in (z_top - 6, z_top):
+                    pts.append((rr * lx + s * tx, rr * ly + s * ty, zz))
+        for s in (-4.5, 4.5):                                    # 45-degree gusset under the lug
+            pts.append(((R_IN + 1.0) * lx + s * tx, (R_IN + 1.0) * ly + s * ty, z_top - 15))
+        parts.append(trimesh.convex.convex_hull(np.array(pts)))
+    m = U(*parts)
+    cut = [cyl(B608_D / 2, -1, 2 * B608_W, 64), cyl(9.0, 2 * B608_W - 0.01, PLATE_T + 18, 48)]
+    for k in range(N_PLANETS):
+        q = math.pi / 2 + 2 * math.pi * k / N_PLANETS
+        cut.append(at(cyl(PIN_D / 2 - 0.05, -1, PLATE_T + 0.5, 24), A_GEAR * math.cos(q), A_GEAR * math.sin(q)))
+    for a in lid_angles():
+        cut.append(at(cyl(1.25, z_top - 10, z_top + 1, 16), -LUG_R * math.cos(a), LUG_R * math.sin(a)))
+    return clean(D(m, *cut))
+
+def tile_profile():
+    """Liner tile centred on +y: rides a shell rail, carries a rail for a rib, and takes
+    epoxied quartz chips on its face."""
+    half = math.pi / N_RAILS - math.radians(0.35)
+    body = ann_sector(TILE_FACE, R_IN - 0.2, math.pi / 2 - half, math.pi / 2 + half)
+    socket = dovetail(RAIL[0] + FIT, R_IN + 1, RAIL[1] + FIT, R_IN - RAIL[2] - FIT)
+    rail = dovetail(RAIL[0], TILE_FACE + 0.4, RAIL[1], TILE_FACE - RAIL[2])
+    return unary_union([body.difference(socket), rail])
+
+def rib_profile(rib):
+    """Lifter rib centred on +y, from (u tangential, v radial-inward) mapped onto the tile
+    face.  Vertical through the chip layer, then the face leans back by beta over its
+    height above the quartz.  Leading face at +u; slide it on end-for-end to reverse."""
+    h_m, beta_deg = TB.RIBS[rib]
+    h = h_m * 1000
+    r0 = TILE_FACE - 0.1
+    v0 = r0 - R_W
+    lean = h * math.tan(math.radians(beta_deg))
+    top_lead, top_trail = RIB_BASE - lean, RIB_BASE - lean - 3.0
+    trail = min(-8.5, top_trail - 1.5)
+    uv = [(trail, 0), (RIB_BASE, 0), (RIB_BASE, v0), (top_lead, v0 + h), (top_trail, v0 + h), (trail, 4.0)]
+    sock = [(-(RAIL[0] + FIT), -0.6), (RAIL[0] + FIT, -0.6), (RAIL[1] + FIT, RAIL[2] + FIT),
+            (-(RAIL[1] + FIT), RAIL[2] + FIT)]
+    def to_xy(pts):
+        dense = []
+        for (u0, w0), (u1, w1) in zip(pts, pts[1:] + pts[:1]):
+            for t in np.linspace(0, 1, 12, endpoint=False):
+                dense.append((u0 + (u1 - u0) * t, w0 + (w1 - w0) * t))
+        return Polygon([((r0 - w) * math.sin(u / r0), (r0 - w) * math.cos(u / r0)) for u, w in dense])
+    # simplify: collinear points on the straight faces triangulate into slivers that clean() would drop
+    return to_xy(uv).buffer(0).difference(to_xy(sock).buffer(0)).simplify(0.01)
+
+def tile():
+    return clean(extrude(tile_profile(), 0, DRUM_L - 1)[0])
+
+def rib(name):
+    return clean(extrude(rib_profile(name), 0, DRUM_L - 1)[0])
+
+def chip_layer(k, with_rib):
+    """Render-only: the epoxied quartz chips on tile k (not a printed part)."""
+    half = math.pi / N_RAILS - math.radians(0.35)
+    face = ann_sector(R_W, TILE_FACE + 0.05, math.pi / 2 - half, math.pi / 2 + half)
+    keep_out = sbox(-(RAIL[1] + 0.8), 40, RAIL[1] + 0.8, 70)
+    if with_rib:
+        keep_out = rib_profile(TB.DEFAULT_RIB).buffer(0.6).union(keep_out)
+    return rot2(face.difference(keep_out), 360 * k / N_RAILS - 90)
+
+# ================================================================== gearbox + governor
+def gear_shapes():
+    if not hasattr(gear_shapes, "cache"):
+        sun = GR.external(ZS, GEAR_M, XS)
+        planet = GR.external(ZP, GEAR_M, XP)
+        ring = GR.internal(ZR, ZP, GEAR_M, planet, r_outer=ZR * GEAR_M / 2 + 7, x_p=XP)
+        gear_shapes.cache = (sun, planet, ring)
+    return gear_shapes.cache
+
+def housing_screw_xy():
+    return [(15 * math.cos(math.pi / 2 + 2 * math.pi * k / 3), 15 * math.sin(math.pi / 2 + 2 * math.pi * k / 3))
+            for k in range(3)]
+
+def gear_housing():
+    """Stationary: governor chamber + fixed ring gear.  Local z from the back plate's
+    block-side face; prints on the back plate.  Three countersunk M3 into the block cap."""
+    _, _, ring = gear_shapes()
+    z_r0, z_r1 = X_RING[0] - X_HB[0], X_RING[1] - X_HB[0]
+    parts = [cyl(HOUSING_R + 2, 0, 2, 180), cyl(HOUSING_R, 1.9, 4.1, 180),
+             D(cyl(HOUSING_R, 4, z_r0 + 0.1, 180), cyl(CHAMBER_R, 3.9, z_r0 + 0.2, 180)),
+             D(cyl(HOUSING_R, z_r0, z_r1, 180), cyl(ZR * GEAR_M / 2 + 6.5, z_r0 - 1, z_r1 + 1, 180)),
+             D(cyl(HOUSING_R + 1.5, z_r1 - 3, z_r1, 180), cyl(HOUSING_R - 0.5, z_r1 - 4, z_r1 + 1, 180))]
+    parts += extrude(ring, z_r0, z_r1)
+    m = U(*parts)
+    cut = [cyl(10.0, -1, 5, 64)]
+    for x, y in housing_screw_xy():
+        cut.append(at(cyl(1.7, -1, 5, 16), x, y))
+        cut.append(at(revolve([(0, 2.3), (1.7, 2.3), (3.4, 4.02), (0, 4.02)], 24), x, y))
+    for k in range(24):                                          # fluting round the chamber
+        a = 2 * math.pi * k / 24
+        c = trimesh.creation.capsule(height=12, radius=1.0, count=[10, 10])
+        c.apply_translation([(HOUSING_R + 0.45) * math.cos(a), (HOUSING_R + 0.45) * math.sin(a),
+                             6.5 - c.bounds[0, 2]])
+        cut.append(c)
+    return clean(D(m, *cut))
+
+def drive_hub():
+    """The governor's friction drum, pinch-clamped to the plain rod at its inboard collar
+    (the shoes ride on the outboard 12 mm, clear of the screw recesses)."""
+    L = X_HUB[1] - X_HUB[0]
+    return clean(D(cyl(HUB_R, 0, L, 96), cyl(ROD_D / 2 + 0.05, -1, L + 1, 32),
+                   *pinch_cutters(HUB_R, 0, L, 10.0, 3.0)))
+
+def rotor_clamp():
+    """Fixes the rotor to the plain rod at its nose: a hex boss keys into the rotor hub's
+    nose trap, the flange pinch-clamps the rod, and a small boss bears on the nose
+    bearing's inner race.  Local z from that boss face toward the rotor."""
+    m = U(cyl(5.5, 0, 1.1, 48), cyl(R_HUB, 1, 9, 96), hexp(NUT_AF - 0.15, 8.9, 15))
+    return clean(D(m, cyl(ROD_D / 2 + 0.05, -1, 16, 32), *pinch_cutters(R_HUB, 0, 15, 8.0, 5.0)))
+
+SHOE_ANGLES = [math.pi / 2 + 2 * math.pi * k / 3 for k in range(3)]
+SHOE_CAGE_SCREWS = [a + math.pi / 3 for a in SHOE_ANGLES]
+
+def sun_governor():
+    """Sun gear on two 688s plus the cage disc the shoe cage screws to.  Local z from
+    the cage disc's inboard face; prints on that face."""
+    sun, _, _ = gear_shapes()
+    z_s0, z_s1 = X_SUN[0] - X_CAGE[0], X_SUN[1] - X_CAGE[0]
+    z_688 = X_RING[0] + 0.5 - X_CAGE[0]
+    m = U(cyl(CAGE_R, 0, z_s0 + 0.1, 128), *extrude(sun, z_s0, z_s1))
+    cut = [cyl(6.1, -1, z_688, 48), cyl(B688_D / 2, z_688, z_s1 + 1, 48)]
+    for a in SHOE_CAGE_SCREWS:
+        cut.append(at(cyl(1.25, -1, 2.6, 16), 28 * math.cos(a), 28 * math.sin(a)))
+    return clean(D(m, *cut))
+
+def shoe_cage():
+    """Guide walls for the three shoes; local z as sun_governor (base at z -2..0)."""
+    z0 = X_SHOE[0] - 0.2 - X_CAGE[0]
+    base = D(cyl(CAGE_R, -2, 0, 128), cyl(HUB_R + 2.5, -3, 1, 64))
+    walls = []
+    for a in SHOE_ANGLES:
+        for s in (-1, 1):
+            c = s * (SHOE_W / 2 + 0.4 + 1.5)
+            w = box(c - 1.5, c + 1.5, 18, 34, z0, -1.9)
+            w.apply_transform(rotation_matrix(a - math.pi / 2, [0, 0, 1]))
+            walls.append(w)
+    m = U(base, *walls)
+    z_or = (X_SHOE[0] + X_SHOE[1]) / 2 - X_CAGE[0]
+    cut = [D(cyl(CAGE_R + 2, z_or - 1.8, z_or + 1.8, 96), cyl(31.0, z_or - 3, z_or + 3, 96))]  # O-ring path
+    for a in SHOE_CAGE_SCREWS:
+        cut.append(at(cyl(1.7, -3, 1, 16), 28 * math.cos(a), 28 * math.sin(a)))
+    return clean(D(m, *cut))
+
+def shoe():
+    """Flyweight shoe centred on +y, local z axial (0..SHOE_AX).  Cork pad on the inner
+    face, O-ring in the outer groove, two pockets for up to 2 x M5 nuts each (tuning
+    mass), opening toward the cage base so the nuts cannot fall out."""
+    w = SHOE_W / 2
+    ri, ro = SHOE_R
+    xs = np.linspace(-w, w, 24)
+    pts = [(x, math.sqrt(ro * ro - x * x)) for x in xs[::-1]] + [(x, math.sqrt(ri * ri - x * x)) for x in xs]
+    m = extrude(Polygon(pts), 0, SHOE_AX)[0]
+    groove = trimesh.creation.torus(major_radius=ro - 0.4, minor_radius=1.0, major_sections=96, minor_sections=16)
+    groove.apply_translation([0, 0, SHOE_AX / 2])
+    cut = [groove] + [at(hexp(8.2, SHOE_AX - 8.3, SHOE_AX + 1), x, 27.0) for x in (-5.0, 5.0)]
+    return clean(D(m, *cut))
+
+def planet():
+    _, p, _ = gear_shapes()
+    return clean(D(extrude(p, 0, FACE)[0], cyl(PIN_D / 2 + 0.1, -1, FACE + 1, 24)))
+
+def spacer(length):
+    return clean(D(cyl(5.5, 0, length, 48), cyl(4.3, -1, length + 1, 32)))
 
 # ================================================================== bearing blocks
 def _x_hole(r, x0, x1, z, n=24):
@@ -353,32 +552,32 @@ def _x_hole(r, x0, x1, z, n=24):
 
 def bearing_block(mouth):
     """Local frame: axle along +z (the block's outboard direction), local +x = world
-    up.  Octagonal body, stepped caps on the outboard face (the print's top)."""
+    up.  The nose block has stepped caps on its outboard face (the print's top).  The
+    mouth block carries two 608s, one at each end, so the overhung gearbox and drum do
+    not sag the sun out of mesh; its outer races float axially for the rod's and the
+    frame's different thermal expansion.  The gear housing screws to its outboard face."""
     L = BLOCK_LEN
     z0 = FOOT_Z[0]             # the body runs the full foot length so the part stands flat on z0
     parts = [oct_prism(BLOCK_RF, z0, L / 2),
              box(-24, -12, -YOKE_T / 2, YOKE_T / 2, z0, FOOT_Z[1]),
              box(-24, 0, -YOKE_T / 2, YOKE_T / 2, z0, L / 2)]
-    sl = X_ICO - (X_RISER + L / 2)
     if mouth:
-        parts += [box(14, 21, -6, 6, SEAT_Z[0], SEAT_Z[1]),            # pointer seat
-                  cyl(17.2, L / 2 - 0.5, L / 2 + 2), cyl(15.9, L / 2 + 1.9, L / 2 + 4),
-                  cyl(SLEEVE_D / 2, L / 2 - 1, L / 2 + sl - 12),
-                  hexp(SLEEVE_HEX, L / 2 + sl - 12, L / 2 + sl)]
+        parts += [box(14, 21, -6, 6, SEAT_Z[0], SEAT_Z[1])]            # pointer seat
     else:
         parts += [cyl(15.0, L / 2 - 0.5, L / 2 + 2), cyl(12.5, L / 2 + 1.9, L / 2 + 4)]
     m = U(*parts)
-    cut = [cyl(B608_D / 2, z0 - 1, z0 + B608_W),                        # pocket faces the rotor
-           cyl(B608_SHOULDER / 2, z0, L / 2 + (0 if mouth else 5))]
+    if mouth:
+        cut = [cyl(B608_SLIP / 2, z0 - 1, z0 + B608_W + FLOAT),            # inboard 608, floating
+               cyl(B608_SLIP / 2, L / 2 - B608_W - FLOAT, L / 2 + 1),      # outboard 608, floating
+               cyl(B608_SHOULDER / 2, z0, L / 2)]
+    else:
+        cut = [cyl(B608_D / 2, z0 - 1, z0 + B608_W),                    # pocket faces the rotor
+               cyl(B608_SHOULDER / 2, z0, L / 2 + 5)]
     cut += [_x_hole(2.7, -30, -6, zf) for zf in BLOCK_BOLTS]
     if mouth:
-        tip = L / 2 + sl
-        cut += [cyl(10.5 / 2, L / 2, tip), cyl(B608_D / 2, tip - B608_W, tip + 1)]
         cut += [_x_hole(1.4, 12, 22, zz, 16) for zz in SEAT_SCREWS]     # pointer screws, self-tap M3
-        h = cyl(1.4, 0, 20, 16)                                          # paddle set screw, from world below
-        h.apply_transform(rotation_matrix(-math.pi / 2, [0, 1, 0]))
-        h.apply_translation([0, 0, tip - 6])
-        cut.append(h)
+        for x, y in housing_screw_xy():                                  # gear housing, self-tap M3
+            cut.append(at(cyl(1.25, L / 2 - 9, L / 2 + 1, 16), -x, -y))
     return clean(D(m, *cut))   # local frame; print_orient stands it on its rotor-side face
 
 def block_to_world(m_local, mouth):
@@ -395,29 +594,9 @@ def block_to_world(m_local, mouth):
     return m
 
 def race_spacer():
-    """Tube from the nose bearing's inner race to the outboard nut, inside the block bore."""
+    """Tube from the nose bearing's inner race to the outboard collar, inside the block bore."""
     length = (BLOCK_LEN / 2 + 4) - (FOOT_Z[0] + B608_W) + 1
     return clean(D(cyl(6.0, 0, length, 48), cyl(4.3, -1, length + 1, 32)))
-
-# ================================================================== paddle
-def paddle_profile():
-    """Paddle outline in world (x - X_ICO, z - axle)."""
-    xs = np.linspace(-PADDLE_HALF, PADDLE_HALF, 41)
-    tips = [ico_inner_min_radius(x) - STONE_GAP for x in xs]
-    pts = [(x, -t) for x, t in zip(xs, tips)]
-    pts = [(xs[-1], -17.0)] + pts[::-1] + [(xs[0], -17.0)]
-    return Polygon(pts).buffer(0)
-
-def paddle():
-    blade_poly = unary_union([paddle_profile(), sbox(-12, -24, 0, -15)])
-    z_st = -(ico_inner_min_radius(0) - STONE_GAP - PADDLE_STONE_D / 2 - 4)
-    blade_poly = blade_poly.difference(Point(0.0, z_st).buffer(PADDLE_STONE_D / 2, 64))
-    m = extrude_xz(blade_poly, -PADDLE_T / 2, PADDLE_T / 2)
-    c = at(along_x(hexp(36, 0, 12)), -12)
-    m = U(m, c)
-    bore = at(along_x(hexp(SLEEVE_HEX + 0.4, -1, 14)), -13)
-    m = D(m, bore, at(cyl(1.7, -30, 0, 16), -6))
-    return clean(m)            # world-local; print lying on a y face
 
 # ================================================================== yoke
 def yoke_profile():
@@ -542,7 +721,8 @@ def base():
                           sbox(-44, -66.0, 44, -65.0), sbox(-44, -79.0, 44, -78.0)])
     parts += extrude(plaque, 15 - 0.2, 15 + 0.8)
     m = U(*parts)
-    cut = [cyl(POST_D / 2 + 0.25, BASE_T, 46), cyl(4.4, -1, BASE_T + 1, 32), hexp(NUT_AF, -1, NUT_H - 1)]
+    cut = [cyl(POST_D / 2 + 0.25, POST_Z0, 46), cyl(ROD_D / 2 + 0.3, -1, POST_Z0 + 1, 32),
+           cyl(COLLAR_D / 2 + 0.4, -1, COLLAR_W + 0.5, 64)]           # rod collar, recessed under the base
     for sx in (-1, 1):
         for sy in (-1, 1):
             cut.append(at(cyl(3.2, -1, BASE_T + 1, 24), sx * 78, sy * 78))
@@ -550,18 +730,19 @@ def base():
 
 # ================================================================== communication disc
 def comm_disc():
-    """Spirit-board dial in print frame: X = viewer's right, Y = up, relief on +Z."""
+    """Spirit-board dial, also the drum's outboard lid.  Print frame: X = viewer's right,
+    Y = up, relief on +Z."""
     base_m = cyl(DISC_R, 0, DISC_T, 180)
     hub = U(cyl(17, DISC_T - 0.5, DISC_T + 3, 64), cyl(14, DISC_T + 2.9, DISC_T + 6, 64),
             cyl(11.5, DISC_T + 5.9, DISC_T + 8, 64))
     n = len(WORDS)
     sector = 2 * math.pi / n
     f = [DM.ring(106.0, 107.2), DM.ring(104.5, 105.4)]                   # bezel step, number track
-    for k in range(50):                                                  # railroad ticks
-        if k % 5:
-            f.append(DM.place(sbox(-0.45, 0, 0.45, 3.6), 100.6, k * 2 * math.pi / 50))
+    nn = len(NUMBERS)
+    for k in range(nn):                                                  # a tick between neighbouring trumps
+        f.append(DM.place(sbox(-0.45, 0, 0.45, 3.6), 100.6, (k + 0.5) * 2 * math.pi / nn))
     for k, s in enumerate(NUMBERS):
-        f += DM.arc_text(s, 95.6, k * 2 * math.pi / len(NUMBERS), 7.2)
+        f += DM.arc_text(s, 96.4, k * 2 * math.pi / nn, 6.5, tracking=0.14)
     f += [DM.ring(91.0, 92.0), DM.ring(88.6, 89.5)]
     for k in range(n):                                                   # sector dividers
         a = (k + 0.5) * sector
@@ -571,14 +752,25 @@ def comm_disc():
         f += DM.arc_text(w, 71.0, k * sector, 8.2, max_arc=0.78 * 71.0 * sector)
         f.append(DM.place(SYMBOLS[w](), 62.5, k * sector))
     f += [DM.ring(54.6, 55.6), DM.ring(52.4, 53.3)]
-    f.append(DM.sunburst((0, 0), 20.2, 50.5, 43.0, 36, 2.2, 0.95))
+    suit_at = [math.pi / 4 + j * math.pi / 2 for j in range(4)]         # wands, cups, swords, pentacles
+    medallions = unary_union([Point(SUIT_R * math.sin(a), SUIT_R * math.cos(a)).buffer(9.4, 64) for a in suit_at])
+    f.append(DM.sunburst((0, 0), 20.2, 50.5, 43.0, 36, 2.2, 0.95).difference(medallions))
+    for a, glyph in zip(suit_at, DM.SUITS):
+        f.append(DM.place(glyph(), SUIT_R, a))
+        f.append(DM.place(DM.ring(7.9, 8.8), SUIT_R, a))
     f.append(DM.ring(18.4, 19.4))
     relief = unary_union(f).intersection(Point(0, 0).buffer(105.95, 180)).difference(Point(0, 0).buffer(17.4, 64))
     bezel = DM.ring(107.2 - 0.05, DISC_R, res=180)
     m = U(base_m, hub, *extrude(relief, DISC_T - 0.2, DISC_T + RELIEF),
           *extrude(bezel, DISC_T - 0.2, DISC_T + BEZEL_H))
-    m = D(m, cyl(ROD_CLEAR / 2, -1, DISC_T + 9, 48), hexp(NUT_AF, DISC_T + 8 - NUT_H, DISC_T + 9))
-    return clean(m)            # print orientation: dial up; world: print z -> +x, print Y -> +z
+    m = U(m, cyl(COLLAR_D / 2, DISC_T + 7.9, DISC_T + 8 + COLLAR_W + 0.5, 64))   # finial post
+    cut = []
+    for a in lid_angles():                                               # countersunk M3 into the drum lugs
+        x, y = LUG_R * math.sin(a), LUG_R * math.cos(a)
+        cut.append(at(cyl(1.7, -1, DISC_T + 2, 16), x, y))
+        cut.append(at(revolve([(0, DISC_T + RELIEF - 1.6), (1.7, DISC_T + RELIEF - 1.6),
+                               (3.3, DISC_T + RELIEF + 0.02), (0, DISC_T + RELIEF + 0.02)], 24), x, y))
+    return clean(D(m, *cut))   # print orientation: dial up; world: print z -> +x, print Y -> +z
 
 def disc_to_world(m_print):
     m = m_print.copy()
@@ -595,9 +787,9 @@ def pointer():
     (shaped in y so the reader, looking along -x, sees the point)."""
     xf = X_DISC + DISC_T + BEZEL_H + 3.0
     zt = DISC_R + 14.0
-    xc = X_RISER
+    xc = X_RISER + POINTER_DX
     body = unary_union([
-        sbox(xc - 12, 21, xc + 12, 34),                 # plinth (screws at +-8.5)
+        sbox(xc - 12, 21, xc + 11.5, 34),               # plinth (screws at +-8.5 from its centre)
         sbox(xc - 8, 34, xc + 8, 38),                   # step
         sbox(xc - 5, 34, xc + 5, zt + 8),               # shaft
         sbox(xc - 5, zt, xf + 8, zt + 8),               # beam
@@ -621,14 +813,16 @@ def pointer():
     ap.apply_transform(R)
     ap.apply_translation([xf - 2, 0, 0])
     m = U(m, I(drop, ap))
-    cut = [at(cyl(1.7, 20, 36, 16), xc + dx) for dx in SEAT_SCREWS]
+    cut = [at(cyl(1.7, 20, 36, 16), X_RISER + dz) for dz in SEAT_SCREWS]
     return clean(D(m, *cut))   # world-local (z from axle); print lying on a y face
 
 def finial():
-    """Stepped spire pressed over an axle-end M8 nut (collar clears the stationary face by 1 mm)."""
-    m = U(cyl(12, 0, 4, 64), oct_prism(10, 3.9, 8), oct_prism(8, 7.9, 12), oct_prism(6, 11.9, 16),
-          revolve([(0, 15.9), (4.6, 15.9), (0.9, 26), (0, 26)], 48))
-    return clean(D(m, hexp(NUT_AF, -1, 5.5), cyl(4.4, -1, 11, 32)))
+    """Stepped spire pressed over the nose shaft collar (it clears the stationary cap by
+    1 mm), and over the dial's centre post."""
+    d = COLLAR_W + 1.0
+    m = U(cyl(12, 0, d + 2, 64), oct_prism(10, d + 1.9, d + 6), oct_prism(8, d + 5.9, d + 10),
+          oct_prism(6, d + 9.9, d + 14), revolve([(0, d + 13.9), (4.6, d + 13.9), (0.9, d + 24), (0, d + 24)], 48))
+    return clean(D(m, cyl(COLLAR_D / 2 + 0.15, -1, d, 64), cyl(ROD_D / 2 + 0.4, -1, d + 2, 32)))
 
 # ================================================================== assembly + report
 def report(name, m, material, count=1):
@@ -639,21 +833,30 @@ def report(name, m, material, count=1):
           f"{'' if fits else '  ** EXCEEDS BED **'}")
     assert fits, f"{name} exceeds the bed"
 
+FLIPPED = ("shoe_cage",)
+
 def print_orient(name, m):
-    if name in ("yoke_nose", "yoke_mouth", "pointer", "paddle"):
+    if name in ("yoke_nose", "yoke_mouth", "pointer"):
         m = m.copy()
         m.apply_transform(rotation_matrix(math.pi / 2, [1, 0, 0]))    # -y face on the bed
         return to_bed(m)
-    if name == "ico_outboard":
+    if name in FLIPPED:
         m = m.copy()
         m.apply_transform(rotation_matrix(math.pi, [1, 0, 0]))
         return to_bed(m)
     return to_bed(m)
 
+def on_axle(m, x0, deg=0.0):
+    """Place a part built along local z (local z = 0 at world x0) onto the axle."""
+    m = m.copy()
+    if deg:
+        m.apply_transform(rotation_matrix(math.radians(deg), [0, 0, 1]))
+    return at(along_x(m), x0, 0, Z_PAD + Z_AX)
+
 def assembly(P):
     zax = Z_PAD + Z_AX
     W = [("base", P["base"], "brown"),
-         ("post", at(P["post"], z=BASE_T), "brown"),
+         ("post", at(P["post"], z=POST_Z0), "brown"),
          ("yaw_hub", at(P["yaw_hub"], z=Z_PAD - YAW_H - PAD_T), "brown")]
     for n in ("yoke_nose", "yoke_mouth"):
         W.append((n, at(P[n], z=Z_PAD), "brown"))
@@ -662,35 +865,67 @@ def assembly(P):
     r = P["rotor"].copy()
     r.apply_transform(rotation_matrix(math.pi / 2, [0, 1, 0]))     # print z -> world +x
     W.append(("rotor", at(r, -ROTOR_L / 2, 0, zax), "glass"))
-    for n in ("ico_inboard", "ico_outboard"):
-        W.append((n, at(along_x(P[n]), X_ICO, 0, zax), "glass"))
-    W.append(("paddle", at(P["paddle"], X_ICO, 0, zax), "brown"))
+    fc = P["rotor_clamp"].copy()
+    W.append(("rotor_clamp", on_axle(fc, -X_RISER - FOOT_Z[0]), "brass"))
+    # gearbox + governor
+    W.append(("gear_housing", on_axle(P["gear_housing"], X_HB[0]), "brown"))
+    W.append(("drive_hub", on_axle(P["drive_hub"], X_HUB[0]), "brown"))
+    W.append(("sun_governor", on_axle(P["sun_governor"], X_CAGE[0]), "brass"))
+    W.append(("shoe_cage", on_axle(P["shoe_cage"], X_CAGE[0]), "brown"))
+    for k, a in enumerate(SHOE_ANGLES):
+        W.append((f"shoe_{k}", on_axle(P["shoe"], X_SHOE[0], math.degrees(a) - 90), "brass"))
+    for k in range(N_PLANETS):
+        q = math.pi / 2 + 2 * math.pi * k / N_PLANETS
+        pl = at(P["planet"], A_GEAR * math.cos(q), A_GEAR * math.sin(q))
+        W.append((f"planet_{k}", on_axle(pl, X_PLANET[0]), "brass"))
+    # drum: shell, liner tiles with quartz chips, ribs on alternate tiles, dial lid
+    W.append(("drum_shell", on_axle(P["drum_shell"], X_DRUM0), "glass"))
+    z_liner = X_DRUM0 + PLATE_T + 0.5
+    for k in range(N_RAILS):
+        deg = 360 * k / N_RAILS - 90
+        W.append((f"tile_{k}", on_axle(P["tile"], z_liner, deg), "brown"))
+        chips = extrude(chip_layer(k, k % 2 == 0), 0, DRUM_L - 1)
+        if chips:
+            W.append((f"chips_{k}", on_axle(trimesh.util.concatenate(chips), z_liner), "quartz"))
+        if k % 2 == 0:
+            W.append((f"rib_{k}", on_axle(P[f"rib_{TB.DEFAULT_RIB}"], z_liner, deg), "brown"))
     W.append(("comm_disc", disc_to_world(P["comm_disc"]), "brown"))
     W.append(("pointer", at(P["pointer"], z=zax), "brown"))
-    x_cap = X_RISER + BLOCK_LEN / 2 + 4                              # stepped cap face
     fn = P["finial"].copy()
     fn.apply_transform(rotation_matrix(-math.pi / 2, [0, 1, 0]))    # local z -> world -x
-    W.append(("finial_nose", at(fn, -(x_cap + 1), 0, zax), "brass"))
-    W.append(("finial_disc", at(along_x(P["finial"]), X_DISC + DISC_T + 8 + 1, 0, zax), "brass"))
-    x_end = X_DISC + DISC_T + 8 + 6.5
-    W.append(("rod", at(along_x(cyl(4, -(x_cap + 6.5), x_end, 24)), 0, 0, zax), "steel"))
+    W.append(("finial_nose", at(fn, -(X_NOSE_CAP + 1), 0, zax), "brass"))
+    W.append(("finial_disc", at(along_x(P["finial"]), X_DISC + DISC_T + 8, 0, zax), "brass"))
+    collar = D(cyl(COLLAR_D / 2, 0, COLLAR_W, 48), cyl(ROD_D / 2, -1, COLLAR_W + 1, 24))
+    nose_c = collar.copy(); nose_c.apply_transform(rotation_matrix(-math.pi / 2, [0, 1, 0]))
+    W.append(("collar_nose", at(nose_c, -(X_NOSE_CAP + 1), 0, zax), "steel"))
+    W.append(("collar_drum", on_axle(collar, X_DRUM0 + 2 * B608_W + 1.6), "steel"))
+    rod_end = X_DRUM0 + 2 * B608_W + 1.6 + COLLAR_W
+    W.append(("rod", at(along_x(cyl(ROD_D / 2, -(X_NOSE_CAP + 1 + COLLAR_W), rod_end, 24)), 0, 0, zax), "alu"))
     return W
 
 def clearance_checks(W):
     """Rotating parts sweep surfaces of revolution about the axle, so a stationary
     part clears them iff its (x, r) image stays off theirs.  Surface samples of both
-    in the (x, r) half-plane, nearest-neighbour distance = clearance (~0.5 mm res.)."""
+    in the (x, r) half-plane, nearest-neighbour distance = clearance (~0.5 mm res.).
+    Parts turning at different speeds (rotor/shaft, governor, drum) are checked
+    against each other the same way.  Meshing gears are checked in 2D by GR.mesh_check."""
     from scipy.spatial import cKDTree
     zax = Z_PAD + Z_AX
     parts = {n: m for n, m, _ in W}
     def xr(m, n):
         p, _ = trimesh.sample.sample_surface_even(m, n)
         return np.column_stack([p[:, 0], np.hypot(p[:, 1], p[:, 2] - zax)])
-    pairs = [("rotor", ["yoke_nose", "yoke_mouth", "block_nose", "block_mouth", "pointer"]),
-             ("ico_inboard", ["block_mouth", "paddle", "pointer", "yoke_mouth"]),
-             ("ico_outboard", ["paddle", "pointer"]),
-             ("comm_disc", ["pointer", "yoke_mouth"]),
+    shoes = trimesh.util.concatenate([parts[f"shoe_{k}"] for k in range(3)])
+    drum = trimesh.util.concatenate([parts["drum_shell"], parts["comm_disc"]])
+    parts["shoes"], parts["drum+lid"] = shoes, drum
+    pairs = [("rotor", ["yoke_nose", "yoke_mouth", "block_nose", "block_mouth", "pointer", "gear_housing"]),
+             ("drum+lid", ["gear_housing", "pointer", "block_mouth", "yoke_mouth", "sun_governor"]),
+             ("drive_hub", ["gear_housing", "block_mouth", "sun_governor", "shoe_cage"]),
+             ("sun_governor", ["gear_housing"]),
+             ("shoe_cage", ["gear_housing"]),
+             ("shoes", ["gear_housing", "sun_governor"]),
              ("finial_nose", ["block_nose"]),
+             ("rotor_clamp", ["block_nose"]),
              ("finial_disc", ["pointer"])]
     worst = {}
     for rot, statics in pairs:
@@ -698,18 +933,32 @@ def clearance_checks(W):
         for st in statics:
             d, _ = tree.query(xr(parts[st], 30000))
             worst[(rot, st)] = d.min()
-            print(f"  clearance {rot:13s} <-> {st:12s} {d.min():6.1f} mm")
+            print(f"  clearance {rot:13s} <-> {st:13s} {d.min():6.1f} mm")
     return worst
 
 if __name__ == "__main__":
     os.makedirs("stl", exist_ok=True)
+    for stale in ("ico_inboard", "ico_outboard", "paddle"):
+        if os.path.exists(os.path.join("stl", f"{stale}.stl")):
+            os.remove(os.path.join("stl", f"{stale}.stl"))
     P = {}
     P["rotor"] = rotor()
-    P["ico_inboard"], P["ico_outboard"] = ico_halves()
     P["block_nose"] = bearing_block(False)
     P["block_mouth"] = bearing_block(True)
     P["race_spacer"] = race_spacer()
-    P["paddle"] = paddle()
+    P["rotor_clamp"] = rotor_clamp()
+    P["gear_housing"] = gear_housing()
+    P["drive_hub"] = drive_hub()
+    P["sun_governor"] = sun_governor()
+    P["shoe_cage"] = shoe_cage()
+    P["shoe"] = shoe()
+    P["planet"] = planet()
+    P["spacer_a"] = spacer(X_RING[0] + 0.5 - X_HUB[1])       # drive hub -> inboard 688 inner race
+    P["spacer_b"] = spacer(X_DRUM0 - (X_SUN[1]))              # outboard 688 -> drum 608 inner race
+    P["drum_shell"] = drum_shell()
+    P["tile"] = tile()
+    for name in TB.RIBS:
+        P[f"rib_{name}"] = rib(name)
     P["yoke_nose"] = yoke(False)
     P["yoke_mouth"] = yoke(True)
     P["yaw_hub"] = yaw_hub()
@@ -719,11 +968,12 @@ if __name__ == "__main__":
     P["pointer"] = pointer()
     P["finial"] = finial()
 
-    mats = {"rotor": "clear", "ico_inboard": "clear", "ico_outboard": "clear",
-            "comm_disc": "brown+brass", "finial": "brass"}
-    counts = {"finial": 2}
+    mats = {"rotor": "clear", "drum_shell": "clear", "comm_disc": "brown+brass", "finial": "brass",
+            "sun_governor": "brown", "shoe": "brown"}
+    counts = {"finial": 2, "tile": N_RAILS, "shoe": 3, "planet": N_PLANETS}
+    counts.update({f"rib_{n}": TB.N_RIBS for n in TB.RIBS})
     print(f"axle height {Z_PAD + Z_AX:.0f} mm, rotor top {Z_PAD + Z_AX + R_MAX:.0f} mm, "
-          f"icosahedron centre x={X_ICO:.1f}, disc back x={X_DISC:.1f}")
+          f"gearbox {X_HB[0]:.1f}-{X_RING[1]:.1f}, drum {X_DRUM0:.1f}-{X_DISC:.1f}, ratio {RATIO:.2f}:1")
     for name, m in P.items():
         pm = print_orient(name, m)
         path = os.path.join("stl", f"{name}.stl")
@@ -733,6 +983,10 @@ if __name__ == "__main__":
         assert back.is_watertight, f"{name} not watertight after reload"
     print(f"rotor unsupported overhang (>45 deg from vertical), area fraction: "
           f"{overhang_report(P['rotor']):.3f}")
+    sun, pl, ring = gear_shapes()
+    ov = GR.mesh_check(sun, pl, ring, ZS, ZP, ZR, GEAR_M)
+    print(f"gear mesh: worst overlap over a mesh pitch {ov:.3f} mm^2")
+    assert ov < 0.01, "gears interfere"
     W = assembly(P)
     worst = clearance_checks(W)
     assert all(v > 0.5 for v in worst.values()), "a stationary part touches a rotating one"

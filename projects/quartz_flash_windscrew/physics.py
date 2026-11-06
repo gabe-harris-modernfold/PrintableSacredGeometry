@@ -2,31 +2,32 @@
 """Quartz Flash Windscrew -- the numbers behind the build.
 
 Run from this directory:  python physics.py
-Prints the design table and writes physics.png.
+Prints the design tables and writes physics.png.  The drum itself (lifter
+release, flights, landing, drum torque) is modelled in tumbler.py.
 
 Chain of models (assumptions in README.md):
   1. Rotor     Liam-type conical Archimedes screw, linear torque-coefficient curve
                Ct(lam) = Ct0 (1 - lam/lam0), conservative small-rotor values.
-  2. Tumbler   loose quartz stones in an icosahedron on the shaft.  Froude number
-               Fr = omega^2 r / g says when they cascade (Fr < 1) and when they are
-               pinned to the walls (Fr > 1) -- which is every wind above cut-in.
-  3. Paddle    a stationary paddle on a fixed sleeve inside the icosahedron meets each
-               pinned stone once per revolution.  Strike + friction re-acceleration
-               costs ~ eta m (omega r)^2 / 2 per stone per rev, so the load power goes
-               as omega^3, like the wind's: the operating tip-speed ratio is the same
-               at every wind speed.
-  4. Impact    Hertz sphere-on-sphere impact: peak force, contact radius, peak
+  2. Gearbox   4.8 : 1 planetary (sun in, ring fixed, carrier = drum), efficiency
+               eta, plus a constant drag torque at the sun.
+  3. Governor  inverse centrifugal clutch.  Three shoes on the sun's cage are held
+               onto a hub on the shaft by an O-ring (inward force F each).  Torque
+               passed to the sun is 3 mu (F - m w^2 r_s) r_hub, which falls as the sun
+               speeds up, so the sun settles where that equals the drum's load:
+               w_sun^2 = (F - T_sun / (3 mu r_hub)) / (m r_s).  Adding nuts to the
+               shoes (m) lowers the governed speed; wind no longer sets it.
+  4. Drum load from tumbler.py (lifts per rev x energy per lift).
+  5. Impact    Hertz sphere-on-sphere impact: peak force, contact radius, peak
                pressure, and the rim tension that starts a cone crack.
-  5. Sliding   flash temperature of a sliding contact, Tian & Kennedy (1994)
-               circular-source formula with Blok heat partition; smooth Hertz contact
-               and plastic asperities (p = H) both evaluated.
-  6. Photons   Planck emission from the hot real-contact area, scotopic-weighted, into
+  6. Sliding   flash temperature of a sliding contact, Tian & Kennedy (1994)
+               circular-source formula with Blok heat partition.
+  7. Photons   Planck emission from the hot real-contact area, scotopic-weighted, into
                a dark-adapted pupil, against the Hecht-Shlaer-Pirenne threshold -- swept
-               over emissivity, because the visible emissivity of a micron-thick hot
-               skin of clear quartz is the most uncertain number here.
+               over emissivity, the most uncertain number here.
 """
 import math
 import numpy as np
+import tumbler as TB
 
 RHO_AIR = 1.20             # kg/m^3 (ridge, ~200 m ASL, 15 C)
 G = 9.81
@@ -36,15 +37,19 @@ H_PL, C_L, K_B = 6.626e-34, 2.998e8, 1.381e-23
 R_ROT = 0.150
 A_ROT = math.pi * R_ROT**2
 CT0, LAM0 = 0.20, 2.0      # -> Cp_max = Ct0 lam0 / 4 = 0.10 (independent Liam tests: ~0.1-0.2)
-T_BEARING = 4e-3           # N m, four shielded 608s
+T_BEARING = 3e-3           # N m: two axle 608s and the drum's two 608s
 
-# tumbler (matches windscrew.py)
-N_STONES = 6               # one per outer vertex pocket of the face-axis icosahedron
-M_STONE = 0.012            # kg (a ~20 mm tumbled quartz stone)
-R_POCKET = 0.055           # m, centroid radius of a pinned stone (icosahedron Rc 70)
-ETA = 1.5                  # strike (~1) + friction re-acceleration (~0.5) per 1/2 m v^2
-REPOSE = math.radians(35)  # charge angle of repose against the paddle at rest
-SLIDE_LEN = 0.010          # m, scrape length per paddle pass
+# gearbox + governor (matches windscrew.py)
+RATIO = 1 + 57 / 15
+ETA_GEAR = 0.75            # printed PETG planetary, light load
+T_DRAG_SUN = 1.5e-3        # N m at the sun: two 688s, planet pins, mesh friction
+N_SHOES = 3
+MU_PAD = 0.40              # cork on PETG
+R_HUB = 0.016
+R_SHOE = 0.027             # shoe centre of mass radius
+M_SHOE = 0.0039            # printed shoe (3.1 cm3 PETG)
+M_NUT = 0.0012             # M5 nut; up to 4 per shoe
+NUTS_NOMINAL = 2           # O-ring force is chosen so this setting gives PHI_TARGET
 
 # quartz (alpha, room temperature, directional averages)
 E_Q, NU_Q = 95e9, 0.08
@@ -60,7 +65,7 @@ T_CEIL = 1950.0
 
 # eye
 PUPIL_D = 7e-3
-VIEW_L = 0.30              # m, eye to the icosahedron at night
+VIEW_L = 0.30              # m, eye to the drum at night
 T_PETG = 0.85              # transmission of one clear 2.4 mm PETG wall
 HSP = (54, 148)
 
@@ -69,40 +74,93 @@ _SC = np.array([[400, 9.29e-3], [420, 9.66e-2], [440, 0.328], [460, 0.567], [480
                 [580, 0.121], [600, 3.32e-2], [620, 7.37e-3], [640, 1.50e-3],
                 [660, 3.13e-4], [680, 7.15e-5], [700, 1.78e-5]])
 
+# drum torque vs fraction of critical, tabulated once from tumbler.py
+_PHI = np.linspace(0.02, 1.0, 50)
+_TD = np.array([TB.drum_torque(TB.DEFAULT_RIB, p) for p in _PHI])
+W_C = TB.omega_c()
+
+def drum_torque(phi):
+    return float(np.interp(phi, _PHI, _TD))
+
 def ct(lam):
     return CT0 * np.clip(1 - lam / LAM0, 0, None)
 
 def rotor_torque(v, lam):
     return 0.5 * RHO_AIR * A_ROT * R_ROT * v**2 * ct(lam)
 
-def strike_energy(omega):
-    return ETA * 0.5 * M_STONE * (omega * R_POCKET)**2
+def t_sun(phi):
+    """Torque the sun must deliver to hold the drum at phi."""
+    return drum_torque(phi) / (RATIO * ETA_GEAR) + T_DRAG_SUN
 
-def load_coeff():
-    return N_STONES * ETA * M_STONE * R_POCKET**2 / (4 * math.pi * R_ROT**3)
+def shoe_mass(nuts):
+    return M_SHOE + nuts * M_NUT
 
-def operating_lambda():
-    """n eta m r^2 lam^2 / (4 pi R^3) = 1/2 rho A Ct0 (1 - lam/lam0); v has cancelled."""
-    a, b = load_coeff(), 0.5 * RHO_AIR * A_ROT * CT0
-    return (-(b / LAM0) + math.sqrt((b / LAM0)**2 + 4 * a * b)) / (2 * a)
+def oring_force():
+    """Inward force per shoe that puts the nominal setting at PHI_TARGET."""
+    w = TB.PHI_TARGET * W_C * RATIO
+    return shoe_mass(NUTS_NOMINAL) * w * w * R_SHOE + t_sun(TB.PHI_TARGET) / (N_SHOES * MU_PAD * R_HUB)
 
-def operating_point(v):
-    lam = np.linspace(1e-3, LAM0, 4000)
+def governed_phi(nuts, torque_scale=1.0, F=None):
+    """Drum speed (fraction of critical) the governor settles at; solves the load/speed loop."""
+    F = oring_force() if F is None else F
+    phi = TB.PHI_TARGET
+    for _ in range(60):
+        L = torque_scale * t_sun(phi) / (N_SHOES * MU_PAD * R_HUB)
+        w2 = max(F - L, 0.0) / (shoe_mass(nuts) * R_SHOE)
+        phi = 0.5 * phi + 0.5 * math.sqrt(w2) / (RATIO * W_C)
+    return phi
+
+def operating_point(v, nuts=NUTS_NOMINAL):
+    """(rotor omega, drum phi, governed?) at wind v."""
+    phi_g = governed_phi(nuts)
+    lam = np.linspace(1e-3, LAM0, 3000)
     om = lam * v / R_ROT
-    load = N_STONES * strike_energy(om) / (2 * math.pi) + T_BEARING
+    phi_d = np.minimum(om / (RATIO * W_C), phi_g)
+    load = np.array([t_sun(p) for p in phi_d]) + T_BEARING
     net = rotor_torque(v, lam) - load
     i = np.where(np.diff(np.sign(net)) < 0)[0]
     if len(i) == 0:
-        return 0.0, 0.0
-    return lam[i[0]], lam[i[0]] * v / R_ROT
-
-def charge_torque():
-    return N_STONES * M_STONE * G * R_POCKET * math.sin(REPOSE) * 0.6
+        return 0.0, 0.0, False
+    k = i[0]
+    return om[k], phi_d[k], bool(om[k] / (RATIO * W_C) > phi_g)
 
 def cut_in():
-    return math.sqrt((T_BEARING + charge_torque()) / (0.5 * RHO_AIR * A_ROT * R_ROT * CT0))
+    """Rotor static torque must lift the resting charge through the gearbox."""
+    charge = TB.N_STONES * TB.M_ROCK * G * (TB.R_W - TB.ROCK_A) * math.sin(TB.PSI_BED)
+    need = charge / (RATIO * ETA_GEAR) + T_DRAG_SUN + T_BEARING
+    return math.sqrt(need / (0.5 * RHO_AIR * A_ROT * R_ROT * CT0))
 
-def hertz_impact(v_n, m=M_STONE, r1=R_STONE, r2=R_STONE):
+# axle (matches windscrew.py): world x of the bearings and loads, mm
+X_NOSE, X_MOUTH_IN, X_MOUTH_OUT = -163.5, 163.5, 194.5
+X_SUN, X_DRUM_HUB, DRUM_ARM = 233.0, 246.5, 41.0     # drum+lid+stones centroid sits DRUM_ARM beyond its hub
+W_DRUM, W_GEAR, W_ROTOR, F_GUST = 9.0, 1.0, 5.0, 22.0
+RODS = {"steel M8 threaded (root 6.47 mm)": (200e3, 6.47, 640.0, 250.0),
+        "aluminium 8 mm 6061-T6 / 6082-T6": (69e3, 8.0, 275.0, 96.0)}   # E MPa, d, yield, fatigue (polished)
+
+def shaft_beam(E, d, supports, gust=False, n=480):
+    """Euler-Bernoulli FE beam of the axle.  Returns x, deflection (mm), bending stress (MPa)."""
+    xs = np.linspace(-215.0, 262.0, n + 1)
+    I = math.pi * d**4 / 64
+    K = np.zeros((2 * len(xs), 2 * len(xs))); F = np.zeros(2 * len(xs))
+    for e in range(n):
+        L = xs[e + 1] - xs[e]
+        k = E * I / L**3 * np.array([[12, 6 * L, -12, 6 * L], [6 * L, 4 * L * L, -6 * L, 2 * L * L],
+                                     [-12, -6 * L, 12, -6 * L], [6 * L, 2 * L * L, -6 * L, 4 * L * L]])
+        i = [2 * e, 2 * e + 1, 2 * e + 2, 2 * e + 3]
+        K[np.ix_(i, i)] += k
+    node = lambda x: int(np.argmin(abs(xs - x)))
+    loads = [(X_DRUM_HUB, -W_DRUM), (X_SUN, -W_GEAR), (-60.0, -W_ROTOR)] + ([(-30.0, -F_GUST)] if gust else [])
+    for x, P in loads:
+        F[2 * node(x)] += P
+    F[2 * node(X_DRUM_HUB) + 1] += -W_DRUM * DRUM_ARM
+    fixed = [2 * node(x) for x in supports]
+    free = [i for i in range(len(F)) if i not in fixed]
+    u = np.zeros(len(F))
+    u[free] = np.linalg.solve(K[np.ix_(free, free)], F[free])
+    M = E * I * np.gradient(u[1::2], xs)
+    return xs, u[0::2], M / (math.pi * d**3 / 32)
+
+def hertz_impact(v_n, m=TB.M_ROCK, r1=R_STONE, r2=R_STONE):
     e_star = E_Q / (2 * (1 - NU_Q**2))
     r_star = r1 * r2 / (r1 + r2)
     d = (15 * m * v_n**2 / (16 * e_star * math.sqrt(r_star)))**0.4
@@ -110,10 +168,6 @@ def hertz_impact(v_n, m=M_STONE, r1=R_STONE, r2=R_STONE):
     a = math.sqrt(r_star * d)
     p0 = 3 * f / (2 * math.pi * a**2)
     return f, a, p0, (1 - 2 * NU_Q) / 3 * p0
-
-def hertz_static(n, r1=R_STONE, r2=R_STONE):
-    e_star = E_Q / (2 * (1 - NU_Q**2))
-    return (3 * n * (r1 * r2 / (r1 + r2)) / (4 * e_star))**(1 / 3)
 
 def flash_rise(q, a, v):
     """Tian & Kennedy (1994), uniform circular source, flux q, Pe = v a / 2 kappa on the
@@ -135,106 +189,92 @@ def photons_to_eye(T, area, tau, eps, dist=VIEW_L):
     frac = (PUPIL_D**2 / 4) / dist**2 * T_PETG                  # Lambertian, on-axis
     return n_scot * frac
 
-def slide_state(v):
-    lam, om = operating_point(v)
-    vs = om * R_POCKET
-    fc = M_STONE * om**2 * R_POCKET
-    return om, vs, fc
-
 if __name__ == "__main__":
-    lam_op = operating_lambda()
-    w_c = math.sqrt(G / R_POCKET)
-    print("== rotor + tumbler load ==")
-    print(f"rotor swept area {A_ROT*1e4:.0f} cm2, Cp_max (model) {CT0*LAM0/4:.3f}")
-    print(f"operating tip-speed ratio (drag-free, wind-independent): {lam_op:.2f}  (runaway {LAM0:.1f})")
-    print(f"cut-in wind (bearings + stones resting on the paddle): {cut_in():.1f} m/s")
-    print(f"Froude 1 (stones pin to the walls) at omega = {w_c:.1f} rad/s = {w_c*30/math.pi:.0f} rpm"
-          f" = {w_c*R_ROT/lam_op:.1f} m/s wind  -> without the paddle nothing collides above that")
-    print()
-    print(" wind   lam   rpm   Fr   strikes/s  stone m/s  E_strike mJ  P_load W  "
-          "F_pin N  Hertz F N  p0 GPa  rim tension/strength")
-    for v in (4, 6, 8, 10, 12, 15, 20, 25):
-        lam, om = operating_point(v)
-        vs = om * R_POCKET
-        e = strike_energy(om)
-        f, a, p0, st = hertz_impact(vs)
-        print(f"{v:5.0f} {lam:5.2f} {om*30/math.pi:5.0f} {om**2*R_POCKET/G:5.1f} "
-              f"{N_STONES*om/(2*math.pi):9.1f} {vs:10.2f} {e*1e3:11.1f} "
-              f"{N_STONES*om/(2*math.pi)*e:9.2f} {M_STONE*om**2*R_POCKET:8.1f} {f:10.0f} "
-              f"{p0/1e9:7.2f} {st/SIGMA_F:10.0f}x")
+    F = oring_force()
+    print("== governor ==")
+    print(f"drum torque ({TB.DEFAULT_RIB}, {TB.N_STONES} stones) at {TB.PHI_TARGET:.0%}: "
+          f"{drum_torque(TB.PHI_TARGET)*1e3:.1f} mN m -> sun {t_sun(TB.PHI_TARGET)*1e3:.1f} mN m")
+    print(f"O-ring inward force per shoe for {NUTS_NOMINAL} nuts at {TB.PHI_TARGET:.0%}: {F:.2f} N "
+          f"(band tension ~{F / (2 * math.sin(math.pi / 3)):.2f} N)")
+    print(" nuts/shoe   drum rpm   phi    phi at -30 % / +30 % drum torque")
+    for n in range(5):
+        p = governed_phi(n)
+        print(f"   {n}        {TB.rpm(p * W_C):6.0f}   {p:4.2f}     {governed_phi(n, 0.7):4.2f} / {governed_phi(n, 1.3):4.2f}")
+    print(f"\ncut-in wind: {cut_in():.1f} m/s")
+    print("\n wind  rotor rpm  drum rpm   phi  governed  strikes/s  quartz strike m/s  slip W")
+    for v in (3, 4, 5, 6, 8, 10, 12, 15, 20, 25):
+        om, phi, gov = operating_point(v)
+        if om == 0:
+            print(f"{v:5.0f}   (below cut-in)")
+            continue
+        slip = t_sun(phi) * max(om - phi * W_C * RATIO, 0)
+        vq = TB.quartz_strike(TB.DEFAULT_RIB, phi) if phi > 0.3 else 0.0
+        print(f"{v:5.0f} {om*30/math.pi:9.0f} {TB.rpm(phi*W_C):9.0f} {phi:6.2f}  {'yes' if gov else 'no ':8s}"
+              f"{TB.strikes_per_s(phi):9.1f} {vq:15.2f} {slip:10.2f}")
 
-    print("\n== sliding flash temperature (quartz on quartz; quartz on PETG cannot run hot) ==")
-    print("  v m/s   Hertz a um  T_smooth K   T_asperity(a=3um) K   T_asperity(a=10um) K")
-    for v in (0.2, 0.5, 1.0, 2.0, 4.0, 8.0):
-        n = 1.5
-        a_h = hertz_static(n)
-        q_h = MU_Q * n / (math.pi * a_h**2) * v
-        q_asp = MU_Q * H_Q * v
-        print(f"{v:7.1f} {a_h*1e6:11.0f} {flash_T(q_h, a_h, v):11.0f} "
-              f"{flash_T(q_asp, 3e-6, v):20.0f} {flash_T(q_asp, 10e-6, v):21.0f}")
-    print(f"  (hand rubbing ~0.2 m/s; alpha-beta inversion {T_ALPHA_BETA:.0f} K; ceiling {T_CEIL:.0f} K)")
+    v_imp = TB.quartz_strike(TB.DEFAULT_RIB, TB.PHI_TARGET)
+    f, a, p0, st = hertz_impact(v_imp)
+    print(f"\n== a governed strike: {v_imp:.2f} m/s normal ==")
+    print(f"Hertz peak force {f:.0f} N, contact radius {a*1e6:.0f} um, p0 {p0/1e9:.2f} GPa, "
+          f"rim tension {st/SIGMA_F:.0f}x the surface strength -> cone cracks, fracture light")
 
-    print(f"\n== thermal photons at the cornea per scrape, 8 m/s wind, eye {VIEW_L*100:.0f} cm away ==")
-    om, vs, fc = slide_state(8)
-    area, tau = fc / H_Q, SLIDE_LEN / vs
-    T = flash_T(MU_Q * H_Q * vs, 3e-6, vs)
-    print(f"  real contact {area*1e12:.0f} um2 at {T:.0f} K for {tau*1e3:.1f} ms")
-    for eps in (1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0):
-        ns = photons_to_eye(T, area, tau, eps)
-        flag = "seen" if ns > HSP[1] else ("threshold" if ns > HSP[0] else "below")
-        print(f"  emissivity {eps:7.0e}: {ns:10.3g} scotopic-equivalent photons  ({flag})")
-    eps_need = next(e for e in np.logspace(-8, 0, 800) if photons_to_eye(T, area, tau, e) > HSP[0])
-    print(f"  emissivity needed for the HSP floor: {eps_need:.1e}  -> a ~3 um hot skin must absorb "
-          f">= {eps_need/3e-6/100:.1f} /cm in the visible")
+    v_s = TB.PHI_TARGET * W_C * (TB.R_W - TB.ROCK_A)
+    n = TB.M_ROCK * G * (1 + TB.PHI_TARGET**2)
+    print(f"\n== sliding on the liner: {v_s:.2f} m/s under ~{n:.2f} N ==")
+    for asp in (3e-6, 10e-6):
+        print(f"  asperity a = {asp*1e6:.0f} um: flash T {flash_T(MU_Q * H_Q * v_s, asp, v_s):.0f} K")
+    area, tau = n / H_Q, 0.01 / v_s
+    T = flash_T(MU_Q * H_Q * v_s, 3e-6, v_s)
+    eps_need = next((e for e in np.logspace(-8, 0, 800) if photons_to_eye(T, area, tau, e) > HSP[0]), None)
+    print(f"  real contact {area*1e12:.0f} um2 at {T:.0f} K for {tau*1e3:.0f} ms; emissivity for the HSP floor: "
+          f"{eps_need:.1e}" if eps_need else "  thermal channel below threshold at any emissivity")
+
+    print("\n== axle: sag at the sun gear (backlash 0.14-0.20 mm) and bending stress ==")
+    for name, (E, d, sy, sf) in RODS.items():
+        for sup, lab in (([X_NOSE, X_MOUTH_IN], "one mouth bearing "), ([X_NOSE, X_MOUTH_IN, X_MOUTH_OUT], "two mouth bearings")):
+            xs, w, s = shaft_beam(E, d, sup)
+            _, _, sg = shaft_beam(E, d, sup, gust=True)
+            i = int(np.argmin(abs(xs - X_SUN)))
+            rot = abs(s[xs > 150]).max()
+            print(f"  {name:34s} {lab}: sag {abs(w[i]):.3f} mm, rotating {rot:4.1f} MPa "
+                  f"(fatigue {sf:.0f} polished), {F_GUST:.0f} N gust peak {abs(sg).max():4.1f} MPa (yield {sy:.0f})")
 
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-
     fig, ax = plt.subplots(2, 2, figsize=(11, 8.5))
-    winds = np.linspace(2, 25, 200)
+    winds = np.linspace(2, 25, 90)
     ops = [operating_point(v) for v in winds]
-    ax[0, 0].plot(winds, [o[1] * 30 / math.pi for o in ops], color="#3a6ea5")
-    ax[0, 0].set_xlabel("wind m/s"); ax[0, 0].set_ylabel("rpm", color="#3a6ea5")
+    ax[0, 0].plot(winds, [o[0] * 30 / math.pi for o in ops], color="#3a6ea5", label="rotor rpm")
+    ax[0, 0].set_xlabel("wind m/s"); ax[0, 0].set_ylabel("rotor rpm", color="#3a6ea5")
     axb = ax[0, 0].twinx()
-    axb.plot(winds, [o[1]**2 * R_POCKET / G for o in ops], color="#c0552b")
-    axb.axhline(1, color="#c0552b", ls=":"); axb.set_ylabel("Froude number (pinned above 1)", color="#c0552b")
-    ax[0, 0].axvline(cut_in(), color="0.6", ls="--"); ax[0, 0].text(cut_in() + 0.3, 50, "cut-in", fontsize=8)
-    ax[0, 0].set_title("Operating point: stones are pinned at every running speed")
-
-    lam = np.linspace(0, LAM0, 200)
-    ax[0, 1].plot(lam, ct(lam) * lam, color="#3a6ea5", label="rotor Cp(lam)")
-    ax[0, 1].plot(lam, load_coeff() * lam**3 / (0.5 * RHO_AIR * A_ROT), color="#c0552b",
-                  label="paddle demand / (1/2 rho A v^3)")
-    ax[0, 1].axvline(lam_op, color="0.5", ls=":")
-    ax[0, 1].set_ylim(0, 0.15); ax[0, 1].set_xlabel("tip-speed ratio")
-    ax[0, 1].legend(); ax[0, 1].set_title("Matching: wind speed cancels")
-
+    axb.plot(winds, [o[1] for o in ops], color="#c0552b")
+    axb.axhspan(0.70, 0.80, color="#f3d9c8", alpha=0.5)
+    axb.set_ylabel("drum speed, fraction of critical", color="#c0552b"); axb.set_ylim(0, 1.05)
+    ax[0, 0].axvline(cut_in(), color="0.6", ls="--")
+    ax[0, 0].set_title("Governed drum: wind sets the rotor, not the drum")
+    nuts = np.arange(0, 5)
+    for sc, ls, lab in ((1.0, "-", "nominal drum torque"), (0.7, ":", "-30 %"), (1.3, "--", "+30 %")):
+        ax[0, 1].plot(nuts, [governed_phi(n, sc) for n in nuts], ls, color="#1d3f66", marker="o", label=lab)
+    ax[0, 1].axhspan(0.70, 0.80, color="#f3d9c8")
+    ax[0, 1].set_xlabel("M5 nuts per shoe"); ax[0, 1].set_ylabel("governed fraction of critical")
+    ax[0, 1].legend(fontsize=8); ax[0, 1].set_title("Tuning the governor")
     vv = np.logspace(-1, 1, 100)
-    for a_asp, ls in ((1e-6, "--"), (3e-6, "-"), (10e-6, "-.")):
-        ax[1, 0].plot(vv, [flash_T(MU_Q * H_Q * v, a_asp, v) for v in vv], ls,
-                      color="#c0552b", label=f"asperity a={a_asp*1e6:.0f} um")
-    a_h = hertz_static(1.5)
-    ax[1, 0].plot(vv, [flash_T(MU_Q * 1.5 / (math.pi * a_h**2) * v, a_h, v) for v in vv],
-                  color="#3a6ea5", label="smooth Hertz, 1.5 N")
+    for asp, ls in ((1e-6, "--"), (3e-6, "-"), (10e-6, "-.")):
+        ax[1, 0].plot(vv, [flash_T(MU_Q * H_Q * v, asp, v) for v in vv], ls, color="#c0552b",
+                      label=f"asperity a={asp*1e6:.0f} um")
     ax[1, 0].axhline(T_ALPHA_BETA, color="0.5", ls=":"); ax[1, 0].text(0.11, 880, "alpha-beta 573 C", fontsize=8)
     ax[1, 0].axvspan(0.1, 0.3, color="0.9"); ax[1, 0].text(0.105, 1700, "hand\nrubbing", fontsize=8)
-    lo, hi = slide_state(4)[1], slide_state(15)[1]
-    ax[1, 0].axvspan(lo, hi, color="#f3d9c8", alpha=0.6); ax[1, 0].text(lo * 1.05, 400, "windscrew\n4-15 m/s", fontsize=8)
+    ax[1, 0].axvline(v_s, color="#1d3f66", ls=":"); ax[1, 0].text(v_s * 1.05, 400, "drum\nsliding", fontsize=8)
     ax[1, 0].set_xscale("log"); ax[1, 0].set_xlabel("sliding speed m/s"); ax[1, 0].set_ylabel("flash T, K")
     ax[1, 0].legend(fontsize=8); ax[1, 0].set_title("Flash temperature (Tian-Kennedy, capped at softening)")
-
-    eps = np.logspace(-7, 0, 100)
-    for v, col in ((5, "#7a9cc6"), (8, "#3a6ea5"), (15, "#1d3f66")):
-        om, vs, fc = slide_state(v)
-        T = flash_T(MU_Q * H_Q * vs, 3e-6, vs)
-        ax[1, 1].plot(eps, [photons_to_eye(T, fc / H_Q, SLIDE_LEN / vs, e) for e in eps],
-                      color=col, label=f"{v} m/s wind")
-    ax[1, 1].axhspan(*HSP, color="#f3d9c8"); ax[1, 1].text(2e-7, 170, "HSP threshold", fontsize=8)
-    ax[1, 1].set_xscale("log"); ax[1, 1].set_yscale("log")
-    ax[1, 1].set_xlabel("visible emissivity of the hot skin")
-    ax[1, 1].set_ylabel(f"photons at cornea / scrape ({VIEW_L*100:.0f} cm)")
-    ax[1, 1].legend(fontsize=8); ax[1, 1].set_title("Thermal channel: seen only if the skin absorbs")
+    vi = np.linspace(0.1, 2.0, 60)
+    ax[1, 1].plot(vi, [hertz_impact(x)[3] / SIGMA_F for x in vi], color="#1d3f66")
+    ax[1, 1].axhline(1, color="#c0552b", ls=":"); ax[1, 1].text(0.12, 1.15, "cone-crack threshold", fontsize=8)
+    ax[1, 1].axvline(v_imp, color="0.5", ls="--"); ax[1, 1].text(v_imp + 0.03, 2, "governed strike", fontsize=8)
+    ax[1, 1].set_yscale("log"); ax[1, 1].set_xlabel("normal impact speed m/s")
+    ax[1, 1].set_ylabel("Hertz rim tension / surface strength")
+    ax[1, 1].set_title("Every strike cracks quartz (fracture light)")
     fig.tight_layout()
     fig.savefig("physics.png", dpi=110)
     print("\nwrote physics.png")

@@ -94,6 +94,50 @@ def chevrons(c=(0, 0), up=True, w=7.0, h=3.0, gap=2.6):
     return unary_union([chevron((c[0], c[1] + s * gap / 2), w, h, 1.2, up),
                         chevron((c[0], c[1] - s * gap / 2), w, h, 1.2, up)])
 
+# ------------------------------------------------------------------ tarot
+ROMAN = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII",
+         "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"]       # the 22 Major Arcana, The Fool to The World
+
+def star(c=(0, 0), r_out=4.0, r_in=1.7, n=5):
+    pts = []
+    for k in range(2 * n):
+        r = r_out if k % 2 == 0 else r_in
+        a = math.pi / 2 + k * math.pi / n
+        pts.append((c[0] + r * math.cos(a), c[1] + r * math.sin(a)))
+    return Polygon(pts)
+
+def wand(c=(0, 0), h=13.0):
+    """Suit of Wands: a budding staff."""
+    x, y = c
+    f = [stroke([(x, y - h / 2), (x, y + h / 2 - 1.2)], 1.4), Point(x, y + h / 2 - 1.1).buffer(1.2, 24)]
+    for k, yy in enumerate((-2.5, 0.5, 3.5)):
+        s = 1 if k % 2 == 0 else -1
+        f.append(lozenge((x + s * 1.9, y + yy), 2.6, 1.6))
+    return unary_union(f)
+
+def cup(c=(0, 0), h=13.0):
+    """Suit of Cups: a Deco chalice."""
+    x, y = c
+    bowl = Point(x, y + 2.0).buffer(4.6, 48).intersection(sbox(x - 5, y - 3.0, x + 5, y + 2.0))
+    return unary_union([bowl, sbox(x - 4.8, y + 2.0, x + 4.8, y + 3.2),           # rim
+                        sbox(x - 0.7, y - 4.6, x + 0.7, y - 2.4),                  # stem
+                        lozenge((x, y - 2.6), 3.0, 1.6),                           # knop
+                        sbox(x - 3.2, y - 6.0, x + 3.2, y - 4.6)])                 # foot
+
+def sword(c=(0, 0), h=13.0):
+    """Suit of Swords: blade, cross-guard, grip and pommel."""
+    x, y = c
+    blade = Polygon([(x, y + h / 2), (x + 1.2, y + h / 2 - 3), (x + 1.2, y - 1.6), (x - 1.2, y - 1.6),
+                     (x - 1.2, y + h / 2 - 3)])
+    return unary_union([blade, sbox(x - 3.8, y - 2.7, x + 3.8, y - 1.5),
+                        sbox(x - 0.75, y - 5.4, x + 0.75, y - 2.6), Point(x, y - 5.9).buffer(1.2, 24)])
+
+def pentacle(c=(0, 0), r=5.6):
+    """Suit of Pentacles: a coin ring with a solid five-point star."""
+    return unary_union([ring(r - 1.1, r, c, 64), star(c, r - 1.9, 0.8 * (r - 1.9) * 0.48)])
+
+SUITS = (wand, cup, sword, pentacle)
+
 # ------------------------------------------------------------------ type
 def glyph(ch, cap):
     from matplotlib.textpath import TextPath
@@ -112,7 +156,7 @@ def glyph(ch, cap):
     ext = tp.get_extents()
     return shape, ext.x0, ext.x1
 
-def _layout(text, cap):
+def _layout(text, cap, tracking=None):
     gl, wd = [], []
     for ch in text:
         if ch == " ":
@@ -120,7 +164,7 @@ def _layout(text, cap):
             continue
         g, x0, x1 = glyph(ch, cap)
         gl.append((g, x0)); wd.append(x1 - x0)
-    gap = TRACKING * cap
+    gap = (TRACKING if tracking is None else tracking) * cap
     return gl, wd, sum(wd) + gap * (len(text) - 1), gap
 
 def line_text(text, cap, c=(0, 0)):
@@ -142,10 +186,10 @@ def place(geom, r, alpha):
         return (right[0] * x + up[0] * (r + y), right[1] * x + up[1] * (r + y))
     return transform(tf, geom)
 
-def arc_text(text, r_base, alpha_c, cap, max_arc=None):
+def arc_text(text, r_base, alpha_c, cap, max_arc=None, tracking=None):
     """Curved text, letter tops outward, reading clockwise, centred on alpha_c."""
     while True:
-        gl, wd, total, gap = _layout(text, cap)
+        gl, wd, total, gap = _layout(text, cap, tracking)
         if max_arc is None or total <= max_arc:
             break
         cap *= 0.95
