@@ -65,6 +65,7 @@ works without setting `PYTHONPATH`.
 | [ogdoad_wind_chandelier](projects/ogdoad_wind_chandelier) | The Hymn of the Ogdoad: nine wind-blown pigeon-whistle voices hung as a geocentric cosmos. |
 | [platonic_solid_frames](projects/platonic_solid_frames) | The five Platonic solids as edge frames, sized so their corner-on outlines land on Metatron's Cube. |
 | [rainbow_prism_tray](projects/rainbow_prism_tray) | Hex-tile prism tray and tabletop scene (OpenSCAD). |
+| [raking_light_book_cover](projects/raking_light_book_cover) | Book-cover plate whose hidden word, symbol and image appear only under raking light, encoded in top-layer hatch direction. Brief only, no build yet. |
 | [sacred_correspondant_forms](projects/sacred_correspondant_forms) | Research report on printed acoustic geometries, cymatics and water resonance. No build yet. |
 | [sacred_geometry_plates](projects/sacred_geometry_plates) | Eight stackable 170 mm plates on one lattice, circle → Metatron's Cube → Tree of Life, with registration pins. |
 | [stellated_platonic_solids](projects/stellated_platonic_solids) | First stellation of each Platonic solid (or its dual compound), as edge frames grown from the grid solids. |
