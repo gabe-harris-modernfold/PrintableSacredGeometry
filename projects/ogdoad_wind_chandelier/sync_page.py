@@ -23,6 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 PAGE = os.path.join(ROOT, "web", "hymn-of-the-ogdoad.html")
 SITE = os.path.join(ROOT, "site")
+SINGLE_STLS = ["0_earth_174hz_gourd.stl"]      # also linked one by one on the page
 
 
 def autocrop(im, margin=36):
@@ -76,7 +77,13 @@ def main():
         for f in sorted(os.listdir(os.path.join(HERE, "stl"))):
             z.write(os.path.join(HERE, "stl", f), f)
         z.write(os.path.join(HERE, "README.md"), "README.md") if os.path.exists(os.path.join(HERE, "README.md")) else None
-    print(f"staged page, 4 webps and {os.path.relpath(zp, ROOT)} ({os.path.getsize(zp) / 1e6:.1f} MB)")
+    # single parts offered on their own as well (re-printed after a fix without the whole zip)
+    od = os.path.join(sd, "ogdoad")
+    os.makedirs(od, exist_ok=True)
+    for f in SINGLE_STLS:
+        shutil.copy(os.path.join(HERE, "stl", f), os.path.join(od, f))
+    print(f"staged page, 4 webps, {os.path.relpath(zp, ROOT)} ({os.path.getsize(zp) / 1e6:.1f} MB) "
+          f"and {len(SINGLE_STLS)} single STL(s) in {os.path.relpath(od, ROOT)}")
 
 
 if __name__ == "__main__":
