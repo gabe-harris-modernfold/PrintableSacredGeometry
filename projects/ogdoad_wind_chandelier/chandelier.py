@@ -50,6 +50,11 @@ EPEG = 10.0                     # Earth's square peg
 EPEG_L = 12.0
 L_BOSS = 16.0                   # Earth's rear boss, from its bulb surface to the hub
 BOSS_HW = 11.0                  # boss half width / half height
+BOSS_SINK = 6.0                 # boss inner face this far inside the bulb's inner wall
+BOSS_DZ = 8.0                   # boss (and its socket) raised this far above the bulb's
+                                # equator, so its 45-deg underside lands inside the wall of
+                                # the 45-deg bottom cone instead of running parallel outside
+                                # it (which left a notch); Earth hangs this much lower
 BOOM = 12.0                     # vane boom section
 BOOM_IN = 14.0                  # boom depth in the hub
 BOOM_FREE = 220.0               # boom span between the hub and the fin sleeve
@@ -132,11 +137,15 @@ def earth_boss(v):
     """Rear corbel on Earth's lower bulb (local +y), with the hub peg's socket.
     Its underside is chamfered at 45 deg so the gourd still prints upright unsupported."""
     d = v["dims"]
-    R, t, c1 = d["R"], d["t"], d["c1"]
-    y0, y1 = R - t / 2, R + L_BOSS
+    R, t, c1 = d["R"], d["t"], d["c1"] + BOSS_DZ
+    # the inner face is sunk well inside the bulb (then the cavity is cut back out), so the
+    # boss fuses to the curved wall over its whole footprint instead of kissing it along
+    # the equator only
+    y0, y1 = R - t - BOSS_SINK, R + L_BOSS
     zt, zb = c1 + BOSS_HW, c1 - BOSS_HW
     prof = [(y0, zt), (y0, zb - (y1 - y0)), (y1, zb), (y1, zt)]
     boss = yz_prism(prof, -BOSS_HW, BOSS_HW)
+    boss -= rev_rz([(0.0, vc.FLOOR_T)] + [tuple(p) for p in v["inner"]] + [(0.0, d["z_top"])])
     sock = EPEG + 0.4
     boss -= box(-sock / 2, sock / 2, y1 - EPEG_L - 1, y1 + 1, c1 - sock / 2, c1 + sock / 2)
     return boss
@@ -251,7 +260,7 @@ def solve_layout(vs):
         yE = HUB_Y0 - (e["dims"]["R"] + L_BOSS)
         zz, rr = samples(e)
         for z, r in zip(zz, rr):
-            balls.append((np.array([0.0, yE, z - e["dims"]["c1"]]), r, "Earth"))
+            balls.append((np.array([0.0, yE, z - e["dims"]["c1"] - BOSS_DZ]), r, "Earth"))
         P = np.array([b[0] for b in balls])
         Rr = np.array([b[1] for b in balls])
         names = np.array([b[2] for b in balls])
@@ -395,7 +404,7 @@ def place_voice(part, v, th, Rf):
     """Local gourd frame -> assembly."""
     if v["name"] == "Earth":
         yE = HUB_Y0 - (v["dims"]["R"] + L_BOSS)
-        return Pos(0, yE, -v["dims"]["c1"]) * part
+        return Pos(0, yE, -v["dims"]["c1"] - BOSS_DZ) * part
     z_l, x_l = frame_of(th)
     org = tuple(Rf * c for c in z_l)
     return Location(Plane(origin=org, x_dir=x_l, z_dir=z_l)) * part
@@ -695,7 +704,7 @@ def main():
 
     layout = dict(
         R_f=Rf, hub_y0=HUB_Y0, frame_t=T_F, ring_r=Rf - 7.0, boom_free=BOOM_FREE,
-        earth_y=HUB_Y0 - (vs[0]["dims"]["R"] + L_BOSS), earth_z0=-vs[0]["dims"]["c1"],
+        earth_y=HUB_Y0 - (vs[0]["dims"]["R"] + L_BOSS), earth_z0=-vs[0]["dims"]["c1"] - BOSS_DZ,
         angles={vv["name"]: th for vv, th in assign}, climb=[vv["name"] for vv, _ in assign],
         mass_g=round(m, 0), cg=[round(x, 1) for x in cg], hang_hole_y=best[0],
         envelope=[round(x) for x in span],
