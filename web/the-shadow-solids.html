@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Shadow Solids — a modern table of correspondences</title>
+<meta name="description" content="A working table of correspondences for psychological occultism and shadow work: the five Platonic solids, five Jungian archetypes with their shadows, somatic cues, two-state colour shifts, five-sense anchors from the last twenty years, cultural objects and a transmutation practice for each. Built with no inherited tables: geometry, Jung and the senses only.">
+<link rel="canonical" href="https://promethean-theoria.netlify.app/the-shadow-solids.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Promethean Theoria">
+<meta property="og:title" content="The Shadow Solids — a modern table of correspondences">
+<meta property="og:description" content="Five Platonic solids, five archetypes, each with two faces. Somatic cues, colour shifts, synth waveforms, phone glass and weighted blankets: a shadow-work table built only from geometry, Jung and the senses as they meet you now.">
+<meta property="og:image" content="https://promethean-theoria.netlify.app/previews/the-shadow-solids.webp">
+<meta property="og:url" content="https://promethean-theoria.netlify.app/the-shadow-solids.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — dark-first, in the Theoria family.
+   The ten state colours (balanced / shadow per solid) are content, not theme:
+   they live in the data block and are drawn as-is in both themes.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --ground:#0B0D12; --ground-2:#11141B; --ground-3:#181C26; --rule:#262C3A; --rule-soft:#1C212E;
+  --ink:#E8E4D8; --ink-2:#B6B3A8; --muted:#8B92A4; --faint:#5C6376;
+  --gold:#D4B87F; --link:#6FC7DC; --int:#7CC79F; --sha:#E0596B;
+  --halo:rgba(232,228,216,0.22);
+  --serif:"Palatino Linotype", Palatino, "Iowan Old Style", "Book Antiqua", "URW Palladio L", Georgia, serif;
+  --label:"Bahnschrift SemiCondensed", "Bahnschrift", "DIN Alternate", "Franklin Gothic Medium", "Avenir Next Condensed", "Roboto Condensed", Corbel, "Segoe UI", sans-serif;
+  --mono:Consolas, "Cascadia Mono", "SF Mono", Menlo, monospace;
+  --measure:40rem; --wide:72rem;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#ECEAE3; --ground-2:#F3F2EC; --ground-3:#FAF9F5; --rule:#C6C7BE; --rule-soft:#DADAD2;
+    --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+    --gold:#8A6E1E; --link:#1F7A93; --int:#2C7A56; --sha:#B03145;
+    --halo:rgba(22,26,34,0.28);
+  }
+}
+:root[data-theme="light"]{
+  --ground:#ECEAE3; --ground-2:#F3F2EC; --ground-3:#FAF9F5; --rule:#C6C7BE; --rule-soft:#DADAD2;
+  --ink:#161A22; --ink-2:#3C424C; --muted:#5E6572; --faint:#8C929E;
+  --gold:#8A6E1E; --link:#1F7A93; --int:#2C7A56; --sha:#B03145;
+  --halo:rgba(22,26,34,0.28);
+}
+:root[data-theme="dark"]{
+  --ground:#0B0D12; --ground-2:#11141B; --ground-3:#181C26; --rule:#262C3A; --rule-soft:#1C212E;
+  --ink:#E8E4D8; --ink-2:#B6B3A8; --muted:#8B92A4; --faint:#5C6376;
+  --gold:#D4B87F; --link:#6FC7DC; --int:#7CC79F; --sha:#E0596B;
+  --halo:rgba(232,228,216,0.22);
+}
+
+/* ═════════════════════════ BASE ═════════════════════════ */
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *, *::before, *::after{ transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
+}
+body{ background:var(--ground); color:var(--ink); font-family:var(--serif); font-size:17px; line-height:1.66;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+::selection{ background:var(--gold); color:var(--ground); }
+p{ text-wrap:pretty; }
+h1,h2,h3,h4{ font-weight:400; text-wrap:balance; }
+a{ color:var(--link); text-decoration-color:color-mix(in srgb, var(--link) 45%, transparent); text-underline-offset:3px; }
+a:hover{ text-decoration-color:var(--link); }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+button, select, input{ font:inherit; color:inherit; }
+b{ font-weight:400; color:var(--gold); }
+
+.wrap{ max-width:var(--wide); margin:0 auto; padding:0 16px 3rem; }
+.col{ max-width:var(--measure); }
+.col p + p{ margin-top:0.9rem; }
+.top{ display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1rem 0; font-family:var(--label); font-size:0.9rem; }
+.top a{ color:var(--muted); text-decoration:none; }
+.top a:hover{ color:var(--ink); }
+.top .tools{ display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end; }
+.pill{ border:1px solid var(--rule); background:transparent; color:var(--muted); cursor:pointer; font-family:var(--label);
+  font-size:0.82rem; letter-spacing:0.04em; padding:0.28rem 0.85rem; border-radius:2px; }
+.pill:hover{ color:var(--ink); border-color:var(--muted); }
+.pill[aria-pressed="true"]{ color:var(--ink); border-color:var(--gold); }
+
+.eyebrow{ font-family:var(--label); font-size:0.78rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+header{ padding-top:1.6rem; }
+h1{ font-size:clamp(2.4rem, 7vw, 4.2rem); line-height:1.04; margin:0.45rem 0 0.55rem; letter-spacing:-0.01em; }
+.axline{ font-style:italic; color:var(--gold); font-size:1.18rem; margin-bottom:1.3rem; max-width:46rem; }
+.lede{ font-size:1.08rem; }
+
+h2{ font-size:clamp(1.6rem, 3.6vw, 2.3rem); line-height:1.15; margin:0.3rem 0 0.8rem; }
+h2 .num{ font-family:var(--label); font-size:0.9rem; letter-spacing:0.12em; color:var(--gold); margin-right:0.8rem; vertical-align:0.35em; }
+h3{ font-family:var(--label); font-size:0.8rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin:0 0 0.5rem; }
+section.block{ margin-top:4.2rem; }
+.note{ font-size:0.9rem; color:var(--muted); }
+
+/* translations of non-English terms: tap to show, or show all */
+.tr{ border-bottom:1px dotted currentColor; cursor:help; }
+.tr.open::after, body.tr-all .tr::after{ content:" (" attr(data-en) ")"; font-family:var(--label); font-size:0.82em;
+  letter-spacing:0.02em; color:var(--muted); font-style:normal; }
+
+/* ═════════════════════════ HERO: the five ═════════════════════════ */
+.five{ display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:0.6rem; margin:2rem 0 0.8rem; }
+@media (max-width:700px){ .five{ grid-template-columns:repeat(6, minmax(0,1fr)); }
+  .five > *{ grid-column:span 2; } .five > :nth-child(4){ grid-column:2 / span 2; }
+  .f-name{ font-size:0.66rem; letter-spacing:0.04em; } }
+.f-card{ display:flex; flex-direction:column; align-items:center; text-align:center; text-decoration:none; color:var(--ink);
+  background:var(--ground-2); border:1px solid var(--rule-soft); border-radius:4px; padding:0.6rem 0.4rem 0.75rem; transition:border-color .2s; }
+.f-card:hover{ border-color:var(--muted); }
+.f-card canvas{ width:100%; aspect-ratio:1; display:block; }
+.f-name{ font-family:var(--label); font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-top:0.2rem; }
+.f-arch{ font-size:0.95rem; line-height:1.3; margin-top:0.15rem; }
+.f-arch .s{ display:block; font-size:0.82rem; color:var(--muted); font-style:italic; }
+.statebar{ display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap; font-family:var(--label); font-size:0.88rem; color:var(--muted); }
+.seg{ display:inline-flex; border:1px solid var(--rule); border-radius:3px; overflow:hidden; }
+.seg button{ background:transparent; border:0; padding:0.32rem 0.95rem; cursor:pointer; color:var(--muted); font-family:var(--label); letter-spacing:0.04em; }
+.seg button + button{ border-left:1px solid var(--rule); }
+.seg button[aria-pressed="true"]{ color:var(--ground); background:var(--ink); }
+.leaves{ margin-top:1.6rem; border-left:2px solid var(--gold); padding:0.2rem 0 0.2rem 1rem; max-width:var(--measure); color:var(--ink-2); font-size:0.95rem; }
+.leaves b{ font-family:var(--label); font-size:0.78rem; letter-spacing:0.12em; text-transform:uppercase; display:block; margin-bottom:0.15rem; }
+
+/* ═════════════════════════ MASTER TABLE ═════════════════════════ */
+.tbar{ display:flex; gap:0.5rem; flex-wrap:wrap; margin:0.4rem 0 0.9rem; align-items:center; }
+.tbar .ok{ font-family:var(--label); font-size:0.82rem; color:var(--int); opacity:0; transition:opacity .2s; }
+.tbar .ok.on{ opacity:1; }
+.tablewrap{ overflow-x:auto; border:1px solid var(--rule); border-radius:4px; background:var(--ground-2); -webkit-overflow-scrolling:touch; }
+table.master{ border-collapse:separate; border-spacing:0; min-width:1880px; font-size:0.86rem; line-height:1.5; }
+.master th, .master td{ text-align:left; vertical-align:top; padding:0.75rem 0.85rem; border-bottom:1px solid var(--rule-soft); border-right:1px solid var(--rule-soft); }
+.master thead th{ font-family:var(--label); font-weight:400; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); background:var(--ground-3); }
+.master tbody tr:last-child td, .master tbody tr:last-child th{ border-bottom:0; }
+.master th[scope="row"]{ position:sticky; left:0; z-index:1; background:var(--ground-3); min-width:11rem; font-weight:400; }
+.master th[scope="row"] a{ color:var(--ink); text-decoration:none; font-size:1.05rem; }
+.master th[scope="row"] a:hover{ color:var(--gold); }
+.master .geo{ display:block; font-family:var(--label); font-size:0.78rem; color:var(--muted); margin:0.15rem 0 0.35rem; letter-spacing:0.03em; }
+.master .q{ color:var(--gold); font-style:italic; }
+.master ul{ list-style:none; }
+.master li{ position:relative; padding-left:0.85rem; }
+.master li + li{ margin-top:0.3rem; }
+.master li::before{ content:""; position:absolute; left:0; top:0.62em; width:5px; height:5px; border-radius:50%; background:var(--faint); }
+.master .int li::before{ background:var(--int); }
+.master .sha li::before{ background:var(--sha); }
+.master .lab{ font-family:var(--label); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); display:block; }
+.master .lab.i{ color:var(--int); } .master .lab.s{ color:var(--sha); }
+.master p + .lab, .master p + p{ margin-top:0.4rem; }
+.sw{ display:inline-block; width:1.05em; height:1.05em; border-radius:2px; vertical-align:-0.18em; margin-right:0.35rem; box-shadow:0 0 0 1px var(--halo); }
+.hex{ font-family:var(--mono); font-size:0.82rem; }
+.senses-mini dt{ font-family:var(--label); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+.senses-mini dd + dt{ margin-top:0.3rem; }
+.c-arch{ min-width:11rem; } .c-tr{ min-width:12rem; } .c-df{ min-width:10rem; } .c-som{ min-width:13rem; } .c-col{ min-width:12rem; }
+.c-sen{ min-width:14rem; } .c-obj{ min-width:12rem; } .c-tm{ min-width:16rem; }
+
+/* ═════════════════════════ BREAKDOWN ═════════════════════════ */
+.solid{ margin-top:4.5rem; scroll-margin-top:1rem; }
+.solid-grid{ display:grid; grid-template-columns:minmax(15rem, 20rem) minmax(0,1fr); gap:1.5rem 2.6rem; align-items:start; }
+@media (max-width:860px){ .solid-grid{ grid-template-columns:1fr; } }
+.stage-col{ position:sticky; top:1rem; }
+@media (max-width:860px){ .stage-col{ position:static; max-width:24rem; } }
+.stage{ background:var(--ground-2); border:1px solid var(--rule-soft); border-radius:4px; padding:0.6rem; }
+.stage canvas{ width:100%; aspect-ratio:1; display:block; }
+.shift{ margin-top:0.7rem; }
+.shift .ends{ display:flex; justify-content:space-between; font-family:var(--label); font-size:0.74rem; letter-spacing:0.1em; text-transform:uppercase; }
+.shift .ends .s{ color:var(--sha); } .shift .ends .i{ color:var(--int); }
+.shift input[type=range]{ width:100%; margin:0.3rem 0 0.2rem; accent-color:var(--gold); }
+.readout{ display:flex; justify-content:space-between; align-items:center; gap:0.6rem; font-family:var(--label); font-size:0.84rem; color:var(--muted); }
+.readout .now{ display:flex; align-items:center; gap:0.4rem; }
+.stage-actions{ display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.7rem; }
+.facts{ display:grid; grid-template-columns:auto 1fr; gap:0.15rem 0.8rem; font-size:0.86rem; margin-top:1rem; }
+.facts dt{ font-family:var(--label); font-size:0.74rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); padding-top:0.14rem; }
+.quality{ margin-top:0.9rem; font-size:0.92rem; color:var(--ink-2); }
+.quality b{ display:block; font-size:1.05rem; font-style:italic; }
+
+.panel{ border-top:1px solid var(--rule); padding-top:1rem; margin-top:1.4rem; }
+.panel:first-child{ border-top:0; padding-top:0; margin-top:0; }
+.pair{ display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.6rem; }
+@media (max-width:560px){ .pair{ grid-template-columns:1fr; } }
+.pol{ border-left:3px solid var(--int); padding-left:0.9rem; transition:opacity .35s; }
+.pol.s{ border-left-color:var(--sha); }
+.pol .who{ font-size:1.25rem; line-height:1.25; }
+.pol .tag{ font-family:var(--label); font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--int); }
+.pol.s .tag{ color:var(--sha); }
+.pol .gloss{ font-size:0.9rem; color:var(--ink-2); margin:0.3rem 0 0.5rem; }
+.pol ul{ list-style:none; font-size:0.95rem; }
+.pol li{ padding-left:1rem; position:relative; }
+.pol li + li{ margin-top:0.35rem; }
+.pol li::before{ content:""; position:absolute; left:0; top:0.65em; width:6px; height:6px; border-radius:50%; background:var(--int); }
+.pol.s li::before{ background:var(--sha); }
+.dm{ font-family:var(--label); font-size:0.78rem; color:var(--muted); letter-spacing:0.03em; }
+/* the slider moves the emphasis between the two faces */
+.solid.shadowing .pol:not(.s){ opacity:0.5; }
+.solid:not(.shadowing) .pol.s{ opacity:0.72; }
+.df{ display:grid; grid-template-columns:1fr 1fr; gap:0.8rem 1.6rem; }
+@media (max-width:560px){ .df{ grid-template-columns:1fr; } }
+.df p{ font-size:1.02rem; }
+.colors{ display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+.chip{ border-radius:4px; overflow:hidden; border:1px solid var(--rule-soft); }
+.chip .fill{ height:4.2rem; }
+.chip .cap{ padding:0.45rem 0.7rem; font-family:var(--label); font-size:0.84rem; background:var(--ground-2); }
+.chip .cap .hex{ float:right; color:var(--muted); }
+.ramp{ height:0.55rem; border-radius:2px; margin:0.7rem 0 0.6rem; }
+.colors-note{ font-size:0.92rem; color:var(--ink-2); }
+
+.senses{ display:grid; grid-template-columns:5.5rem 1fr 1fr; border:1px solid var(--rule-soft); border-radius:4px; overflow:hidden; font-size:0.93rem; }
+.senses > div{ padding:0.65rem 0.8rem; border-top:1px solid var(--rule-soft); }
+.senses > .h{ border-top:0; font-family:var(--label); font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); background:var(--ground-3); }
+.senses > .h.i{ color:var(--int); } .senses > .h.s{ color:var(--sha); }
+.senses > .sn{ font-family:var(--label); font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); background:var(--ground-2); }
+.senses > .tl{ color:var(--ink-2); transition:opacity .35s; }
+.solid:not(.shadowing) .senses > .tl{ opacity:0.75; }
+.solid.shadowing .senses > .an{ opacity:0.55; }
+@media (max-width:620px){
+  .senses{ grid-template-columns:1fr; }
+  .senses > .h{ display:none; }
+  .senses > .sn{ border-top:1px solid var(--rule); }
+  .senses > .an::before{ content:"Anchor · "; font-family:var(--label); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--int); }
+  .senses > .tl::before{ content:"Shadow tell · "; font-family:var(--label); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--sha); }
+  .senses > .an, .senses > .tl{ border-top:0; padding-top:0.2rem; }
+}
+.objects{ display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+@media (max-width:560px){ .objects{ grid-template-columns:1fr; } }
+.obj{ background:var(--ground-2); border:1px solid var(--rule-soft); border-radius:4px; padding:0.75rem 0.9rem; font-size:0.92rem; }
+.obj .on{ font-size:1.05rem; line-height:1.3; margin-bottom:0.35rem; }
+.obj .yr{ font-family:var(--label); font-size:0.8rem; color:var(--muted); }
+.obj p + p{ margin-top:0.3rem; }
+.obj .l{ font-family:var(--label); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; }
+.obj .l.i{ color:var(--int); } .obj .l.s{ color:var(--sha); }
+.rite{ background:var(--ground-2); border:1px solid var(--rule); border-left:3px solid var(--gold); border-radius:4px; padding:0.9rem 1.1rem; }
+.rite p{ font-size:1rem; }
+.rite p + p{ margin-top:0.5rem; }
+.rite .sig{ font-size:0.94rem; color:var(--ink-2); }
+
+/* ═════════════════════════ CLOSING: the progression ═════════════════════════ */
+.prog{ background:var(--ground-2); border:1px solid var(--rule-soft); border-radius:4px; padding:0.6rem; margin:1.2rem 0 1rem; }
+.prog svg{ display:block; width:100%; height:auto; }
+.prog text{ font-family:var(--label); fill:var(--muted); }
+.prog .big{ fill:var(--ink); font-family:var(--serif); }
+.prog .node{ cursor:pointer; }
+.prog .node:hover .big{ fill:var(--gold); }
+.progtext p + p{ margin-top:0.9rem; }
+.care{ margin-top:3rem; border-top:1px solid var(--rule); padding-top:1.2rem; font-size:0.9rem; color:var(--muted); max-width:var(--measure); }
+.care p + p{ margin-top:0.6rem; }
+footer{ margin-top:2.5rem; color:var(--muted); font-style:italic; font-size:0.9rem; }
+.sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="top" aria-label="Site">
+  <a href="index.html">&larr; Promethean Theoria</a>
+  <div class="tools">
+    <button class="pill" id="trAll" aria-pressed="false">Show all translations</button>
+    <button class="pill" id="themeBtn" aria-label="Switch colour theme">Theme</button>
+  </div>
+</nav>
+
+<header>
+  <div class="eyebrow">A modern table of correspondences &middot; for shadow work</div>
+  <h1>The Shadow Solids</h1>
+  <p class="axline">Five Platonic solids, five archetypes, each with two faces: the one you live from when you feel whole, and the one that takes over when you are afraid.</p>
+  <div class="col">
+    <p class="lede">This is a working table for psychological practice, built from three things you can check:
+      the geometry of the five Platonic solids, the archetypes of Jung&rsquo;s analytical psychology, and
+      the senses as they meet you now &mdash; LED colour temperatures, synth waveforms, phone glass, a
+      weighted blanket. Each solid holds one archetype with an <span style="color:var(--int)">integrated</span>
+      face and a <span style="color:var(--sha)">shadow</span> face. The anchors help you notice which one is
+      running, and give you something concrete to shift it with.</p>
+  </div>
+
+  <div class="five" id="five" aria-label="The five solids, simplest to most complex"></div>
+  <div class="statebar">
+    <span>Show every solid in its</span>
+    <div class="seg" role="group" aria-label="State of all five solids">
+      <button id="heroInt" aria-pressed="true">Integrated</button>
+      <button id="heroSha" aria-pressed="false">Shadow</button>
+    </div>
+    <span>state &middot; tap a solid for its breakdown</span>
+  </div>
+
+  <div class="leaves">
+    <b>What this table leaves out</b>
+    No letters, paths or spheres from the older systems; no planets, metals, gods or classical incense.
+    The quality of each solid is read from its geometry alone &mdash; its faces, corners, symmetry and its dual &mdash;
+    and every object and sense anchor comes from ordinary life in 2006&ndash;2026.
+  </div>
+</header>
+
+<section class="block" id="table" aria-labelledby="h-table">
+  <div class="eyebrow">Quick reference</div>
+  <h2 id="h-table"><span class="num">01</span>The master table</h2>
+  <div class="tbar">
+    <button class="pill" id="copyMd">Copy table as Markdown</button>
+    <button class="pill" id="dlMd">Download the full reference (.md)</button>
+    <span class="ok" id="copyOk" role="status" aria-live="polite"></span>
+  </div>
+  <div class="tablewrap" tabindex="0" aria-label="Master table, scrolls sideways">
+    <table class="master" id="master">
+      <thead><tr>
+        <th scope="col">Platonic solid &amp; geometry</th>
+        <th scope="col" class="c-arch">Archetype &amp; polarity</th>
+        <th scope="col" class="c-tr">Integrated traits</th>
+        <th scope="col" class="c-tr">Shadow traits</th>
+        <th scope="col" class="c-df">Core drive &amp; fear</th>
+        <th scope="col" class="c-som">Somatic cue</th>
+        <th scope="col" class="c-col">Colour (2-state shift)</th>
+        <th scope="col" class="c-sen">Five senses</th>
+        <th scope="col" class="c-obj">Cultural objects</th>
+        <th scope="col" class="c-tm">Transmutation</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:0.6rem">The table scrolls sideways; the solid stays pinned on the left.</p>
+</section>
+
+<section class="block" aria-labelledby="h-break">
+  <div class="eyebrow">Sensory &amp; ritual breakdown</div>
+  <h2 id="h-break" class="sr">Sensory and ritual breakdown</h2>
+  <div class="col"><p>Each solid gets its own room. Drag its slider from <span style="color:var(--int)">integrated</span>
+    to <span style="color:var(--sha)">shadow</span> and watch the solid, the colour and the emphasis of the text shift;
+    press <i>Hear the anchor</i> and the sound shifts with it. In the senses grid the <i>anchor</i> is what you use to invoke the
+    integrated state; the <i>shadow tell</i> is the same sense when the shadow is running, so you can catch it.</p></div>
+  <div id="rooms"></div>
+</section>
+
+<section class="block" id="progression" aria-labelledby="h-prog">
+  <div class="eyebrow">Why this order</div>
+  <h2 id="h-prog"><span class="num">07</span>How the geometry mirrors the growth</h2>
+  <div class="prog"><svg id="progSvg" viewBox="0 0 1000 330" role="img" aria-labelledby="progT"><title id="progT">The five solids in order with their edge counts 6, 12, 12, 30 and 30, the tetrahedron marked as its own dual, the cube and octahedron joined as one dual pair and the icosahedron and dodecahedron as another, with bars for how much of the surrounding sphere each fills</title></svg></div>
+  <div class="col progtext">
+    <p><b>Connections only grow.</b> Counted by edges &mdash; the links between corners &mdash; the five climb
+      6, 12, 12, 30, 30 and never fall back. Development here is not adding parts but adding relationships between them.</p>
+    <p><b>One seed, then two mirrors.</b> The tetrahedron is its own dual: put a point in the middle of each face and you get
+      a tetrahedron again. That is the Child, who meets only itself. After it the solids come in dual pairs. The cube&rsquo;s six faces
+      become the octahedron&rsquo;s six corners: the <span class="tr" data-en="Latin: an actor&rsquo;s mask">persona</span> turned
+      outward and the inner other carried within, which Jung described as complementary to the persona. The icosahedron&rsquo;s twelve
+      corners become the dodecahedron&rsquo;s twelve faces: the Sage, who knows <i>about</i> wholeness from twenty viewpoints, and
+      the Self, which <i>is</i> it. The inflated guru is the Self&rsquo;s counterfeit &mdash; its mirror image, mistaken for the original.</p>
+    <p><b>Jung&rsquo;s own sequence.</b> In his 1928 essay <i>The Relations between the Ego and the Unconscious</i> the stages run
+      persona, anima and animus, the <span class="tr" data-en="Oceanic word for spiritual power and authority">mana</span>-personality,
+      then the self. Put the Child (his 1940 essay) at the start as the seed, and the five solids line up with them one to one.</p>
+    <p><b>The faces change kind only twice.</b> Triangles &mdash; the smallest rigid face &mdash; carry the spark, the mirror and
+      knowledge. Squares carry structure. Pentagons appear only at the end, and they carry the golden ratio (a pentagon&rsquo;s diagonal
+      over its side is &phi; = 1.618&hellip;), a number no fraction can write. The last form is built on a proportion that never closes:
+      wholeness is not a finished state.</p>
+    <p><b>Round is not the same as whole.</b> By surface against volume the icosahedron is the roundest of the five (sphericity 0.94
+      against the dodecahedron&rsquo;s 0.91): the Sage presents the smoothest surface. But the dodecahedron fills more of the sphere
+      through its corners (66% against 61%): the Self holds more. Note the one dip, cube to octahedron (37% to 32%). Turning to the inner
+      other first feels like losing solid ground.</p>
+    <p class="note">These are correspondences. They hold because the pattern is useful to work with, not because geometry causes the
+      psyche; the numbers are exact, the readings are offered.</p>
+  </div>
+</section>
+
+<div class="care">
+  <p><b>A reflective practice, not therapy.</b> Shadow work can raise old pain. If an exercise brings up trauma, panic, or thoughts
+    of harming yourself, stop, put the table down and talk to someone qualified.</p>
+  <p>Sound plays only when you press a button, and quietly. The traits are written for recognising patterns in yourself, not for
+    diagnosing anyone else.</p>
+</div>
+
+<footer>Where the geometry is exact, it is computed. Where it is read as a psyche, that is a reading.</footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DATA — the single source for the hero, the table, the rooms and the
+     Markdown export. {{term|English}} marks a non-English term.
+     projects/shadow_solids/check_solids.py validates this block and
+     writes the repo copy of the Markdown reference from it.
+     ═══════════════════════════════════════════════════════════════ -->
+<script type="application/json" id="ss-data">
+{
+  "solids": [
+    {
+      "id": "tetrahedron", "solid": "Tetrahedron", "shape": "tetra",
+      "faces": 4, "face": "triangle", "vertices": 4, "edges": 6, "dual": "itself",
+      "sphereFill": 0.1225, "sphericity": 0.6711,
+      "quality": "Ignition",
+      "qualityText": "The fewest flat faces that can close off a space. Every corner touches every other, nothing is hidden from itself, and it is its own dual. A spark: complete, with almost nothing yet committed.",
+      "archetype": "The Child",
+      "archetypeGloss": "Jung's archetype of beginnings (1940): the part of you that is still becoming, oriented to what might be.",
+      "shadow": "The Eternal Child",
+      "shadowTerm": "{{puer aeternus|Latin: eternal boy; puella aeterna, eternal girl}}",
+      "shadowGloss": "The one who will not add a face. Real life is always about to start, so nothing is chosen and nothing is finished.",
+      "integrated": [
+        "Curiosity that acts: tries the thing and reports back",
+        "Play as a method: experiments cheaply, learns from failing",
+        "Names needs plainly and early"
+      ],
+      "shadowTraits": [
+        "Provisional living: \"real life starts later\", so nothing is committed to (avoidance)",
+        "Novelty-chasing and escape: the next app, plan or person (fantasy)",
+        "Helplessness and magical thinking: waits to be rescued or discovered (regression)"
+      ],
+      "drive": "To feel alive and new: to begin.",
+      "fear": "Being trapped in a finished, ordinary life; limitation itself.",
+      "somaticInt": "Belly soft and breathing low; eyes bright and moving; loose, quick limbs; an easy laugh.",
+      "somaticSha": "Restless legs and fidgeting hands; breath high and quick; a hollow, fluttering stomach; a slump when the novelty fades.",
+      "colorInt": {"hex": "#FF9F43", "name": "Spark Apricot"},
+      "colorSha": {"hex": "#D8CBB0", "name": "Sun-Faded Sticker"},
+      "colorShift": "Saturation falls by two-thirds and lightness rises: the colour bleaches like a toy left on a windowsill.",
+      "colorEffect": "Saturated warm orange raises arousal and the urge to approach. Bleached, it reads as nostalgia and inertia: warmth remembered rather than felt.",
+      "senses": {
+        "sight": {"k": "High-key morning light; scattered small triangles", "a": "Bright, high-key morning light with small hard shadows; a confetti scatter of little triangles; primary-coloured plastic.", "t": "A phone screen glowing in a dark room at 1 a.m., thumb still scrolling."},
+        "sound": {"k": "Square-wave arpeggio, major third, 128 BPM", "a": "A square-wave chiptune arpeggio bouncing a major third at about 128 BPM: bright, staccato, open-ended.", "t": "The notification ping on loop: each one a tiny new beginning, none of them finished."},
+        "smell": {"k": "Orange peel, pencil shavings", "a": "Fresh orange peel and sharpened pencil shavings.", "t": "A sweet vape cloud, or the sticky rim of an energy-drink can."},
+        "taste": {"k": "Sour citrus candy, sharp yuzu soda", "a": "Sour citrus candy or a sharp yuzu soda: a jolt that wakes the mouth.", "t": "Flat cola after the sugar crash."},
+        "touch": {"k": "Kinetic sand, modelling clay", "a": "Kinetic sand or modelling clay: a material that keeps the shape you give it.", "t": "Slick touchscreen glass that takes every touch and keeps none."}
+      },
+      "objects": [
+        {"name": "The fidget spinner", "year": "2017", "light": "Play in the hand; for some, a real help in settling restless attention.", "shadow": "A craze that lasted one summer: stimulation with nowhere to go."},
+        {"name": "The infinite-scroll video feed", "year": "infinite scroll 2006; short-video feeds 2016 on", "light": "A thousand small delights and new skills in a minute.", "shadow": "A new beginning every fifteen seconds and no ending: the provisional life, automated."}
+      ],
+      "transmutation": "Press one corner of a tetrahedron into your palm while the arpeggio plays, until you feel the point, and say aloud one small thing you will finish by Sunday: commitment made into a sensation.",
+      "sigil": "Draw the tetrahedron's flat net of four triangles and fold it shut only when that thing is done."
+    },
+    {
+      "id": "cube", "solid": "Hexahedron (Cube)", "shape": "cube",
+      "faces": 6, "face": "square", "vertices": 8, "edges": 12, "dual": "octahedron",
+      "sphereFill": 0.3676, "sphericity": 0.8060,
+      "quality": "Stability",
+      "qualityText": "The only Platonic solid that fills space with no gaps: cubes stack into walls, rooms and cities. Right angles, level faces, a clear inside and outside. The shape that fits beside others.",
+      "archetype": "The {{Persona|Latin: an actor's mask}}",
+      "archetypeGloss": "The face turned to the world: roles, manners and the competence that lets you work and belong among others.",
+      "shadow": "The Mask",
+      "shadowTerm": "identification with the persona",
+      "shadowGloss": "The role becomes the whole self. Jung's warning: whoever is nothing but their persona has no one inside to fall back on.",
+      "integrated": [
+        "Reliable: keeps promises and routines that hold others up",
+        "Fits the room without losing the self: skilled code-switching",
+        "Clear boundaries and clear roles"
+      ],
+      "shadowTraits": [
+        "Rigidity and perfectionism: the rule outranks the person",
+        "Conformity and image management: the role is all there is (false self)",
+        "Rationalising to defend the image (intellectualisation, reaction formation)"
+      ],
+      "drive": "To belong and be competent: a secure place in the order.",
+      "fear": "Exposure: being seen as you are and found wanting (shame).",
+      "somaticInt": "Feet flat and spine stacked; shoulders down and wide; jaw loose; an even breath you could keep up all day.",
+      "somaticSha": "Clenched jaw and braced shoulders; locked knees; a held, chest-high breath; the stiff neck of someone being watched.",
+      "colorInt": {"hex": "#3E7CB1", "name": "Architect Blue"},
+      "colorSha": {"hex": "#8E9196", "name": "Lanyard Grey"},
+      "colorShift": "Saturation drained almost to zero at nearly the same lightness: the hue is still there, faintly, under a uniform.",
+      "colorEffect": "A steady mid-blue reads as dependable and calm. Drained to grey it reads as compliance and anonymity: a uniform, not a face.",
+      "senses": {
+        "sight": {"k": "Even 4000 K light, clean square grid", "a": "Even, flicker-free light at about 4000 K; a clean square grid; matte surfaces with crisp edges.", "t": "Overhead fluorescent flicker, and a mirrored-glass facade where you only see yourself performing."},
+        "sound": {"k": "Sine perfect fifth, soft click at 60 BPM", "a": "A sine-wave perfect fifth (C and G) under a soft click at 60 BPM: one beat a second, steady as a resting heart.", "t": "The hum of an open-plan office: mains buzz and air handling you stop hearing but keep obeying."},
+        "smell": {"k": "Clean linen, fresh printer paper", "a": "Clean linen and fresh printer paper.", "t": "New-car plastic and an air freshener covering something up."},
+        "taste": {"k": "Sea salt on dense rye", "a": "Sea salt on dense dark rye: plain, structural, satisfying.", "t": "Gum chewed long after the flavour went, kept up for appearance."},
+        "touch": {"k": "Cold brushed aluminium, concrete", "a": "Cold brushed aluminium with a square edge; the weight of a concrete paver in both hands.", "t": "A collar or waistband a size too tight; stiff, starched fabric."}
+      },
+      "objects": [
+        {"name": "The video-call tile and virtual background", "year": "mass use from 2020", "light": "A tidy, adaptable working face that kept work and school going through lockdown.", "shadow": "A blurred or fake room hiding the real one; a grid of boxes performing attention."},
+        {"name": "The AR beauty filter", "year": "2015 on", "light": "Play with self-presentation: trying on faces.", "shadow": "A mask some people come to prefer to their own face, and the gap between the two aches."}
+      ],
+      "transmutation": "Stand with feet flat, stack the spine and drop the shoulders on a long exhale, unclenching the jaw while the fifth plays; then let one person see one unpolished thing today.",
+      "sigil": "Draw a square and leave one side open: a door in the wall."
+    },
+    {
+      "id": "octahedron", "solid": "Octahedron", "shape": "octa",
+      "faces": 8, "face": "triangle", "vertices": 6, "edges": 12, "dual": "cube",
+      "sphereFill": 0.3183, "sphericity": 0.8456,
+      "quality": "Reciprocity",
+      "qualityText": "The cube's mirror: put a point in the middle of each of the cube's six faces and you have it. Two square pyramids joined base to base, six corners on three axes at right angles: front and back, left and right, up and down. Balance, and a self meeting what it reflects.",
+      "archetype": "The Inner Other",
+      "archetypeTerm": "{{anima|Latin: soul}} / {{animus|Latin: mind, spirit}}",
+      "archetypeGloss": "Jung's soul-image: the inner figure that carries what the conscious self is not, and the bridge to the deeper psyche. Read here without fixing it to gender.",
+      "shadow": "The Projected Other",
+      "shadowTerm": "projection and possession",
+      "shadowGloss": "The inner figure is carried out of you and onto a partner, an idol or a screen; or it takes over from inside, as moods and as borrowed, fixed opinions.",
+      "integrated": [
+        "Empathy with edges: feels others without dissolving into them",
+        "Receptive: treats feelings, dreams and inspiration as information",
+        "Reciprocity: gives and receives in rough balance"
+      ],
+      "shadowTraits": [
+        "Idealise, then devalue: a person is worshipped until they turn out to be human (projection, splitting)",
+        "Enmeshment: mood set by someone else's reply (codependency)",
+        "Possession: swamped by moods, or gripped by certainties that are not your own"
+      ],
+      "drive": "Union: to be met, mirrored and completed.",
+      "fear": "Being unlovable: rejection, or its twin, being swallowed up.",
+      "somaticInt": "Chest open and soft, breastbone lifted without force; warm hands; steady, soft eye contact; a heartbeat you can feel that is not racing.",
+      "somaticSha": "Chest caved in or thrust out; throat tight around unsaid words; heart racing when the phone lights up; leaning in toward approval.",
+      "colorInt": {"hex": "#D9777F", "name": "Rose Clay"},
+      "colorSha": {"hex": "#FF1F8E", "name": "Infatuation Magenta"},
+      "colorShift": "Saturation pushed to the maximum and the hue nudged toward magenta: the same warmth, turned up until it glares.",
+      "colorEffect": "A muted warm rose is intimate and calming. Full-saturation magenta glares, and stare at it then look away and your eye paints its complement, green: a projection is an afterimage.",
+      "senses": {
+        "sight": {"k": "Warm 2700 K lamp, overlapping-grid moiré", "a": "A warm 2700 K lamp at eye level with a second light crossing it; a moiré where two fine grids overlap and make a third pattern.", "t": "Ring-light glare and the front camera: a face lit for someone else."},
+        "sound": {"k": "Two sawtooth voices into unison, 66 BPM pulse", "a": "Two soft sawtooth voices tuned to unison under a slow heartbeat pulse of about 66 BPM: two become one tone.", "t": "The same two voices 3 Hz apart: the wobble of beating, a pair that cannot settle."},
+        "smell": {"k": "Warm skin, laundered cotton", "a": "Warm skin and laundered cotton; a jumper just taken off.", "t": "A blast from a department-store tester: someone else's idea of desire."},
+        "taste": {"k": "Salted caramel", "a": "Salted caramel: two opposites that make one taste.", "t": "The thin aftertaste of artificial sweetener: sweetness with no body."},
+        "touch": {"k": "Warm ceramic mug in both hands", "a": "A warm ceramic mug held in both hands; skin-warm fleece.", "t": "A phone held to the chest, battery warm, waiting for a reply."}
+      },
+      "objects": [
+        {"name": "The dating-app swipe card", "year": "2012 on", "light": "Couples met across distances and circles they would never otherwise have crossed.", "shadow": "A photo and three lines become a screen for projection; a face judged in under a second."},
+        {"name": "The AI companion chatbot", "year": "2017 on", "light": "A safe place to rehearse feeling and saying things.", "shadow": "A mirror that never pushes back: the perfect surface to project on."}
+      ],
+      "transmutation": "When you catch yourself idealising or blaming, write the quality you see in them on one side of a card and \"where do I live this?\" on the other, then hold a warm mug to your breastbone and breathe into the front of the chest while the detuned voices slide into unison.",
+      "sigil": "Draw the octahedron as seen from above, a square with both diagonals; trace it once with each hand."
+    },
+    {
+      "id": "icosahedron", "solid": "Icosahedron", "shape": "icosa",
+      "faces": 20, "face": "triangle", "vertices": 12, "edges": 30, "dual": "dodecahedron",
+      "sphereFill": 0.6055, "sphericity": 0.9393,
+      "quality": "Flow",
+      "qualityText": "Twenty triangles: the most faces of any Platonic solid and, by surface against volume, the roundest. It rolls (it is the d20). Many viewpoints held at once, still built from the simplest rigid face.",
+      "archetype": "The Sage",
+      "archetypeTerm": "the {{mana|Oceanic word for spiritual power and authority}}-personality",
+      "archetypeGloss": "Jung's figure of extraordinary knowing that appears once the inner other is understood. Integrated, it is wisdom that moves: shared, applied, held lightly.",
+      "shadow": "The Inflated Guru",
+      "shadowTerm": "inflation",
+      "shadowGloss": "Jung's warning at this stage: the ego swallows the figure and believes itself the one who knows.",
+      "integrated": [
+        "Holds several perspectives without needing to win",
+        "Teaches by making things clear, not by impressing",
+        "Turns knowing into practice: lives what it knows"
+      ],
+      "shadowTraits": [
+        "Inflation and contempt: \"I see through everyone\" (grandiosity)",
+        "Insight used to avoid feeling (intellectualisation, spiritual bypassing)",
+        "Hoarding information; analysis that never becomes action"
+      ],
+      "drive": "To understand: meaning, mastery and clear sight.",
+      "fear": "Being deceived, ignorant or ordinary.",
+      "somaticInt": "Brow smooth, gaze soft and wide; head balanced on top of the spine; slow breath through the nose; warm hands and feet.",
+      "somaticSha": "Furrowed brow and strained eyes; head pushed forward toward the screen; cold hands and feet; living from the neck up.",
+      "colorInt": {"hex": "#2BA39B", "name": "Deep Teal"},
+      "colorSha": {"hex": "#D4E4F2", "name": "Ice Glare"},
+      "colorShift": "Lightness pushed near white and the hue cooled from teal to blue: clarity frozen into glare.",
+      "colorEffect": "Teal pairs the calm of blue with the life of green and suits long, unhurried attention. Pale cold blue-white raises glare and distance: brightness without warmth.",
+      "senses": {
+        "sight": {"k": "Diffuse overcast light, branching fractals", "a": "Soft, diffuse light from an overcast window; branching patterns: river deltas, leaf veins, Voronoi cells.", "t": "Blue-white LED glare at 2 a.m. and forty open browser tabs."},
+        "sound": {"k": "Brown noise like rain on glass, triangle-wave fourth", "a": "Brown noise like rain on glass under a quiet triangle-wave perfect fourth: open, unhurried, no beat.", "t": "The pressured hush of noise cancelling with nothing playing, and a thin high whine."},
+        "smell": {"k": "Petrichor, old paper", "a": "Petrichor, and the faint vanilla of old paper.", "t": "Hot electronics and dusty radiator air."},
+        "taste": {"k": "Bitter green tea", "a": "Bitter green tea or matcha: alert, clean, slow.", "t": "Cold coffee forgotten on the desk, the fifth of the day."},
+        "touch": {"k": "Cool smooth glass, page edges", "a": "Cool, smooth glass; the edges of a book's pages riffled under the thumb.", "t": "Cold fingertips on a keyboard at 2 a.m."}
+      },
+      "objects": [
+        {"name": "The e-reader", "year": "2007 on", "light": "A library in one hand: knowledge open to anyone, anywhere.", "shadow": "A thousand books downloaded and unread: knowing about instead of knowing."},
+        {"name": "Noise-cancelling earbuds", "year": "2019 on", "light": "A portable room for deep focus.", "shadow": "A sealed-off head; the world and the body tuned out."}
+      ],
+      "transmutation": "Before you explain anything today, put both feet on the floor and warm your hands around tea while the rain and the fourth play, until you can feel your toes; then say one thing you know in a sentence a child could use.",
+      "sigil": "Draw the icosahedron's net, a strip of twenty triangles, and write across it one piece of knowledge you will act on this week."
+    },
+    {
+      "id": "dodecahedron", "solid": "Dodecahedron", "shape": "dodeca",
+      "faces": 12, "face": "pentagon", "vertices": 20, "edges": 30, "dual": "icosahedron",
+      "sphereFill": 0.6649, "sphericity": 0.9105,
+      "quality": "Wholeness",
+      "qualityText": "Twelve pentagons, the only Platonic faces that are neither triangles nor squares; the golden ratio is in every face. Of the five it fills the most of the sphere through its corners. The most complete enclosure.",
+      "archetype": "The Self",
+      "archetypeGloss": "Jung's archetype of wholeness: the centre and the whole circumference of the psyche, conscious and unconscious together, shadow included.",
+      "shadow": "The Divided Self",
+      "shadowTerm": "splitting and dissociation",
+      "shadowGloss": "Wholeness refused: the parts are kept in separate rooms, split, numbed or compartmentalised, so that nothing ever has to meet.",
+      "integrated": [
+        "Integration: owns both light and shadow without excuse or collapse",
+        "Acts from a centre: values, body and action line up",
+        "Equanimity: can hold paradox and not-knowing"
+      ],
+      "shadowTraits": [
+        "Splitting: all-good or all-bad, about oneself and others",
+        "Compartmentalising: one self at work, another at home, another online",
+        "Dissociation and numbing: absent from one's own life"
+      ],
+      "drive": "Wholeness: to be one person, all the way through.",
+      "fear": "Meaninglessness: dissolving into nothing.",
+      "somaticInt": "The whole body felt at once; a long spine; peripheral vision open; a slow, full breath that moves belly, ribs and back.",
+      "somaticSha": "Numb or floaty; feet not felt; staring through things; breath barely there; a felt split between the head and the body.",
+      "colorInt": {"hex": "#5E4FC4", "name": "Integration Indigo"},
+      "colorSha": {"hex": "#2A2833", "name": "Dead-Pixel Black"},
+      "colorShift": "Lightness collapses to near black with only a trace of the violet left in it.",
+      "colorEffect": "A deep, saturated blue-violet sits at the end of the visible spectrum and reads as depth and contemplative calm. Near black with a trace of violet is the void: a screen that is on and showing nothing.",
+      "senses": {
+        "sight": {"k": "Long view to the horizon, Penrose tiling", "a": "A long view to the horizon at dusk; a Penrose tiling: fivefold, never repeating, still one pattern.", "t": "A shattered phone screen: one picture in a hundred pieces."},
+        "sound": {"k": "Sine drone on the harmonic series, 55 Hz", "a": "A sine drone built on the harmonic series (55 Hz with its octave, fifth, second octave and major third): many tones heard as one.", "t": "The same drone stuttering with dropouts, like a call breaking up."},
+        "smell": {"k": "Sea air after a storm", "a": "Clean sea air after a storm: ozone and salt.", "t": "Sterile nothing: hand sanitiser and filtered air, where smelling has stopped."},
+        "taste": {"k": "Miso broth", "a": "Miso broth: salt, sweet, sour, bitter and savoury in one cup.", "t": "Eating at the screen without tasting a bite."},
+        "touch": {"k": "Weighted blanket, bare feet on a cool floor", "a": "A weighted blanket's even pressure over the whole body; bare feet on a cool floor.", "t": "Pins and needles in a limb that went to sleep."}
+      },
+      "objects": [
+        {"name": "The VR headset", "year": "2016 on", "light": "Presence: a whole world felt at once, used in exposure therapy and pain relief.", "shadow": "A body left behind in a room while the self goes somewhere else."},
+        {"name": "The smartwatch", "year": "2015 on", "light": "A body listened to: heart rhythm, sleep, breath.", "shadow": "The self split into dashboards; the number trusted over the felt sense."}
+      ],
+      "transmutation": "Lie under a weighted blanket with the drone playing and move your attention through the body part by part; then feel the whole body at once and name aloud one disowned part of yourself you are taking back.",
+      "sigil": "Draw the dodecahedron's net, two flowers of six pentagons, write one compartment of your life in each face, then fold it into a single solid."
+    }
+  ]
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+const DATA = JSON.parse(document.getElementById('ss-data').textContent);
+const SOL = DATA.solids;
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ─────────── text helpers ─────────── */
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const TOK = /\{\{([^|}]+)\|([^}]+)\}\}/g;
+const rich = s => esc(s).replace(TOK, (m, t, en) => `<span class="tr" tabindex="0" role="button" data-en="${en}">${t}</span>`);
+const plain = s => String(s).replace(TOK, (m, t, en) => `${t} [${en}]`);
+const archFull = d => d.archetypeTerm ? `${d.archetype} (${d.archetypeTerm})` : d.archetype;
+const shaFull  = d => d.shadowTerm ? `${d.shadow} (${d.shadowTerm})` : d.shadow;
+const SENSES = [['sight','Sight'],['sound','Sound'],['smell','Smell'],['taste','Taste'],['touch','Touch']];
+const pct = x => Math.round(x*100) + '%';
+const dualTxt = d => d.dual === 'itself' ? 'self-dual' : 'dual of the ' + d.dual;
+
+/* ─────────── colour helpers ─────────── */
+const hexRgb = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+const rgbHex = c => '#' + c.map(v => Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase();
+const mixHex = (a, b, t) => { const A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map((v,i) => v + (B[i]-v)*t)); };
+const rgba = (h, a) => { const c = hexRgb(h); return `rgba(${c[0]},${c[1]},${c[2]},${a})`; };
+function complementHex(h){ const c = hexRgb(h), mx = Math.max(...c), mn = Math.min(...c); return rgbHex(c.map(v => mx + mn - v)); }
+
+/* ─────────── geometry: the five solids, unit circumradius ─────────── */
+const PHI = (1 + Math.sqrt(5)) / 2;
+function rawVerts(k){
+  const v = [];
+  const pm = [-1, 1];
+  if (k === 'tetra') return [[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]];
+  if (k === 'octa')  return [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+  if (k === 'cube' || k === 'dodeca') for (const a of pm) for (const b of pm) for (const c of pm) v.push([a,b,c]);
+  if (k === 'icosa') for (const a of pm) for (const b of pm) v.push([0,a,b*PHI],[a,b*PHI,0],[b*PHI,0,a]);
+  if (k === 'dodeca') for (const a of pm) for (const b of pm) v.push([0,a/PHI,b*PHI],[a/PHI,b*PHI,0],[b*PHI,0,a/PHI]);
+  return v;
+}
+const GEO = {};
+for (const k of ['tetra','cube','octa','icosa','dodeca']){
+  const V = rawVerts(k).map(p => { const r = Math.hypot(...p); return p.map(x => x/r); });
+  let dmin = Infinity;
+  for (let i=0;i<V.length;i++) for (let j=i+1;j<V.length;j++) dmin = Math.min(dmin, Math.hypot(V[i][0]-V[j][0], V[i][1]-V[j][1], V[i][2]-V[j][2]));
+  const E = [];
+  for (let i=0;i<V.length;i++) for (let j=i+1;j<V.length;j++)
+    if (Math.abs(Math.hypot(V[i][0]-V[j][0], V[i][1]-V[j][1], V[i][2]-V[j][2]) - dmin) < 1e-6) E.push([i,j]);
+  GEO[k] = {V, E};
+}
+window.__ssGeo = GEO; // for the self-check
+
+/* draw one solid. s = shadow amount (0 integrated … 1 shadow). st holds per-canvas motion state. */
+function drawSolid(cv, d, s, st, now){
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height; if (!W || !H) return;
+  const dt = st.last ? Math.min(0.1, (now - st.last)/1000) : 0; st.last = now;
+  const g = GEO[d.shape];
+  const k = d.shape;
+  const motion = reduceMotion ? 0.18 : 1;
+  // angular speed: the Eternal Child races, the Mask freezes
+  let speed = 0.38;
+  if (k === 'tetra') speed *= 1 + 4.5*s;
+  if (k === 'cube')  speed *= Math.max(0, 1 - 1.15*s);
+  st.angle = (st.angle || 0.6) + dt*speed*motion;
+  const t = now/1000;
+  let tilt = 0.5;
+  if (k === 'tetra' && !reduceMotion) tilt += Math.sin(t*9.3)*0.16*s + Math.sin(t*5.1)*0.08*s;
+  const R = Math.min(W,H) * 0.36;
+  let scale = 1, cx = W/2, cy = H/2;
+  if (k === 'icosa'){ scale = 1 + 0.2*s; cy -= R*0.13*s; }
+  const col = mixHex(d.colorInt.hex, d.colorSha.hex, s);
+  const dpr = W / (cv.clientWidth || W);
+  ctx.clearRect(0,0,W,H);
+  const halo = getComputedStyle(document.documentElement).getPropertyValue('--halo').trim() || 'rgba(128,128,128,.25)';
+
+  const ca = Math.cos(st.angle), sa = Math.sin(st.angle), ct = Math.cos(tilt), stt = Math.sin(tilt);
+  const P = g.V.map(([x,y,z]) => {
+    const x1 = x*ca + z*sa, z1 = -x*sa + z*ca;          // spin about y
+    const y2 = y*ct - z1*stt, z2 = y*stt + z1*ct;       // tilt about x
+    const f = 3.4 / (3.4 - z2);                         // gentle perspective
+    return [cx + x1*R*scale*f, cy - y2*R*scale*f, z2];
+  });
+
+  function pass(offX, colour, alphaMul, widthMul, explode, dropout){
+    const edges = g.E.map(([i,j], n) => ({i, j, n, z:(P[i][2]+P[j][2])/2})).sort((a,b) => a.z - b.z);
+    for (const e of edges){
+      if (dropout > 0){
+        const h = Math.sin((Math.floor(t*7) + 1) * 12.9898 + e.n * 78.233) * 43758.5453;
+        if ((h - Math.floor(h)) < dropout) continue;
+      }
+      let [x1,y1] = P[e.i], [x2,y2] = P[e.j];
+      if (explode){
+        const mx = (x1+x2)/2 - cx, my = (y1+y2)/2 - cy, m = Math.hypot(mx,my) || 1;
+        const push = explode * R * 0.42 * (0.6 + 0.4*Math.abs(Math.sin(e.n*1.7)));
+        x1 += mx/m*push; x2 += mx/m*push; y1 += my/m*push; y2 += my/m*push;
+      }
+      const depth = (e.z + 1)/2;
+      const a = (0.25 + 0.75*depth) * alphaMul;
+      const lw = (1.1 + 1.5*depth) * dpr * widthMul * (W/(300*dpr) > 0.6 ? 1 : 0.8);
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = halo; ctx.globalAlpha = a; ctx.lineWidth = lw + 2.2*dpr;
+      ctx.beginPath(); ctx.moveTo(x1+offX,y1); ctx.lineTo(x2+offX,y2); ctx.stroke();
+      ctx.strokeStyle = colour; ctx.lineWidth = lw;
+      ctx.beginPath(); ctx.moveTo(x1+offX,y1); ctx.lineTo(x2+offX,y2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  if (k === 'octa' && s > 0.02){
+    // the projection: a ghost of the solid in the complementary colour, carried out and away
+    const drift = (reduceMotion ? 0.8 : 0.75 + 0.25*Math.sin(t*0.9));
+    pass(R*0.42*s*drift, complementHex(d.colorSha.hex), 0.55*s, 0.8, 0, 0);
+  }
+  if (k === 'icosa' && s > 0.02){ ctx.shadowColor = rgba(d.colorSha.hex, 0.9); ctx.shadowBlur = 14*s*dpr; }
+  pass(0, col,
+       1,
+       k === 'cube' ? 1 + 0.9*s : (k === 'icosa' ? 1 - 0.35*s : 1),
+       k === 'dodeca' ? s : 0,
+       k === 'dodeca' && !reduceMotion ? 0.3*s : 0);
+  ctx.shadowBlur = 0;
+  // corners
+  for (const p of P){
+    if (k === 'dodeca' && s > 0.3) break;
+    const depth = (p[2]+1)/2;
+    ctx.globalAlpha = 0.35 + 0.65*depth;
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.arc(p[0], p[1], (1.4 + 1.6*depth)*dpr, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ─────────── stage registry + one animation loop ─────────── */
+const stages = [];
+function addStage(cv, d, getS){
+  const st = {cv, d, getS, state:{}, visible:true};
+  stages.push(st);
+  const size = () => { const r = cv.getBoundingClientRect(); const dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.max(1, Math.round(r.width*dpr)); cv.height = Math.max(1, Math.round(r.height*dpr)); drawSolid(cv, d, getS(), st.state, performance.now()); };
+  if ('ResizeObserver' in window) new ResizeObserver(size).observe(cv); else size();
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { for (const e of es) st.visible = e.isIntersecting; }).observe(cv);
+  size();
+  return st;
+}
+let heroTarget = 0, heroS = 0, lastFrame = 0;
+function frame(now){
+  const dt = lastFrame ? Math.min(0.1, (now-lastFrame)/1000) : 0; lastFrame = now;
+  heroS += (heroTarget - heroS) * Math.min(1, dt*3.2);
+  for (const st of stages) if (st.visible) drawSolid(st.cv, st.d, st.getS(), st.state, now);
+  requestAnimationFrame(frame);
+}
+window.__ssFrame = frame; // manual stepping when the pane is hidden
+
+/* ─────────── hero: the five ─────────── */
+const five = document.getElementById('five');
+SOL.forEach(d => {
+  const a = document.createElement('a');
+  a.className = 'f-card'; a.href = '#' + d.id;
+  a.innerHTML = `<canvas aria-hidden="true"></canvas><div class="f-name">${esc(d.solid.replace(/ \(.*\)/,''))} &middot; ${d.faces}</div>
+    <div class="f-arch">${rich(d.archetype)}<span class="s">${esc(d.shadow)}</span></div>`;
+  a.setAttribute('aria-label', `${d.solid}, ${d.faces} faces: ${plain(d.archetype)} and its shadow, ${d.shadow}`);
+  five.appendChild(a);
+  addStage(a.querySelector('canvas'), d, () => heroS);
+});
+const heroInt = document.getElementById('heroInt'), heroSha = document.getElementById('heroSha');
+function setHero(sh){ heroTarget = sh ? 1 : 0; heroInt.setAttribute('aria-pressed', String(!sh)); heroSha.setAttribute('aria-pressed', String(sh)); if (reduceMotion) heroS = heroTarget; }
+heroInt.onclick = () => setHero(false); heroSha.onclick = () => setHero(true);
+
+/* ─────────── master table ─────────── */
+const tbody = document.querySelector('#master tbody');
+SOL.forEach(d => {
+  const tr = document.createElement('tr');
+  const sensesMini = SENSES.map(([k,l]) => `<dt>${l}</dt><dd>${esc(d.senses[k].k)}</dd>`).join('');
+  tr.innerHTML = `
+    <th scope="row"><a href="#${d.id}">${esc(d.solid)}</a>
+      <span class="geo">${d.faces} ${d.face}s &middot; ${d.vertices} corners &middot; ${d.edges} edges &middot; ${dualTxt(d)}</span>
+      <span class="q">${esc(d.quality)}</span></th>
+    <td><span class="lab i">Integrated</span><p>${rich(d.archetype)}${d.archetypeTerm ? ' <span class="dm">' + rich(d.archetypeTerm) + '</span>' : ''}</p>
+        <span class="lab s">Shadow</span><p>${esc(d.shadow)} <span class="dm">${rich(d.shadowTerm)}</span></p></td>
+    <td class="int"><ul>${d.integrated.map(x => `<li>${esc(x)}</li>`).join('')}</ul></td>
+    <td class="sha"><ul>${d.shadowTraits.map(x => `<li>${esc(x)}</li>`).join('')}</ul></td>
+    <td><span class="lab i">Drive</span><p>${esc(d.drive)}</p><span class="lab s">Fear</span><p>${esc(d.fear)}</p></td>
+    <td><span class="lab i">Integrated</span><p>${esc(d.somaticInt)}</p><span class="lab s">Shadow</span><p>${esc(d.somaticSha)}</p></td>
+    <td><p><span class="sw" style="background:${d.colorInt.hex}"></span><span class="hex">${d.colorInt.hex}</span> ${esc(d.colorInt.name)}</p>
+        <p><span class="sw" style="background:${d.colorSha.hex}"></span><span class="hex">${d.colorSha.hex}</span> ${esc(d.colorSha.name)}</p>
+        <p class="note">${esc(d.colorEffect)}</p></td>
+    <td><dl class="senses-mini">${sensesMini}</dl></td>
+    <td>${d.objects.map(o => `<p><b>${esc(o.name)}</b> <span class="dm">(${esc(o.year)})</span></p>`).join('')}</td>
+    <td><p>${esc(d.transmutation)}</p></td>`;
+  tbody.appendChild(tr);
+});
+
+/* ─────────── the five rooms ─────────── */
+const rooms = document.getElementById('rooms');
+SOL.forEach((d, n) => {
+  const sec = document.createElement('section');
+  sec.className = 'solid'; sec.id = d.id;
+  sec.setAttribute('aria-labelledby', 'h-' + d.id);
+  const sensesRows = SENSES.map(([k,l]) => `<div class="sn">${l}</div><div class="an">${esc(d.senses[k].a)}</div><div class="tl">${esc(d.senses[k].t)}</div>`).join('');
+  sec.innerHTML = `
+    <div class="eyebrow">${String(n+2).padStart(2,'0')} &middot; ${d.faces} faces &middot; ${esc(d.quality)}</div>
+    <h2 id="h-${d.id}">${esc(d.solid)}: ${rich(d.archetype)} <span style="color:var(--muted)">&harr;</span> ${esc(d.shadow)}</h2>
+    <div class="solid-grid">
+      <aside class="stage-col">
+        <div class="stage"><canvas role="img" aria-label="A turning wireframe ${esc(d.solid.toLowerCase())}, coloured by the slider's state"></canvas></div>
+        <div class="shift">
+          <div class="ends"><span class="s">Shadow</span><span class="i">Integrated</span></div>
+          <input type="range" min="0" max="100" value="100" aria-label="Shift ${esc(d.solid)} between shadow and integrated">
+          <div class="readout"><span class="now"><span class="sw"></span><span class="hex"></span></span><span class="st"></span></div>
+        </div>
+        <div class="stage-actions"><button class="pill play" aria-pressed="false">&#9654; Hear the anchor</button></div>
+        <dl class="facts">
+          <dt>Faces</dt><dd>${d.faces} ${d.face}s</dd>
+          <dt>Corners</dt><dd>${d.vertices}</dd>
+          <dt>Edges</dt><dd>${d.edges}</dd>
+          <dt>Dual</dt><dd>${d.dual === 'itself' ? 'itself' : `<a href="#${SOL.find(x => x.solid.toLowerCase().includes(d.dual)).id}">${d.dual}</a>`}</dd>
+          <dt>Fills sphere</dt><dd>${pct(d.sphereFill)}</dd>
+        </dl>
+        <p class="quality"><b>${esc(d.quality)}</b>${esc(d.qualityText)}</p>
+      </aside>
+      <div class="content-col">
+        <div class="panel">
+          <h3>Archetype &amp; polarity</h3>
+          <div class="pair">
+            <div class="pol"><div class="tag">Integrated</div><div class="who">${rich(d.archetype)}</div>
+              ${d.archetypeTerm ? `<div class="dm">${rich(d.archetypeTerm)}</div>` : ''}
+              <p class="gloss">${esc(d.archetypeGloss)}</p>
+              <ul>${d.integrated.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+            <div class="pol s"><div class="tag">Shadow</div><div class="who">${esc(d.shadow)}</div>
+              <div class="dm">${rich(d.shadowTerm)}</div>
+              <p class="gloss">${esc(d.shadowGloss)}</p>
+              <ul>${d.shadowTraits.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="df">
+            <div><h3>Core drive</h3><p>${esc(d.drive)}</p></div>
+            <div><h3>Core fear</h3><p>${esc(d.fear)}</p></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Somatic cue</h3>
+          <div class="pair">
+            <div class="pol"><div class="tag">Integrated</div><p style="font-size:0.95rem">${esc(d.somaticInt)}</p></div>
+            <div class="pol s"><div class="tag">Shadow</div><p style="font-size:0.95rem">${esc(d.somaticSha)}</p></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Colour: the two-state shift</h3>
+          <div class="colors">
+            <div class="chip"><div class="fill" style="background:${d.colorInt.hex}"></div><div class="cap">${esc(d.colorInt.name)} <span class="hex">${d.colorInt.hex}</span></div></div>
+            <div class="chip"><div class="fill" style="background:${d.colorSha.hex}"></div><div class="cap">${esc(d.colorSha.name)} <span class="hex">${d.colorSha.hex}</span></div></div>
+          </div>
+          <div class="ramp" style="background:linear-gradient(90deg, ${d.colorInt.hex}, ${d.colorSha.hex})"></div>
+          <p class="colors-note"><i>${esc(d.colorShift)}</i> ${esc(d.colorEffect)}</p>
+        </div>
+        <div class="panel">
+          <h3>The five senses</h3>
+          <div class="senses"><div class="h"></div><div class="h i">Anchor (invoke)</div><div class="h s">Shadow tell (recognise)</div>${sensesRows}</div>
+        </div>
+        <div class="panel">
+          <h3>Cultural objects, 2006&ndash;2026</h3>
+          <div class="objects">${d.objects.map(o => `<div class="obj"><div class="on">${esc(o.name)} <span class="yr">${esc(o.year)}</span></div>
+            <p><span class="l i">Light</span> ${esc(o.light)}</p><p><span class="l s">Shadow</span> ${esc(o.shadow)}</p></div>`).join('')}</div>
+        </div>
+        <div class="panel">
+          <h3>Transmutation</h3>
+          <div class="rite"><p>${esc(d.transmutation)}</p><p class="sig"><b>Sigil.</b> ${esc(d.sigil)}</p></div>
+          <p class="note" style="margin-top:0.6rem">A printable ${esc(d.solid.replace(/ \(.*\)/,'').toLowerCase())} to hold is in <a href="from-one-circle.html#solids">From One Circle</a>.</p>
+        </div>
+      </div>
+    </div>`;
+  rooms.appendChild(sec);
+
+  const range = sec.querySelector('input[type=range]');
+  const sOf = () => 1 - range.value/100;
+  addStage(sec.querySelector('canvas'), d, sOf);
+  const sw = sec.querySelector('.readout .sw'), hx = sec.querySelector('.readout .hex'), stl = sec.querySelector('.readout .st');
+  const sync = () => {
+    const s = sOf(), c = mixHex(d.colorInt.hex, d.colorSha.hex, s);
+    sw.style.background = c; hx.textContent = c;
+    stl.textContent = s < 0.2 ? 'Integrated' : s > 0.8 ? 'Shadow' : s > 0.5 ? 'Slipping' : 'Returning';
+    stl.style.color = s > 0.5 ? 'var(--sha)' : 'var(--int)';
+    sec.classList.toggle('shadowing', s > 0.5);
+    if (Sound && Sound.cur && Sound.cur.id === d.id) Sound.cur.setS(s);
+  };
+  range.addEventListener('input', sync); sync();
+  const btn = sec.querySelector('.play');
+  btn.addEventListener('click', () => Sound.toggle(d, sOf(), btn));
+});
+
+/* ─────────── sound: each anchor and its shadow tell, crossfaded by the slider ─────────── */
+var Sound = {
+  ctx: null, cur: null, btn: null,
+  toggle(d, s, btn){
+    if (this.cur && this.cur.id === d.id){ this.stop(); return; }
+    this.stop();
+    try {
+      this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)();
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      this.cur = PATCH[d.shape](this.ctx, s); this.cur.id = d.id;
+      this.btn = btn; btn.setAttribute('aria-pressed','true'); btn.innerHTML = '&#9632; Stop';
+    } catch(e){ btn.textContent = 'Sound unavailable'; }
+  },
+  stop(){
+    if (this.cur){ this.cur.stop(); this.cur = null; }
+    if (this.btn){ this.btn.setAttribute('aria-pressed','false'); this.btn.innerHTML = '&#9654; Hear the anchor'; this.btn = null; }
+  }
+};
+function base(ctx){
+  const out = ctx.createGain(); out.gain.value = 0; out.connect(ctx.destination);
+  out.gain.setTargetAtTime(0.9, ctx.currentTime, 0.25);
+  const B = ctx.createGain(), S = ctx.createGain(); B.connect(out); S.connect(out);
+  const nodes = [], timers = [];
+  const kill = () => { timers.forEach(clearInterval); out.gain.setTargetAtTime(0, ctx.currentTime, 0.12);
+    setTimeout(() => { nodes.forEach(n => { try{ n.stop(); }catch(e){} }); out.disconnect(); }, 700); };
+  const fade = s => { B.gain.setTargetAtTime(1 - s, ctx.currentTime, 0.08); S.gain.setTargetAtTime(s, ctx.currentTime, 0.08); };
+  return {out, B, S, nodes, timers, kill, fade};
+}
+function osc(ctx, type, f, gain, dest, nodes){
+  const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f; g.gain.value = gain;
+  o.connect(g); g.connect(dest); o.start(); nodes.push(o); return {o, g};
+}
+function blip(ctx, type, f, t0, dur, peak, dest){
+  const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(peak, t0 + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(dest); o.start(t0); o.stop(t0 + dur + 0.05);
+}
+function noiseBuf(ctx, brown){
+  const n = ctx.sampleRate * 2, b = ctx.createBuffer(1, n, ctx.sampleRate), ch = b.getChannelData(0);
+  let last = 0; for (let i=0;i<n;i++){ const w = Math.random()*2-1; if (brown){ last = (last + 0.02*w)/1.02; ch[i] = last*3.5; } else ch[i] = w; }
+  return b;
+}
+function scheduler(ctx, P, every, fn){
+  let next = ctx.currentTime + 0.08;
+  const id = setInterval(() => { while (next < ctx.currentTime + 0.2){ fn(next); next += typeof every === 'function' ? every() : every; } }, 40);
+  P.timers.push(id);
+}
+const PATCH = {
+  tetra(ctx, s){ // major-third square arpeggio vs. a loop of notification pings
+    const P = base(ctx); let step = 0;
+    const lpB = ctx.createBiquadFilter(); lpB.type = 'lowpass'; lpB.frequency.value = 2600; lpB.connect(P.B);
+    scheduler(ctx, P, 60/128/2, t => { const f = [523.25, 659.25, 783.99, 659.25][step++ % 4]; blip(ctx, 'square', f, t, 0.16, 0.05, lpB); });
+    scheduler(ctx, P, () => 0.25 + Math.random()*0.9, t => { blip(ctx, 'sine', 1568, t, 0.22, 0.09, P.S); blip(ctx, 'sine', 2093, t+0.07, 0.25, 0.07, P.S); });
+    P.fade(s); return {setS: P.fade, stop: P.kill};
+  },
+  cube(ctx, s){ // sine fifth + 60 BPM click vs. office mains hum and buzz
+    const P = base(ctx);
+    osc(ctx, 'sine', 130.81, 0.11, P.B, P.nodes); osc(ctx, 'sine', 196.0, 0.08, P.B, P.nodes);
+    scheduler(ctx, P, 1.0, t => blip(ctx, 'sine', 1200, t, 0.03, 0.08, P.B));
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520; lp.connect(P.S);
+    osc(ctx, 'sawtooth', 60, 0.16, lp, P.nodes); osc(ctx, 'sine', 120, 0.08, P.S, P.nodes);
+    const bz = ctx.createBiquadFilter(); bz.type = 'bandpass'; bz.frequency.value = 2400; bz.Q.value = 3; bz.connect(P.S);
+    osc(ctx, 'square', 120, 0.025, bz, P.nodes);
+    P.fade(s); return {setS: P.fade, stop: P.kill};
+  },
+  octa(ctx, s){ // two sawtooth voices: unison when integrated, 3 Hz apart in shadow
+    const P = base(ctx);
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900; lp.Q.value = 0.7;
+    const pulse = ctx.createGain(); pulse.gain.value = 0.55; lp.connect(pulse); pulse.connect(P.out);
+    const a = osc(ctx, 'sawtooth', 220, 0.07, lp, P.nodes), b = osc(ctx, 'sawtooth', 220, 0.07, lp, P.nodes);
+    scheduler(ctx, P, 60/66, t => { pulse.gain.setTargetAtTime(0.85, t, 0.03); pulse.gain.setTargetAtTime(0.5, t + 0.12, 0.18); });
+    const setS = v => { b.o.frequency.setTargetAtTime(220 + 3*v, ctx.currentTime, 0.1); lp.frequency.setTargetAtTime(900 + 1400*v, ctx.currentTime, 0.1); };
+    setS(s); return {setS, stop: P.kill};
+  },
+  icosa(ctx, s){ // brown-noise rain + triangle fourth vs. a pressured hush with a thin whine
+    const P = base(ctx);
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf(ctx, true); src.loop = true;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100;
+    const ng = ctx.createGain(); ng.gain.value = 0.32; src.connect(lp); lp.connect(ng); ng.connect(P.B); src.start(); P.nodes.push(src);
+    osc(ctx, 'triangle', 196.0, 0.05, P.B, P.nodes); osc(ctx, 'triangle', 261.63, 0.04, P.B, P.nodes);
+    osc(ctx, 'sine', 5600, 0.006, P.S, P.nodes);
+    const src2 = ctx.createBufferSource(); src2.buffer = noiseBuf(ctx, false); src2.loop = true;
+    const hp = ctx.createBiquadFilter(); hp.type = 'lowpass'; hp.frequency.value = 160; const g2 = ctx.createGain(); g2.gain.value = 0.05;
+    src2.connect(hp); hp.connect(g2); g2.connect(P.S); src2.start(); P.nodes.push(src2);
+    P.fade(s); return {setS: P.fade, stop: P.kill};
+  },
+  dodeca(ctx, s){ // harmonic-series drone, steady vs. stuttering with dropouts
+    const P = base(ctx); let sh = s;
+    const gate = ctx.createGain(); gate.gain.value = 1; gate.connect(P.out);
+    [[55,0.12],[110,0.07],[165,0.05],[220,0.035],[275,0.03]].forEach(([f,g]) => osc(ctx, 'sine', f, g, gate, P.nodes));
+    scheduler(ctx, P, 0.11, t => {
+      if (Math.random() < 0.55*sh){ gate.gain.setValueAtTime(0.0, t); gate.gain.setValueAtTime(1, t + 0.04 + Math.random()*0.12); }
+    });
+    return {setS: v => { sh = v; }, stop: P.kill};
+  }
+};
+
+/* ─────────── closing diagram: edges, duals, sphere fill ─────────── */
+(function(){
+  const svg = document.getElementById('progSvg'), NS = 'http://www.w3.org/2000/svg';
+  const el = (n, a, txt) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const xs = SOL.map((d,i) => 100 + i*200);
+  const yN = 150;
+  // dual arcs
+  const arc = (i, j, label) => {
+    const x1 = xs[i], x2 = xs[j], mx = (x1+x2)/2;
+    svg.appendChild(el('path', {d:`M${x1} ${yN-58} Q${mx} ${yN-140} ${x2} ${yN-58}`, fill:'none', stroke:'var(--gold)', 'stroke-width':1.4, 'stroke-dasharray':'4 4', opacity:0.8}));
+    svg.appendChild(el('text', {x:mx, y:yN-108, 'text-anchor':'middle', 'font-size':15}, label));
+  };
+  const self = svg.appendChild(el('path', {d:`M${xs[0]-26} ${yN-58} C${xs[0]-60} ${yN-140} ${xs[0]+60} ${yN-140} ${xs[0]+26} ${yN-58}`, fill:'none', stroke:'var(--gold)', 'stroke-width':1.4, 'stroke-dasharray':'4 4', opacity:0.8}));
+  svg.appendChild(el('text', {x:xs[0], y:yN-128, 'text-anchor':'middle', 'font-size':15}, 'its own mirror'));
+  arc(1, 2, 'mirror pair: outer face, inner other');
+  arc(3, 4, 'mirror pair: knowing whole, being whole');
+  SOL.forEach((d, i) => {
+    const g = el('g', {class:'node', tabindex:0, role:'link', 'aria-label':`${d.solid}: ${d.edges} edges, fills ${pct(d.sphereFill)} of its sphere`});
+    g.addEventListener('click', () => location.hash = d.id);
+    g.addEventListener('keydown', e => { if (e.key === 'Enter') location.hash = d.id; });
+    g.appendChild(el('circle', {cx:xs[i], cy:yN, r:44, fill:d.colorInt.hex, opacity:0.16}));
+    g.appendChild(el('circle', {cx:xs[i], cy:yN, r:44, fill:'none', stroke:d.colorInt.hex, 'stroke-width':1.5}));
+    g.appendChild(el('text', {x:xs[i], y:yN+8, 'text-anchor':'middle', 'font-size':26, class:'big'}, d.edges));
+    g.appendChild(el('text', {x:xs[i], y:yN+24, 'text-anchor':'middle', 'font-size':12}, 'edges'));
+    g.appendChild(el('text', {x:xs[i], y:yN+66, 'text-anchor':'middle', 'font-size':17, class:'big'}, d.solid.replace(/ \(.*\)/,'')));
+    g.appendChild(el('text', {x:xs[i], y:yN+86, 'text-anchor':'middle', 'font-size':14}, d.archetype.replace(TOK, '$1')));
+    // sphere-fill bar
+    const bw = 140, by = yN+106;
+    g.appendChild(el('rect', {x:xs[i]-bw/2, y:by, width:bw, height:9, rx:2, fill:'var(--rule)'}));
+    g.appendChild(el('rect', {x:xs[i]-bw/2, y:by, width:bw*d.sphereFill, height:9, rx:2, fill:d.colorInt.hex}));
+    g.appendChild(el('text', {x:xs[i], y:by+28, 'text-anchor':'middle', 'font-size':13}, `fills ${pct(d.sphereFill)} of its sphere`));
+    svg.appendChild(g);
+    if (i < SOL.length-1) svg.appendChild(el('path', {d:`M${xs[i]+50} ${yN} L${xs[i+1]-56} ${yN}`, stroke:'var(--muted)', 'stroke-width':1.2, 'marker-end':'url(#ah)', opacity:0.7}));
+  });
+  const defs = el('defs', {}); const m = el('marker', {id:'ah', viewBox:'0 0 10 10', refX:8, refY:5, markerWidth:7, markerHeight:7, orient:'auto'});
+  m.appendChild(el('path', {d:'M0 0 L10 5 L0 10 z', fill:'var(--muted)'})); defs.appendChild(m); svg.prepend(defs);
+})();
+
+/* ─────────── Markdown export ─────────── */
+const mdCell = s => plain(s).replace(/\|/g,'\\|');
+function makeTable(){
+  const head = ['Platonic Solid & Geometry','Jungian Archetype & Polarity','Positive Traits (Integrated)','Negative Traits (Shadow)','Core Drive & Fear','Somatic Cue','Modern Color Theory (2-State Shift)','5-Sense Modern Correspondences','Cultural Object (2006–2026)','Transmutation / Magical Function'];
+  const rows = SOL.map(d => [
+    `**${d.solid}**<br>${d.faces} ${d.face}s · ${d.vertices} vertices · ${d.edges} edges · ${dualTxt(d)}<br>*${d.quality}*`,
+    `**${archFull(d)}**<br>↔ *${shaFull(d)}*`,
+    d.integrated.join('<br>'),
+    d.shadowTraits.join('<br>'),
+    `**Drive:** ${d.drive}<br>**Fear:** ${d.fear}`,
+    `**Integrated:** ${d.somaticInt}<br>**Shadow:** ${d.somaticSha}`,
+    `**Balanced** \`${d.colorInt.hex}\` ${d.colorInt.name}<br>**Shadow** \`${d.colorSha.hex}\` ${d.colorSha.name}<br>${d.colorEffect}`,
+    SENSES.map(([k,l]) => `**${l}:** ${d.senses[k].k}`).join('<br>'),
+    d.objects.map(o => `${o.name} (${o.year})`).join('<br>'),
+    d.transmutation
+  ].map(mdCell));
+  return [`| ${head.join(' | ')} |`, `|${head.map(() => '---').join('|')}|`, ...rows.map(r => `| ${r.join(' | ')} |`)].join('\n');
+}
+function makeFull(){
+  const out = ['# The Shadow Solids — a modern table of correspondences', '',
+    'Five Platonic solids, five Jungian archetypes, each with an integrated face and a shadow face. Built without inherited correspondence tables: the qualities are read from the geometry, the anchors come from 2006–2026.', '',
+    '## Master table', '', makeTable(), '', '## Sensory & ritual breakdown', ''];
+  SOL.forEach(d => {
+    out.push(`### ${d.solid} — ${plain(archFull(d))} ↔ ${plain(shaFull(d))}`, '',
+      `*${d.faces} ${d.face}s · ${d.vertices} vertices · ${d.edges} edges · ${dualTxt(d)} · fills ${pct(d.sphereFill)} of its circumsphere.* **${d.quality}.** ${d.qualityText}`, '',
+      `- **Integrated — ${plain(d.archetype)}:** ${d.archetypeGloss}`, `- **Shadow — ${d.shadow}:** ${d.shadowGloss}`,
+      `- **Drive:** ${d.drive} **Fear:** ${d.fear}`,
+      `- **Somatic, integrated:** ${d.somaticInt}`, `- **Somatic, shadow:** ${d.somaticSha}`,
+      `- **Colour:** \`${d.colorInt.hex}\` ${d.colorInt.name} → \`${d.colorSha.hex}\` ${d.colorSha.name}. ${d.colorShift} ${d.colorEffect}`, '',
+      '| Sense | Anchor (invoke) | Shadow tell (recognise) |', '|---|---|---|',
+      ...SENSES.map(([k,l]) => `| ${l} | ${mdCell(d.senses[k].a)} | ${mdCell(d.senses[k].t)} |`), '',
+      '**Cultural objects:**', ...d.objects.map(o => `- *${o.name}* (${o.year}). Light: ${o.light} Shadow: ${o.shadow}`), '',
+      `**Transmutation:** ${d.transmutation}`, '', `**Sigil:** ${d.sigil}`, '');
+  });
+  out.push('## How the geometry mirrors the growth', '', document.querySelector('.progtext').innerText.replace(/\n{2,}/g, '\n\n'), '');
+  return out.join('\n');
+}
+window.__ssMarkdown = {makeTable, makeFull};
+const ok = document.getElementById('copyOk');
+const flash = msg => { ok.textContent = msg; ok.classList.add('on'); setTimeout(() => ok.classList.remove('on'), 2200); };
+document.getElementById('copyMd').onclick = async () => {
+  const md = makeTable();
+  try { await navigator.clipboard.writeText(md); flash('Copied'); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = md; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); flash('Copied'); } catch(_){ flash('Copy failed'); } ta.remove(); }
+};
+document.getElementById('dlMd').onclick = () => {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([makeFull()], {type:'text/markdown'}));
+  a.download = 'the-shadow-solids.md'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+};
+
+/* ─────────── translations + theme ─────────── */
+document.addEventListener('click', e => { const t = e.target.closest('.tr'); if (t) t.classList.toggle('open'); });
+document.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.tr'); if (t && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); t.classList.toggle('open'); } });
+const trAll = document.getElementById('trAll');
+trAll.onclick = () => { const on = document.body.classList.toggle('tr-all'); trAll.setAttribute('aria-pressed', String(on)); trAll.textContent = on ? 'Hide translations' : 'Show all translations'; };
+const root = document.documentElement, themeBtn = document.getElementById('themeBtn');
+const sysDark = () => !(window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches);
+const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : sysDark();
+const labelTheme = () => themeBtn.textContent = isDark() ? 'Light' : 'Dark';
+try { const t = localStorage.getItem('ss-theme'); if (t) root.dataset.theme = t; } catch(e){}
+labelTheme();
+themeBtn.onclick = () => { root.dataset.theme = isDark() ? 'light' : 'dark'; try { localStorage.setItem('ss-theme', root.dataset.theme); } catch(e){} labelTheme(); };
+
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
